@@ -1807,30 +1807,59 @@
         }
 
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
-        
-        // ==============================================
-        // 🗑️ ATUALIZAÇÃO DA FUNÇÃO EXCLUIR ALUNO
-        // Agora ela procura a URL real da foto no banco e deleta corretamente
-        // ==============================================
+
         window.excluirAluno = async (id) => { 
-            if(confirm("Deseja excluir este atleta da sua equipe? Esta ação apagará também a foto do sistema.")) { 
+            if(confirm("Deseja excluir este atleta da sua equipe? Esta ação apagará a ficha, a foto e TODO o histórico (mensalidades, check-ins, graduações) do sistema.")) { 
                 try {
                     const alunoParaApagar = todosAlunosCache.find(a => a.id === id);
+                    
+
                     if (alunoParaApagar && alunoParaApagar.foto_url) {
                         try {
                             const fotoRef = ref(storage, alunoParaApagar.foto_url);
                             await deleteObject(fotoRef);
-                            console.log("Foto do aluno apagada do Storage com sucesso.");
+                            console.log("Foto apagada com sucesso.");
                         } catch(err) {
-                            console.log("Aviso: Foto não encontrada ou já apagada do Storage.");
+                            console.log("Aviso: Foto não encontrada.");
+                        }
+                    }
+
+                    showToast("A limpar histórico do atleta... ⏳", "info");
+
+                     const colecoesParaLimpar = ["checkins", "faturas", "financeiro", "graduacoes", "competicoes", "certificados"];
+                    
+                    for (const nomeColecao of colecoesParaLimpar) {
+                        try {
+
+                            const q = query(collection(db, nomeColecao), where("aluno_id", "==", id));
+                            const snap = await getDocs(q);
+                           
+                            const promessasDeletar = snap.docs.map(docSnap => deleteDoc(doc(db, nomeColecao, docSnap.id)));
+                            await Promise.all(promessasDeletar); 
+                        } catch(errLimpeza) {
+                            console.log(`Erro ao limpar ${nomeColecao}:`, errLimpeza);
                         }
                     }
                     
+
                     await deleteDoc(doc(db, "alunos", id)); 
-                    showToast("Atleta excluído com sucesso!", "success");
+
+                    try {
+                        await addDoc(collection(db, "auditoria"), {
+                            equipe_id: teamId,
+                            equipe_nome: equipeDados.nome,
+                            usuario_email: auth.currentUser.email,
+                            acao: "EXCLUIU_ALUNO",
+                            detalhes: `Excluiu permanentemente o aluno: ${alunoParaApagar.nome} e apagou todo o seu histórico.`,
+                            timestamp: new Date().toISOString()
+                        });
+                    } catch(e){}
+                    
+                    showToast("Atleta e todo o seu histórico foram excluídos com sucesso!", "success");
                     buscarAlunosFirebase(); 
                 } catch(e) {
-                    showToast("Erro ao excluir.", "error");
+                    console.error(e);
+                    showToast("Erro ao excluir o atleta.", "error");
                 }
             } 
         }
