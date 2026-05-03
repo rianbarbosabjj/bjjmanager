@@ -35,7 +35,11 @@
         /* =======================================================
            🏅 DESIGN ULTRA PREMIUM DO CERTIFICADO
            ======================================================= */
-        #certificado-render {            
+        #certificado-render {   
+            /* 🔥 Variáveis CSS Mágicas (Controlam TODAS as cores do tema simultaneamente) */         
+            --cor-destaque: #D4AF37;
+            --grad-metalico: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+
             width: 1123px; /* A4 Landscape */            
             height: 794px;            
             background: #E8E5DF; 
@@ -65,6 +69,7 @@
         }
         
         .cert-border-metal {
+            background: var(--grad-metalico); /* 🔥 Segue o Tema */
             padding: 3px;
             height: 100%;
             width: 100%;
@@ -78,7 +83,7 @@
             background: #FCFAF2;
             background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
             background-size: 200px;
-            border: 1px solid #D4AF37;
+            border: 1px solid var(--cor-destaque); /* 🔥 Segue o Tema */
             height: 100%;
             width: 100%;
             position: relative;
@@ -87,13 +92,15 @@
             align-items: center;
             padding: 45px 55px;
             box-sizing: border-box;
-            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px #D4AF37;
+            /* 🔥 A Sombra dupla também segue o Tema */
+            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px var(--cor-destaque); 
             z-index: 2;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: #D4AF37; }
+        /* 🔥 Cantos decorativos seguem o Tema */
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -128,20 +135,18 @@
             z-index: 10;
         }
 
-        /* 🔥 CABEÇALHO (Logos encostadas às margens laterais para dar mais espaço ao centro) */
         .cert-header-container {
             position: absolute;
             top: 55px; 
-            left: 35px; /* Empurrado para fora */
-            right: 35px; /* Empurrado para fora */
+            left: 35px;
+            right: 35px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
         }
-        .cert-header-side { width: 130px; display: flex; justify-content: center; } /* Ligeiramente mais estreito */
-        .cert-logo { max-width: 125px; max-height: 120px; object-fit: contain; } /* Imagem otimizada */
-        
+        .cert-header-side { width: 130px; display: flex; justify-content: center; }
+        .cert-logo { max-width: 125px; max-height: 120px; object-fit: contain; }
         .cert-titulo-wrapper { flex: 1; text-align: center; }
         
         .cert-titulo { 
@@ -177,12 +182,12 @@
         .cert-nome-container {
             width: 85%;
             margin: 15px auto 10px auto;
-            border-bottom: 2px solid #D4AF37;
+            border-bottom: 2px solid var(--cor-destaque); /* 🔥 Segue o Tema */
             padding-bottom: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s ease;
         }
 
         .cert-nome-atleta { 
@@ -193,27 +198,26 @@
             transition: all 0.3s ease;
         }
         
-        /* 🔥 BLOCO DA FAIXA NA MESMA LINHA (Flexbox Baseline) */
         .cert-bloco-faixa {
             display: flex;
-            align-items: baseline; /* Alinha o fundo das letras milimetricamente */
+            align-items: baseline;
             justify-content: center;
-            gap: 12px; /* Espaço entre a frase e a faixa */
+            gap: 12px;
             margin-top: 20px;
             margin-bottom: 10px;
         }
 
         .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 26px; /* Ajustado para casar com a frase */
+            font-size: 26px; 
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: #1E293B; 
-            border-bottom: 3px solid #D4AF37; 
+            /* A Cor do texto é definida via JS dinamicamente (Cor da Faixa) */
+            border-bottom: 3px solid var(--cor-destaque); /* 🔥 O sublinhado segue o Tema */
             padding-bottom: 0px;
             display: inline-block;
-            transition: all 0.3s; 
+            transition: all 0.3s ease; 
             line-height: 1;
         }
 
@@ -233,11 +237,13 @@
         
         .cert-assinatura-box { text-align: center; width: 280px; }
         
+        /* 🔥 Linhas de assinatura seguem o Tema em formato de degradê */
         .cert-linha { 
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #D4AF37, #D4AF37, #D4AF37, transparent);
+            background: linear-gradient(90deg, transparent, var(--cor-destaque), var(--cor-destaque), var(--cor-destaque), transparent);
             margin-bottom: 8px;
+            transition: background 0.3s ease;
         }
         
         .cert-ass-nome { 
@@ -356,15 +362,15 @@
 
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha render-linhas-metal"></div>
-                                                        <div id="render-ass1-nome" class="cert-ass-nome">Professor responsável</div>
+                                                        <div class="cert-linha"></div>
+                                                        <div id="render-ass1-nome" class="cert-ass-nome">Professor resonsável</div>
                                                         <div id="render-ass1-grad" class="cert-ass-grad">Graduação</div>
                                                     </div>
 
                                                     <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
 
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha render-linhas-metal"></div>
+                                                        <div class="cert-linha"></div>
                                                         <div id="render-ass2-nome" class="cert-ass-nome">Professor</div>
                                                         <div id="render-ass2-grad" class="cert-ass-grad">Graduação</div>
                                                     </div>
@@ -793,29 +799,49 @@
             return null;
         }
 
-        // CORES DINÂMICAS PARA AS FAIXAS
+        // 🔥 TONS REAIS E FIÉIS DAS FAIXAS DE BJJ
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
-            if (f.includes('preta')) return '#0F172A';
-            if (f.includes('marrom')) return '#78350F';
-            if (f.includes('roxa')) return '#7E22CE';
-            if (f.includes('azul')) return '#1D4ED8';
-            if (f.includes('verde')) return '#15803D';
-            if (f.includes('laranja')) return '#C2410C';
-            if (f.includes('amarela')) return '#A16207';
-            if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155'; // Cinza escuro elegante
-            return '#B38728'; 
+            if (f.includes('preta')) return '#000000'; // Preto Absoluto
+            if (f.includes('marrom')) return '#5C4033'; // Marrom Denso Real
+            if (f.includes('roxa')) return '#581C87'; // Roxo Intenso
+            if (f.includes('azul')) return '#1D4ED8'; // Azul Royal
+            if (f.includes('verde')) return '#166534'; // Verde Bandeira/Floresta
+            if (f.includes('laranja')) return '#EA580C'; // Laranja Vivo
+            if (f.includes('amarela')) return '#CA8A04'; // Amarelo Ouro
+            if (f.includes('cinza')) return '#64748B'; // Cinza Chumbo
+            if (f.includes('branca')) return '#475569'; // Cinza médio (Branco no papel branco não se lê)
+            return '#1E293B'; 
         }
 
-        // 🔥 FORMATADOR INTELIGENTE DE NOMES PARA FONTES CURSIVAS
         function formatarNome(nome, isCursive) {
             if (!isCursive) return nome.toUpperCase();
-            // Transforma "JOAO DA SILVA" em "João da Silva"
             return nome.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
         }
 
         window.atualizarPreviewLive = function() {
+            const certRender = document.getElementById('certificado-render');
+            
+            // 🔥 Aplica o Tema nas Variáveis CSS Raiz
+            const tema = document.getElementById('cfg-tema').value;
+            let corDestaque = "#D4AF37"; 
+            let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
+
+            if (tema === 'prata') {
+                corDestaque = "#94A3B8";
+                gradMetalico = "linear-gradient(135deg, #71717A, #E4E4E7, #A1A1AA, #F4F4F5, #71717A)";
+            } else if (tema === 'bronze') {
+                corDestaque = "#B87333";
+                gradMetalico = "linear-gradient(135deg, #A0522D, #CD7F32, #8B4513, #D2B48C, #A0522D)";
+            } else if (tema === 'preto') {
+                corDestaque = "#1E293B";
+                gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
+            }
+            
+            certRender.style.setProperty('--cor-destaque', corDestaque);
+            certRender.style.setProperty('--grad-metalico', gradMetalico);
+
+
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
@@ -829,12 +855,11 @@
 
             document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
             
-            // Aplica cor SÓ na faixa, e a borda acompanha
+            // Aplica cor SÓ no texto da faixa
             const corDaFaixa = getCorDaFaixaTexto(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
             elFaixaCor.style.color = corDaFaixa;
-            elFaixaCor.style.borderColor = corDaFaixa;
 
             document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "").toUpperCase();
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
@@ -868,7 +893,7 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado Puro
+            // Selo Customizado
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -877,7 +902,7 @@
                 elSelo.classList.add('hidden');
             }
 
-            // 🔥 FONTES (Título, Nome e Textos com tamanhos padronizados)
+            // FONTES
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
@@ -924,10 +949,8 @@
                 }
             }
             
-            // Aplica a conversão de maiúsculas/minúsculas inteligente
             elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
 
-            // Textos Corporais
             let baseTextSize = 22;
             if (fonteTexto.includes('Playfair')) baseTextSize = 16;
             if (fonteTexto.includes('Montserrat') || fonteTexto.includes('Roboto')) baseTextSize = 14;
@@ -946,28 +969,7 @@
                 }
             });
 
-            // Tema Visual
-            const tema = document.getElementById('cfg-tema').value;
-            const elNomeContainer = document.getElementById('render-nome-container');
-            const elBordaMetal = document.getElementById('render-border-metal');
-            let corDestaque = "#D4AF37"; 
-            let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
-
-            if (tema === 'prata') {
-                corDestaque = "#A1A1AA";
-                gradMetalico = "linear-gradient(135deg, #71717A, #E4E4E7, #A1A1AA, #F4F4F5, #71717A)";
-            } else if (tema === 'bronze') {
-                corDestaque = "#CD7F32";
-                gradMetalico = "linear-gradient(135deg, #A0522D, #CD7F32, #8B4513, #D2B48C, #A0522D)";
-            } else if (tema === 'preto') {
-                corDestaque = "#0F172A";
-                gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
-            }
-
-            elBordaMetal.style.background = gradMetalico;
-            elNomeContainer.style.borderBottomColor = corDestaque;
-
-            // 🔥 A MÁGICA FINAL: Esperar a fonte baixar do Google antes de calcular!
+            // Encolhimento de Segurança (Sincronizado)
             document.fonts.ready.then(() => {
                 setTimeout(() => {
                     ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680); 
