@@ -42,7 +42,6 @@
             position: relative;
         }
 
-        /* Sistema de Bordas de Luxo com Bordas Arredondadas */
         .cert-border-outer {
             background: #FFFFFF; 
             padding: 12px;
@@ -58,7 +57,7 @@
             width: 100%;
             box-sizing: border-box;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-            border-radius: 30px; /* 🔥 Borda metálica arredondada */
+            border-radius: 30px; 
             transition: background 0.3s ease;
         }
         
@@ -73,12 +72,12 @@
             align-items: center;
             padding: 40px 60px;
             box-sizing: border-box;
-            border-radius: 26px; /* 🔥 Fundo principal arredondado acompanhando o metal */
+            border-radius: 26px; 
             z-index: 1;
             transition: border-color 0.3s ease;
         }
 
-        /* Marca de Água Central Gigante */
+        /* Marca de Água Central */
         .cert-watermark {
             position: absolute;
             top: 50%;
@@ -95,14 +94,11 @@
             transition: opacity 0.3s;
         }
 
-        /* Logos e Cabeçalho */
-        .cert-logo-esq { position: absolute; top: 55px; left: 55px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
-        .cert-logo-dir { position: absolute; top: 55px; right: 55px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
-        
+        /* 🔥 DATA NO CANTO SUPERIOR DIREITO (CLÁSSICO) */
         .cert-data { 
             position: absolute;
-            top: 35px;
-            right: 50px;
+            top: 30px;
+            right: 60px;
             font-family: 'Montserrat', sans-serif;
             font-size: 11px; 
             font-weight: 800; 
@@ -113,8 +109,44 @@
             text-align: right;
         }
 
-        /* 🔥 WRAPPER CENTRALIZADOR Y 
-           Esta classe pega todo o espaço livre e centra o texto no meio exato da página */
+        /* 🔥 CABEÇALHO FLEXÍVEL (TÍTULO E LOGOS ALINHADOS) */
+        .cert-header-container {
+            position: absolute;
+            top: 55px;
+            left: 55px;
+            right: 55px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        .cert-header-side {
+            width: 150px; /* Largura fixa para equilibrar o centro perfeito */
+            display: flex;
+            justify-content: center;
+        }
+        .cert-logo {
+            max-width: 140px;
+            max-height: 130px;
+            object-fit: contain;
+            transition: opacity 0.3s;
+        }
+        .cert-titulo-wrapper {
+            flex: 1;
+            text-align: center;
+        }
+        .cert-titulo { 
+            font-family: 'Playfair Display', serif;
+            font-size: 46px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin: 0; 
+            color: #0F172A; 
+            transition: all 0.3s ease;
+        }
+
+        /* 🔥 CÁPSULA FLEXÍVEL DE TEXTO CENTRAL */
         .cert-text-wrapper {
             flex: 1;
             display: flex;
@@ -123,17 +155,8 @@
             justify-content: center;
             width: 100%;
             z-index: 10;
-            padding-bottom: 60px; /* Dá espaço para o selo e assinaturas não baterem no texto */
-        }
-
-        .cert-titulo { 
-            font-family: 'Playfair Display', serif;
-            font-size: 46px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            letter-spacing: 4px; 
-            color: #0F172A; 
-            transition: all 0.3s ease;
+            padding-top: 100px; /* Compensa a altura do cabeçalho */
+            padding-bottom: 50px; /* Espaço para as assinaturas */
         }
 
         .cert-texto-dinamico { 
@@ -199,7 +222,6 @@
         .cert-ass-nome { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #1E293B; }
         .cert-ass-grad { font-family: 'Montserrat', sans-serif; font-size: 11px; color: #64748b; font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px;}
         
-        /* 🔥 SELO AUMENTADO PARA 155px */
         .cert-selo { width: 155px; height: 155px; object-fit: contain; transition: opacity 0.3s; margin-bottom: -5px;}
 
         /* QR Code Canto */
@@ -228,7 +250,7 @@
                 <div class="max-w-6xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize as fontes, cores, textos e logos.</p>                    
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize fontes, posições e logos.</p>                    
                     </div>
 
                     <!-- 🔴 ÁREA DE PRÉ-VISUALIZAÇÃO (LIVE PREVIEW) -->
@@ -250,30 +272,28 @@
                                                 <!-- MARCA DE ÁGUA CENTRAL -->
                                                 <img id="render-watermark" src="" class="cert-watermark hidden">
 
-                                                <!-- LOGOS LATERAIS -->
-                                                <img id="render-logo-esq" src="" class="cert-logo-esq hidden">
-                                                <img id="render-logo-dir" src="" class="cert-logo-dir hidden">
-
-                                                <!-- DATA NO CANTO SUPERIOR DIREITO -->
+                                                <!-- DATA CLÁSSICA -->
                                                 <p id="render-data" class="cert-data">BRASIL, 01 DE JANEIRO DE 2026</p>
 
-                                                <!-- 🔥 CÁPSULA FLEXÍVEL DE TEXTO (CENTRALIZA NO EIXO Y) -->
+                                                <!-- CABEÇALHO ALINHADO -->
+                                                <div class="cert-header-container">
+                                                    <div class="cert-header-side">
+                                                        <img id="render-logo-esq" src="" class="cert-logo">
+                                                    </div>
+                                                    <div class="cert-titulo-wrapper">
+                                                        <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
+                                                    </div>
+                                                    <div class="cert-header-side">
+                                                        <img id="render-logo-dir" src="" class="cert-logo">
+                                                    </div>
+                                                </div>
+
+                                                <!-- TEXTOS CENTRALIZADOS -->
                                                 <div class="cert-text-wrapper">
-                                                    <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
-
-                                                    <!-- TEXTO 1 -->
                                                     <p id="render-texto1" class="cert-texto-dinamico">A EQUIPE RECONHECE QUE</p>
-
-                                                    <!-- NOME -->
                                                     <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
-
-                                                    <!-- TEXTO 2 -->
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
-
-                                                    <!-- FAIXA -->
                                                     <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA BRANCA</h3>
-
-                                                    <!-- TEXTO 3 -->
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
                                                 </div>
 
@@ -285,7 +305,6 @@
                                                         <div id="render-ass1-grad" class="cert-ass-grad">Grau</div>
                                                     </div>
 
-                                                    <!-- SELO CENTRAL (MAIOR) -->
                                                     <img id="render-selo" src="" class="cert-selo hidden">
 
                                                     <div class="cert-assinatura-box">
@@ -295,7 +314,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- QR CODE -->
                                                 <div class="cert-qr-wrapper">
                                                     <div id="cert-qr-container" class="cert-qr-container"></div>
                                                     <div id="render-serial" class="cert-serial">VAL: 000000</div>
@@ -348,7 +366,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo, Tipografia e Imagens</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -378,31 +396,64 @@
                                         <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Disposição das Logos</label>
-                                    <select id="cfg-logos" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="todas">Marcas Laterais + Fundo</option>
-                                        <option value="sem_fundo">Apenas Marcas Laterais</option>
-                                        <option value="apenas_fundo">Apenas Marca d'Água no Fundo</option>
-                                        <option value="limpo">Limpo (Sem Logos)</option>
-                                    </select>
-                                </div>
                             </div>
 
                             <!-- ÁREA DE UPLOAD DE LOGO E SELO CUSTOMIZADOS -->
-                            <div class="col-span-1 md:col-span-2 lg:col-span-4 border-t border-slate-100 mt-5 pt-5">
-                                <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Customizadas (Opcional)</h4>
+                            <div class="border-t border-slate-100 mt-6 pt-5">
+                                <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Envio de Imagens Adicionais (Opcional)</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
-                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo / Federação (Top e Fundo)</label>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Secundária / Federação</label>
                                         <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 transition-all outline-none">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo Central / Brasão</label>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo / Brasão Específico</label>
                                         <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 transition-all outline-none">
                                     </div>
                                 </div>
-                                <p class="text-[9px] text-slate-400 mt-2 font-medium">* Se não enviar nenhuma imagem, o sistema utilizará a Logo Oficial da Academia configurada no Painel.</p>
+                            </div>
+
+                            <!-- 🔥 A MÁGICA DAS POSIÇÕES -->
+                            <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
+                                <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento de Logos</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Topo Esquerda</label>
+                                        <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer shadow-sm">
+                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="extra">Logo Secundária</option>
+                                            <option value="selo">Imagem do Selo</option>
+                                            <option value="nenhuma">Nenhuma (Ocultar)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Topo Direita</label>
+                                        <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer shadow-sm">
+                                            <option value="nenhuma">Nenhuma (Ocultar)</option>
+                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="extra">Logo Secundária</option>
+                                            <option value="selo">Imagem do Selo</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Marca D'Água (Fundo)</label>
+                                        <select id="pos-water" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer shadow-sm">
+                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="extra">Logo Secundária</option>
+                                            <option value="selo">Imagem do Selo</option>
+                                            <option value="nenhuma">Nenhuma (Ocultar)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo Rodapé</label>
+                                        <select id="pos-selo" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer shadow-sm">
+                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="extra">Logo Secundária</option>
+                                            <option value="selo">Imagem do Selo</option>
+                                            <option value="nenhuma">Nenhuma (Ocultar)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -486,9 +537,7 @@
         let serialEquipeAtual = 427;         
         let qrcodeObj = null;
 
-        let nomeEquipeLogada = "Sua Equipe";
         let logoBase64Global = null; 
-        
         let customLogoBase64 = null;
         let customSeloBase64 = null;
 
@@ -547,7 +596,6 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe";
                     const logoEquipeOficial = dadosEquipe.url_logo || null;
 
                     if (logoEquipeOficial) {
@@ -597,7 +645,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v3");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v4");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -612,7 +660,11 @@
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
                     if(p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
-                    if(p.logos) document.getElementById('cfg-logos').value = p.logos;
+                    
+                    if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
+                    if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
+                    if(p.posWater) document.getElementById('pos-water').value = p.posWater;
+                    if(p.posSelo) document.getElementById('pos-selo').value = p.posSelo;
                 } catch(e) {}            
             } else {
                 document.getElementById('cfg-texto1').value = "A EQUIPE RECONHECE QUE";
@@ -633,10 +685,14 @@
                 tema: document.getElementById('cfg-tema').value,
                 fonteTitulo: document.getElementById('cfg-fonte-titulo').value,
                 fonteTexto: document.getElementById('cfg-fonte-texto').value,
-                logos: document.getElementById('cfg-logos').value
+                
+                posEsq: document.getElementById('pos-esq').value,
+                posDir: document.getElementById('pos-dir').value,
+                posWater: document.getElementById('pos-water').value,
+                posSelo: document.getElementById('pos-selo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v3", JSON.stringify(padroes));            
-            showToast("Design e Padrões guardados no navegador!", "success");        
+            localStorage.setItem("bjj_cert_padroes_v4", JSON.stringify(padroes));            
+            showToast("Design e Posições guardados com sucesso!", "success");        
         }
 
         window.carregarLogoCustomizada = function(event) {
@@ -670,10 +726,16 @@
         }
 
         // ==============================================
-        // 👁️ ATUALIZADOR DO PREVIEW (A MÁGICA VISUAL)
+        // 👁️ O CÉREBRO DA PERSONALIZAÇÃO DE LOGOS
         // ==============================================
+        function getImagemEscolhida(valor) {
+            if (valor === 'equipe') return logoBase64Global;
+            if (valor === 'extra') return customLogoBase64;
+            if (valor === 'selo') return customSeloBase64;
+            return null;
+        }
+
         window.atualizarPreviewLive = function() {
-            // 1. Textos
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome.toUpperCase() : "NOME DO ATLETA";
@@ -683,7 +745,7 @@
             let dt;            
             if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
-            const dataExtenso = `BRASIL, ${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
+            const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
             document.getElementById('render-data').innerText = dataExtenso;
             document.getElementById('render-nome').innerText = nomeAtleta;
@@ -696,76 +758,72 @@
             document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            // 2. Aplicar Logos Inteligentes
-            const confLogos = document.getElementById('cfg-logos').value;
-            const imgEsq = document.getElementById('render-logo-esq');
-            const imgDir = document.getElementById('render-logo-dir');
-            const imgSelo = document.getElementById('render-selo');
-            const imgWater = document.getElementById('render-watermark');
-            
-            const imagemParaLogo = customLogoBase64 || logoBase64Global;
-            const imagemParaSelo = customSeloBase64 || logoBase64Global;
+            // 📸 APLICAR LOGOS ESCOLHIDAS
+            const imgBlank = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; // Gif Transparente 1x1
 
-            if (imagemParaLogo) {
-                imgEsq.src = imagemParaLogo;
-                imgDir.src = imagemParaLogo;
-                imgWater.src = imagemParaLogo;
-            }
-            if (imagemParaSelo) {
-                imgSelo.src = imagemParaSelo;
-            }
+            // 1. Logo Esquerda
+            const valEsq = document.getElementById('pos-esq').value;
+            const srcEsq = getImagemEscolhida(valEsq);
+            const elEsq = document.getElementById('render-logo-esq');
+            elEsq.src = srcEsq || imgBlank;
+            elEsq.style.opacity = (srcEsq && valEsq !== 'nenhuma') ? 1 : 0;
 
-            if (imagemParaLogo || imagemParaSelo) {
-                if (imagemParaSelo && confLogos !== 'limpo') imgSelo.classList.remove('hidden'); 
+            // 2. Logo Direita
+            const valDir = document.getElementById('pos-dir').value;
+            const srcDir = getImagemEscolhida(valDir);
+            const elDir = document.getElementById('render-logo-dir');
+            elDir.src = srcDir || imgBlank;
+            elDir.style.opacity = (srcDir && valDir !== 'nenhuma') ? 1 : 0;
 
-                if (confLogos === 'todas') {
-                    if (imagemParaLogo) {
-                        imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
-                        imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
-                        imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
-                    }
-                } else if (confLogos === 'sem_fundo') {
-                    if (imagemParaLogo) {
-                        imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
-                        imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
-                        imgWater.style.opacity = 0; imgWater.classList.add('hidden');
-                    }
-                } else if (confLogos === 'apenas_fundo') {
-                    if (imagemParaLogo) {
-                        imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
-                        imgDir.style.opacity = 0; imgDir.classList.add('hidden');
-                        imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
-                    }
-                } else { // Limpo
-                    imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
-                    imgDir.style.opacity = 0; imgDir.classList.add('hidden');
-                    imgWater.style.opacity = 0; imgWater.classList.add('hidden');
-                    imgSelo.classList.add('hidden');
-                }
+            // 3. Marca D'Agua
+            const valWater = document.getElementById('pos-water').value;
+            const srcWater = getImagemEscolhida(valWater);
+            const elWater = document.getElementById('render-watermark');
+            elWater.src = srcWater || imgBlank;
+            if(srcWater && valWater !== 'nenhuma') {
+                elWater.classList.remove('hidden');
+                elWater.style.opacity = 0.04;
+            } else {
+                elWater.style.opacity = 0;
             }
 
-            // 3. Aplicar Estilos (Fontes)
+            // 4. Selo
+            const valSelo = document.getElementById('pos-selo').value;
+            const srcSelo = getImagemEscolhida(valSelo);
+            const elSelo = document.getElementById('render-selo');
+            elSelo.src = srcSelo || imgBlank;
+            if(srcSelo && valSelo !== 'nenhuma') {
+                elSelo.classList.remove('hidden');
+                elSelo.style.opacity = 1;
+            } else {
+                elSelo.style.opacity = 0;
+            }
+
+            // ✍️ APLICAR FONTES E ESTILOS
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
-            
             const elTitulo = document.getElementById('render-titulo');
+            
             elTitulo.style.fontFamily = fonteTitulo;
             
+            // Controle especial para fontes cursivas
             if (fonteTitulo.includes('cursive')) {
                 elTitulo.style.textTransform = 'none'; 
-                elTitulo.style.fontSize = '80px';      
+                elTitulo.style.fontSize = '85px';      
                 elTitulo.style.letterSpacing = '1px';
+                elTitulo.style.lineHeight = '0.8';
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.fontSize = '46px';
                 elTitulo.style.letterSpacing = '4px';
+                elTitulo.style.lineHeight = '1.2';
             }
 
             document.getElementById('render-nome').style.fontFamily = fonteTexto;
             document.getElementById('render-ass1-nome').style.fontFamily = fonteTexto;
             document.getElementById('render-ass2-nome').style.fontFamily = fonteTexto;
 
-            // 4. Aplicar Tema (Cores)
+            // 🎨 TEMA METÁLICO
             const tema = document.getElementById('cfg-tema').value;
             const elBordaMetal = document.getElementById('render-border-metal');
             const elBordaInner = document.getElementById('render-border-inner');
