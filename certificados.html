@@ -100,7 +100,7 @@
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -208,13 +208,14 @@
             margin-bottom: 10px;
         }
 
+        /* 🔥 FAIXA COM CONTORNO E COR INTELIGENTE */
         .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
             font-size: 26px; 
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: #1E293B; 
+            /* A linha inferior agora segue EXATAMENTE a cor do tema e não a da faixa */
             border-bottom: 3px solid var(--cor-destaque); 
             padding-bottom: 0px;
             display: inline-block;
@@ -351,7 +352,6 @@
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
-                                                    <!-- 🔥 FAIXA E PREFIXO NA MESMA LINHA -->
                                                     <div class="cert-bloco-faixa">
                                                         <span id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin: 0;">RECEBEU A GRADUAÇÃO DE FAIXA</span>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
@@ -733,7 +733,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v15");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v14");            
             
             const textoPadraoDinamico = `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
 
@@ -780,7 +780,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v15", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v14", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -820,13 +820,13 @@
             return null;
         }
 
-        // 🔥 O SEGREDO DAS FAIXAS DE DUAS CORES (Corrigido para não deformar a fonte)
+        // 🔥 O SEGREDO DAS FAIXAS DE DUAS CORES (Corrigido e Puro)
         function getCoresFaixa(faixaStr) {
             const f = faixaStr.toLowerCase();
             const cores = {
                 branca: '#FFFFFF',
                 cinza: '#64748B', 
-                amarela: '#F59E0B', // Amarelo real e forte
+                amarela: '#FFD700', // Ouro brilhante
                 laranja: '#EA580C', // Laranja vibrante
                 verde: '#15803D', 
                 azul: '#1D4ED8', 
@@ -835,30 +835,30 @@
                 preta: '#0F172A' 
             };
 
-            // Miolo = Cor 2 (Ex: Preta/Branca), Contorno = Cor 1 (Ex: Amarela)
-            if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza, border: cores.cinza };
-            if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza, border: cores.cinza };
-            if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela, border: cores.amarela };
-            if (f.includes('amarela e preta')) return { fill: cores.preta, stroke: cores.amarela, border: cores.amarela };
-            if (f.includes('laranja e branca')) return { fill: cores.branca, stroke: cores.laranja, border: cores.laranja };
-            if (f.includes('laranja e preta')) return { fill: cores.preta, stroke: cores.laranja, border: cores.laranja };
-            if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde, border: cores.verde };
-            if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde, border: cores.verde };
+            // Miolo = Cor 2, Contorno = Cor 1
+            if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza };
+            if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza };
+            if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela };
+            if (f.includes('amarela e preta')) return { fill: cores.preta, stroke: cores.amarela };
+            if (f.includes('laranja e branca')) return { fill: cores.branca, stroke: cores.laranja };
+            if (f.includes('laranja e preta')) return { fill: cores.preta, stroke: cores.laranja };
+            if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde };
+            if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde };
 
             // Sólidas
-            if (f.includes('preta')) return { fill: cores.preta, stroke: null, border: cores.preta };
-            if (f.includes('marrom')) return { fill: cores.marrom, stroke: null, border: cores.marrom };
-            if (f.includes('roxa')) return { fill: cores.roxa, stroke: null, border: cores.roxa };
-            if (f.includes('azul')) return { fill: cores.azul, stroke: null, border: cores.azul };
-            if (f.includes('verde')) return { fill: cores.verde, stroke: null, border: cores.verde };
-            if (f.includes('laranja')) return { fill: cores.laranja, stroke: null, border: cores.laranja };
-            if (f.includes('amarela')) return { fill: cores.amarela, stroke: null, border: cores.amarela };
-            if (f.includes('cinza')) return { fill: cores.cinza, stroke: null, border: cores.cinza };
+            if (f.includes('preta')) return { fill: cores.preta, stroke: null };
+            if (f.includes('marrom')) return { fill: cores.marrom, stroke: null };
+            if (f.includes('roxa')) return { fill: cores.roxa, stroke: null };
+            if (f.includes('azul')) return { fill: cores.azul, stroke: null };
+            if (f.includes('verde')) return { fill: cores.verde, stroke: null };
+            if (f.includes('laranja')) return { fill: cores.laranja, stroke: null };
+            if (f.includes('amarela')) return { fill: cores.amarela, stroke: null };
+            if (f.includes('cinza')) return { fill: cores.cinza, stroke: null };
             
             // Branca ganha um leve contorno cinza para ler bem no fundo claro
-            if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8', border: '#94A3B8' }; 
+            if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8' }; 
 
-            return { fill: '#B38728', stroke: null, border: '#B38728' }; 
+            return { fill: '#B38728', stroke: null }; 
         }
 
         function formatarNome(nome, isCursive) {
@@ -918,7 +918,8 @@
                 elFaixaCor.style.textShadow = 'none';
             }
             
-            elFaixaCor.style.borderBottomColor = corDaFaixa.border;
+            // A borda agora segue a cor de destaque do TEMA e não da faixa
+            // Removi elFaixaCor.style.borderBottomColor = corDaFaixa.border;
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
             document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
