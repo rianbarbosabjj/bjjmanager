@@ -128,18 +128,20 @@
             z-index: 10;
         }
 
+        /* 🔥 CABEÇALHO (Logos encostadas às margens laterais para dar mais espaço ao centro) */
         .cert-header-container {
             position: absolute;
             top: 55px; 
-            left: 55px;
-            right: 55px;
+            left: 35px; /* Empurrado para fora */
+            right: 35px; /* Empurrado para fora */
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
         }
-        .cert-header-side { width: 150px; display: flex; justify-content: center; }
-        .cert-logo { max-width: 140px; max-height: 125px; object-fit: contain; }
+        .cert-header-side { width: 130px; display: flex; justify-content: center; } /* Ligeiramente mais estreito */
+        .cert-logo { max-width: 125px; max-height: 120px; object-fit: contain; } /* Imagem otimizada */
+        
         .cert-titulo-wrapper { flex: 1; text-align: center; }
         
         .cert-titulo { 
@@ -172,7 +174,6 @@
             transition: font-size 0.3s ease;
         }
         
-        /* 🔥 CONTAINER DA LINHA FIXA (Garante que a linha não encolhe) */
         .cert-nome-container {
             width: 85%;
             margin: 15px auto 10px auto;
@@ -184,7 +185,6 @@
             transition: border-color 0.3s;
         }
 
-        /* 🔥 TEXTO DO NOME (Livre de cortes e adaptável) */
         .cert-nome-atleta { 
             color: #1E293B;
             line-height: 1.1;
@@ -193,22 +193,28 @@
             transition: all 0.3s ease;
         }
         
+        /* 🔥 BLOCO DA FAIXA NA MESMA LINHA (Flexbox Baseline) */
         .cert-bloco-faixa {
-            text-align: center;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            display: flex;
+            align-items: baseline; /* Alinha o fundo das letras milimetricamente */
+            justify-content: center;
+            gap: 12px; /* Espaço entre a frase e a faixa */
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
 
         .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 28px; 
+            font-size: 26px; /* Ajustado para casar com a frase */
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
+            color: #1E293B; 
             border-bottom: 3px solid #D4AF37; 
-            padding-bottom: 2px;
+            padding-bottom: 0px;
             display: inline-block;
             transition: all 0.3s; 
+            line-height: 1;
         }
 
         .cert-footer { 
@@ -339,8 +345,9 @@
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
+                                                    <!-- 🔥 FAIXA E PREFIXO NA MESMA LINHA -->
                                                     <div class="cert-bloco-faixa">
-                                                        <p id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin-top: 0; margin-bottom: 5px;">RECEBEU A GRADUAÇÃO DE FAIXA</p>
+                                                        <span id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin: 0;">RECEBEU A GRADUAÇÃO DE FAIXA</span>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
                                                     </div>
 
@@ -350,16 +357,16 @@
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha render-linhas-metal"></div>
-                                                        <div id="render-ass1-nome" class="cert-ass-nome">BOLÃO</div>
-                                                        <div id="render-ass1-grad" class="cert-ass-grad">PRETA 4º GRAU</div>
+                                                        <div id="render-ass1-nome" class="cert-ass-nome">Professor responsável</div>
+                                                        <div id="render-ass1-grad" class="cert-ass-grad">Graduação</div>
                                                     </div>
 
                                                     <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
 
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha render-linhas-metal"></div>
-                                                        <div id="render-ass2-nome" class="cert-ass-nome">SAMUEL</div>
-                                                        <div id="render-ass2-grad" class="cert-ass-grad">PRETA</div>
+                                                        <div id="render-ass2-nome" class="cert-ass-nome">Professor</div>
+                                                        <div id="render-ass2-grad" class="cert-ass-grad">Graduação</div>
                                                     </div>
                                                 </div>
 
@@ -460,6 +467,7 @@
                                 </div>
                             </div>
 
+                            <!-- UPLOADS -->
                             <div class="border-t border-slate-100 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -474,6 +482,7 @@
                                 </div>
                             </div>
 
+                            <!-- POSICIONAMENTO -->
                             <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento das Logos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -859,7 +868,7 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado
+            // Selo Customizado Puro
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -880,7 +889,7 @@
             if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
-                maxFontSizeTitulo = 75; // Letras cursivas do título crescem para combinar
+                maxFontSizeTitulo = 75; 
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
@@ -901,7 +910,7 @@
                 elNome.style.textTransform = 'none'; 
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
-                    maxFontSizeNome = 95; // Fontes ultra finas precisam ser gigantes
+                    maxFontSizeNome = 95; 
                 } else {
                     maxFontSizeNome = 80;
                 }
@@ -909,7 +918,7 @@
                 elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
-                    maxFontSizeNome = 45; // Fontes robustas precisam ser menores
+                    maxFontSizeNome = 45; 
                 } else {
                     maxFontSizeNome = 50;
                 }
