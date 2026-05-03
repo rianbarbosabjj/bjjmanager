@@ -35,11 +35,7 @@
         /* =======================================================
            🏅 DESIGN ULTRA PREMIUM DO CERTIFICADO
            ======================================================= */
-        #certificado-render {   
-            /* 🔥 Variáveis CSS Mágicas (Controlam TODAS as cores do tema simultaneamente) */         
-            --cor-destaque: #D4AF37;
-            --grad-metalico: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-
+        #certificado-render {            
             width: 1123px; /* A4 Landscape */            
             height: 794px;            
             background: #E8E5DF; 
@@ -69,7 +65,6 @@
         }
         
         .cert-border-metal {
-            background: var(--grad-metalico); /* 🔥 Segue o Tema */
             padding: 3px;
             height: 100%;
             width: 100%;
@@ -83,7 +78,7 @@
             background: #FCFAF2;
             background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
             background-size: 200px;
-            border: 1px solid var(--cor-destaque); /* 🔥 Segue o Tema */
+            border: 1px solid #D4AF37;
             height: 100%;
             width: 100%;
             position: relative;
@@ -92,15 +87,13 @@
             align-items: center;
             padding: 45px 55px;
             box-sizing: border-box;
-            /* 🔥 A Sombra dupla também segue o Tema */
-            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px var(--cor-destaque); 
+            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px #D4AF37;
             z-index: 2;
-            transition: all 0.3s ease;
+            transition: border-color 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        /* 🔥 Cantos decorativos seguem o Tema */
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: #D4AF37; }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -182,7 +175,7 @@
         .cert-nome-container {
             width: 85%;
             margin: 15px auto 10px auto;
-            border-bottom: 2px solid var(--cor-destaque); /* 🔥 Segue o Tema */
+            border-bottom: 2px solid #D4AF37;
             padding-bottom: 5px;
             display: flex;
             justify-content: center;
@@ -213,8 +206,8 @@
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            /* A Cor do texto é definida via JS dinamicamente (Cor da Faixa) */
-            border-bottom: 3px solid var(--cor-destaque); /* 🔥 O sublinhado segue o Tema */
+            color: #1E293B; 
+            border-bottom: 3px solid #D4AF37; 
             padding-bottom: 0px;
             display: inline-block;
             transition: all 0.3s ease; 
@@ -237,11 +230,10 @@
         
         .cert-assinatura-box { text-align: center; width: 280px; }
         
-        /* 🔥 Linhas de assinatura seguem o Tema em formato de degradê */
         .cert-linha { 
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--cor-destaque), var(--cor-destaque), var(--cor-destaque), transparent);
+            background: linear-gradient(90deg, transparent, #D4AF37, #D4AF37, #D4AF37, transparent);
             margin-bottom: 8px;
             transition: background 0.3s ease;
         }
@@ -343,7 +335,7 @@
                                                 </div>
 
                                                 <div class="cert-text-wrapper">
-                                                    <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
+                                                    <p id="render-texto1" class="cert-texto-dinamico">A SUA EQUIPE RECONHECE QUE</p>
                                                     
                                                     <div id="render-nome-container" class="cert-nome-container">
                                                         <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
@@ -351,7 +343,6 @@
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
-                                                    <!-- 🔥 FAIXA E PREFIXO NA MESMA LINHA -->
                                                     <div class="cert-bloco-faixa">
                                                         <span id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin: 0;">RECEBEU A GRADUAÇÃO DE FAIXA</span>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
@@ -363,8 +354,8 @@
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
-                                                        <div id="render-ass1-nome" class="cert-ass-nome">Professor resonsável</div>
-                                                        <div id="render-ass1-grad" class="cert-ass-grad">Graduação</div>
+                                                        <div id="render-ass1-nome" class="cert-ass-nome">Professor Responsável</div>
+                                                        <div id="render-ass1-grad" class="cert-ass-grad">Preta Xº Grau</div>
                                                     </div>
 
                                                     <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
@@ -372,7 +363,7 @@
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
                                                         <div id="render-ass2-nome" class="cert-ass-nome">Professor</div>
-                                                        <div id="render-ass2-grad" class="cert-ass-grad">Graduação</div>
+                                                        <div id="render-ass2-grad" class="cert-ass-grad">Preta Xº Grau</div>
                                                     </div>
                                                 </div>
 
@@ -526,7 +517,8 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
-                                    <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <!-- 🔥 VAZIO DE INÍCIO - SERÁ PREENCHIDO PELO JAVASCRIPT DINAMICAMENTE -->
+                                    <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="" placeholder="Carregando nome da equipe..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
@@ -599,6 +591,7 @@
         let serialEquipeAtual = 427;         
         let qrcodeObj = null;
 
+        let nomeEquipeLogada = "SUA EQUIPE";
         let logoBase64Global = null; 
         let customLogoBase64 = null;
         let customSeloBase64 = null;
@@ -615,7 +608,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        // 🔥 FUNÇÃO INTELIGENTE DE ENCOLHIMENTO DE TEXTO
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
@@ -669,6 +661,9 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
+                    // 🔥 Pega o nome oficial da equipe
+                    nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "SUA EQUIPE";
+
                     const logoEquipeOficial = dadosEquipe.url_logo || null;
 
                     if (logoEquipeOficial) {
@@ -718,7 +713,11 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v11");            
+            // 🔥 Versão 12 do cache para forçar a limpeza da frase antiga
+            const memoria = localStorage.getItem("bjj_cert_padroes_v12");            
+            
+            const textoPadraoDinamico = `A ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
+
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -726,9 +725,11 @@
                     if(p.resp_g) document.getElementById('resp-grad').value = p.resp_g;                    
                     if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;                    
                     if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
-                    if(p.txt1) document.getElementById('cfg-texto1').value = p.txt1;
-                    if(p.txt2) document.getElementById('cfg-texto2').value = p.txt2;
-                    if(p.txt3) document.getElementById('cfg-texto3').value = p.txt3;
+                    
+                    // Se houver texto guardado, usa ele. Se não, usa o dinâmico.
+                    document.getElementById('cfg-texto1').value = p.txt1 ? p.txt1 : textoPadraoDinamico;
+                    document.getElementById('cfg-texto2').value = p.txt2 ? p.txt2 : "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
+                    document.getElementById('cfg-texto3').value = p.txt3 ? p.txt3 : "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
                     
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
@@ -739,6 +740,9 @@
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
                     if(p.posWater) document.getElementById('pos-water').value = p.posWater;
                 } catch(e) {}            
+            } else {
+                // Primeira vez a usar o sistema V12, aplica a frase dinâmica
+                document.getElementById('cfg-texto1').value = textoPadraoDinamico;
             }     
         }
 
@@ -759,7 +763,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v11", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v12", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -799,18 +803,17 @@
             return null;
         }
 
-        // 🔥 TONS REAIS E FIÉIS DAS FAIXAS DE BJJ
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
-            if (f.includes('preta')) return '#000000'; // Preto Absoluto
-            if (f.includes('marrom')) return '#5C4033'; // Marrom Denso Real
-            if (f.includes('roxa')) return '#581C87'; // Roxo Intenso
-            if (f.includes('azul')) return '#1D4ED8'; // Azul Royal
-            if (f.includes('verde')) return '#166534'; // Verde Bandeira/Floresta
-            if (f.includes('laranja')) return '#EA580C'; // Laranja Vivo
-            if (f.includes('amarela')) return '#CA8A04'; // Amarelo Ouro
-            if (f.includes('cinza')) return '#64748B'; // Cinza Chumbo
-            if (f.includes('branca')) return '#475569'; // Cinza médio (Branco no papel branco não se lê)
+            if (f.includes('preta')) return '#000000'; 
+            if (f.includes('marrom')) return '#5C4033'; 
+            if (f.includes('roxa')) return '#581C87'; 
+            if (f.includes('azul')) return '#1D4ED8'; 
+            if (f.includes('verde')) return '#166534'; 
+            if (f.includes('laranja')) return '#EA580C'; 
+            if (f.includes('amarela')) return '#CA8A04'; 
+            if (f.includes('cinza')) return '#64748B'; 
+            if (f.includes('branca')) return '#475569'; 
             return '#1E293B'; 
         }
 
@@ -822,7 +825,6 @@
         window.atualizarPreviewLive = function() {
             const certRender = document.getElementById('certificado-render');
             
-            // 🔥 Aplica o Tema nas Variáveis CSS Raiz
             const tema = document.getElementById('cfg-tema').value;
             let corDestaque = "#D4AF37"; 
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
@@ -855,13 +857,15 @@
 
             document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
             
-            // Aplica cor SÓ no texto da faixa
             const corDaFaixa = getCorDaFaixaTexto(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
             elFaixaCor.style.color = corDaFaixa;
 
-            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "").toUpperCase();
+            // 🔥 Garante que se o input 1 for apagado inteiramente, ele mostra a frase padrão da equipe para nunca ficar "undefined" ou vazio feio
+            const textoInput1 = document.getElementById('cfg-texto1').value;
+            document.getElementById('render-texto1').innerText = (textoInput1 || `A ${nomeEquipeLogada} RECONHECE QUE`).toUpperCase();
+            
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
             document.getElementById('render-ass1-nome').innerText = document.getElementById('resp-nome').value || "Responsável";
@@ -902,7 +906,7 @@
                 elSelo.classList.add('hidden');
             }
 
-            // FONTES
+            // Fontes
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
@@ -969,7 +973,7 @@
                 }
             });
 
-            // Encolhimento de Segurança (Sincronizado)
+            // Encolhimento de Segurança Sincronizado
             document.fonts.ready.then(() => {
                 setTimeout(() => {
                     ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680); 
