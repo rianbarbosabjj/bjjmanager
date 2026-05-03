@@ -18,8 +18,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
-    <!-- FONTES PREMIUM ATUALIZADAS -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,700&family=Great+Vibes&family=Montserrat:wght@300;700;900&family=Playfair+Display:wght@400;700;900&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <!-- 🔥 CORREÇÃO: FONTES PREMIUM CARREGADAS DIRETAMENTE E SEM CONFLITOS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -112,7 +114,7 @@
             pointer-events: none;
         }
 
-        /* DATA CLÁSSICA (Livre de sobreposições) */
+        /* DATA CLÁSSICA */
         .cert-data { 
             position: absolute;
             top: 20px;
@@ -139,8 +141,13 @@
         }
         .cert-header-side { width: 150px; display: flex; justify-content: center; }
         .cert-logo { max-width: 140px; max-height: 125px; object-fit: contain; }
-        .cert-titulo-wrapper { flex: 1; text-align: center; }
+        .cert-titulo-wrapper { 
+            flex: 1; 
+            text-align: center; 
+            overflow: hidden; /* Evita quebra */
+        }
         
+        /* 🔥 TÍTULO BLINDADO CONTRA QUEBRA DE LINHA */
         .cert-titulo { 
             font-family: 'Cinzel', serif;
             font-size: 48px;
@@ -153,6 +160,8 @@
             margin: 0;
             text-transform: uppercase;
             transition: all 0.3s ease;
+            white-space: nowrap; /* Não quebra linha */
+            max-width: 100%;
         }
 
         .cert-text-wrapper {
@@ -180,7 +189,7 @@
             font-style: italic;
         }
         
-        /* 🔥 NOME DO ATLETA DINÂMICO */
+        /* 🔥 NOME DO ATLETA BLINDADO CONTRA QUEBRA DE LINHA */
         .cert-nome-atleta { 
             font-family: 'Great Vibes', cursive;
             font-size: 85px; 
@@ -194,9 +203,11 @@
             width: 85%;
             text-align: center;
             transition: all 0.3s ease;
+            white-space: nowrap; /* Não quebra linha */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Caso seja um nome gigantesco, ele pontilha e não quebra o layout */
         }
         
-        /* 🔥 FAIXA COM CORES SEPARADAS */
         .cert-faixa-texto { 
             font-family: 'Montserrat', sans-serif;
             font-size: 28px; 
@@ -204,13 +215,12 @@
             text-transform: uppercase;
             margin: 15px 0 10px 0;
             letter-spacing: 4px;
-            color: #1E293B; /* Cor base da frase */
+            color: #1E293B; 
         }
         .cert-faixa-cor-destaque {
-            transition: color 0.3s; /* Apenas o nome da faixa muda de cor */
+            transition: color 0.3s; 
         }
 
-        /* 🔥 RODAPÉ MAIS AO CENTRO (Descolado do QR Code) */
         .cert-footer { 
             position: absolute;
             bottom: 40px;
@@ -220,7 +230,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            padding: 0 130px; /* 🔥 Aumentado de 55px para 130px para trazer para o meio */
+            padding: 0 130px; 
             box-sizing: border-box;
             z-index: 10;
         }
@@ -240,6 +250,7 @@
             font-weight: 900;
             color: #1E293B;
             letter-spacing: 1px;
+            white-space: nowrap;
         }
         
         .cert-ass-grad { 
@@ -260,10 +271,9 @@
             z-index: 20;
         }
 
-        /* 🔥 QR CODE EMPURRADO PARA O CANTO */
         .cert-qr-wrapper { 
             position: absolute;
-            bottom: 25px; /* Bem no cantinho */
+            bottom: 25px; 
             right: 35px;
             display: flex;
             flex-direction: column;
@@ -334,8 +344,7 @@
                                                     <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
                                                     <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
-                                                    <!-- 🔥 FAIXA COM SPAN COLORIDO -->
-                                                    <h3 id="render-faixa-texto" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span></h3>
+                                                    <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span></h3>
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
                                                 </div>
 
@@ -405,8 +414,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <!-- 🔥 PAINEL COM AS 3 FONTES -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -419,14 +427,14 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
                                     <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita)</option>
                                         <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome do Atleta</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
                                     <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
                                         <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
                                         <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
@@ -445,23 +453,25 @@
                                 </div>
                             </div>
 
+                            <!-- UPLOADS -->
                             <div class="border-t border-slate-100 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo da Equipe/Lateral</label>
-                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 outline-none">
+                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo/Brasão (ficará no rodapé)</label>
-                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 outline-none">
+                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- POSICIONAMENTO -->
                             <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento dos Elementos</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
                                         <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
@@ -476,6 +486,14 @@
                                             <option value="nenhuma">Nenhuma</option>
                                             <option value="equipe">Logo da Plataforma</option>
                                             <option value="extra">Logo Personalizada</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fundo / Marca d'água</label>
+                                        <select id="pos-water" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
+                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="extra">Logo Personalizada</option>
+                                            <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
                                 </div>
@@ -687,6 +705,7 @@
                     
                     if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
+                    if(p.posWater) document.getElementById('pos-water').value = p.posWater;
                 } catch(e) {}            
             }     
         }
@@ -705,7 +724,8 @@
                 fonteTexto: document.getElementById('cfg-fonte-texto').value,
                 fonteNome: document.getElementById('cfg-fonte-nome').value,
                 posEsq: document.getElementById('pos-esq').value,
-                posDir: document.getElementById('pos-dir').value
+                posDir: document.getElementById('pos-dir').value,
+                posWater: document.getElementById('pos-water').value
             };            
             localStorage.setItem("bjj_cert_padroes_v8", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
@@ -747,7 +767,7 @@
             return null;
         }
 
-        // 🔥 CORES DINÂMICAS PARA AS FAIXAS (O Ouro da casa!)
+        // CORES DINÂMICAS PARA A FAIXA
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
             if (f.includes('preta')) return '#0F172A';
@@ -758,14 +778,14 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155'; // Cinza escuro elegante p/ ler no fundo
-            return '#B38728'; // Dourado fallback
+            if (f.includes('branca')) return '#334155'; 
+            return '#B38728';
         }
 
         window.atualizarPreviewLive = function() {
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
-            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; // Retirado o toUpperCase automático
+            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
             const faixa = document.getElementById('combo-faixa').value.toUpperCase();            
             const dataRaw = document.getElementById('entry-data').value;
             
@@ -774,10 +794,10 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            document.getElementById('render-data').innerText = `BRASIL, ${dataExtenso}`;
+            document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
             document.getElementById('render-nome').innerText = nomeAtleta;
             
-            // 🔥 Aplica a cor SÓ na faixa
+            // Aplica cor SÓ na faixa
             const corDaFaixa = getCorDaFaixaTexto(faixa);
             document.getElementById('render-faixa-cor').innerText = faixa;
             document.getElementById('render-faixa-cor').style.color = corDaFaixa;
@@ -803,16 +823,18 @@
             elDir.src = srcDir || '';
             elDir.style.display = (srcDir && valDir !== 'nenhuma') ? 'block' : 'none';
 
-            // Marca de Água (sempre vinculada à logo principal se existir)
+            // Marca de Água
             const imgWater = document.getElementById('render-watermark');
-            if (logoBase64Global || customLogoBase64) {
-                imgWater.src = customLogoBase64 || logoBase64Global;
+            const valWater = document.getElementById('pos-water') ? document.getElementById('pos-water').value : 'equipe';
+            const srcWater = getImagemEscolhida(valWater);
+            if (srcWater && valWater !== 'nenhuma') {
+                imgWater.src = srcWater;
                 imgWater.classList.remove('hidden');
             } else {
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado
+            // Selo Customizado Puro
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -821,7 +843,7 @@
                 elSelo.classList.add('hidden');
             }
 
-            // 🔥 FONTES (Título, Nome e Texto separadas)
+            // Fontes
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
