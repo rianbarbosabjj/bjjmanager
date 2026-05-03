@@ -19,8 +19,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
     <style>        
-        /* 🎨 IMPORTANDO AS FONTES PREMIUM DO GOOGLE */
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@700;900&family=Roboto:wght@700;900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');        
+        /* 🎨 IMPORTANDO AS FONTES PREMIUM DO GOOGLE (Incluindo Fontes Manuscritas para Diplomas) */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Great+Vibes&family=Montserrat:wght@700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Roboto:wght@700;900&display=swap');
         
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
         .hide-scrollbar::-webkit-scrollbar { display: none; }        
@@ -44,14 +44,13 @@
 
         /* Sistema de Bordas de Luxo */
         .cert-border-outer {
-            background: #0F172A; /* Slate 900 */
+            background: #0F172A; 
             padding: 16px;
             height: 100%;
             width: 100%;
             box-sizing: border-box;
         }
         
-        /* A borda Dourada Padrão (agora controlada via JS) */
         .cert-border-metal {
             background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             padding: 4px;
@@ -95,9 +94,26 @@
         }
 
         /* Logos e Cabeçalho */
-        .cert-logo-esq { position: absolute; top: 45px; left: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
-        .cert-logo-dir { position: absolute; top: 45px; right: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
+        /* Ajustei o top para 60px para não encostar na data caso o professor queira usar as marcas laterais */
+        .cert-logo-esq { position: absolute; top: 60px; left: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
+        .cert-logo-dir { position: absolute; top: 60px; right: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
         
+        /* 🔥 DATA NO CANTO SUPERIOR DIREITO (ESTILO TRADICIONAL) */
+        .cert-data { 
+            position: absolute;
+            top: 35px;
+            right: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #64748b; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            z-index: 10;
+            text-align: right;
+        }
+
+        /* Título - Pode ser cursivo ou em bloco */
         .cert-titulo { 
             font-family: 'Playfair Display', serif;
             font-size: 46px; 
@@ -107,16 +123,7 @@
             margin-top: 10px; 
             color: #0F172A; 
             z-index: 10;
-        }
-        .cert-data { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 13px; 
-            font-weight: 800; 
-            margin-top: 5px; 
-            color: #64748b; 
-            letter-spacing: 2px; 
-            text-transform: uppercase;
-            z-index: 10;
+            transition: all 0.3s ease;
         }
 
         /* Textos Dinâmicos */
@@ -212,7 +219,7 @@
     <div id="interface-sistema" class="flex w-full h-full relative">
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">            
             <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10">                
-                <div class="max-w-5xl mx-auto">                                        
+                <div class="max-w-6xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
                         <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize as fontes, cores e textos.</p>                    
@@ -224,14 +231,6 @@
                             <span class="text-xl">👁️</span> Pré-visualização ao Vivo
                         </h3>
                         <div class="preview-wrapper shadow-inner border border-slate-300 ignorar-dark relative">
-                            <!-- Indicador de Carregamento da Logo (Opcional, pro visual) -->
-                            <div class="absolute top-2 right-2 flex gap-1 z-50">
-                                <span class="flex h-2 w-2 relative">
-                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-                                </span>
-                            </div>
-                            
                             <div class="preview-scaler">
                                 
                                 <!-- =============================================== -->
@@ -249,8 +248,10 @@
                                                 <img id="render-logo-esq" src="" class="cert-logo-esq hidden">
                                                 <img id="render-logo-dir" src="" class="cert-logo-dir hidden">
 
-                                                <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
+                                                <!-- DATA NO CANTO SUPERIOR DIREITO -->
                                                 <p id="render-data" class="cert-data">BRASIL, 01 DE JANEIRO DE 2026</p>
+
+                                                <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
 
                                                 <!-- TEXTO 1 -->
                                                 <p id="render-texto1" class="cert-texto-dinamico">A EQUIPE RECONHECE QUE</p>
@@ -336,22 +337,33 @@
 
                         <!-- BLOCO 2: ESTILOS E DESIGN (NOVO!) -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
-                            <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Design</h3>                                                        
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Tipografia</h3>                                                        
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
                                         <option value="dourado">Ouro Metálico (Dourado)</option>
-                                        <option value="prata">Prata Titanium (Cinza Claro)</option>
+                                        <option value="prata">Prata Titanium (Cinza)</option>
                                         <option value="bronze">Bronze Antigo (Cobre)</option>
                                         <option value="preto">Preto Clássico (Dark)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Família de Fonte (Nome)</label>
-                                    <select id="cfg-fonte" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título Principal</label>
+                                    <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                        <option value="'Pinyon Script', cursive">Pinyon Script (Manuscrita Elegante)</option>
+                                        <option value="'Playfair Display', serif">Playfair (Serifada Elegante)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
+                                        <option value="'Old Standard TT', serif">Old Standard (Diploma Antigo)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Atleta e Textos</label>
+                                    <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
                                         <option value="'Playfair Display', serif">Playfair (Clássica e Elegante)</option>
                                         <option value="'Cinzel', serif">Cinzel (Épica / Gladiador)</option>
+                                        <option value="'Old Standard TT', serif">Old Standard (Diploma Antigo)</option>
                                         <option value="'Montserrat', sans-serif">Montserrat (Moderna e Limpa)</option>
                                         <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
                                     </select>
@@ -450,7 +462,7 @@
 
         let nomeEquipeLogada = "Sua Equipe";
         let logoEquipeLogada = null;
-        let logoBase64Global = null; // Guardamos em memória para não gastar internet toda a vez
+        let logoBase64Global = null; 
 
         // --- SISTEMA DE TOASTS ---        
         window.showToast = function(message, type = 'error') {            
@@ -557,7 +569,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v2");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v3");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -570,7 +582,8 @@
                     document.getElementById('cfg-texto3').value = p.txt3 || "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
                     
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
-                    if(p.fonte) document.getElementById('cfg-fonte').value = p.fonte;
+                    if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
+                    if(p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
                     if(p.logos) document.getElementById('cfg-logos').value = p.logos;
                 } catch(e) {}            
             } else {
@@ -590,10 +603,11 @@
                 txt2: document.getElementById('cfg-texto2').value,
                 txt3: document.getElementById('cfg-texto3').value,
                 tema: document.getElementById('cfg-tema').value,
-                fonte: document.getElementById('cfg-fonte').value,
+                fonteTitulo: document.getElementById('cfg-fonte-titulo').value,
+                fonteTexto: document.getElementById('cfg-fonte-texto').value,
                 logos: document.getElementById('cfg-logos').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v2", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v3", JSON.stringify(padroes));            
             showToast("Design e Padrões guardados no navegador!", "success");        
         }
 
@@ -634,7 +648,7 @@
             if (logoBase64Global) {
                 [imgEsq, imgDir, imgSelo, imgWater].forEach(el => el.src = logoBase64Global);
                 
-                imgSelo.classList.remove('hidden'); // Selo central sempre fica visível (a menos que seja limpo, ver abaixo)
+                imgSelo.classList.remove('hidden'); 
 
                 if (confLogos === 'todas') {
                     imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
@@ -648,7 +662,7 @@
                     imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
                     imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                     imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
-                } else { // Limpo
+                } else { 
                     imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
                     imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                     imgWater.style.opacity = 0; imgWater.classList.add('hidden');
@@ -656,13 +670,29 @@
                 }
             }
 
-            // 3. Aplicar Estilos (Fontes e Cores)
-            const fonteEscohida = document.getElementById('cfg-fonte').value;
-            document.getElementById('render-titulo').style.fontFamily = fonteEscohida;
-            document.getElementById('render-nome').style.fontFamily = fonteEscohida;
-            document.getElementById('render-ass1-nome').style.fontFamily = fonteEscohida;
-            document.getElementById('render-ass2-nome').style.fontFamily = fonteEscohida;
+            // 3. Aplicar Estilos (Fontes)
+            const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
+            const fonteTexto = document.getElementById('cfg-fonte-texto').value;
+            
+            const elTitulo = document.getElementById('render-titulo');
+            elTitulo.style.fontFamily = fonteTitulo;
+            
+            // 🔥 Ajuste Mágico para Fontes Cursivas (Diploma antigo)
+            if (fonteTitulo.includes('cursive')) {
+                elTitulo.style.textTransform = 'none'; // Desliga o tudo maiúsculo
+                elTitulo.style.fontSize = '75px';      // Aumenta o tamanho para ficar bem legível
+                elTitulo.style.letterSpacing = '1px';
+            } else {
+                elTitulo.style.textTransform = 'uppercase';
+                elTitulo.style.fontSize = '46px';
+                elTitulo.style.letterSpacing = '4px';
+            }
 
+            document.getElementById('render-nome').style.fontFamily = fonteTexto;
+            document.getElementById('render-ass1-nome').style.fontFamily = fonteTexto;
+            document.getElementById('render-ass2-nome').style.fontFamily = fonteTexto;
+
+            // 4. Aplicar Tema (Cores)
             const tema = document.getElementById('cfg-tema').value;
             const elBordaMetal = document.getElementById('render-border-metal');
             const elBordaInner = document.getElementById('render-border-inner');
@@ -670,7 +700,7 @@
             const elFaixa = document.getElementById('render-faixa');
             const elLinhas = document.querySelectorAll('.render-linhas-metal');
 
-            let corDestaque = "#D4AF37"; // Dourado padrão
+            let corDestaque = "#D4AF37"; 
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
 
             if (tema === 'prata') {
@@ -710,7 +740,7 @@
             const profNome = document.getElementById('prof-nome').value.trim();            
 
             let dt;            
-            if(dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
+            if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
             
             const mesStr = String(dt.getMonth() + 1).padStart(2, '0');            
             const anoStr = dt.getFullYear().toString().slice(-2);            
