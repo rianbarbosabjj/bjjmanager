@@ -43,8 +43,8 @@
         }
 
         .cert-border-outer {
-            background: #0F172A; 
-            padding: 16px;
+            background: #FFFFFF; /* 🔥 Margem preta removida, agora é branca e limpa */
+            padding: 12px;
             height: 100%;
             width: 100%;
             box-sizing: border-box;
@@ -133,15 +133,17 @@
             z-index: 10;
         }
         
+        /* 🔥 NOME EM DESTAQUE (Agora colado na linha) */
         .cert-nome-atleta { 
             font-family: 'Playfair Display', serif;
             font-size: 52px; 
             font-weight: 900; 
             text-transform: uppercase; 
-            margin: 25px 0; 
+            margin: 20px 0 10px 0; /* Margens ajustadas */
             color: #1E293B; 
             border-bottom: 2px solid #D4AF37; 
-            padding-bottom: 5px; 
+            padding-bottom: 0px; /* Colado na linha */
+            line-height: 1.1; /* Remove o espaço fantasma em baixo das letras */
             width: 80%; 
             text-align: center;
             z-index: 10;
@@ -154,7 +156,7 @@
             font-weight: 900; 
             text-transform: uppercase; 
             color: #B38728; 
-            margin: 10px 0; 
+            margin: 15px 0 10px 0; 
             letter-spacing: 3px; 
             z-index: 10;
             transition: color 0.3s;
@@ -369,7 +371,7 @@
                                 </div>
                             </div>
 
-                            <!-- 🔥 NOVO: ÁREA DE UPLOAD DE LOGO E SELO CUSTOMIZADOS -->
+                            <!-- ÁREA DE UPLOAD DE LOGO E SELO CUSTOMIZADOS -->
                             <div class="col-span-1 md:col-span-2 lg:col-span-4 border-t border-slate-100 mt-5 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Customizadas (Opcional)</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -469,7 +471,6 @@
         let nomeEquipeLogada = "Sua Equipe";
         let logoBase64Global = null; 
         
-        // 🔥 Variáveis para armazenar as imagens recém upadas pelo usuário
         let customLogoBase64 = null;
         let customSeloBase64 = null;
 
@@ -620,7 +621,6 @@
             showToast("Design e Padrões guardados no navegador!", "success");        
         }
 
-        // 🔥 FUNÇÕES DE CARREGAMENTO DE IMAGENS CUSTOMIZADAS
         window.carregarLogoCustomizada = function(event) {
             const file = event.target.files[0];
             if(file) {
@@ -685,7 +685,6 @@
             const imgSelo = document.getElementById('render-selo');
             const imgWater = document.getElementById('render-watermark');
             
-            // Lógica: Usa a customizada se existir, senão usa a do Firebase
             const imagemParaLogo = customLogoBase64 || logoBase64Global;
             const imagemParaSelo = customSeloBase64 || logoBase64Global;
 
@@ -699,7 +698,6 @@
             }
 
             if (imagemParaLogo || imagemParaSelo) {
-                // Selo sempre aparece a menos que config seja limpa
                 if (imagemParaSelo && confLogos !== 'limpo') imgSelo.classList.remove('hidden'); 
 
                 if (confLogos === 'todas') {
@@ -720,7 +718,7 @@
                         imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                         imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
                     }
-                } else { // Limpo
+                } else { 
                     imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
                     imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                     imgWater.style.opacity = 0; imgWater.classList.add('hidden');
@@ -735,7 +733,6 @@
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
             
-            // Ajuste Mágico para Fontes Cursivas
             if (fonteTitulo.includes('cursive')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.fontSize = '75px';      
