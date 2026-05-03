@@ -43,7 +43,9 @@
         }
 
         .cert-border-outer {
-            background: #FFFFFF; 
+            background:
+                linear-gradient(135deg, #ffffff, #f8fafc),
+                #FFFFFF;
             padding: 12px;
             height: 100%;
             width: 100%;
@@ -56,13 +58,19 @@
             height: 100%;
             width: 100%;
             box-sizing: border-box;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            box-shadow:
+                inset 0 0 10px rgba(0,0,0,0.45),
+                0 18px 35px rgba(15,23,42,0.18);
             border-radius: 30px; 
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         
         .cert-border-inner {
-            background: #FAFAFA;
+            background:
+                radial-gradient(circle at top left, rgba(212,175,55,0.10), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(212,175,55,0.08), transparent 34%),
+                repeating-linear-gradient(45deg, rgba(15,23,42,0.015) 0px, rgba(15,23,42,0.015) 1px, transparent 1px, transparent 7px),
+                linear-gradient(135deg, #fffdf7, #ffffff 48%, #f8fafc);
             border: 1px solid #BF953F;
             height: 100%;
             width: 100%;
@@ -70,11 +78,59 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 25px 40px; /* Reduzido para expandir os limites */
+            padding: 25px 40px;
             box-sizing: border-box;
             border-radius: 26px; 
             z-index: 1;
-            transition: border-color 0.3s ease;
+            overflow: hidden;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+
+        .cert-border-inner::before {
+            content: "";
+            position: absolute;
+            inset: 22px;
+            border: 1px solid rgba(191,149,63,0.45);
+            border-radius: 18px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .cert-border-inner::after {
+            content: "";
+            position: absolute;
+            inset: 34px;
+            border: 1px solid rgba(191,149,63,0.22);
+            border-radius: 13px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .corner-ornament {
+            position: absolute;
+            width: 92px;
+            height: 92px;
+            border-color: rgba(191,149,63,0.65);
+            z-index: 3;
+            pointer-events: none;
+        }
+        .corner-top-left { top: 26px; left: 26px; border-top: 3px double; border-left: 3px double; border-radius: 20px 0 0 0; }
+        .corner-top-right { top: 26px; right: 26px; border-top: 3px double; border-right: 3px double; border-radius: 0 20px 0 0; }
+        .corner-bottom-left { bottom: 26px; left: 26px; border-bottom: 3px double; border-left: 3px double; border-radius: 0 0 0 20px; }
+        .corner-bottom-right { bottom: 26px; right: 26px; border-bottom: 3px double; border-right: 3px double; border-radius: 0 0 20px 0; }
+
+        .cert-medal-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 430px;
+            height: 430px;
+            border-radius: 50%;
+            border: 1px solid rgba(191,149,63,0.18);
+            background: radial-gradient(circle, rgba(212,175,55,0.08), transparent 70%);
+            z-index: 0;
+            pointer-events: none;
         }
 
         /* Marca de Água Central */
@@ -87,8 +143,8 @@
             height: 65%;
             max-width: 70%;
             object-fit: contain;
-            opacity: 0.04; 
-            filter: grayscale(100%);
+            opacity: 0.045; 
+            filter: grayscale(100%) contrast(105%);
             z-index: 0;
             pointer-events: none;
             transition: opacity 0.3s;
@@ -137,13 +193,24 @@
         }
         .cert-titulo { 
             font-family: 'Playfair Display', serif;
-            font-size: 48px; /* Ligeiramente maior */
+            font-size: 48px;
             font-weight: 900; 
             text-transform: uppercase; 
             letter-spacing: 4px; 
             margin: 0; 
             color: #0F172A; 
             transition: all 0.3s ease;
+        }
+
+        .cert-subtitulo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #B38728;
+            margin-top: 6px;
+            transition: color 0.3s ease;
         }
 
         /* 🔥 CÁPSULA FLEXÍVEL DE TEXTO CENTRAL */
@@ -173,17 +240,18 @@
         
         .cert-nome-atleta { 
             font-family: 'Playfair Display', serif;
-            font-size: 56px; /* 🔥 Aumentado de 52px para 56px */
+            font-size: 58px;
             font-weight: 900; 
             text-transform: uppercase; 
-            margin: 15px 0 5px 0; 
-            color: #1E293B; 
-            border-bottom: 2px solid #D4AF37; 
-            padding-bottom: 0px; 
-            line-height: 1.1;
-            width: 85%; 
+            margin: 14px 0 6px 0; 
+            color: #111827; 
+            border-bottom: 3px double #D4AF37; 
+            padding: 0 24px 8px 24px; 
+            line-height: 1.08;
+            width: 86%; 
             text-align: center;
-            transition: border-color 0.3s;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+            transition: border-color 0.3s, color 0.3s;
         }
         
         .cert-faixa-texto { 
@@ -221,7 +289,14 @@
         .cert-ass-nome { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #1E293B; }
         .cert-ass-grad { font-family: 'Montserrat', sans-serif; font-size: 11px; color: #64748b; font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px;}
         
-        .cert-selo { width: 155px; height: 155px; object-fit: contain; transition: opacity 0.3s; margin-bottom: -5px;}
+        .cert-selo {
+            width: 165px;
+            height: 165px;
+            object-fit: contain;
+            transition: opacity 0.3s, filter 0.3s, transform 0.3s;
+            margin-bottom: -8px;
+            filter: drop-shadow(0 10px 14px rgba(15, 23, 42, 0.28));
+        }
 
         /* QR Code Canto */
         .cert-qr-wrapper { 
@@ -233,8 +308,19 @@
             align-items: center; 
             z-index: 10;
         }
-        .cert-qr-container { padding: 4px; border: 1px solid #CBD5E1; background: #fff; border-radius: 4px;}
-        .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: bold; margin-top: 5px; color: #94a3b8; letter-spacing: 1px;}
+        .cert-qr-container { padding: 5px; border: 1px solid rgba(148,163,184,0.75); background: #fff; border-radius: 7px; box-shadow: 0 6px 12px rgba(15,23,42,0.08);}
+        .cert-serial {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 8px;
+            font-weight: 900;
+            margin-top: 6px;
+            color: #64748b;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+            max-width: 120px;
+            text-align: center;
+            line-height: 1.25;
+        }
 
         /* =======================================================
            📱 CONTAINER DE PREVIEW (Escalado para caber na tela) 
@@ -257,7 +343,7 @@
                 <div class="max-w-6xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize fontes, posições e logos.</p>                    
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas profissionais com selo, QR Code, ornamentos, marca d’água e modelos premium.</p>                    
                     </div>
 
                     <!-- 🔴 ÁREA DE PRÉ-VISUALIZAÇÃO (LIVE PREVIEW) -->
@@ -275,6 +361,11 @@
                                     <div class="cert-border-outer">
                                         <div id="render-border-metal" class="cert-border-metal">
                                             <div id="render-border-inner" class="cert-border-inner">
+                                                <span class="corner-ornament corner-top-left"></span>
+                                                <span class="corner-ornament corner-top-right"></span>
+                                                <span class="corner-ornament corner-bottom-left"></span>
+                                                <span class="corner-ornament corner-bottom-right"></span>
+                                                <span class="cert-medal-glow"></span>
                                                 
                                                 <!-- MARCA DE ÁGUA CENTRAL -->
                                                 <img id="render-watermark" src="" class="cert-watermark hidden">
@@ -288,7 +379,8 @@
                                                         <img id="render-logo-esq" src="" class="cert-logo">
                                                     </div>
                                                     <div class="cert-titulo-wrapper">
-                                                        <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
+                                                        <h1 id="render-titulo" class="cert-titulo">Certificado Oficial</h1>
+                                                        <p id="render-subtitulo" class="cert-subtitulo">Graduação em Brazilian Jiu-Jitsu</p>
                                                     </div>
                                                     <div class="cert-header-side">
                                                         <img id="render-logo-dir" src="" class="cert-logo">
@@ -297,11 +389,11 @@
 
                                                 <!-- TEXTOS CENTRALIZADOS -->
                                                 <div class="cert-text-wrapper">
-                                                    <p id="render-texto1" class="cert-texto-dinamico">A EQUIPE RECONHECE QUE</p>
+                                                    <p id="render-texto1" class="cert-texto-dinamico">A PRESENTE CERTIFICAÇÃO RECONHECE QUE</p>
                                                     <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
-                                                    <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
+                                                    <p id="render-texto2" class="cert-texto-dinamico">CUMPRIU OS REQUISITOS TÉCNICOS, DISCIPLINARES E FORMATIVOS ESTABELECIDOS POR ESTA EQUIPE</p>
                                                     <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA BRANCA</h3>
-                                                    <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
+                                                    <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E RESPONSABILIDADES INERENTES À PRESENTE GRADUAÇÃO</p>
                                                 </div>
 
                                                 <!-- FOOTER (ASSINATURAS E SELO) -->
@@ -323,7 +415,7 @@
 
                                                 <div class="cert-qr-wrapper">
                                                     <div id="cert-qr-container" class="cert-qr-container"></div>
-                                                    <div id="render-serial" class="cert-serial">VAL: 000000</div>
+                                                    <div id="render-serial" class="cert-serial">CÓDIGO DE AUTENTICIDADE Nº 000000</div>
                                                 </div>
 
                                             </div>
@@ -377,6 +469,11 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="classico_ouro">Modelo Premium Oficial BJJ</option>
+                                        <option value="luxo_preto">Luxo Preto e Ouro</option>
+                                        <option value="minimalista">Minimalista Institucional</option>
+                                        <option value="tradicional_bjj">Tradicional Jiu-Jitsu</option>
+                                        <option value="federacao">Modelo Federação</option>
                                         <option value="dourado">Ouro Metálico (Dourado)</option>
                                         <option value="prata">Prata Titanium (Cinza)</option>
                                         <option value="bronze">Bronze Antigo (Cobre)</option>
@@ -479,15 +576,15 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
-                                    <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" placeholder="Ex: A EQUIPE RECONHECE QUE" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" placeholder="Ex: A PRESENTE CERTIFICAÇÃO RECONHECE QUE" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
-                                    <input type="text" id="cfg-texto2" oninput="atualizarPreviewLive()" placeholder="Ex: APÓS TER CUMPRIDO TODOS OS REQUISITOS..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <input type="text" id="cfg-texto2" oninput="atualizarPreviewLive()" placeholder="Ex: CUMPRIU OS REQUISITOS TÉCNICOS..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Inferior (Honras)</label>
-                                    <input type="text" id="cfg-texto3" oninput="atualizarPreviewLive()" placeholder="Ex: COM TODOS OS DIREITOS, HONRAS..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <input type="text" id="cfg-texto3" oninput="atualizarPreviewLive()" placeholder="Ex: COM TODOS OS DIREITOS, HONRAS E RESPONSABILIDADES..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                             </div>
                         </div>
@@ -669,9 +766,9 @@
                     document.getElementById('resp-grad').value = p.resp_g || "";                    
                     document.getElementById('prof-nome').value = p.prof_n || "";                    
                     document.getElementById('prof-grad').value = p.prof_g || "";
-                    document.getElementById('cfg-texto1').value = p.txt1 || "A EQUIPE RECONHECE QUE";
-                    document.getElementById('cfg-texto2').value = p.txt2 || "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
-                    document.getElementById('cfg-texto3').value = p.txt3 || "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
+                    document.getElementById('cfg-texto1').value = p.txt1 || "A PRESENTE CERTIFICAÇÃO RECONHECE QUE";
+                    document.getElementById('cfg-texto2').value = p.txt2 || "CUMPRIU OS REQUISITOS TÉCNICOS, DISCIPLINARES E FORMATIVOS ESTABELECIDOS POR ESTA EQUIPE";
+                    document.getElementById('cfg-texto3').value = p.txt3 || "COM TODOS OS DIREITOS, HONRAS E RESPONSABILIDADES INERENTES À PRESENTE GRADUAÇÃO";
                     
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
@@ -683,9 +780,9 @@
                     if(p.posSelo) document.getElementById('pos-selo').value = p.posSelo;
                 } catch(e) {}            
             } else {
-                document.getElementById('cfg-texto1').value = "A EQUIPE RECONHECE QUE";
-                document.getElementById('cfg-texto2').value = "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
-                document.getElementById('cfg-texto3').value = "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
+                document.getElementById('cfg-texto1').value = "A PRESENTE CERTIFICAÇÃO RECONHECE QUE";
+                document.getElementById('cfg-texto2').value = "CUMPRIU OS REQUISITOS TÉCNICOS, DISCIPLINARES E FORMATIVOS ESTABELECIDOS POR ESTA EQUIPE";
+                document.getElementById('cfg-texto3').value = "COM TODOS OS DIREITOS, HONRAS E RESPONSABILIDADES INERENTES À PRESENTE GRADUAÇÃO";
             }       
         }
 
@@ -782,7 +879,7 @@
             document.getElementById('render-data').innerText = dataExtenso;
             document.getElementById('render-nome').innerText = nomeAtleta;
             document.getElementById('render-faixa').innerText = `RECEBEU A GRADUAÇÃO DE FAIXA ${faixa}`;
-            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "A EQUIPE RECONHECE QUE").toUpperCase();
+            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "A PRESENTE CERTIFICAÇÃO RECONHECE QUE").toUpperCase();
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
             document.getElementById('render-ass1-nome').innerText = document.getElementById('resp-nome').value || "Responsável";
@@ -850,6 +947,20 @@
             document.getElementById('render-ass1-nome').style.fontFamily = fonteTexto;
             document.getElementById('render-ass2-nome').style.fontFamily = fonteTexto;
 
+            // Ajustes automáticos de composição para os modelos prontos
+            const subtitulo = document.getElementById('render-subtitulo');
+            if (document.getElementById('cfg-tema').value === 'minimalista') {
+                elTitulo.innerText = 'Certificado Oficial';
+                subtitulo.innerText = 'Graduação em Brazilian Jiu-Jitsu';
+                elTitulo.style.letterSpacing = fonteTitulo.includes('cursive') ? '1px' : '6px';
+            } else if (document.getElementById('cfg-tema').value === 'federacao') {
+                elTitulo.innerText = 'Certificado de Graduação';
+                subtitulo.innerText = 'Registro Oficial de Autenticidade';
+            } else {
+                elTitulo.innerText = 'Certificado Oficial';
+                subtitulo.innerText = 'Graduação em Brazilian Jiu-Jitsu';
+            }
+
             // 4. Tema Metálico
             const tema = document.getElementById('cfg-tema').value;
             const elBordaMetal = document.getElementById('render-border-metal');
@@ -858,22 +969,36 @@
             const elLinhas = document.querySelectorAll('.render-linhas-metal');
 
             let corDestaque = "#D4AF37"; 
+            let corTexto = "#0F172A";
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
+            let fundoDiploma = "radial-gradient(circle at top left, rgba(212,175,55,0.10), transparent 30%), radial-gradient(circle at bottom right, rgba(212,175,55,0.08), transparent 34%), repeating-linear-gradient(45deg, rgba(15,23,42,0.015) 0px, rgba(15,23,42,0.015) 1px, transparent 1px, transparent 7px), linear-gradient(135deg, #fffdf7, #ffffff 48%, #f8fafc)";
 
-            if (tema === 'prata') {
+            if (tema === 'prata' || tema === 'minimalista') {
                 corDestaque = "#A1A1AA";
                 gradMetalico = "linear-gradient(135deg, #71717A, #E4E4E7, #A1A1AA, #F4F4F5, #71717A)";
-            } else if (tema === 'bronze') {
+                fundoDiploma = "radial-gradient(circle at top left, rgba(148,163,184,0.10), transparent 30%), radial-gradient(circle at bottom right, rgba(148,163,184,0.08), transparent 34%), linear-gradient(135deg, #ffffff, #f8fafc 55%, #ffffff)";
+            } else if (tema === 'bronze' || tema === 'tradicional_bjj') {
                 corDestaque = "#CD7F32";
                 gradMetalico = "linear-gradient(135deg, #A0522D, #CD7F32, #8B4513, #D2B48C, #A0522D)";
-            } else if (tema === 'preto') {
-                corDestaque = "#0F172A";
-                gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
+                fundoDiploma = "radial-gradient(circle at top left, rgba(205,127,50,0.11), transparent 30%), radial-gradient(circle at bottom right, rgba(139,69,19,0.08), transparent 34%), linear-gradient(135deg, #fff7ed, #ffffff 50%, #f8fafc)";
+            } else if (tema === 'preto' || tema === 'luxo_preto') {
+                corDestaque = "#D4AF37";
+                corTexto = "#0F172A";
+                gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #D4AF37, #111827, #0F172A)";
+                fundoDiploma = "radial-gradient(circle at top left, rgba(212,175,55,0.14), transparent 28%), radial-gradient(circle at bottom right, rgba(15,23,42,0.10), transparent 34%), linear-gradient(135deg, #fffdf7, #ffffff 45%, #f1f5f9)";
+            } else if (tema === 'federacao') {
+                corDestaque = "#B38728";
+                gradMetalico = "linear-gradient(135deg, #B38728, #FBF5B7, #0F172A, #FCF6BA, #B38728)";
+                fundoDiploma = "radial-gradient(circle at center, rgba(212,175,55,0.09), transparent 32%), linear-gradient(135deg, #fffdf7, #ffffff 50%, #f8fafc)";
             }
 
             elBordaMetal.style.background = gradMetalico;
             elBordaInner.style.borderColor = corDestaque;
+            elBordaInner.style.background = fundoDiploma;
             elNome.style.borderBottomColor = corDestaque;
+            elNome.style.color = corTexto;
+            document.getElementById('render-subtitulo').style.color = corDestaque;
+            document.querySelectorAll('.corner-ornament').forEach(c => c.style.borderColor = corDestaque);
             elLinhas.forEach(l => l.style.background = `linear-gradient(to right, transparent, ${corDestaque}, transparent)`);
 
             // 🔥 A MÁGICA DA COR DA FAIXA
@@ -921,7 +1046,7 @@
                 });            
             } catch (e) {}
 
-            document.getElementById('render-serial').innerText = `VAL: ${numeroSerieStr}`;                        
+            document.getElementById('render-serial').innerText = `CÓDIGO DE AUTENTICIDADE Nº ${numeroSerieStr}`;                        
             qrcodeObj.clear();            
             qrcodeObj.makeCode(urlValidador);
 
