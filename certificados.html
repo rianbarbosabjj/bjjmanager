@@ -213,7 +213,7 @@
             font-weight: 600;
             text-align: center;
             margin-top: 20px;
-            max-width: 900px; /* Alargado para o texto oficial da GFTeam caber elegante */
+            max-width: 900px;
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
@@ -290,12 +290,34 @@
             letter-spacing: 1px;
         }
         
-        /* SELO  */
-        .cert-selo-img {
-            width: 140px;
-            height: 140px;
-            object-fit: contain;
+        /* SELO DE CERA PREMIUM */
+        .cert-wax-seal {
+            width: 110px;
+            height: 110px;
+            background: radial-gradient(circle at 35% 35%, #C62828, #5E0000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255,255,255,0.3);
+            border: 2px solid #F4C430;
             margin-bottom: -10px;
+            position: relative;
+        }
+        
+        .cert-wax-seal::after {
+            content: '⚜️';
+            position: absolute;
+            font-size: 45px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        .cert-wax-seal img {
+            width: 65%;
+            height: 65%;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
         }
 
         /* QR Code */
@@ -426,7 +448,9 @@
                                                         <div id="render-ass1-grad" class="cert-ass-grad">PRETA 4º GRAU</div>
                                                     </div>
 
-                                                    <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
+                                                    <div class="cert-wax-seal">
+                                                        <img id="render-selo-img" src="" class="hidden" alt="Selo Oficial">
+                                                    </div>
 
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
@@ -485,7 +509,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -501,6 +525,15 @@
                                         <option value="'Cinzel', serif">Cinzel (Épica)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
                                         <option value="'Great Vibes', cursive">Great Vibes (Manuscrita)</option>
+                                    </select>
+                                </div>
+                                <!-- 🔥 MENU DA FONTE DOS TEXTOS DE VOLTA! -->
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
+                                    <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="'Cormorant Garamond', serif">Cormorant (Clássica)</option>
+                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -543,9 +576,9 @@
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="extra">Logo Personalizada</option>
-                                            <option value="equipe">Logo da Plataforma</option>
                                             <option value="nenhuma">Nenhuma</option>
+                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="extra">Logo Personalizada</option>
                                         </select>
                                     </div>
                                 </div>
@@ -558,7 +591,6 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
-                                    <!-- 🔥 Texto Padrão GFTeam Carregado -->
                                     <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
@@ -584,7 +616,6 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <!-- 🔥 Assinaturas GFTeam Carregadas -->
                                     <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="BOLÃO" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
                                     <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="PRETA 4º GRAU" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
@@ -740,7 +771,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v5");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v6");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -754,6 +785,7 @@
                     
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
+                    if(p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
                     
                     if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
@@ -772,10 +804,11 @@
                 txt3: document.getElementById('cfg-texto3').value,
                 tema: document.getElementById('cfg-tema').value,
                 fonteTitulo: document.getElementById('cfg-fonte-titulo').value,
+                fonteTexto: document.getElementById('cfg-fonte-texto').value,
                 posEsq: document.getElementById('pos-esq').value,
                 posDir: document.getElementById('pos-dir').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v5", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v6", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -815,7 +848,6 @@
             return null;
         }
 
-        // 🔥 FUNÇÃO INTELIGENTE PARA A COR DA FAIXA
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
             if (f.includes('preta')) return '#0F172A';
@@ -826,8 +858,8 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155'; // Chumbo elegante em fundo branco
-            return '#B38728'; // Padrão dourado
+            if (f.includes('branca')) return '#334155';
+            return '#B38728';
         }
 
         window.atualizarPreviewLive = function() {
@@ -838,7 +870,7 @@
             const dataRaw = document.getElementById('entry-data').value;
             
             let dt;            
-            if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
+            if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }            
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
@@ -866,18 +898,7 @@
             elDir.src = srcDir || '';
             elDir.style.display = (srcDir && valDir !== 'nenhuma') ? 'block' : 'none';
 
-            // Marca D'água sempre usa a logo central
-            const imgWater = document.getElementById('render-watermark');
-            const confLogos = document.getElementById('cfg-logos').value;
-            imgWater.src = customLogoBase64 || logoBase64Global || '';
-            if ((customLogoBase64 || logoBase64Global) && confLogos === 'todas') {
-                imgWater.classList.remove('hidden');
-                imgWater.style.opacity = 0.04;
-            } else {
-                imgWater.style.opacity = 0;
-            }
-
-            // Selo customizado
+            // Selo de cera
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -888,20 +909,21 @@
 
             // Fontes
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
+            const fonteTexto = document.getElementById('cfg-fonte-texto').value;
+            
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
 
-            if (fonteTitulo.includes('cursive')) {
-                elTitulo.style.textTransform = 'none'; 
-                elTitulo.style.fontSize = '85px';      
-                elTitulo.style.letterSpacing = '1px';
-            } else {
-                elTitulo.style.textTransform = 'uppercase';
-                elTitulo.style.fontSize = '46px';
-                elTitulo.style.letterSpacing = '4px';
-            }
+            const elsTextosCorpo = [
+                document.getElementById('render-texto1'),
+                document.getElementById('render-texto2'),
+                document.getElementById('render-texto3')
+            ];
+            elsTextosCorpo.forEach(el => {
+                if(el) el.style.fontFamily = fonteTexto;
+            });
 
-            // Tema Metálico
+            // Tema
             const tema = document.getElementById('cfg-tema').value;
             const elBordaMetal = document.getElementById('render-border-metal');
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
@@ -913,9 +935,10 @@
             } else if (tema === 'preto') {
                 gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
             }
+
             elBordaMetal.style.background = gradMetalico;
             
-            // Cor da faixa dinâmica
+            // Cor da faixa
             const elFaixa = document.getElementById('render-faixa');
             elFaixa.style.color = getCorDaFaixaTexto(faixa);
         }
