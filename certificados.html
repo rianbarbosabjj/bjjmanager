@@ -208,14 +208,14 @@
             margin-bottom: 10px;
         }
 
-        /* 🔥 FAIXA COM CONTORNO E COR INTELIGENTE */
         .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
             font-size: 26px; 
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            border-bottom: 3px solid; /* A cor é herdada dinamicamente via JS */
+            color: #1E293B; 
+            border-bottom: 3px solid var(--cor-destaque); 
             padding-bottom: 0px;
             display: inline-block;
             transition: all 0.3s ease; 
@@ -562,7 +562,7 @@
                             
                             <div class="pt-4 border-t border-slate-100">                                
                                 <button id="btn-gerar" onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-5 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center border border-slate-700">                                    
-                                    <span class="mr-2 text-xl">🎓</span> GERAR DIPLOMA OFICIAL (PDF)                                
+                                    <span class="mr-2 text-xl">🎓</span> GERAR CERTIFICADO OFICIAL EM PDF                                
                                 </button>                            
                             </div>                        
                         </div>                    
@@ -732,7 +732,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v13");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v14");            
             
             const textoPadraoDinamico = `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
 
@@ -779,7 +779,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v13", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v14", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -906,15 +906,18 @@
             
             if (corDaFaixa.stroke) {
                 const s = corDaFaixa.stroke;
-                // Criação de contorno "bulletproof" para geradores de PDF via text-shadow múltiplo
+                // 1. O Text Stroke engrossa para DENTRO (espremendo e afinando o miolo)
+                elFaixaCor.style.webkitTextStroke = `1.5px ${s}`; 
+                // 2. O Text Shadow engrossa para FORA (garantindo que o gerador de PDF não falha)
                 elFaixaCor.style.textShadow = `
                     1.5px 1.5px 0 ${s}, -1.5px -1.5px 0 ${s}, 
                     1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 
                     0px 1.5px 0 ${s}, 0px -1.5px 0 ${s}, 
                     1.5px 0px 0 ${s}, -1.5px 0px 0 ${s},
-                    0px 0px 4px rgba(0,0,0,0.15)
+                    0px 3px 5px rgba(0,0,0,0.15)
                 `;
             } else {
+                elFaixaCor.style.webkitTextStroke = '0px transparent';
                 elFaixaCor.style.textShadow = 'none';
             }
             
