@@ -129,6 +129,34 @@
             font-weight: bold;            
             white-space: nowrap;        
         }    
+
+        /* 🔥 CSS PARA O ESPAÇO DA EQUIPE NA CARTEIRINHA */
+        #cert-equipe-wrapper {
+            position: absolute;
+            top: 60px;
+            left: 60px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        #cert-equipe-logo {
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        #cert-equipe-nome {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            color: #1E293B;
+            line-height: 1.2;
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -139,7 +167,7 @@
                 <div class="max-w-4xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Gere diplomas oficiais em PDF com Validação QR Code</p>                    
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Gere diplomas oficiais em PDF com Validação QR Code e personalização da Equipe</p>                    
                     </div>
 
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">                                                
@@ -230,6 +258,13 @@
     <div id="wrapper-render" class="ignorar-dark absolute top-[-9999px] left-[-9999px] opacity-0 pointer-events-none">        
         <div id="certificado-render">            
             <img id="cert-bg" src="template_moderno.png" alt="Fundo">            
+            
+            <!-- 🔥 NOVO ESPAÇO PARA A LOGO E NOME DA EQUIPE -->
+            <div id="cert-equipe-wrapper">
+                <img id="cert-equipe-logo" src="" alt="Logo da Equipe" style="display: none;">
+                <div id="cert-equipe-nome">SUA EQUIPE</div>
+            </div>
+
             <div id="cert-data">BRASIL, 01 DE JANEIRO DE 2026</div>            
             <div id="cert-nome">NOME DO ATLETA AQUI</div>            
             <div id="cert-faixa">FAIXA AZUL</div>                        
@@ -276,6 +311,10 @@
         let alunosCache = [];        
         let serialEquipeAtual = 427;         
         let qrcodeObj = null;
+
+        // 🔥 VARIÁVEIS GLOBAIS DA EQUIPE PARA O CERTIFICADO
+        let nomeEquipeLogada = "Sua Equipe";
+        let logoEquipeLogada = null;
 
         // --- SISTEMA DE TOASTS ---        
         window.showToast = function(message, type = 'error') {            
@@ -370,6 +409,10 @@
                     const nomeEquipe = dadosEquipe.nome_equipe;                                        
                     const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');                    
                     if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipe.toUpperCase();
+
+                    // 🔥 GUARDAMOS OS DADOS PARA USAR NO CERTIFICADO
+                    nomeEquipeLogada = nomeEquipe || dadosEquipe.nome || "Sua Equipe";
+                    logoEquipeLogada = dadosEquipe.url_logo || null;
 
                     const elLogo = document.getElementById('container-logo');                    
                     if (elLogo) {                        
@@ -484,14 +527,8 @@
 
             const idHash = Math.random().toString(36).substring(2, 10).toUpperCase();                        
             
-            // =================================================================================            
-            // 🚨 NOVO: URL APONTANDO PARA A MESMA PÁGINA DE VALIDAÇÃO COM PARÂMETRO ?cert=            
-            // =================================================================================            
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
 
-            // =================================================================================            
-            // 🚨 NOVO: SALVANDO O CERTIFICADO NO BANCO DE DADOS PARA PODER SER VALIDADO DEPOIS            
-            // =================================================================================            
             try {                
                 await addDoc(collection(db, "certificados"), {                    
                     equipe_id: uid,                    
@@ -509,6 +546,9 @@
                 console.error("Erro ao registrar certificado no banco de dados", e);            
             }
 
+            // ==============================================
+            // 🔥 PREENCHENDO DADOS DO ATLETA NO CERTIFICADO
+            // ==============================================
             document.getElementById('cert-nome').innerText = aluno.nome.toUpperCase();            
             document.getElementById('cert-faixa').innerText = `FAIXA ${faixa.toUpperCase()}`;            
             document.getElementById('cert-data').innerText = dataExtenso;                        
@@ -519,6 +559,36 @@
             document.getElementById('cert-serial').innerText = `Validador: ${numeroSerieStr}`;                        
             qrcodeObj.clear();            
             qrcodeObj.makeCode(urlValidador);
+
+            // ==============================================
+            // 🔥 PREENCHENDO DADOS DA EQUIPE NO CERTIFICADO
+            // ==============================================
+            document.getElementById('cert-equipe-nome').innerText = nomeEquipeLogada;
+            const imgLogoHTML = document.getElementById('cert-equipe-logo');
+            
+            if (logoEquipeLogada) {
+                try {
+                    // Magia Negra Anti-CORS: Baixamos a logo e convertemos para Base64 antes de jogar no PDF!
+                    const respLogo = await fetch(logoEquipeLogada);
+                    if (respLogo.ok) {
+                        const blobLogo = await respLogo.blob();
+                        const base64Logo = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blobLogo);
+                        });
+                        imgLogoHTML.src = base64Logo;
+                        imgLogoHTML.style.display = 'block';
+                    } else {
+                        imgLogoHTML.style.display = 'none';
+                    }
+                } catch(e) {
+                    console.log("Aviso: Falha ao carregar logo da equipe via CORS.");
+                    imgLogoHTML.style.display = 'none';
+                }
+            } else {
+                imgLogoHTML.style.display = 'none';
+            }
 
             const btn = document.getElementById('btn-gerar');            
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A GERAR PDF OFICIAL...";            
