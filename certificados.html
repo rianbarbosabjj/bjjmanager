@@ -21,7 +21,7 @@
     <!-- FONTES PREMIUM ATUALIZADAS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;600;700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&family=Alex+Brush&family=Parisienne&family=Tangerine:wght@400;700&family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -38,7 +38,7 @@
         #certificado-render {            
             width: 1123px; /* A4 Landscape */            
             height: 794px;            
-            background: #E8E5DF; /* Cor de fundo envelhecida */
+            background: #E8E5DF; 
             box-sizing: border-box;
             position: relative;
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
@@ -65,13 +65,13 @@
         }
         
         .cert-border-metal {
-            background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             padding: 3px;
             height: 100%;
             width: 100%;
             box-sizing: border-box;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             position: relative;
+            transition: background 0.3s ease;
         }
         
         .cert-border-inner {
@@ -89,6 +89,7 @@
             box-sizing: border-box;
             box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px #D4AF37;
             z-index: 2;
+            transition: border-color 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
@@ -114,7 +115,6 @@
             pointer-events: none;
         }
 
-        /* DATA CLÁSSICA */
         .cert-data { 
             position: absolute;
             top: 20px;
@@ -128,7 +128,6 @@
             z-index: 10;
         }
 
-        /* CABEÇALHO */
         .cert-header-container {
             position: absolute;
             top: 55px; 
@@ -141,12 +140,9 @@
         }
         .cert-header-side { width: 150px; display: flex; justify-content: center; }
         .cert-logo { max-width: 140px; max-height: 125px; object-fit: contain; }
-        .cert-titulo-wrapper { flex: 1; text-align: center; overflow: visible; }
+        .cert-titulo-wrapper { flex: 1; text-align: center; }
         
-        /* 🔥 TÍTULO (Display inline-block para o Shrink funcionar perfeitamente) */
         .cert-titulo { 
-            font-family: 'Cinzel', serif;
-            font-weight: 900;
             color: #1E293B; 
             margin: 0;
             transition: all 0.3s ease;
@@ -167,45 +163,36 @@
         }
 
         .cert-texto-dinamico { 
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 23px; 
-            font-weight: 700;
             text-align: center;
             margin-top: 22px;
             max-width: 950px; 
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
-            font-style: italic;
+            transition: font-size 0.3s ease;
         }
         
-        /* 🔥 CÁPSULA DA LINHA DO NOME (Tamanho Fixo e Visível, segura a linha dourada) */
+        /* 🔥 CONTAINER DA LINHA FIXA (Garante que a linha não encolhe) */
         .cert-nome-container {
             width: 85%;
             margin: 15px auto 10px auto;
             border-bottom: 2px solid #D4AF37;
             padding-bottom: 5px;
-            text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: border-color 0.3s;
-            overflow: hidden;
         }
 
-        /* 🔥 NOME DO ATLETA (Display inline-block para não quebrar e medir certo) */
+        /* 🔥 TEXTO DO NOME (Livre de cortes e adaptável) */
         .cert-nome-atleta { 
-            font-family: 'Great Vibes', cursive;
-            font-weight: 400;
             color: #1E293B;
             line-height: 1.1;
             white-space: nowrap; 
-            transition: all 0.3s ease;
             margin: 0;
-            display: inline-block;
+            transition: all 0.3s ease;
         }
         
-        /* 🔥 BLOCO DA FAIXA COM LINHA */
         .cert-bloco-faixa {
             text-align: center;
             margin-top: 15px;
@@ -218,7 +205,6 @@
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 4px;
-            color: #1E293B; 
             border-bottom: 3px solid #D4AF37; 
             padding-bottom: 2px;
             display: inline-block;
@@ -347,14 +333,12 @@
                                                 <div class="cert-text-wrapper">
                                                     <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
                                                     
-                                                    <!-- 🔥 LINHA INAMOVÍVEL E NOME CENTRALIZADO -->
                                                     <div id="render-nome-container" class="cert-nome-container">
                                                         <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
                                                     </div>
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
-                                                    <!-- 🔥 FAIXA E PREFIXO SEPARADOS -->
                                                     <div class="cert-bloco-faixa">
                                                         <p id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin-top: 0; margin-bottom: 5px;">RECEBEU A GRADUAÇÃO DE FAIXA</p>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
@@ -365,7 +349,7 @@
 
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha"></div>
+                                                        <div class="cert-linha render-linhas-metal"></div>
                                                         <div id="render-ass1-nome" class="cert-ass-nome">BOLÃO</div>
                                                         <div id="render-ass1-grad" class="cert-ass-grad">PRETA 4º GRAU</div>
                                                     </div>
@@ -373,7 +357,7 @@
                                                     <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
 
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha"></div>
+                                                        <div class="cert-linha render-linhas-metal"></div>
                                                         <div id="render-ass2-nome" class="cert-ass-nome">SAMUEL</div>
                                                         <div id="render-ass2-grad" class="cert-ass-grad">PRETA</div>
                                                     </div>
@@ -381,7 +365,6 @@
 
                                                 <div class="cert-qr-wrapper">
                                                     <div id="cert-qr-container" class="cert-qr-container"></div>
-                                                    <!-- 🔥 VALIDADOR CORRIGIDO -->
                                                     <div id="render-serial" class="cert-serial">VALIDADOR: 000000</div>
                                                 </div>
 
@@ -445,6 +428,7 @@
                                     <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
                                         <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                        <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
                                         <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
                                         <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
                                     </select>
@@ -452,9 +436,14 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
                                     <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
                                         <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
                                         <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
-                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                        <option value="'Alex Brush', cursive">Alex Brush (Moderna e Fluida)</option>
+                                        <option value="'Parisienne', cursive">Parisienne (Romântica)</option>
+                                        <option value="'Tangerine', cursive">Tangerine (Elegante e Estreita)</option>
+                                        <option value="'Dancing Script', cursive">Dancing Script (Descontraída)</option>
+                                        <option value="'Playfair Display', serif">Playfair (Serifada Elegante)</option>
                                         <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
                                     </select>
                                 </div>
@@ -465,11 +454,12 @@
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
                                         <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
                                         <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
+                                        <option value="'Lora', serif">Lora (Serifada Suave)</option>
+                                        <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- UPLOADS -->
                             <div class="border-t border-slate-100 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -484,7 +474,6 @@
                                 </div>
                             </div>
 
-                            <!-- POSICIONAMENTO -->
                             <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento das Logos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -714,7 +703,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v10");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v11");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -755,7 +744,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v10", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v11", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -813,8 +802,7 @@
         // 🔥 FORMATADOR INTELIGENTE DE NOMES PARA FONTES CURSIVAS
         function formatarNome(nome, isCursive) {
             if (!isCursive) return nome.toUpperCase();
-            
-            // Transforma "JOAO DA SILVA" em "João da Silva" para ficar bonito na cursiva
+            // Transforma "JOAO DA SILVA" em "João da Silva"
             return nome.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
         }
 
@@ -871,7 +859,7 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado Puro
+            // Selo Customizado
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -880,7 +868,7 @@
                 elSelo.classList.add('hidden');
             }
 
-            // 🔥 FONTES (Título, Nome e Textos)
+            // 🔥 FONTES (Título, Nome e Textos com tamanhos padronizados)
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
@@ -889,39 +877,52 @@
             elTitulo.style.fontFamily = fonteTitulo;
             let maxFontSizeTitulo = 42;
             
-            if (fonteTitulo.includes('cursive')) {
+            if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
-                maxFontSizeTitulo = 60;
+                maxFontSizeTitulo = 75; // Letras cursivas do título crescem para combinar
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
-                maxFontSizeTitulo = 42;
+                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) {
+                    maxFontSizeTitulo = 36;
+                } else {
+                    maxFontSizeTitulo = 42;
+                }
             }
 
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
-            let maxFontSizeNome = 70;
+            let maxFontSizeNome = 56;
             
-            const isNomeCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon');
+            const isNomeCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
             
-            if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
-                maxFontSizeNome = 115; 
-            } else if (fonteNome.includes('cursive')) {
-                maxFontSizeNome = 95; 
-            } else {
-                maxFontSizeNome = 70;
-            }
-
             if (isNomeCursive) {
-                elNome.style.textTransform = 'none'; // Desliga CSS, quem cuida é o Javascript
+                elNome.style.textTransform = 'none'; 
                 elNome.style.letterSpacing = '1px';
+                if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
+                    maxFontSizeNome = 95; // Fontes ultra finas precisam ser gigantes
+                } else {
+                    maxFontSizeNome = 80;
+                }
             } else {
                 elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
+                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
+                    maxFontSizeNome = 45; // Fontes robustas precisam ser menores
+                } else {
+                    maxFontSizeNome = 50;
+                }
             }
             
+            // Aplica a conversão de maiúsculas/minúsculas inteligente
             elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
+
+            // Textos Corporais
+            let baseTextSize = 22;
+            if (fonteTexto.includes('Playfair')) baseTextSize = 16;
+            if (fonteTexto.includes('Montserrat') || fonteTexto.includes('Roboto')) baseTextSize = 14;
+            if (fonteTexto.includes('Old Standard')) baseTextSize = 19;
 
             const elsTextosCorpo = [
                 document.getElementById('render-texto1'),
@@ -929,9 +930,14 @@
                 document.getElementById('render-texto3'),
                 document.getElementById('render-faixa-prefixo')
             ];
-            elsTextosCorpo.forEach(el => { if(el) el.style.fontFamily = fonteTexto; });
+            elsTextosCorpo.forEach(el => { 
+                if(el) {
+                    el.style.fontFamily = fonteTexto; 
+                    el.style.fontSize = baseTextSize + 'px';
+                }
+            });
 
-            // Tema
+            // Tema Visual
             const tema = document.getElementById('cfg-tema').value;
             const elNomeContainer = document.getElementById('render-nome-container');
             const elBordaMetal = document.getElementById('render-border-metal');
@@ -952,11 +958,13 @@
             elBordaMetal.style.background = gradMetalico;
             elNomeContainer.style.borderBottomColor = corDestaque;
 
-            // Encolhimento de Segurança
-            setTimeout(() => {
-                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680); 
-                ajustarTamanhoTexto(elNome, maxFontSizeNome, 920); 
-            }, 10);
+            // 🔥 A MÁGICA FINAL: Esperar a fonte baixar do Google antes de calcular!
+            document.fonts.ready.then(() => {
+                setTimeout(() => {
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680); 
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 800); 
+                }, 50);
+            });
         }
 
         window.gerarCertificado = async function() {            
