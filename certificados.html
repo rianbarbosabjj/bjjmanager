@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
     <!-- FONTES PREMIUM ATUALIZADAS -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Great+Vibes&family=Montserrat:wght@300;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,700&family=Great+Vibes&family=Montserrat:wght@300;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -31,7 +31,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
         /* =======================================================
-           🏅 DESIGN ULTRA PREMIUM DO CERTIFICADO (VERSÃO 2.0)
+           🏅 DESIGN ULTRA PREMIUM DO CERTIFICADO (VERSÃO 3.0)
            ======================================================= */
         #certificado-render {            
             width: 1123px; /* A4 Landscape */            
@@ -42,14 +42,10 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        /* Camada de textura de pergaminho */
         #certificado-render::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
             opacity: 0.12;
             pointer-events: none;
@@ -66,7 +62,6 @@
             z-index: 1;
         }
         
-        /* Moldura metálica principal */
         .cert-border-metal {
             background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             padding: 3px;
@@ -77,7 +72,6 @@
             position: relative;
         }
         
-        /* Moldura interna com cantos clássicos */
         .cert-border-inner {
             background: #FCFAF2;
             background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
@@ -95,39 +89,18 @@
             z-index: 2;
         }
 
-        /* Cantos decorativos (ornamentos) */
-        .cert-corner {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            z-index: 15;
-        }
-        .cert-corner::before,
-        .cert-corner::after {
-            content: '';
-            position: absolute;
-            background: #D4AF37;
-        }
+        .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: #D4AF37; }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
-        .corner-tl { top: 20px; left: 20px; }
-        .corner-tl::before { left: 0; top: 0; }
-        .corner-tl::after { left: 0; top: 0; }
-        .corner-tr { top: 20px; right: 20px; }
-        .corner-tr::before { right: 0; top: 0; }
-        .corner-tr::after { left: 0; top: 0; }
-        .corner-bl { bottom: 20px; left: 20px; }
-        .corner-bl::before { left: 0; bottom: 0; }
-        .corner-bl::after { left: 0; bottom: 0; }
-        .corner-br { bottom: 20px; right: 20px; }
-        .corner-br::before { right: 0; bottom: 0; }
-        .corner-br::after { left: 0; bottom: 0; }
+        .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
+        .corner-tr { top: 20px; right: 20px; } .corner-tr::before { right: 0; top: 0; } .corner-tr::after { left: 0; top: 0; }
+        .corner-bl { bottom: 20px; left: 20px; } .corner-bl::before { left: 0; bottom: 0; } .corner-bl::after { left: 0; bottom: 0; }
+        .corner-br { bottom: 20px; right: 20px; } .corner-br::before { right: 0; bottom: 0; } .corner-br::after { left: 0; bottom: 0; }
 
-        /* Marca de Água Central */
         .cert-watermark {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: auto;
             height: 65%;
@@ -139,24 +112,24 @@
             pointer-events: none;
         }
 
-        /* DATA CLÁSSICA */
+        /* 🔥 DATA: MAIS ALTA E SEGURA */
         .cert-data { 
             position: absolute;
-            top: 35px;
-            right: 55px;
+            top: 20px;
+            right: 40px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 10px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: #64748b;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             z-index: 10;
         }
 
-        /* CABEÇALHO */
+        /* 🔥 CABEÇALHO */
         .cert-header-container {
             position: absolute;
-            top: 35px;
+            top: 55px; /* Distante da data */
             left: 55px;
             right: 55px;
             display: flex;
@@ -164,36 +137,23 @@
             align-items: center;
             z-index: 10;
         }
-        .cert-header-side {
-            width: 140px;
-            display: flex;
-            justify-content: center;
-        }
-        .cert-logo {
-            max-width: 130px;
-            max-height: 120px;
-            object-fit: contain;
-        }
-        .cert-titulo-wrapper {
-            flex: 1;
-            text-align: center;
-        }
+        .cert-header-side { width: 150px; display: flex; justify-content: center; }
+        .cert-logo { max-width: 140px; max-height: 125px; object-fit: contain; }
+        .cert-titulo-wrapper { flex: 1; text-align: center; }
         
-        /* TÍTULO COM DEGRADÊ DOURADO */
         .cert-titulo { 
             font-family: 'Cinzel', serif;
-            font-size: 46px;
+            font-size: 48px;
             font-weight: 900;
             background: linear-gradient(135deg, #A67C00 0%, #F9E281 50%, #A67C00 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            letter-spacing: 6px;
+            letter-spacing: 5px;
             margin: 0;
             text-transform: uppercase;
         }
 
-        /* ÁREA DE TEXTO CENTRAL */
         .cert-text-wrapper {
             flex: 1;
             display: flex;
@@ -202,79 +162,75 @@
             justify-content: center;
             width: 100%;
             z-index: 10;
-            padding-top: 60px;
-            padding-bottom: 50px;
+            padding-top: 50px;
+            padding-bottom: 40px;
         }
 
-        /* TEXTOS CORPORAIS COM SERIFA CLÁSSICA */
+        /* 🔥 TEXTOS PRINCIPAIS MAIORES */
         .cert-texto-dinamico { 
             font-family: 'Cormorant Garamond', serif;
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 23px; /* AUMENTADO */
+            font-weight: 700;
             text-align: center;
-            margin-top: 20px;
-            max-width: 900px;
+            margin-top: 22px;
+            max-width: 950px; 
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
             font-style: italic;
         }
         
-        /* NOME DO ATLETA - MANUSCRITA ELEGANTE */
         .cert-nome-atleta { 
             font-family: 'Great Vibes', cursive;
-            font-size: 72px;
+            font-size: 78px; /* AUMENTADO */
             font-weight: 400;
             text-transform: capitalize;
-            margin: 20px 0 15px 0;
+            margin: 15px 0 10px 0;
             color: #1E293B;
             border-bottom: 2px solid #D4AF37;
-            padding-bottom: 15px;
-            line-height: 1.2;
+            padding-bottom: 5px;
+            line-height: 1.1;
             width: 85%;
             text-align: center;
         }
         
-        /* TEXTO DA FAIXA */
+        /* 🔥 FAIXA DINÂMICA MAIOR */
         .cert-faixa-texto { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 26px;
-            font-weight: 800;
+            font-size: 28px; /* AUMENTADO */
+            font-weight: 900;
             text-transform: uppercase;
             margin: 15px 0 10px 0;
             letter-spacing: 4px;
         }
 
-        /* RODAPÉ COM SELO CENTRALIZADO */
+        /* 🔥 RODAPÉ ALINHADO COM AS LOGOS */
         .cert-footer { 
             position: absolute;
-            bottom: 45px;
+            bottom: 40px; /* Pouco mais abaixo */
             left: 0;
             right: 0;
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            padding: 0 80px;
+            padding: 0 55px; /* Exatamente alinhado com as logos (left: 55px) */
             box-sizing: border-box;
             z-index: 10;
         }
         
-        .cert-assinatura-box { 
-            text-align: center; 
-            width: 260px;
-        }
+        .cert-assinatura-box { text-align: center; width: 280px; }
         
         .cert-linha { 
             width: 100%;
             height: 2px;
             background: linear-gradient(90deg, transparent, #D4AF37, #D4AF37, #D4AF37, transparent);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .cert-ass-nome { 
             font-family: 'Cinzel', serif;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 900;
             color: #1E293B;
             letter-spacing: 1px;
@@ -282,103 +238,51 @@
         
         .cert-ass-grad { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 10px;
+            font-size: 11px;
             color: #64748b;
-            font-weight: 600;
-            margin-top: 4px;
+            font-weight: 700;
+            margin-top: 2px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
-        /* SELO DE CERA PREMIUM */
-        .cert-wax-seal {
-            width: 110px;
-            height: 110px;
-            background: radial-gradient(circle at 35% 35%, #C62828, #5E0000);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255,255,255,0.3);
-            border: 2px solid #F4C430;
-            margin-bottom: -10px;
-            position: relative;
-        }
-        
-        .cert-wax-seal::after {
-            content: '⚜️';
-            position: absolute;
-            font-size: 45px;
-            opacity: 0.15;
-            pointer-events: none;
-        }
-        
-        .cert-wax-seal img {
-            width: 65%;
-            height: 65%;
+        /* 🔥 SELO GIGANTE E PURO (SEM EFEITO DE CERA VERMELHA) */
+        .cert-selo-img {
+            width: 165px;
+            height: 165px;
             object-fit: contain;
-            filter: brightness(0) invert(1);
+            margin-bottom: -15px; /* Deixa descer um bocadinho a linha base */
+            z-index: 20;
         }
 
-        /* QR Code */
+        /* 🔥 QR CODE EMPURRADO PARA O CANTO E MENOR */
         .cert-qr-wrapper { 
             position: absolute;
-            bottom: 30px;
-            right: 45px;
+            bottom: 20px;
+            right: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 10;
+            transform: scale(0.85); /* Fica discreto */
+            transform-origin: bottom right;
         }
         
-        .cert-qr-container { 
-            padding: 6px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .cert-serial { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 9px;
-            font-weight: 700;
-            margin-top: 6px;
-            color: #64748b;
-            letter-spacing: 1px;
-        }
+        .cert-qr-container { padding: 4px; background: #fff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; margin-top: 4px; color: #64748b; letter-spacing: 1px; }
 
         /* =======================================================
            📱 CONTAINER DE PREVIEW
            ======================================================= */
         .preview-wrapper {
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
+            width: 100%; overflow: hidden; display: flex; justify-content: center;
             background: linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 100%);
-            border-radius: 1rem;
-            padding: 25px 0;
-            height: 420px;
-            align-items: flex-start;
+            border-radius: 1rem; padding: 25px 0; height: 420px; align-items: flex-start;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
-        
-        .preview-scaler { 
-            transform: scale(0.42); 
-            transform-origin: top center; 
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        @media (min-width: 768px) { 
-            .preview-wrapper { height: 450px; } 
-            .preview-scaler { transform: scale(0.48); } 
-        }
-        
-        @media (min-width: 1024px) { 
-            .preview-wrapper { height: 520px; } 
-            .preview-scaler { transform: scale(0.58); } 
-        }
+        .preview-scaler { transform: scale(0.42); transform-origin: top center; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        @media (min-width: 768px) { .preview-wrapper { height: 450px; } .preview-scaler { transform: scale(0.48); } }
+        @media (min-width: 1024px) { .preview-wrapper { height: 520px; } .preview-scaler { transform: scale(0.58); } }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -392,7 +296,6 @@
                         <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium com design profissional e identidade oficial.</p>                    
                     </div>
 
-                    <!-- ÁREA DE PRÉ-VISUALIZAÇÃO -->
                     <div class="mb-8">
                         <h3 class="font-black text-slate-700 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
                             <span class="text-xl">👁️</span> Pré-visualização Premium
@@ -400,38 +303,26 @@
                         <div class="preview-wrapper">
                             <div class="preview-scaler">
                                 
-                                <!-- CERTIFICADO PREMIUM -->
                                 <div id="certificado-render">
                                     <div class="cert-border-outer">
                                         <div id="render-border-metal" class="cert-border-metal">
                                             <div id="render-border-inner" class="cert-border-inner">
                                                 
-                                                <!-- Cantos decorativos -->
                                                 <div class="cert-corner corner-tl"></div>
                                                 <div class="cert-corner corner-tr"></div>
                                                 <div class="cert-corner corner-bl"></div>
                                                 <div class="cert-corner corner-br"></div>
                                                 
-                                                <!-- MARCA D'ÁGUA -->
                                                 <img id="render-watermark" src="" class="cert-watermark">
 
-                                                <!-- DATA -->
                                                 <p id="render-data" class="cert-data">BRASIL, 01 DE JANEIRO DE 2026</p>
 
-                                                <!-- CABEÇALHO -->
                                                 <div class="cert-header-container">
-                                                    <div class="cert-header-side">
-                                                        <img id="render-logo-esq" src="" class="cert-logo">
-                                                    </div>
-                                                    <div class="cert-titulo-wrapper">
-                                                        <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
-                                                    </div>
-                                                    <div class="cert-header-side">
-                                                        <img id="render-logo-dir" src="" class="cert-logo">
-                                                    </div>
+                                                    <div class="cert-header-side"><img id="render-logo-esq" src="" class="cert-logo"></div>
+                                                    <div class="cert-titulo-wrapper"><h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1></div>
+                                                    <div class="cert-header-side"><img id="render-logo-dir" src="" class="cert-logo"></div>
                                                 </div>
 
-                                                <!-- TEXTOS CENTRALIZADOS -->
                                                 <div class="cert-text-wrapper">
                                                     <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
                                                     <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
@@ -440,7 +331,6 @@
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
                                                 </div>
 
-                                                <!-- FOOTER COM SELO E ASSINATURAS -->
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
@@ -448,9 +338,7 @@
                                                         <div id="render-ass1-grad" class="cert-ass-grad">PRETA 4º GRAU</div>
                                                     </div>
 
-                                                    <div class="cert-wax-seal">
-                                                        <img id="render-selo-img" src="" class="hidden" alt="Selo Oficial">
-                                                    </div>
+                                                    <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
 
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
@@ -468,16 +356,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- FIM DO CERTIFICADO -->
 
                             </div>
                         </div>
                     </div>
 
-                    <!-- PAINEL DE CONFIGURAÇÕES -->
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col mb-10">                                                
                         
-                        <!-- BLOCO 1: ATLETA -->
+                        <!-- 1. ATLETA -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
                             <h3 class="font-black text-cyan-600 text-sm uppercase tracking-widest mb-6">1. Dados da Emissão</h3>                                                        
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">                                
@@ -505,11 +391,11 @@
                             </div>                        
                         </div>
 
-                        <!-- BLOCO 2: ESTILOS E LOGOS -->
+                        <!-- 2. ESTILOS E LOGOS -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -527,7 +413,6 @@
                                         <option value="'Great Vibes', cursive">Great Vibes (Manuscrita)</option>
                                     </select>
                                 </div>
-                                <!-- 🔥 MENU DA FONTE DOS TEXTOS DE VOLTA! -->
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
                                     <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -536,17 +421,8 @@
                                         <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Disposição das Logos</label>
-                                    <select id="cfg-logos" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="todas">Completa (Logos + Fundo)</option>
-                                        <option value="sem_fundo">Apenas Logos Laterais</option>
-                                        <option value="limpo">Limpo (Sem Logos)</option>
-                                    </select>
-                                </div>
                             </div>
 
-                            <!-- UPLOADS -->
                             <div class="border-t border-slate-100 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -561,7 +437,6 @@
                                 </div>
                             </div>
 
-                            <!-- POSICIONAMENTO -->
                             <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento dos Elementos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -585,7 +460,7 @@
                             </div>
                         </div>
 
-                        <!-- BLOCO 3: TEXTOS -->
+                        <!-- 3. TEXTOS -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
                             <h3 class="font-black text-indigo-500 text-sm uppercase tracking-widest mb-6">3. Textos Oficiais</h3>                                                        
                             <div class="space-y-4">
@@ -604,7 +479,7 @@
                             </div>
                         </div>
 
-                        <!-- BLOCO 4: ASSINATURAS -->
+                        <!-- 4. ASSINATURAS -->
                         <div class="p-6 md:p-8 bg-white">                            
                             <div class="flex justify-between items-center mb-6">                                
                                 <h3 class="font-black text-amber-500 text-sm uppercase tracking-widest">4. Assinaturas</h3>                                
@@ -771,7 +646,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v6");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v7");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -808,7 +683,7 @@
                 posEsq: document.getElementById('pos-esq').value,
                 posDir: document.getElementById('pos-dir').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v6", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v7", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -848,6 +723,7 @@
             return null;
         }
 
+        // CORES DINÂMICAS PARA AS FAIXAS
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
             if (f.includes('preta')) return '#0F172A';
@@ -858,8 +734,8 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155';
-            return '#B38728';
+            if (f.includes('branca')) return '#334155'; // Cinza escuro elegante
+            return '#B38728'; // Dourado fallback
         }
 
         window.atualizarPreviewLive = function() {
@@ -874,10 +750,10 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            document.getElementById('render-data').innerText = `BRASIL, ${dataExtenso}`;
+            document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
             document.getElementById('render-nome').innerText = nomeAtleta;
             document.getElementById('render-faixa').innerText = `RECEBEU A GRADUAÇÃO DE FAIXA ${faixa}`;
-            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "A EQUIPE RECONHECE QUE").toUpperCase();
+            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "").toUpperCase();
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
             document.getElementById('render-ass1-nome').innerText = document.getElementById('resp-nome').value || "Responsável";
@@ -885,7 +761,7 @@
             document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            // Logos
+            // Logos Laterais
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
             const elEsq = document.getElementById('render-logo-esq');
@@ -898,7 +774,16 @@
             elDir.src = srcDir || '';
             elDir.style.display = (srcDir && valDir !== 'nenhuma') ? 'block' : 'none';
 
-            // Selo de cera
+            // Marca de Água (sempre vinculada à logo principal se existir)
+            const imgWater = document.getElementById('render-watermark');
+            if (logoBase64Global || customLogoBase64) {
+                imgWater.src = customLogoBase64 || logoBase64Global;
+                imgWater.classList.remove('hidden');
+            } else {
+                imgWater.classList.add('hidden');
+            }
+
+            // Selo Customizado Puro
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -938,7 +823,7 @@
 
             elBordaMetal.style.background = gradMetalico;
             
-            // Cor da faixa
+            // Cor da faixa dinâmica
             const elFaixa = document.getElementById('render-faixa');
             elFaixa.style.color = getCorDaFaixaTexto(faixa);
         }
