@@ -100,7 +100,7 @@
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -208,14 +208,14 @@
             margin-bottom: 10px;
         }
 
+        /* 🔥 FAIXA COM CONTORNO E COR INTELIGENTE */
         .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
             font-size: 26px; 
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: #1E293B; 
-            border-bottom: 3px solid var(--cor-destaque); 
+            border-bottom: 3px solid; /* A cor é herdada dinamicamente via JS */
             padding-bottom: 0px;
             display: inline-block;
             transition: all 0.3s ease; 
@@ -351,7 +351,6 @@
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
-                                                    <!-- 🔥 FAIXA E PREFIXO NA MESMA LINHA -->
                                                     <div class="cert-bloco-faixa">
                                                         <span id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin: 0;">RECEBEU A GRADUAÇÃO DE FAIXA</span>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
@@ -496,7 +495,7 @@
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
                                         <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
                                             <option value="extra">Logo Personalizada</option>
-                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="equipe">Logo da Plataforma</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
@@ -504,14 +503,14 @@
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
                                             <option value="nenhuma">Nenhuma</option>
-                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="equipe">Logo da Plataforma</option>
                                             <option value="extra">Logo Personalizada</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fundo / Marca d'água</label>
                                         <select id="pos-water" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="equipe">Logo da Equipe</option>
+                                            <option value="equipe">Logo da Plataforma</option>
                                             <option value="extra">Logo Personalizada</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
@@ -526,7 +525,6 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
-                                    <!-- 🔥 VAZIO DE INÍCIO - SERÁ PREENCHIDO PELO JAVASCRIPT DINAMICAMENTE -->
                                     <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="" placeholder="Carregando nome da equipe..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
@@ -601,7 +599,7 @@
         let qrcodeObj = null;
 
         let nomeEquipeLogada = "SUA EQUIPE";
-        let cidadeEquipeLogada = "RIO DE JANEIRO"; // 🔥 Cidade padrão ajustada para Rio de Janeiro
+        let cidadeEquipeLogada = "RIO DE JANEIRO"; 
         let logoBase64Global = null; 
         let customLogoBase64 = null;
         let customSeloBase64 = null;
@@ -671,7 +669,6 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    // 🔥 Pega o nome oficial da equipe e a cidade
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "SUA EQUIPE";
                     
                     if (dadosEquipe.cidade) {
@@ -822,18 +819,44 @@
             return null;
         }
 
-        function getCorDaFaixaTexto(faixaStr) {
+        // 🔥 O SEGREDO DAS FAIXAS DE DUAS CORES (Preenchimento e Contorno)
+        function getCoresFaixa(faixaStr) {
             const f = faixaStr.toLowerCase();
-            if (f.includes('preta')) return '#000000'; 
-            if (f.includes('marrom')) return '#5C4033'; 
-            if (f.includes('roxa')) return '#581C87'; 
-            if (f.includes('azul')) return '#1D4ED8'; 
-            if (f.includes('verde')) return '#166534'; 
-            if (f.includes('laranja')) return '#EA580C'; 
-            if (f.includes('amarela')) return '#CA8A04'; 
-            if (f.includes('cinza')) return '#64748B'; 
-            if (f.includes('branca')) return '#475569'; 
-            return '#1E293B'; 
+            const cores = {
+                branca: '#FFFFFF',
+                cinza: '#64748B', 
+                amarela: '#EAB308', // Amarelo Ouro
+                laranja: '#EA580C', // Laranja vibrante
+                verde: '#15803D', // Verde BJJ
+                azul: '#1D4ED8', // Azul royal
+                roxa: '#6B21A8', // Roxo profundo
+                marrom: '#5C4033', // Marrom puro
+                preta: '#0F172A' // Preto (Slate 900)
+            };
+
+            // Duas Cores: O Stroke (contorno) é a 1ª cor. O Fill (miolo) é a 2ª cor.
+            if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza, border: cores.cinza };
+            if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza, border: cores.cinza };
+            if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela, border: cores.amarela };
+            if (f.includes('amarela e preta')) return { fill: cores.preta, stroke: cores.amarela, border: cores.amarela };
+            if (f.includes('laranja e branca')) return { fill: cores.branca, stroke: cores.laranja, border: cores.laranja };
+            if (f.includes('laranja e preta')) return { fill: cores.preta, stroke: cores.laranja, border: cores.laranja };
+            if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde, border: cores.verde };
+            if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde, border: cores.verde };
+
+            // Cores Sólidas
+            if (f.includes('preta')) return { fill: cores.preta, stroke: null, border: cores.preta };
+            if (f.includes('marrom')) return { fill: cores.marrom, stroke: null, border: cores.marrom };
+            if (f.includes('roxa')) return { fill: cores.roxa, stroke: null, border: cores.roxa };
+            if (f.includes('azul')) return { fill: cores.azul, stroke: null, border: cores.azul };
+            if (f.includes('verde')) return { fill: cores.verde, stroke: null, border: cores.verde };
+            if (f.includes('laranja')) return { fill: cores.laranja, stroke: null, border: cores.laranja };
+            if (f.includes('amarela')) return { fill: cores.amarela, stroke: null, border: cores.amarela };
+            if (f.includes('cinza')) return { fill: cores.cinza, stroke: null, border: cores.cinza };
+            // A faixa branca tem sempre um leve contorno cinza para ler bem no fundo
+            if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8', border: '#94A3B8' }; 
+
+            return { fill: '#B38728', stroke: null, border: '#B38728' }; 
         }
 
         function formatarNome(nome, isCursive) {
@@ -862,7 +885,6 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
-
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
@@ -874,13 +896,30 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            // 🔥 A CIDADE PUXADA DO CADASTRO É INSERIDA AQUI!
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
-            const corDaFaixa = getCorDaFaixaTexto(faixa);
+            // 🔥 APLICAÇÃO DE CONTORNOS E CORES DA FAIXA
+            const corDaFaixa = getCoresFaixa(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
-            elFaixaCor.style.color = corDaFaixa;
+            elFaixaCor.style.color = corDaFaixa.fill;
+            
+            if (corDaFaixa.stroke) {
+                const s = corDaFaixa.stroke;
+                // Criação de contorno "bulletproof" para geradores de PDF via text-shadow múltiplo
+                elFaixaCor.style.textShadow = `
+                    1.5px 1.5px 0 ${s}, -1.5px -1.5px 0 ${s}, 
+                    1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 
+                    0px 1.5px 0 ${s}, 0px -1.5px 0 ${s}, 
+                    1.5px 0px 0 ${s}, -1.5px 0px 0 ${s},
+                    0px 0px 4px rgba(0,0,0,0.15)
+                `;
+            } else {
+                elFaixaCor.style.textShadow = 'none';
+            }
+            
+            // A borda usa a cor principal de destaque definida (border)
+            elFaixaCor.style.borderBottomColor = corDaFaixa.border;
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
             document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
