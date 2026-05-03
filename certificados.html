@@ -18,10 +18,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
-    <!-- FONTES PREMIUM ATUALIZADAS -->
+    <!-- 🔥 MEGA PACOTE DE FONTES PREMIUM (Google Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Dancing+Script:wght@400;600;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;600;700&family=Parisienne&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -143,7 +143,6 @@
         .cert-logo { max-width: 140px; max-height: 125px; object-fit: contain; }
         .cert-titulo-wrapper { flex: 1; text-align: center; overflow: visible; }
         
-        /* 🔥 TÍTULO BLINDADO (Sem degradê, preto clássico e sem quebra de linha) */
         .cert-titulo { 
             font-family: 'Cinzel', serif;
             font-size: 48px;
@@ -181,21 +180,31 @@
             font-style: italic;
         }
         
-        /* 🔥 NOME DO ATLETA BLINDADO (Sem quebra de linha) */
+        /* 🔥 CÁPSULA DA LINHA DO NOME (Tamanho Fixo e Imóvel) */
+        .cert-nome-container {
+            width: 85%;
+            margin: 15px auto 10px auto;
+            border-bottom: 2px solid #D4AF37;
+            padding-bottom: 5px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: border-color 0.3s;
+        }
+
+        /* 🔥 TEXTO DO NOME DO ATLETA (Encolhe dentro da caixa sem mexer na linha) */
         .cert-nome-atleta { 
             font-family: 'Great Vibes', cursive;
             font-size: 85px; 
             font-weight: 400;
             text-transform: capitalize;
-            margin: 15px 0 10px 0;
             color: #1E293B;
-            border-bottom: 2px solid #D4AF37;
-            padding-bottom: 5px;
             line-height: 1.1;
-            width: 85%;
-            text-align: center;
-            transition: border-color 0.3s;
-            white-space: nowrap;
+            white-space: nowrap; 
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin: 0;
         }
         
         .cert-faixa-texto { 
@@ -283,7 +292,7 @@
             border-radius: 1rem; padding: 25px 0; height: 420px; align-items: flex-start;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
-        .preview-scaler { transform: scale(0.42); transform-origin: top center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .preview-scaler { transform: scale(0.42); transform-origin: top center; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         @media (min-width: 768px) { .preview-wrapper { height: 450px; } .preview-scaler { transform: scale(0.48); } }
         @media (min-width: 1024px) { .preview-wrapper { height: 520px; } .preview-scaler { transform: scale(0.58); } }
     </style>
@@ -330,7 +339,12 @@
 
                                                 <div class="cert-text-wrapper">
                                                     <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
-                                                    <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
+                                                    
+                                                    <!-- 🔥 LINHA INAMOVÍVEL E NOME CENTRALIZADO -->
+                                                    <div id="render-nome-container" class="cert-nome-container">
+                                                        <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
+                                                    </div>
+
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span></h3>
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
@@ -354,7 +368,6 @@
 
                                                 <div class="cert-qr-wrapper">
                                                     <div id="cert-qr-container" class="cert-qr-container"></div>
-                                                    <!-- 🔥 Troca de VAL: para Validador: -->
                                                     <div id="render-serial" class="cert-serial">Validador: 000000</div>
                                                 </div>
 
@@ -416,32 +429,43 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
                                     <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cinzel', serif">Cinzel (Épica)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita)</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
                                         <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
+                                        <option value="'Alex Brush', cursive">Alex Brush (Manuscrita Fluida)</option>
+                                        <option value="'Oswald', sans-serif">Oswald (Moderna e Forte)</option>
+                                        <option value="'Lora', serif">Lora (Serifada Suave)</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
                                     <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
-                                        <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
-                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes (Clássica)</option>
+                                        <option value="'Pinyon Script', cursive">Pinyon (Fina e Delicada)</option>
+                                        <option value="'Alex Brush', cursive">Alex Brush (Moderna e Fluida)</option>
+                                        <option value="'Parisienne', cursive">Parisienne (Romântica)</option>
+                                        <option value="'Tangerine', cursive">Tangerine (Elegante e Estreita)</option>
+                                        <option value="'Dancing Script', cursive">Dancing Script (Descontraída)</option>
+                                        <option value="'Playfair Display', serif">Playfair (Serifada Elegante)</option>
                                         <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
+                                        <option value="'Oswald', sans-serif">Oswald (Moderna e Forte)</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
                                     <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cormorant Garamond', serif">Cormorant (Clássica)</option>
+                                        <option value="'Cormorant Garamond', serif">Cormorant (Clássica Livro)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
-                                        <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna e Limpa)</option>
+                                        <option value="'Old Standard TT', serif">Old Standard (Jornal Antigo)</option>
+                                        <option value="'Lora', serif">Lora (Serifada Suave)</option>
+                                        <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
                                     </select>
                                 </div>
                             </div>
 
+                            <!-- UPLOADS -->
                             <div class="border-t border-slate-100 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -456,8 +480,9 @@
                                 </div>
                             </div>
 
+                            <!-- POSICIONAMENTO -->
                             <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
-                                <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento dos Elementos</h4>
+                                <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento das Logos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
@@ -582,13 +607,12 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        // 🔥 FUNÇÃO INTELIGENTE DE ENCOLHIMENTO DE TEXTO (SHRINK-TO-FIT)
+        // 🔥 FUNÇÃO INTELIGENTE DE ENCOLHIMENTO DE TEXTO
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
             let tamanhoAtual = tamanhoMaximo;
             
-            // Loop de segurança para ir diminuindo a fonte caso o texto ultrapasse a largura máxima
             while (elemento.scrollWidth > larguraMaxima && tamanhoAtual > 15) {
                 tamanhoAtual--;
                 elemento.style.fontSize = tamanhoAtual + 'px';
@@ -866,16 +890,23 @@
             }
 
             elNome.style.fontFamily = fonteNome;
-            let maxFontSizeNome = 56;
+            let maxFontSizeNome = 85;
             
+            // Tratar fontes que precisam ser GIGANTES
+            if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
+                maxFontSizeNome = 100;
+            } else if (fonteNome.includes('cursive')) {
+                maxFontSizeNome = 85;
+            } else {
+                maxFontSizeNome = 56;
+            }
+
             if (fonteNome.includes('cursive')) {
                 elNome.style.textTransform = 'capitalize'; 
                 elNome.style.letterSpacing = '1px';
-                maxFontSizeNome = 85;
             } else {
                 elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
-                maxFontSizeNome = 56;
             }
 
             // Aplica os textos corporais
@@ -886,26 +917,33 @@
             ];
             elsTextosCorpo.forEach(el => { if(el) el.style.fontFamily = fonteTexto; });
 
-            // Executa a função de Shrink para o Título e o Nome (Garante que cabem na tela perfeitamente)
-            setTimeout(() => {
-                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700); // 700px é a largura do meio (entre as duas logos)
-                ajustarTamanhoTexto(elNome, maxFontSizeNome, 900); // 900px é a largura da folha menos as margens laterais
-            }, 10);
-
-            // Tema
+            // 🔥 A MÁGICA: Ajustar tamanhos para NUNCA quebrar a linha
+            // Atualiza a borda e cor
             const tema = document.getElementById('cfg-tema').value;
+            const elNomeContainer = document.getElementById('render-nome-container');
             const elBordaMetal = document.getElementById('render-border-metal');
+            let corDestaque = "#D4AF37"; 
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
 
             if (tema === 'prata') {
+                corDestaque = "#A1A1AA";
                 gradMetalico = "linear-gradient(135deg, #71717A, #E4E4E7, #A1A1AA, #F4F4F5, #71717A)";
             } else if (tema === 'bronze') {
+                corDestaque = "#CD7F32";
                 gradMetalico = "linear-gradient(135deg, #A0522D, #CD7F32, #8B4513, #D2B48C, #A0522D)";
             } else if (tema === 'preto') {
+                corDestaque = "#0F172A";
                 gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
             }
 
             elBordaMetal.style.background = gradMetalico;
+            elNomeContainer.style.borderBottomColor = corDestaque;
+
+            // Executa a função de Shrink para o Título e o Nome
+            setTimeout(() => {
+                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700); // 700px é o meio entre as logos
+                ajustarTamanhoTexto(elNome, maxFontSizeNome, 800); // 800px é o limite seguro interno
+            }, 10);
         }
 
         window.gerarCertificado = async function() {            
