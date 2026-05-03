@@ -100,7 +100,7 @@
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -351,6 +351,7 @@
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
+                                                    <!-- 🔥 FAIXA E PREFIXO NA MESMA LINHA -->
                                                     <div class="cert-bloco-faixa">
                                                         <span id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin: 0;">RECEBEU A GRADUAÇÃO DE FAIXA</span>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
@@ -732,7 +733,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v14");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v15");            
             
             const textoPadraoDinamico = `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
 
@@ -779,7 +780,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v14", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v15", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -819,22 +820,22 @@
             return null;
         }
 
-        // 🔥 O SEGREDO DAS FAIXAS DE DUAS CORES (Preenchimento e Contorno)
+        // 🔥 O SEGREDO DAS FAIXAS DE DUAS CORES (Corrigido para não deformar a fonte)
         function getCoresFaixa(faixaStr) {
             const f = faixaStr.toLowerCase();
             const cores = {
                 branca: '#FFFFFF',
                 cinza: '#64748B', 
-                amarela: '#EAB308', // Amarelo Ouro
+                amarela: '#F59E0B', // Amarelo real e forte
                 laranja: '#EA580C', // Laranja vibrante
-                verde: '#15803D', // Verde BJJ
-                azul: '#1D4ED8', // Azul royal
-                roxa: '#6B21A8', // Roxo profundo
-                marrom: '#5C4033', // Marrom puro
-                preta: '#0F172A' // Preto (Slate 900)
+                verde: '#15803D', 
+                azul: '#1D4ED8', 
+                roxa: '#6B21A8', 
+                marrom: '#5C4033', 
+                preta: '#0F172A' 
             };
 
-            // Duas Cores: O Stroke (contorno) é a 1ª cor. O Fill (miolo) é a 2ª cor.
+            // Miolo = Cor 2 (Ex: Preta/Branca), Contorno = Cor 1 (Ex: Amarela)
             if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza, border: cores.cinza };
             if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza, border: cores.cinza };
             if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela, border: cores.amarela };
@@ -844,7 +845,7 @@
             if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde, border: cores.verde };
             if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde, border: cores.verde };
 
-            // Cores Sólidas
+            // Sólidas
             if (f.includes('preta')) return { fill: cores.preta, stroke: null, border: cores.preta };
             if (f.includes('marrom')) return { fill: cores.marrom, stroke: null, border: cores.marrom };
             if (f.includes('roxa')) return { fill: cores.roxa, stroke: null, border: cores.roxa };
@@ -853,7 +854,8 @@
             if (f.includes('laranja')) return { fill: cores.laranja, stroke: null, border: cores.laranja };
             if (f.includes('amarela')) return { fill: cores.amarela, stroke: null, border: cores.amarela };
             if (f.includes('cinza')) return { fill: cores.cinza, stroke: null, border: cores.cinza };
-            // A faixa branca tem sempre um leve contorno cinza para ler bem no fundo
+            
+            // Branca ganha um leve contorno cinza para ler bem no fundo claro
             if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8', border: '#94A3B8' }; 
 
             return { fill: '#B38728', stroke: null, border: '#B38728' }; 
@@ -898,7 +900,7 @@
 
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
-            // 🔥 APLICAÇÃO DE CONTORNOS E CORES DA FAIXA
+            // 🔥 APLICAÇÃO DE CONTORNOS E CORES DA FAIXA SEM DEFORMAÇÃO
             const corDaFaixa = getCoresFaixa(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
@@ -906,22 +908,16 @@
             
             if (corDaFaixa.stroke) {
                 const s = corDaFaixa.stroke;
-                // 1. O Text Stroke engrossa para DENTRO (espremendo e afinando o miolo)
-                elFaixaCor.style.webkitTextStroke = `1.5px ${s}`; 
-                // 2. O Text Shadow engrossa para FORA (garantindo que o gerador de PDF não falha)
+                // Text-shadow cria um contorno limpo "para fora", mantendo o miolo perfeito
                 elFaixaCor.style.textShadow = `
-                    1.5px 1.5px 0 ${s}, -1.5px -1.5px 0 ${s}, 
-                    1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 
-                    0px 1.5px 0 ${s}, 0px -1.5px 0 ${s}, 
-                    1.5px 0px 0 ${s}, -1.5px 0px 0 ${s},
+                    -1.5px -1.5px 0 ${s}, 1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 1.5px 1.5px 0 ${s}, 
+                    -2px 0 0 ${s}, 2px 0 0 ${s}, 0 -2px 0 ${s}, 0 2px 0 ${s},
                     0px 3px 5px rgba(0,0,0,0.15)
                 `;
             } else {
-                elFaixaCor.style.webkitTextStroke = '0px transparent';
                 elFaixaCor.style.textShadow = 'none';
             }
             
-            // A borda usa a cor principal de destaque definida (border)
             elFaixaCor.style.borderBottomColor = corDaFaixa.border;
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
