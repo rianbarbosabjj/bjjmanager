@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
     <style>        
-        /* 🎨 IMPORTANDO AS FONTES PREMIUM DO GOOGLE (Incluindo Fontes Manuscritas para Diplomas) */
+        /* 🎨 IMPORTANDO AS FONTES PREMIUM DO GOOGLE */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Great+Vibes&family=Montserrat:wght@700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Roboto:wght@700;900&display=swap');
         
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -42,7 +42,6 @@
             position: relative;
         }
 
-        /* Sistema de Bordas de Luxo */
         .cert-border-outer {
             background: #0F172A; 
             padding: 16px;
@@ -76,7 +75,6 @@
             transition: border-color 0.3s ease;
         }
 
-        /* Marca de Água Central Gigante */
         .cert-watermark {
             position: absolute;
             top: 50%;
@@ -93,12 +91,9 @@
             transition: opacity 0.3s;
         }
 
-        /* Logos e Cabeçalho */
-        /* Ajustei o top para 60px para não encostar na data caso o professor queira usar as marcas laterais */
         .cert-logo-esq { position: absolute; top: 60px; left: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
         .cert-logo-dir { position: absolute; top: 60px; right: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
         
-        /* 🔥 DATA NO CANTO SUPERIOR DIREITO (ESTILO TRADICIONAL) */
         .cert-data { 
             position: absolute;
             top: 35px;
@@ -113,7 +108,6 @@
             text-align: right;
         }
 
-        /* Título - Pode ser cursivo ou em bloco */
         .cert-titulo { 
             font-family: 'Playfair Display', serif;
             font-size: 46px; 
@@ -126,7 +120,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Textos Dinâmicos */
         .cert-texto-dinamico { 
             font-family: 'Montserrat', sans-serif;
             font-size: 14px; 
@@ -140,7 +133,6 @@
             z-index: 10;
         }
         
-        /* Nome em Destaque */
         .cert-nome-atleta { 
             font-family: 'Playfair Display', serif;
             font-size: 52px; 
@@ -168,7 +160,6 @@
             transition: color 0.3s;
         }
 
-        /* Rodapé: Assinaturas e Selo */
         .cert-footer { 
             position: absolute; 
             bottom: 45px; 
@@ -182,7 +173,6 @@
         }
         .cert-assinatura-box { text-align: center; width: 260px; }
         
-        /* Linha Dinâmica */
         .cert-linha { 
             width: 100%; 
             height: 2px; 
@@ -196,7 +186,6 @@
         
         .cert-selo { width: 110px; height: 110px; object-fit: contain; transition: opacity 0.3s;}
 
-        /* QR Code Canto */
         .cert-qr-wrapper { position: absolute; bottom: 40px; right: 50px; display: flex; flex-direction: column; align-items: center; z-index: 10;}
         .cert-qr-container { padding: 4px; border: 1px solid #CBD5E1; background: #fff; }
         .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: bold; margin-top: 5px; color: #94a3b8; letter-spacing: 1px;}
@@ -222,7 +211,7 @@
                 <div class="max-w-6xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize as fontes, cores e textos.</p>                    
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize as fontes, cores, textos e logos.</p>                    
                     </div>
 
                     <!-- 🔴 ÁREA DE PRÉ-VISUALIZAÇÃO (LIVE PREVIEW) -->
@@ -335,9 +324,10 @@
                             </div>                        
                         </div>
 
-                        <!-- BLOCO 2: ESTILOS E DESIGN (NOVO!) -->
+                        <!-- BLOCO 2: ESTILOS, DESIGN E LOGOS -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
-                            <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Tipografia</h3>                                                        
+                            <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo, Tipografia e Imagens</h3>                                                        
+                            
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
@@ -377,6 +367,22 @@
                                         <option value="limpo">Limpo (Sem Logos)</option>
                                     </select>
                                 </div>
+                            </div>
+
+                            <!-- 🔥 NOVO: ÁREA DE UPLOAD DE LOGO E SELO CUSTOMIZADOS -->
+                            <div class="col-span-1 md:col-span-2 lg:col-span-4 border-t border-slate-100 mt-5 pt-5">
+                                <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Customizadas (Opcional)</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo / Federação (Top e Fundo)</label>
+                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 transition-all outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo Central / Brasão</label>
+                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 transition-all outline-none">
+                                    </div>
+                                </div>
+                                <p class="text-[9px] text-slate-400 mt-2 font-medium">* Se não enviar nenhuma imagem, o sistema utilizará a Logo Oficial da Academia configurada no Painel.</p>
                             </div>
                         </div>
 
@@ -461,8 +467,11 @@
         let qrcodeObj = null;
 
         let nomeEquipeLogada = "Sua Equipe";
-        let logoEquipeLogada = null;
         let logoBase64Global = null; 
+        
+        // 🔥 Variáveis para armazenar as imagens recém upadas pelo usuário
+        let customLogoBase64 = null;
+        let customSeloBase64 = null;
 
         // --- SISTEMA DE TOASTS ---        
         window.showToast = function(message, type = 'error') {            
@@ -520,11 +529,11 @@
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe";
-                    logoEquipeLogada = dadosEquipe.url_logo || null;
+                    const logoEquipeOficial = dadosEquipe.url_logo || null;
 
-                    if (logoEquipeLogada) {
+                    if (logoEquipeOficial) {
                         try {
-                            const respLogo = await fetch(logoEquipeLogada);
+                            const respLogo = await fetch(logoEquipeOficial);
                             if (respLogo.ok) {
                                 const blobLogo = await respLogo.blob();
                                 logoBase64Global = await new Promise((resolve) => {
@@ -611,6 +620,37 @@
             showToast("Design e Padrões guardados no navegador!", "success");        
         }
 
+        // 🔥 FUNÇÕES DE CARREGAMENTO DE IMAGENS CUSTOMIZADAS
+        window.carregarLogoCustomizada = function(event) {
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customLogoBase64 = e.target.result;
+                    window.atualizarPreviewLive();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                customLogoBase64 = null;
+                window.atualizarPreviewLive();
+            }
+        }
+
+        window.carregarSeloCustomizado = function(event) {
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customSeloBase64 = e.target.result;
+                    window.atualizarPreviewLive();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                customSeloBase64 = null;
+                window.atualizarPreviewLive();
+            }
+        }
+
         // ==============================================
         // 👁️ ATUALIZADOR DO PREVIEW (A MÁGICA VISUAL)
         // ==============================================
@@ -638,31 +678,49 @@
             document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            // 2. Aplicar Logos
+            // 2. Aplicar Logos Inteligentes
             const confLogos = document.getElementById('cfg-logos').value;
             const imgEsq = document.getElementById('render-logo-esq');
             const imgDir = document.getElementById('render-logo-dir');
             const imgSelo = document.getElementById('render-selo');
             const imgWater = document.getElementById('render-watermark');
             
-            if (logoBase64Global) {
-                [imgEsq, imgDir, imgSelo, imgWater].forEach(el => el.src = logoBase64Global);
-                
-                imgSelo.classList.remove('hidden'); 
+            // Lógica: Usa a customizada se existir, senão usa a do Firebase
+            const imagemParaLogo = customLogoBase64 || logoBase64Global;
+            const imagemParaSelo = customSeloBase64 || logoBase64Global;
+
+            if (imagemParaLogo) {
+                imgEsq.src = imagemParaLogo;
+                imgDir.src = imagemParaLogo;
+                imgWater.src = imagemParaLogo;
+            }
+            if (imagemParaSelo) {
+                imgSelo.src = imagemParaSelo;
+            }
+
+            if (imagemParaLogo || imagemParaSelo) {
+                // Selo sempre aparece a menos que config seja limpa
+                if (imagemParaSelo && confLogos !== 'limpo') imgSelo.classList.remove('hidden'); 
 
                 if (confLogos === 'todas') {
-                    imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
-                    imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
-                    imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
+                    if (imagemParaLogo) {
+                        imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
+                        imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
+                        imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
+                    }
                 } else if (confLogos === 'sem_fundo') {
-                    imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
-                    imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
-                    imgWater.style.opacity = 0; imgWater.classList.add('hidden');
+                    if (imagemParaLogo) {
+                        imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
+                        imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
+                        imgWater.style.opacity = 0; imgWater.classList.add('hidden');
+                    }
                 } else if (confLogos === 'apenas_fundo') {
-                    imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
-                    imgDir.style.opacity = 0; imgDir.classList.add('hidden');
-                    imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
-                } else { 
+                    if (imagemParaLogo) {
+                        imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
+                        imgDir.style.opacity = 0; imgDir.classList.add('hidden');
+                        imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
+                    }
+                } else { // Limpo
                     imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
                     imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                     imgWater.style.opacity = 0; imgWater.classList.add('hidden');
@@ -677,10 +735,10 @@
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
             
-            // 🔥 Ajuste Mágico para Fontes Cursivas (Diploma antigo)
+            // Ajuste Mágico para Fontes Cursivas
             if (fonteTitulo.includes('cursive')) {
-                elTitulo.style.textTransform = 'none'; // Desliga o tudo maiúsculo
-                elTitulo.style.fontSize = '75px';      // Aumenta o tamanho para ficar bem legível
+                elTitulo.style.textTransform = 'none'; 
+                elTitulo.style.fontSize = '75px';      
                 elTitulo.style.letterSpacing = '1px';
             } else {
                 elTitulo.style.textTransform = 'uppercase';
