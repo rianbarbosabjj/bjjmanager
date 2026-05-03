@@ -19,7 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
     <style>        
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');        
+        /* 🎨 IMPORTANDO AS FONTES PREMIUM DO GOOGLE */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@700;900&family=Roboto:wght@700;900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');        
+        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
         .hide-scrollbar::-webkit-scrollbar { display: none; }        
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }                
@@ -48,15 +50,18 @@
             width: 100%;
             box-sizing: border-box;
         }
-        .cert-border-gold {
-            /* Degradê dourado metálico estilo folha de ouro */
+        
+        /* A borda Dourada Padrão (agora controlada via JS) */
+        .cert-border-metal {
             background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             padding: 4px;
             height: 100%;
             width: 100%;
             box-sizing: border-box;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            transition: background 0.3s ease;
         }
+        
         .cert-border-inner {
             background: #FAFAFA;
             border: 1px solid #BF953F;
@@ -69,6 +74,7 @@
             padding: 40px 60px;
             box-sizing: border-box;
             z-index: 1;
+            transition: border-color 0.3s ease;
         }
 
         /* Marca de Água Central Gigante */
@@ -81,15 +87,16 @@
             height: 65%;
             max-width: 70%;
             object-fit: contain;
-            opacity: 0.04; /* Quase invisível */
+            opacity: 0.04; 
             filter: grayscale(100%);
             z-index: 0;
             pointer-events: none;
+            transition: opacity 0.3s;
         }
 
         /* Logos e Cabeçalho */
-        .cert-logo-esq { position: absolute; top: 45px; left: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; }
-        .cert-logo-dir { position: absolute; top: 45px; right: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; }
+        .cert-logo-esq { position: absolute; top: 45px; left: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
+        .cert-logo-dir { position: absolute; top: 45px; right: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
         
         .cert-titulo { 
             font-family: 'Playfair Display', serif;
@@ -102,8 +109,9 @@
             z-index: 10;
         }
         .cert-data { 
+            font-family: 'Montserrat', sans-serif;
             font-size: 13px; 
-            font-weight: bold; 
+            font-weight: 800; 
             margin-top: 5px; 
             color: #64748b; 
             letter-spacing: 2px; 
@@ -113,8 +121,9 @@
 
         /* Textos Dinâmicos */
         .cert-texto-dinamico { 
-            font-size: 15px; 
-            font-weight: 600; 
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px; 
+            font-weight: 700; 
             text-align: center; 
             margin-top: 35px; 
             max-width: 800px; 
@@ -137,16 +146,19 @@
             width: 80%; 
             text-align: center;
             z-index: 10;
+            transition: border-color 0.3s;
         }
         
         .cert-faixa-texto { 
+            font-family: 'Montserrat', sans-serif;
             font-size: 24px; 
             font-weight: 900; 
             text-transform: uppercase; 
-            color: #B38728; /* Cor Dourada */
+            color: #B38728; 
             margin: 10px 0; 
             letter-spacing: 3px; 
             z-index: 10;
+            transition: color 0.3s;
         }
 
         /* Rodapé: Assinaturas e Selo */
@@ -163,23 +175,24 @@
         }
         .cert-assinatura-box { text-align: center; width: 260px; }
         
-        /* Linha com Degradê Dourado */
+        /* Linha Dinâmica */
         .cert-linha { 
             width: 100%; 
             height: 2px; 
             background: linear-gradient(to right, transparent, #BF953F, transparent); 
             margin-bottom: 8px; 
+            transition: background 0.3s;
         }
         
-        .cert-ass-nome { font-size: 16px; font-weight: bold; color: #1E293B; }
-        .cert-ass-grad { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px; }
+        .cert-ass-nome { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #1E293B; }
+        .cert-ass-grad { font-family: 'Montserrat', sans-serif; font-size: 11px; color: #64748b; font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px;}
         
-        .cert-selo { width: 110px; height: 110px; object-fit: contain; }
+        .cert-selo { width: 110px; height: 110px; object-fit: contain; transition: opacity 0.3s;}
 
         /* QR Code Canto */
         .cert-qr-wrapper { position: absolute; bottom: 40px; right: 50px; display: flex; flex-direction: column; align-items: center; z-index: 10;}
         .cert-qr-container { padding: 4px; border: 1px solid #CBD5E1; background: #fff; }
-        .cert-serial { font-size: 9px; font-weight: bold; margin-top: 5px; color: #94a3b8; letter-spacing: 1px;}
+        .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: bold; margin-top: 5px; color: #94a3b8; letter-spacing: 1px;}
 
         /* =======================================================
            📱 CONTAINER DE PREVIEW (Escalado para caber na tela) 
@@ -189,7 +202,7 @@
             background-color: #e2e8f0; border-radius: 1rem; padding: 20px 0;
             height: 380px; align-items: flex-start;
         }
-        .preview-scaler { transform: scale(0.40); transform-origin: top center; }
+        .preview-scaler { transform: scale(0.40); transform-origin: top center; transition: all 0.3s; }
         @media (min-width: 768px) { .preview-wrapper { height: 420px; } .preview-scaler { transform: scale(0.48); } }
         @media (min-width: 1024px) { .preview-wrapper { height: 500px; } .preview-scaler { transform: scale(0.58); } }
     </style>
@@ -202,7 +215,7 @@
                 <div class="max-w-5xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Gere diplomas de luxo oficiais em PDF com Validação QR Code.</p>                    
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium. Personalize as fontes, cores e textos.</p>                    
                     </div>
 
                     <!-- 🔴 ÁREA DE PRÉ-VISUALIZAÇÃO (LIVE PREVIEW) -->
@@ -210,7 +223,15 @@
                         <h3 class="font-black text-slate-700 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
                             <span class="text-xl">👁️</span> Pré-visualização ao Vivo
                         </h3>
-                        <div class="preview-wrapper shadow-inner border border-slate-300 ignorar-dark">
+                        <div class="preview-wrapper shadow-inner border border-slate-300 ignorar-dark relative">
+                            <!-- Indicador de Carregamento da Logo (Opcional, pro visual) -->
+                            <div class="absolute top-2 right-2 flex gap-1 z-50">
+                                <span class="flex h-2 w-2 relative">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                                </span>
+                            </div>
+                            
                             <div class="preview-scaler">
                                 
                                 <!-- =============================================== -->
@@ -218,8 +239,8 @@
                                 <!-- =============================================== -->
                                 <div id="certificado-render">
                                     <div class="cert-border-outer">
-                                        <div class="cert-border-gold">
-                                            <div class="cert-border-inner">
+                                        <div id="render-border-metal" class="cert-border-metal">
+                                            <div id="render-border-inner" class="cert-border-inner">
                                                 
                                                 <!-- MARCA DE ÁGUA CENTRAL -->
                                                 <img id="render-watermark" src="" class="cert-watermark hidden">
@@ -228,7 +249,7 @@
                                                 <img id="render-logo-esq" src="" class="cert-logo-esq hidden">
                                                 <img id="render-logo-dir" src="" class="cert-logo-dir hidden">
 
-                                                <h1 class="cert-titulo">Certificado de Graduação</h1>
+                                                <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
                                                 <p id="render-data" class="cert-data">BRASIL, 01 DE JANEIRO DE 2026</p>
 
                                                 <!-- TEXTO 1 -->
@@ -249,7 +270,7 @@
                                                 <!-- FOOTER (ASSINATURAS E SELO) -->
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha"></div>
+                                                        <div class="cert-linha render-linhas-metal"></div>
                                                         <div id="render-ass1-nome" class="cert-ass-nome">Responsável</div>
                                                         <div id="render-ass1-grad" class="cert-ass-grad">Grau</div>
                                                     </div>
@@ -258,7 +279,7 @@
                                                     <img id="render-selo" src="" class="cert-selo hidden">
 
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha"></div>
+                                                        <div class="cert-linha render-linhas-metal"></div>
                                                         <div id="render-ass2-nome" class="cert-ass-nome">Professor</div>
                                                         <div id="render-ass2-grad" class="cert-ass-grad">Grau</div>
                                                     </div>
@@ -280,7 +301,10 @@
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">                                                
+                    <!-- =============================================== -->
+                    <!-- 🎛️ PAINEL DE CONFIGURAÇÕES                        -->
+                    <!-- =============================================== -->
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col mb-10">                                                
                         
                         <!-- BLOCO 1: ATLETA -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
@@ -310,9 +334,43 @@
                             </div>                        
                         </div>
 
-                        <!-- BLOCO 2: PERSONALIZAÇÃO DE TEXTOS -->
-                        <div class="p-6 md:p-8 border-b border-slate-100">                            
-                            <h3 class="font-black text-indigo-500 text-sm uppercase tracking-widest mb-6">2. Textos do Certificado</h3>                                                        
+                        <!-- BLOCO 2: ESTILOS E DESIGN (NOVO!) -->
+                        <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
+                            <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Design</h3>                                                        
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
+                                    <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="dourado">Ouro Metálico (Dourado)</option>
+                                        <option value="prata">Prata Titanium (Cinza Claro)</option>
+                                        <option value="bronze">Bronze Antigo (Cobre)</option>
+                                        <option value="preto">Preto Clássico (Dark)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Família de Fonte (Nome)</label>
+                                    <select id="cfg-fonte" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="'Playfair Display', serif">Playfair (Clássica e Elegante)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica / Gladiador)</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna e Limpa)</option>
+                                        <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Disposição das Logos</label>
+                                    <select id="cfg-logos" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="todas">Marcas Laterais + Fundo</option>
+                                        <option value="sem_fundo">Apenas Marcas Laterais</option>
+                                        <option value="apenas_fundo">Apenas Marca d'Água no Fundo</option>
+                                        <option value="limpo">Limpo (Sem Logos)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BLOCO 3: PERSONALIZAÇÃO DE TEXTOS -->
+                        <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
+                            <h3 class="font-black text-indigo-500 text-sm uppercase tracking-widest mb-6">3. Textos Oficiais</h3>                                                        
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
@@ -329,31 +387,31 @@
                             </div>
                         </div>
 
-                        <!-- BLOCO 3: ASSINATURAS E BOTÃO GERAR -->
-                        <div class="p-6 md:p-8 bg-slate-50">                            
+                        <!-- BLOCO 4: ASSINATURAS E BOTÃO GERAR -->
+                        <div class="p-6 md:p-8 bg-white">                            
                             <div class="flex justify-between items-center mb-6">                                
-                                <h3 class="font-black text-amber-500 text-sm uppercase tracking-widest">3. Assinaturas</h3>                                
-                                <button onclick="salvarPadroes()" class="bg-white border border-slate-200 hover:border-cyan-300 hover:text-cyan-600 text-slate-500 font-bold py-2 px-4 rounded-xl shadow-sm transition-all text-[10px] uppercase tracking-widest">                                    
-                                    💾 Guardar Padrões                                
+                                <h3 class="font-black text-amber-500 text-sm uppercase tracking-widest">4. Assinaturas</h3>                                
+                                <button onclick="salvarPadroes()" class="bg-slate-100 border border-slate-200 hover:border-slate-300 hover:text-slate-800 text-slate-500 font-bold py-2 px-4 rounded-xl shadow-sm transition-all text-[10px] uppercase tracking-widest flex items-center gap-1">                                    
+                                    💾 <span class="hidden sm:inline">Guardar Padrões</span>                                
                                 </button>                            
                             </div>                                                        
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" placeholder="Mestre Fundador..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
-                                    <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" placeholder="Ex: Faixa Preta 4º Grau" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm"></div>                                
+                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" placeholder="Mestre Fundador..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
+                                    <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" placeholder="Ex: Faixa Preta 4º Grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" placeholder="Professor Direto..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
-                                    <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" placeholder="Ex: Faixa Preta 1º Grau" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm"></div>                                
+                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" placeholder="Professor Direto..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
+                                    <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" placeholder="Ex: Faixa Preta 1º Grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm"></div>                                
                                 </div>                            
                             </div>                                                        
                             
-                            <div>                                
-                                <button id="btn-gerar" onclick="gerarCertificado()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center">                                    
-                                    <span class="mr-2 text-xl">🎓</span> GERAR CERTIFICADO OFICIAL (PDF)                                
+                            <div class="pt-4 border-t border-slate-100">                                
+                                <button id="btn-gerar" onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-5 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center border border-slate-700">                                    
+                                    <span class="mr-2 text-xl">🎓</span> GERAR DIPLOMA OFICIAL (PDF)                                
                                 </button>                            
                             </div>                        
                         </div>                    
@@ -390,9 +448,9 @@
         let serialEquipeAtual = 427;         
         let qrcodeObj = null;
 
-        // 🔥 VARIÁVEIS GLOBAIS DA EQUIPE PARA O CERTIFICADO
         let nomeEquipeLogada = "Sua Equipe";
         let logoEquipeLogada = null;
+        let logoBase64Global = null; // Guardamos em memória para não gastar internet toda a vez
 
         // --- SISTEMA DE TOASTS ---        
         window.showToast = function(message, type = 'error') {            
@@ -404,19 +462,13 @@
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;                        
             container.appendChild(toast);                        
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);            
-            setTimeout(() => {                
-                toast.classList.add('translate-x-full', 'opacity-0');                
-                setTimeout(() => toast.remove(), 300);            
-            }, 4500);        
+            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
         onAuthStateChanged(auth, async (user) => {            
             if (user) {                
                 let isSuper = false;                
-                try {                    
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));                    
-                    if (superSnap.exists()) isSuper = true;                
-                } catch(e) {}
+                try { const superSnap = await getDoc(doc(db, "super_admins", user.uid)); if (superSnap.exists()) isSuper = true; } catch(e) {}
 
                 try {                    
                     if (isSuper) {                        
@@ -453,9 +505,7 @@
                 const docSnap = await getDoc(doc(db, "equipes", uid));                
                 if (docSnap.exists()) {                    
                     const dadosEquipe = docSnap.data();
-                    if (dadosEquipe.contador_certificados) {                        
-                        serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
-                    } 
+                    if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe";
                     logoEquipeLogada = dadosEquipe.url_logo || null;
@@ -465,22 +515,13 @@
                             const respLogo = await fetch(logoEquipeLogada);
                             if (respLogo.ok) {
                                 const blobLogo = await respLogo.blob();
-                                const base64Logo = await new Promise((resolve) => {
+                                logoBase64Global = await new Promise((resolve) => {
                                     const reader = new FileReader();
                                     reader.onloadend = () => resolve(reader.result);
                                     reader.readAsDataURL(blobLogo);
                                 });
-                                
-                                // Aplica a logo em Base64 nos 4 pontos do certificado (Evita falha no PDF)
-                                const elementosLogo = ['render-logo-esq', 'render-logo-dir', 'render-selo', 'render-watermark'];
-                                elementosLogo.forEach(id => {
-                                    const el = document.getElementById(id);
-                                    if(el) { el.src = base64Logo; el.classList.remove('hidden'); }
-                                });
                             }
-                        } catch(e) {
-                            console.log("Aviso: Falha ao carregar logo da equipe via CORS.");
-                        }
+                        } catch(e) {}
                     }
                 }            
             } catch (error) { console.log(error); }        
@@ -516,7 +557,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v2");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -527,6 +568,10 @@
                     document.getElementById('cfg-texto1').value = p.txt1 || "A EQUIPE RECONHECE QUE";
                     document.getElementById('cfg-texto2').value = p.txt2 || "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
                     document.getElementById('cfg-texto3').value = p.txt3 || "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
+                    
+                    if(p.tema) document.getElementById('cfg-tema').value = p.tema;
+                    if(p.fonte) document.getElementById('cfg-fonte').value = p.fonte;
+                    if(p.logos) document.getElementById('cfg-logos').value = p.logos;
                 } catch(e) {}            
             } else {
                 document.getElementById('cfg-texto1').value = "A EQUIPE RECONHECE QUE";
@@ -543,51 +588,107 @@
                 prof_g: document.getElementById('prof-grad').value,
                 txt1: document.getElementById('cfg-texto1').value,
                 txt2: document.getElementById('cfg-texto2').value,
-                txt3: document.getElementById('cfg-texto3').value
+                txt3: document.getElementById('cfg-texto3').value,
+                tema: document.getElementById('cfg-tema').value,
+                fonte: document.getElementById('cfg-fonte').value,
+                logos: document.getElementById('cfg-logos').value
             };            
-            localStorage.setItem("bjj_cert_padroes", JSON.stringify(padroes));            
-            showToast("Padrões de texto e assinatura guardados no navegador!", "success");        
+            localStorage.setItem("bjj_cert_padroes_v2", JSON.stringify(padroes));            
+            showToast("Design e Padrões guardados no navegador!", "success");        
         }
 
         // ==============================================
-        // 👁️ ATUALIZADOR DO PREVIEW (LIVE RENDER)
+        // 👁️ ATUALIZADOR DO PREVIEW (A MÁGICA VISUAL)
         // ==============================================
         window.atualizarPreviewLive = function() {
+            // 1. Textos
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome.toUpperCase() : "NOME DO ATLETA";
-            
             const faixa = document.getElementById('combo-faixa').value.toUpperCase();            
             const dataRaw = document.getElementById('entry-data').value;
-            const respNome = document.getElementById('resp-nome').value.trim() || "Responsável";            
-            const respGrad = document.getElementById('resp-grad').value.trim() || "Grau";            
-            const profNome = document.getElementById('prof-nome').value.trim() || "Professor";            
-            const profGrad = document.getElementById('prof-grad').value.trim() || "Grau";
-
-            const txt1 = document.getElementById('cfg-texto1').value.trim() || "A EQUIPE RECONHECE QUE";
-            const txt2 = document.getElementById('cfg-texto2').value.trim() || "APÓS TER CUMPRIDO OS REQUISITOS";
-            const txt3 = document.getElementById('cfg-texto3').value.trim() || "COM TODAS AS HONRAS";
-
-            let dataExtenso = "BRASIL, 01 DE JANEIRO DE 2026";
-            if(dataRaw) {
-                let dt;            
-                if(dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
-                const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
-                dataExtenso = `BRASIL, ${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
-            }
+            
+            let dt;            
+            if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
+            const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
+            const dataExtenso = `BRASIL, ${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
             document.getElementById('render-data').innerText = dataExtenso;
             document.getElementById('render-nome').innerText = nomeAtleta;
             document.getElementById('render-faixa').innerText = `RECEBEU A GRADUAÇÃO DE FAIXA ${faixa}`;
-            
-            document.getElementById('render-texto1').innerText = txt1.toUpperCase();
-            document.getElementById('render-texto2').innerText = txt2.toUpperCase();
-            document.getElementById('render-texto3').innerText = txt3.toUpperCase();
+            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "A EQUIPE RECONHECE QUE").toUpperCase();
+            document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
+            document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
+            document.getElementById('render-ass1-nome').innerText = document.getElementById('resp-nome').value || "Responsável";
+            document.getElementById('render-ass1-grad').innerText = (document.getElementById('resp-grad').value || "Grau").toUpperCase();
+            document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
+            document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            document.getElementById('render-ass1-nome').innerText = respNome;
-            document.getElementById('render-ass1-grad').innerText = respGrad.toUpperCase();
-            document.getElementById('render-ass2-nome').innerText = profNome;
-            document.getElementById('render-ass2-grad').innerText = profGrad.toUpperCase();
+            // 2. Aplicar Logos
+            const confLogos = document.getElementById('cfg-logos').value;
+            const imgEsq = document.getElementById('render-logo-esq');
+            const imgDir = document.getElementById('render-logo-dir');
+            const imgSelo = document.getElementById('render-selo');
+            const imgWater = document.getElementById('render-watermark');
+            
+            if (logoBase64Global) {
+                [imgEsq, imgDir, imgSelo, imgWater].forEach(el => el.src = logoBase64Global);
+                
+                imgSelo.classList.remove('hidden'); // Selo central sempre fica visível (a menos que seja limpo, ver abaixo)
+
+                if (confLogos === 'todas') {
+                    imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
+                    imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
+                    imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
+                } else if (confLogos === 'sem_fundo') {
+                    imgEsq.style.opacity = 1; imgEsq.classList.remove('hidden');
+                    imgDir.style.opacity = 1; imgDir.classList.remove('hidden');
+                    imgWater.style.opacity = 0; imgWater.classList.add('hidden');
+                } else if (confLogos === 'apenas_fundo') {
+                    imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
+                    imgDir.style.opacity = 0; imgDir.classList.add('hidden');
+                    imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
+                } else { // Limpo
+                    imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
+                    imgDir.style.opacity = 0; imgDir.classList.add('hidden');
+                    imgWater.style.opacity = 0; imgWater.classList.add('hidden');
+                    imgSelo.classList.add('hidden');
+                }
+            }
+
+            // 3. Aplicar Estilos (Fontes e Cores)
+            const fonteEscohida = document.getElementById('cfg-fonte').value;
+            document.getElementById('render-titulo').style.fontFamily = fonteEscohida;
+            document.getElementById('render-nome').style.fontFamily = fonteEscohida;
+            document.getElementById('render-ass1-nome').style.fontFamily = fonteEscohida;
+            document.getElementById('render-ass2-nome').style.fontFamily = fonteEscohida;
+
+            const tema = document.getElementById('cfg-tema').value;
+            const elBordaMetal = document.getElementById('render-border-metal');
+            const elBordaInner = document.getElementById('render-border-inner');
+            const elNome = document.getElementById('render-nome');
+            const elFaixa = document.getElementById('render-faixa');
+            const elLinhas = document.querySelectorAll('.render-linhas-metal');
+
+            let corDestaque = "#D4AF37"; // Dourado padrão
+            let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
+
+            if (tema === 'prata') {
+                corDestaque = "#A1A1AA";
+                gradMetalico = "linear-gradient(135deg, #71717A, #E4E4E7, #A1A1AA, #F4F4F5, #71717A)";
+            } else if (tema === 'bronze') {
+                corDestaque = "#CD7F32";
+                gradMetalico = "linear-gradient(135deg, #A0522D, #CD7F32, #8B4513, #D2B48C, #A0522D)";
+            } else if (tema === 'preto') {
+                corDestaque = "#0F172A";
+                gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
+            }
+
+            elBordaMetal.style.background = gradMetalico;
+            elBordaInner.style.borderColor = corDestaque;
+            elNome.style.borderBottomColor = corDestaque;
+            elFaixa.style.color = corDestaque;
+            elLinhas.forEach(l => l.style.background = `linear-gradient(to right, transparent, ${corDestaque}, transparent)`);
         }
 
         // ==============================================
@@ -598,14 +699,15 @@
             const aluno = alunosCache.find(a => a.id === alunoId);                        
             if(!aluno) return showToast("Selecione um Atleta na lista primeiro!", "error");
 
+            const btn = document.getElementById('btn-gerar');            
+            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A PREPARAR DIPLOMA...";            
+            btn.classList.replace('from-slate-800', 'from-slate-400');            
+            btn.disabled = true;
+
             const faixa = document.getElementById('combo-faixa').value;            
             const dataRaw = document.getElementById('entry-data').value;            
             const respNome = document.getElementById('resp-nome').value.trim();            
             const profNome = document.getElementById('prof-nome').value.trim();            
-
-            if(!dataRaw || !respNome || !profNome) {                
-                return showToast("A data e os nomes das assinaturas são obrigatórios!", "error");            
-            }
 
             let dt;            
             if(dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
@@ -627,30 +729,18 @@
                     numero_serie: numeroSerieStr, hash_validador: idHash, data_cerimonia: dataRaw,                    
                     prof_responsavel: respNome, prof_direto: profNome, data_emissao: new Date().toISOString()                
                 });            
-            } catch (e) { showToast("Erro ao registrar certificado na nuvem", "error"); }
+            } catch (e) {}
 
-            // Certifique-se de que o QR Code final tem a URL e o texto de validade certos
             document.getElementById('render-serial').innerText = `VAL: ${numeroSerieStr}`;                        
             qrcodeObj.clear();            
             qrcodeObj.makeCode(urlValidador);
 
-            const btn = document.getElementById('btn-gerar');            
-            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A GERAR DIPLOMA OFICIAL...";            
-            btn.classList.replace('bg-emerald-500', 'bg-slate-400');            
-            btn.disabled = true;
-
             setTimeout(() => {
-                // Clonamos o renderizador para um wrapper invisível temporário para gerar o PDF 
-                // garantindo que ele tenha exatamente 1123x794 pixels sem ser afetado pela tela do PC
                 const certificadoReal = document.getElementById('certificado-render');
                 const wrapperParaPDF = document.getElementById('wrapper-render');
                 
-                // Limpa o lixo antigo
                 wrapperParaPDF.innerHTML = '';
-                
-                // Clona a div inteira
                 const clone = certificadoReal.cloneNode(true);
-                // Remove qualquer transformação do clone
                 clone.style.transform = 'none';
                 wrapperParaPDF.appendChild(clone);
 
@@ -663,8 +753,8 @@
                 };
 
                 html2pdf().set(opt).from(clone).save().then(() => {                    
-                    btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> GERAR CERTIFICADO OFICIAL (PDF)";                    
-                    btn.classList.replace('bg-slate-400', 'bg-emerald-500');                    
+                    btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> GERAR DIPLOMA OFICIAL (PDF)";                    
+                    btn.classList.replace('from-slate-400', 'from-slate-800');                    
                     btn.disabled = false;                                        
                     document.getElementById('combo-aluno').value = "";                    
                     window.atualizarPreviewLive();                
