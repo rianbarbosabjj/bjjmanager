@@ -18,7 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
-    <!-- 🔥 CORREÇÃO: FONTES PREMIUM CARREGADAS DIRETAMENTE E SEM CONFLITOS -->
+    <!-- FONTES PREMIUM ATUALIZADAS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -141,27 +141,19 @@
         }
         .cert-header-side { width: 150px; display: flex; justify-content: center; }
         .cert-logo { max-width: 140px; max-height: 125px; object-fit: contain; }
-        .cert-titulo-wrapper { 
-            flex: 1; 
-            text-align: center; 
-            overflow: hidden; /* Evita quebra */
-        }
+        .cert-titulo-wrapper { flex: 1; text-align: center; overflow: visible; }
         
-        /* 🔥 TÍTULO BLINDADO CONTRA QUEBRA DE LINHA */
+        /* 🔥 TÍTULO BLINDADO (Sem degradê, preto clássico e sem quebra de linha) */
         .cert-titulo { 
             font-family: 'Cinzel', serif;
             font-size: 48px;
             font-weight: 900;
-            background: linear-gradient(135deg, #A67C00 0%, #F9E281 50%, #A67C00 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: #1E293B; 
             letter-spacing: 5px;
             margin: 0;
             text-transform: uppercase;
             transition: all 0.3s ease;
-            white-space: nowrap; /* Não quebra linha */
-            max-width: 100%;
+            white-space: nowrap; 
         }
 
         .cert-text-wrapper {
@@ -189,7 +181,7 @@
             font-style: italic;
         }
         
-        /* 🔥 NOME DO ATLETA BLINDADO CONTRA QUEBRA DE LINHA */
+        /* 🔥 NOME DO ATLETA BLINDADO (Sem quebra de linha) */
         .cert-nome-atleta { 
             font-family: 'Great Vibes', cursive;
             font-size: 85px; 
@@ -202,10 +194,8 @@
             line-height: 1.1;
             width: 85%;
             text-align: center;
-            transition: all 0.3s ease;
-            white-space: nowrap; /* Não quebra linha */
-            overflow: hidden;
-            text-overflow: ellipsis; /* Caso seja um nome gigantesco, ele pontilha e não quebra o layout */
+            transition: border-color 0.3s;
+            white-space: nowrap;
         }
         
         .cert-faixa-texto { 
@@ -217,9 +207,7 @@
             letter-spacing: 4px;
             color: #1E293B; 
         }
-        .cert-faixa-cor-destaque {
-            transition: color 0.3s; 
-        }
+        .cert-faixa-cor-destaque { transition: color 0.3s; }
 
         .cert-footer { 
             position: absolute;
@@ -295,7 +283,7 @@
             border-radius: 1rem; padding: 25px 0; height: 420px; align-items: flex-start;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
-        .preview-scaler { transform: scale(0.42); transform-origin: top center; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .preview-scaler { transform: scale(0.42); transform-origin: top center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         @media (min-width: 768px) { .preview-wrapper { height: 450px; } .preview-scaler { transform: scale(0.48); } }
         @media (min-width: 1024px) { .preview-wrapper { height: 520px; } .preview-scaler { transform: scale(0.58); } }
     </style>
@@ -366,7 +354,8 @@
 
                                                 <div class="cert-qr-wrapper">
                                                     <div id="cert-qr-container" class="cert-qr-container"></div>
-                                                    <div id="render-serial" class="cert-serial">VAL: 000000</div>
+                                                    <!-- 🔥 Troca de VAL: para Validador: -->
+                                                    <div id="render-serial" class="cert-serial">Validador: 000000</div>
                                                 </div>
 
                                             </div>
@@ -453,22 +442,20 @@
                                 </div>
                             </div>
 
-                            <!-- UPLOADS -->
                             <div class="border-t border-slate-100 pt-5">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo da Equipe/Lateral</label>
-                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
+                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo/Brasão (ficará no rodapé)</label>
-                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
+                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 outline-none">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- POSICIONAMENTO -->
                             <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento dos Elementos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -595,6 +582,19 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
+        // 🔥 FUNÇÃO INTELIGENTE DE ENCOLHIMENTO DE TEXTO (SHRINK-TO-FIT)
+        function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima) {
+            if (!elemento) return;
+            elemento.style.fontSize = tamanhoMaximo + 'px';
+            let tamanhoAtual = tamanhoMaximo;
+            
+            // Loop de segurança para ir diminuindo a fonte caso o texto ultrapasse a largura máxima
+            while (elemento.scrollWidth > larguraMaxima && tamanhoAtual > 15) {
+                tamanhoAtual--;
+                elemento.style.fontSize = tamanhoAtual + 'px';
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {            
             if (user) {                
                 let isSuper = false;                
@@ -686,7 +686,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v8");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v9");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -727,7 +727,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v8", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v9", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -767,7 +767,7 @@
             return null;
         }
 
-        // CORES DINÂMICAS PARA A FAIXA
+        // CORES DINÂMICAS PARA AS FAIXAS
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
             if (f.includes('preta')) return '#0F172A';
@@ -778,8 +778,8 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155'; 
-            return '#B38728';
+            if (f.includes('branca')) return '#334155'; // Chumbo escuro para a faixa branca
+            return '#B38728'; 
         }
 
         window.atualizarPreviewLive = function() {
@@ -795,9 +795,12 @@
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
             document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
-            document.getElementById('render-nome').innerText = nomeAtleta;
             
-            // Aplica cor SÓ na faixa
+            // Textos base
+            const elNome = document.getElementById('render-nome');
+            elNome.innerText = nomeAtleta;
+            
+            // Aplica cor só na faixa
             const corDaFaixa = getCorDaFaixaTexto(faixa);
             document.getElementById('render-faixa-cor').innerText = faixa;
             document.getElementById('render-faixa-cor').style.color = corDaFaixa;
@@ -834,7 +837,7 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado Puro
+            // Selo Customizado
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -843,42 +846,51 @@
                 elSelo.classList.add('hidden');
             }
 
-            // Fontes
+            // 🔥 FONTES & SHRINK-TO-FIT (Impede quebra de linha do Titulo e Nome)
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             
             const elTitulo = document.getElementById('render-titulo');
-            const elNome = document.getElementById('render-nome');
-            
             elTitulo.style.fontFamily = fonteTitulo;
+            let maxFontSizeTitulo = 48;
+            
             if (fonteTitulo.includes('cursive')) {
                 elTitulo.style.textTransform = 'none'; 
-                elTitulo.style.fontSize = '80px';      
                 elTitulo.style.letterSpacing = '1px';
+                maxFontSizeTitulo = 80;
             } else {
                 elTitulo.style.textTransform = 'uppercase';
-                elTitulo.style.fontSize = '48px';
                 elTitulo.style.letterSpacing = '5px';
+                maxFontSizeTitulo = 48;
             }
 
             elNome.style.fontFamily = fonteNome;
+            let maxFontSizeNome = 56;
+            
             if (fonteNome.includes('cursive')) {
                 elNome.style.textTransform = 'capitalize'; 
-                elNome.style.fontSize = '85px';      
                 elNome.style.letterSpacing = '1px';
+                maxFontSizeNome = 85;
             } else {
                 elNome.style.textTransform = 'uppercase';
-                elNome.style.fontSize = '56px';
                 elNome.style.letterSpacing = '4px';
+                maxFontSizeNome = 56;
             }
 
+            // Aplica os textos corporais
             const elsTextosCorpo = [
                 document.getElementById('render-texto1'),
                 document.getElementById('render-texto2'),
                 document.getElementById('render-texto3')
             ];
             elsTextosCorpo.forEach(el => { if(el) el.style.fontFamily = fonteTexto; });
+
+            // Executa a função de Shrink para o Título e o Nome (Garante que cabem na tela perfeitamente)
+            setTimeout(() => {
+                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700); // 700px é a largura do meio (entre as duas logos)
+                ajustarTamanhoTexto(elNome, maxFontSizeNome, 900); // 900px é a largura da folha menos as margens laterais
+            }, 10);
 
             // Tema
             const tema = document.getElementById('cfg-tema').value;
@@ -933,7 +945,7 @@
                 });            
             } catch (e) {}
 
-            document.getElementById('render-serial').innerText = `VAL: ${numeroSerieStr}`;                        
+            document.getElementById('render-serial').innerText = `Validador: ${numeroSerieStr}`;                        
             qrcodeObj.clear();            
             qrcodeObj.makeCode(urlValidador);
 
