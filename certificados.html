@@ -18,10 +18,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
-    <!-- 🔥 MEGA PACOTE DE FONTES PREMIUM (Google Fonts) -->
+    <!-- FONTES PREMIUM ATUALIZADAS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Dancing+Script:wght@400;600;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;600;700&family=Parisienne&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -150,7 +150,6 @@
             color: #1E293B; 
             letter-spacing: 5px;
             margin: 0;
-            text-transform: uppercase;
             transition: all 0.3s ease;
             white-space: nowrap; 
         }
@@ -180,7 +179,7 @@
             font-style: italic;
         }
         
-        /* 🔥 CÁPSULA DA LINHA DO NOME (Tamanho Fixo e Imóvel) */
+        /* 🔥 CÁPSULA DA LINHA DO NOME (Tamanho Fixo e Visível) */
         .cert-nome-container {
             width: 85%;
             margin: 15px auto 10px auto;
@@ -191,32 +190,41 @@
             justify-content: center;
             align-items: center;
             transition: border-color 0.3s;
+            overflow: visible;
         }
 
-        /* 🔥 TEXTO DO NOME DO ATLETA (Encolhe dentro da caixa sem mexer na linha) */
+        /* 🔥 NOME DO ATLETA (Impede cortes e adapta a fonte) */
         .cert-nome-atleta { 
             font-family: 'Great Vibes', cursive;
             font-size: 85px; 
             font-weight: 400;
-            text-transform: capitalize;
             color: #1E293B;
             line-height: 1.1;
             white-space: nowrap; 
-            overflow: hidden;
+            overflow: visible;
             transition: all 0.3s ease;
             margin: 0;
         }
         
-        .cert-faixa-texto { 
+        /* 🔥 BLOCO DA FAIXA COM LINHA */
+        .cert-bloco-faixa {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
             font-size: 28px; 
             font-weight: 900;
             text-transform: uppercase;
-            margin: 15px 0 10px 0;
             letter-spacing: 4px;
             color: #1E293B; 
+            border-bottom: 3px solid #D4AF37; /* Linha debaixo da cor */
+            padding-bottom: 2px;
+            display: inline-block;
+            transition: all 0.3s; 
         }
-        .cert-faixa-cor-destaque { transition: color 0.3s; }
 
         .cert-footer { 
             position: absolute;
@@ -346,13 +354,19 @@
                                                     </div>
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
-                                                    <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span></h3>
+                                                    
+                                                    <!-- 🔥 FAIXA E PREFIXO SEPARADOS PARA CONTROLAR A FONTE -->
+                                                    <div class="cert-bloco-faixa">
+                                                        <p id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin-top: 0; margin-bottom: 5px;">RECEBEU A GRADUAÇÃO DE FAIXA</p>
+                                                        <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
+                                                    </div>
+
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
                                                 </div>
 
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha"></div>
+                                                        <div class="cert-linha render-linhas-metal"></div>
                                                         <div id="render-ass1-nome" class="cert-ass-nome">BOLÃO</div>
                                                         <div id="render-ass1-grad" class="cert-ass-grad">PRETA 4º GRAU</div>
                                                     </div>
@@ -360,7 +374,7 @@
                                                     <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
 
                                                     <div class="cert-assinatura-box">
-                                                        <div class="cert-linha"></div>
+                                                        <div class="cert-linha render-linhas-metal"></div>
                                                         <div id="render-ass2-nome" class="cert-ass-nome">SAMUEL</div>
                                                         <div id="render-ass2-grad" class="cert-ass-grad">PRETA</div>
                                                     </div>
@@ -368,7 +382,8 @@
 
                                                 <div class="cert-qr-wrapper">
                                                     <div id="cert-qr-container" class="cert-qr-container"></div>
-                                                    <div id="render-serial" class="cert-serial">Validador: 000000</div>
+                                                    <!-- 🔥 VALIDADOR CORRIGIDO -->
+                                                    <div id="render-serial" class="cert-serial">VALIDADOR: 000000</div>
                                                 </div>
 
                                             </div>
@@ -429,38 +444,30 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
                                     <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                        <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita)</option>
                                         <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
-                                        <option value="'Alex Brush', cursive">Alex Brush (Manuscrita Fluida)</option>
-                                        <option value="'Oswald', sans-serif">Oswald (Moderna e Forte)</option>
-                                        <option value="'Lora', serif">Lora (Serifada Suave)</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
                                     <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Great Vibes', cursive">Great Vibes (Clássica)</option>
-                                        <option value="'Pinyon Script', cursive">Pinyon (Fina e Delicada)</option>
-                                        <option value="'Alex Brush', cursive">Alex Brush (Moderna e Fluida)</option>
-                                        <option value="'Parisienne', cursive">Parisienne (Romântica)</option>
-                                        <option value="'Tangerine', cursive">Tangerine (Elegante e Estreita)</option>
-                                        <option value="'Dancing Script', cursive">Dancing Script (Descontraída)</option>
-                                        <option value="'Playfair Display', serif">Playfair (Serifada Elegante)</option>
+                                        <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                        <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
+                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
                                         <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
-                                        <option value="'Oswald', sans-serif">Oswald (Moderna e Forte)</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
                                     <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cormorant Garamond', serif">Cormorant (Clássica Livro)</option>
+                                        <option value="'Cormorant Garamond', serif">Cormorant (Clássica)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna e Limpa)</option>
-                                        <option value="'Old Standard TT', serif">Old Standard (Jornal Antigo)</option>
-                                        <option value="'Lora', serif">Lora (Serifada Suave)</option>
-                                        <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
+                                        <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
                                     </select>
                                 </div>
                             </div>
@@ -710,7 +717,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v9");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v10");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -751,7 +758,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v9", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v10", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -802,8 +809,14 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155'; // Chumbo escuro para a faixa branca
+            if (f.includes('branca')) return '#334155'; 
             return '#B38728'; 
+        }
+
+        // 🔥 FORMATADOR DE NOMES (Transforma JÕAO SILVA em João Silva para Fontes Cursivas)
+        function formatarNome(nome, isCursive) {
+            if (!isCursive) return nome.toUpperCase();
+            return nome.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
         }
 
         window.atualizarPreviewLive = function() {
@@ -820,14 +833,12 @@
 
             document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
             
-            // Textos base
-            const elNome = document.getElementById('render-nome');
-            elNome.innerText = nomeAtleta;
-            
-            // Aplica cor só na faixa
+            // Aplica cor SÓ na faixa, e a borda acompanha
             const corDaFaixa = getCorDaFaixaTexto(faixa);
-            document.getElementById('render-faixa-cor').innerText = faixa;
-            document.getElementById('render-faixa-cor').style.color = corDaFaixa;
+            const elFaixaCor = document.getElementById('render-faixa-cor');
+            elFaixaCor.innerText = faixa;
+            elFaixaCor.style.color = corDaFaixa;
+            elFaixaCor.style.borderColor = corDaFaixa;
 
             document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "").toUpperCase();
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
@@ -861,7 +872,7 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado
+            // Selo Customizado Puro
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -870,7 +881,7 @@
                 elSelo.classList.add('hidden');
             }
 
-            // 🔥 FONTES & SHRINK-TO-FIT (Impede quebra de linha do Titulo e Nome)
+            // 🔥 FONTES
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
@@ -889,36 +900,35 @@
                 maxFontSizeTitulo = 48;
             }
 
+            const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
             let maxFontSizeNome = 85;
             
-            // Tratar fontes que precisam ser GIGANTES
-            if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
-                maxFontSizeNome = 100;
-            } else if (fonteNome.includes('cursive')) {
-                maxFontSizeNome = 85;
-            } else {
-                maxFontSizeNome = 56;
-            }
-
-            if (fonteNome.includes('cursive')) {
-                elNome.style.textTransform = 'capitalize'; 
+            const isNomeCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon');
+            
+            if (isNomeCursive) {
+                elNome.style.textTransform = 'none'; // Desliga a capitalização automática do CSS
                 elNome.style.letterSpacing = '1px';
+                maxFontSizeNome = 100; // Letra cursiva precisa ser gigante
             } else {
                 elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
+                maxFontSizeNome = 56;
             }
+            
+            // Aplica a conversão de maiúsculas/minúsculas correta
+            elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
 
-            // Aplica os textos corporais
+            // Aplica a fonte nos textos corporais e no prefixo da faixa
             const elsTextosCorpo = [
                 document.getElementById('render-texto1'),
                 document.getElementById('render-texto2'),
-                document.getElementById('render-texto3')
+                document.getElementById('render-texto3'),
+                document.getElementById('render-faixa-prefixo')
             ];
             elsTextosCorpo.forEach(el => { if(el) el.style.fontFamily = fonteTexto; });
 
             // 🔥 A MÁGICA: Ajustar tamanhos para NUNCA quebrar a linha
-            // Atualiza a borda e cor
             const tema = document.getElementById('cfg-tema').value;
             const elNomeContainer = document.getElementById('render-nome-container');
             const elBordaMetal = document.getElementById('render-border-metal');
@@ -939,10 +949,10 @@
             elBordaMetal.style.background = gradMetalico;
             elNomeContainer.style.borderBottomColor = corDestaque;
 
-            // Executa a função de Shrink para o Título e o Nome
+            // Executa o encolhimento de segurança
             setTimeout(() => {
-                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700); // 700px é o meio entre as logos
-                ajustarTamanhoTexto(elNome, maxFontSizeNome, 800); // 800px é o limite seguro interno
+                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700); 
+                ajustarTamanhoTexto(elNome, maxFontSizeNome, 800); 
             }, 10);
         }
 
@@ -983,7 +993,7 @@
                 });            
             } catch (e) {}
 
-            document.getElementById('render-serial').innerText = `Validador: ${numeroSerieStr}`;                        
+            document.getElementById('render-serial').innerText = `VALIDADOR: ${numeroSerieStr}`;                        
             qrcodeObj.clear();            
             qrcodeObj.makeCode(urlValidador);
 
