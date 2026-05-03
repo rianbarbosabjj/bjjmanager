@@ -108,14 +108,8 @@
             position: absolute;
             background: #D4AF37;
         }
-        .cert-corner::before {
-            width: 2px;
-            height: 100%;
-        }
-        .cert-corner::after {
-            width: 100%;
-            height: 2px;
-        }
+        .cert-corner::before { width: 2px; height: 100%; }
+        .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; }
         .corner-tl::before { left: 0; top: 0; }
         .corner-tl::after { left: 0; top: 0; }
@@ -219,8 +213,8 @@
             font-weight: 600;
             text-align: center;
             margin-top: 20px;
-            max-width: 800px;
-            line-height: 1.5;
+            max-width: 900px; /* Alargado para o texto oficial da GFTeam caber elegante */
+            line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
             font-style: italic;
@@ -296,34 +290,12 @@
             letter-spacing: 1px;
         }
         
-        /* SELO DE CERA PREMIUM */
-        .cert-wax-seal {
-            width: 110px;
-            height: 110px;
-            background: radial-gradient(circle at 35% 35%, #C62828, #5E0000);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255,255,255,0.3);
-            border: 2px solid #F4C430;
-            margin-bottom: -10px;
-            position: relative;
-        }
-        
-        .cert-wax-seal::after {
-            content: '⚜️';
-            position: absolute;
-            font-size: 45px;
-            opacity: 0.15;
-            pointer-events: none;
-        }
-        
-        .cert-wax-seal img {
-            width: 65%;
-            height: 65%;
+        /* SELO  */
+        .cert-selo-img {
+            width: 140px;
+            height: 140px;
             object-fit: contain;
-            filter: brightness(0) invert(1);
+            margin-bottom: -10px;
         }
 
         /* QR Code */
@@ -395,7 +367,7 @@
                 <div class="max-w-6xl mx-auto">                                        
                     <div class="mb-6 md:mb-8">                        
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Emissão de Certificados</h2>                        
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium com design profissional</p>                    
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium com design profissional e identidade oficial.</p>                    
                     </div>
 
                     <!-- ÁREA DE PRÉ-VISUALIZAÇÃO -->
@@ -439,29 +411,27 @@
 
                                                 <!-- TEXTOS CENTRALIZADOS -->
                                                 <div class="cert-text-wrapper">
-                                                    <p id="render-texto1" class="cert-texto-dinamico">A EQUIPE RECONHECE QUE</p>
+                                                    <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
                                                     <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
-                                                    <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA BRANCA</h3>
+                                                    <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA AMARELA</h3>
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
                                                 </div>
 
-                                                <!-- FOOTER COM SELO DE CERA -->
+                                                <!-- FOOTER COM SELO E ASSINATURAS -->
                                                 <div class="cert-footer">
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
-                                                        <div id="render-ass1-nome" class="cert-ass-nome">Responsável</div>
-                                                        <div id="render-ass1-grad" class="cert-ass-grad">Grau</div>
+                                                        <div id="render-ass1-nome" class="cert-ass-nome">BOLÃO</div>
+                                                        <div id="render-ass1-grad" class="cert-ass-grad">PRETA 4º GRAU</div>
                                                     </div>
 
-                                                    <div class="cert-wax-seal">
-                                                        <img id="render-selo-wax" src="" alt="Selo Oficial">
-                                                    </div>
+                                                    <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
 
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
-                                                        <div id="render-ass2-nome" class="cert-ass-nome">Professor</div>
-                                                        <div id="render-ass2-grad" class="cert-ass-grad">Grau</div>
+                                                        <div id="render-ass2-nome" class="cert-ass-nome">SAMUEL</div>
+                                                        <div id="render-ass2-grad" class="cert-ass-grad">PRETA</div>
                                                     </div>
                                                 </div>
 
@@ -474,6 +444,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- FIM DO CERTIFICADO -->
 
                             </div>
                         </div>
@@ -497,7 +468,7 @@
                                     <select id="combo-faixa" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
                                         <option value="Branca">Branca</option>                                        
                                         <option value="Cinza e Branca">Cinza e Branca</option><option value="Cinza">Cinza</option><option value="Cinza e Preta">Cinza e Preta</option>                                        
-                                        <option value="Amarela e Branca">Amarela e Branca</option><option value="Amarela">Amarela</option><option value="Amarela e Preta">Amarela e Preta</option>                                        
+                                        <option value="Amarela e Branca">Amarela e Branca</option><option value="Amarela" selected>Amarela</option><option value="Amarela e Preta">Amarela e Preta</option>                                        
                                         <option value="Laranja e Branca">Laranja e Branca</option><option value="Laranja">Laranja</option><option value="Laranja e Preta">Laranja e Preta</option>                                        
                                         <option value="Verde e Branca">Verde e Branca</option><option value="Verde">Verde</option><option value="Verde e Preta">Verde e Preta</option>                                        
                                         <option value="Azul">Azul</option><option value="Roxa">Roxa</option><option value="Marrom">Marrom</option><option value="Preta">Preta</option>                                    
@@ -551,7 +522,7 @@
                                         <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo/Brasão (ficará no selo de cera)</label>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo/Brasão (ficará no rodapé)</label>
                                         <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
                                     </div>
                                 </div>
@@ -564,17 +535,17 @@
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
                                         <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="equipe">Logo da Equipe</option>
                                             <option value="extra">Logo Personalizada</option>
+                                            <option value="equipe">Logo da Plataforma</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="nenhuma">Nenhuma</option>
-                                            <option value="equipe">Logo da Equipe</option>
                                             <option value="extra">Logo Personalizada</option>
+                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
                                 </div>
@@ -587,15 +558,16 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
-                                    <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" placeholder="Ex: A EQUIPE RECONHECE QUE" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <!-- 🔥 Texto Padrão GFTeam Carregado -->
+                                    <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
-                                    <input type="text" id="cfg-texto2" oninput="atualizarPreviewLive()" placeholder="Ex: APÓS TER CUMPRIDO TODOS OS REQUISITOS..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <input type="text" id="cfg-texto2" oninput="atualizarPreviewLive()" value="APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Inferior (Honras)</label>
-                                    <input type="text" id="cfg-texto3" oninput="atualizarPreviewLive()" placeholder="Ex: COM TODOS OS DIREITOS, HONRAS..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <input type="text" id="cfg-texto3" oninput="atualizarPreviewLive()" value="COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO" class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
                                 </div>
                             </div>
                         </div>
@@ -612,13 +584,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" placeholder="Mestre Fundador..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
-                                    <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" placeholder="Ex: Faixa Preta 4º Grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm"></div>                                
+                                    <!-- 🔥 Assinaturas GFTeam Carregadas -->
+                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="BOLÃO" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
+                                    <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="PRETA 4º GRAU" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" placeholder="Professor Direto..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
-                                    <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" placeholder="Ex: Faixa Preta 1º Grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm"></div>                                
+                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="SAMUEL" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
+                                    <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="PRETA" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
                             </div>                                                        
                             
@@ -767,17 +740,17 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v4");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v5");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
-                    document.getElementById('resp-nome').value = p.resp_n || "";                    
-                    document.getElementById('resp-grad').value = p.resp_g || "";                    
-                    document.getElementById('prof-nome').value = p.prof_n || "";                    
-                    document.getElementById('prof-grad').value = p.prof_g || "";
-                    document.getElementById('cfg-texto1').value = p.txt1 || "A EQUIPE RECONHECE QUE";
-                    document.getElementById('cfg-texto2').value = p.txt2 || "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
-                    document.getElementById('cfg-texto3').value = p.txt3 || "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
+                    if(p.resp_n) document.getElementById('resp-nome').value = p.resp_n;                    
+                    if(p.resp_g) document.getElementById('resp-grad').value = p.resp_g;                    
+                    if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;                    
+                    if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
+                    if(p.txt1) document.getElementById('cfg-texto1').value = p.txt1;
+                    if(p.txt2) document.getElementById('cfg-texto2').value = p.txt2;
+                    if(p.txt3) document.getElementById('cfg-texto3').value = p.txt3;
                     
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
@@ -785,11 +758,7 @@
                     if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
                 } catch(e) {}            
-            } else {
-                document.getElementById('cfg-texto1').value = "A EQUIPE RECONHECE QUE";
-                document.getElementById('cfg-texto2').value = "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
-                document.getElementById('cfg-texto3').value = "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
-            }       
+            }     
         }
 
         window.salvarPadroes = function() {            
@@ -806,7 +775,7 @@
                 posEsq: document.getElementById('pos-esq').value,
                 posDir: document.getElementById('pos-dir').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v4", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v5", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -846,6 +815,7 @@
             return null;
         }
 
+        // 🔥 FUNÇÃO INTELIGENTE PARA A COR DA FAIXA
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
             if (f.includes('preta')) return '#0F172A';
@@ -856,8 +826,8 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155';
-            return '#B38728';
+            if (f.includes('branca')) return '#334155'; // Chumbo elegante em fundo branco
+            return '#B38728'; // Padrão dourado
         }
 
         window.atualizarPreviewLive = function() {
@@ -896,13 +866,24 @@
             elDir.src = srcDir || '';
             elDir.style.display = (srcDir && valDir !== 'nenhuma') ? 'block' : 'none';
 
-            // Selo de cera
-            const elSelo = document.getElementById('render-selo-wax');
+            // Marca D'água sempre usa a logo central
+            const imgWater = document.getElementById('render-watermark');
+            const confLogos = document.getElementById('cfg-logos').value;
+            imgWater.src = customLogoBase64 || logoBase64Global || '';
+            if ((customLogoBase64 || logoBase64Global) && confLogos === 'todas') {
+                imgWater.classList.remove('hidden');
+                imgWater.style.opacity = 0.04;
+            } else {
+                imgWater.style.opacity = 0;
+            }
+
+            // Selo customizado
+            const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
-                elSelo.style.display = 'block';
+                elSelo.classList.remove('hidden');
             } else {
-                elSelo.style.display = 'none';
+                elSelo.classList.add('hidden');
             }
 
             // Fontes
@@ -910,7 +891,17 @@
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
 
-            // Tema
+            if (fonteTitulo.includes('cursive')) {
+                elTitulo.style.textTransform = 'none'; 
+                elTitulo.style.fontSize = '85px';      
+                elTitulo.style.letterSpacing = '1px';
+            } else {
+                elTitulo.style.textTransform = 'uppercase';
+                elTitulo.style.fontSize = '46px';
+                elTitulo.style.letterSpacing = '4px';
+            }
+
+            // Tema Metálico
             const tema = document.getElementById('cfg-tema').value;
             const elBordaMetal = document.getElementById('render-border-metal');
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
@@ -922,10 +913,9 @@
             } else if (tema === 'preto') {
                 gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
             }
-
             elBordaMetal.style.background = gradMetalico;
             
-            // Cor da faixa
+            // Cor da faixa dinâmica
             const elFaixa = document.getElementById('render-faixa');
             elFaixa.style.color = getCorDaFaixaTexto(faixa);
         }
@@ -1002,6 +992,7 @@
         }
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+
     </script>
 </body>
 </html>
