@@ -38,6 +38,8 @@
         #certificado-render {            
             width: 1123px; /* A4 Landscape */            
             height: 794px;            
+            --cor-destaque: #D4AF37;
+            --grad-metalico: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             background: #E8E5DF; 
             box-sizing: border-box;
             position: relative;
@@ -48,8 +50,11 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            opacity: 0.12;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(212,175,55,0.12), transparent 26%),
+                radial-gradient(circle at 86% 82%, rgba(120,83,35,0.10), transparent 30%),
+                linear-gradient(135deg, rgba(255,255,255,0.35), rgba(191,149,63,0.06));
+            opacity: 0.75;
             pointer-events: none;
             z-index: 0;
         }
@@ -65,6 +70,7 @@
         }
         
         .cert-border-metal {
+            background: var(--grad-metalico);
             padding: 3px;
             height: 100%;
             width: 100%;
@@ -75,10 +81,11 @@
         }
         
         .cert-border-inner {
-            background: #FCFAF2;
-            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            background-size: 200px;
-            border: 1px solid #D4AF37;
+            background:
+                radial-gradient(circle at center, rgba(212,175,55,0.055), transparent 38%),
+                repeating-linear-gradient(0deg, rgba(15,23,42,0.012) 0px, rgba(15,23,42,0.012) 1px, transparent 1px, transparent 5px),
+                linear-gradient(135deg, #fffdf6 0%, #FCFAF2 45%, #f7f1df 100%);
+            border: 1px solid var(--cor-destaque);
             height: 100%;
             width: 100%;
             position: relative;
@@ -87,13 +94,13 @@
             align-items: center;
             padding: 45px 55px;
             box-sizing: border-box;
-            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px #D4AF37;
+            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px var(--cor-destaque);
             z-index: 2;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: #D4AF37; }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -131,15 +138,16 @@
         .cert-header-container {
             position: absolute;
             top: 55px; 
-            left: 35px;
-            right: 35px;
+            left: 35px; 
+            right: 35px; 
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
         }
-        .cert-header-side { width: 130px; display: flex; justify-content: center; }
-        .cert-logo { max-width: 125px; max-height: 120px; object-fit: contain; }
+        .cert-header-side { width: 130px; display: flex; justify-content: center; } 
+        .cert-logo { max-width: 125px; max-height: 120px; object-fit: contain; } 
+        
         .cert-titulo-wrapper { flex: 1; text-align: center; }
         
         .cert-titulo { 
@@ -175,7 +183,7 @@
         .cert-nome-container {
             width: 85%;
             margin: 15px auto 10px auto;
-            border-bottom: 2px solid #D4AF37;
+            border-bottom: 2px solid var(--cor-destaque);
             padding-bottom: 5px;
             display: flex;
             justify-content: center;
@@ -193,9 +201,9 @@
         
         .cert-bloco-faixa {
             display: flex;
-            align-items: baseline;
+            align-items: baseline; 
             justify-content: center;
-            gap: 12px;
+            gap: 12px; 
             margin-top: 20px;
             margin-bottom: 10px;
         }
@@ -207,7 +215,7 @@
             text-transform: uppercase;
             letter-spacing: 3px;
             color: #1E293B; 
-            border-bottom: 3px solid #D4AF37; 
+            border-bottom: 3px solid var(--cor-destaque); 
             padding-bottom: 0px;
             display: inline-block;
             transition: all 0.3s ease; 
@@ -233,7 +241,7 @@
         .cert-linha { 
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #D4AF37, #D4AF37, #D4AF37, transparent);
+            background: linear-gradient(90deg, transparent, var(--cor-destaque), var(--cor-destaque), var(--cor-destaque), transparent);
             margin-bottom: 8px;
             transition: background 0.3s ease;
         }
@@ -326,7 +334,7 @@
                                                 
                                                 <img id="render-watermark" src="" class="cert-watermark">
 
-                                                <p id="render-data" class="cert-data">BRASIL, 01 DE JANEIRO DE 2026</p>
+                                                <p id="render-data" class="cert-data">CARREGANDO LOCAL E DATA...</p>
 
                                                 <div class="cert-header-container">
                                                     <div class="cert-header-side"><img id="render-logo-esq" src="" class="cert-logo"></div>
@@ -343,6 +351,7 @@
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
                                                     
+                                                    <!-- 🔥 FAIXA E PREFIXO NA MESMA LINHA -->
                                                     <div class="cert-bloco-faixa">
                                                         <span id="render-faixa-prefixo" class="cert-texto-dinamico" style="margin: 0;">RECEBEU A GRADUAÇÃO DE FAIXA</span>
                                                         <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span>
@@ -355,7 +364,7 @@
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
                                                         <div id="render-ass1-nome" class="cert-ass-nome">Professor Responsável</div>
-                                                        <div id="render-ass1-grad" class="cert-ass-grad">Preta Xº Grau</div>
+                                                        <div id="render-ass1-grad" class="cert-ass-grad">Grau</div>
                                                     </div>
 
                                                     <img id="render-selo-img" src="" class="cert-selo-img hidden" alt="Selo Oficial">
@@ -363,7 +372,7 @@
                                                     <div class="cert-assinatura-box">
                                                         <div class="cert-linha"></div>
                                                         <div id="render-ass2-nome" class="cert-ass-nome">Professor</div>
-                                                        <div id="render-ass2-grad" class="cert-ass-grad">Preta Xº Grau</div>
+                                                        <div id="render-ass2-grad" class="cert-ass-grad">Grau</div>
                                                     </div>
                                                 </div>
 
@@ -487,7 +496,7 @@
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
                                         <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
                                             <option value="extra">Logo Personalizada</option>
-                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="equipe">Logo da Equipe</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
@@ -495,14 +504,14 @@
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
                                             <option value="nenhuma">Nenhuma</option>
-                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="equipe">Logo da Equipe</option>
                                             <option value="extra">Logo Personalizada</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fundo / Marca d'água</label>
                                         <select id="pos-water" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="equipe">Logo da Equipe</option>
                                             <option value="extra">Logo Personalizada</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
@@ -543,13 +552,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="BOLÃO" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
-                                    <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="PRETA 4º GRAU" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
+                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
+                                    <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="SAMUEL" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
-                                    <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="PRETA" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
+                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
+                                    <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
                             </div>                                                        
                             
@@ -592,6 +601,7 @@
         let qrcodeObj = null;
 
         let nomeEquipeLogada = "SUA EQUIPE";
+        let cidadeEquipeLogada = "RIO DE JANEIRO"; // 🔥 Cidade padrão ajustada para Rio de Janeiro
         let logoBase64Global = null; 
         let customLogoBase64 = null;
         let customSeloBase64 = null;
@@ -661,8 +671,20 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    // 🔥 Pega o nome oficial da equipe
+                    // 🔥 Pega o nome oficial da equipe e a cidade
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "SUA EQUIPE";
+                    
+                    if (dadosEquipe.cidade) {
+                        cidadeEquipeLogada = dadosEquipe.cidade;
+                    } else if (dadosEquipe.cidade_equipe) {
+                        cidadeEquipeLogada = dadosEquipe.cidade_equipe;
+                    } else if (dadosEquipe.municipio) {
+                        cidadeEquipeLogada = dadosEquipe.municipio;
+                    } else if (dadosEquipe.localidade) {
+                        cidadeEquipeLogada = dadosEquipe.localidade;
+                    } else {
+                        cidadeEquipeLogada = "RIO DE JANEIRO";
+                    }
 
                     const logoEquipeOficial = dadosEquipe.url_logo || null;
 
@@ -713,8 +735,7 @@
         }
 
         function carregarPadroes() {            
-            // 🔥 Versão 12 do cache para forçar a limpeza da frase antiga
-            const memoria = localStorage.getItem("bjj_cert_padroes_v12");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v13");            
             
             const textoPadraoDinamico = `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
 
@@ -726,7 +747,6 @@
                     if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;                    
                     if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
                     
-                    // Se houver texto guardado, usa ele. Se não, usa o dinâmico.
                     document.getElementById('cfg-texto1').value = p.txt1 ? p.txt1 : textoPadraoDinamico;
                     document.getElementById('cfg-texto2').value = p.txt2 ? p.txt2 : "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
                     document.getElementById('cfg-texto3').value = p.txt3 ? p.txt3 : "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
@@ -741,7 +761,6 @@
                     if(p.posWater) document.getElementById('pos-water').value = p.posWater;
                 } catch(e) {}            
             } else {
-                // Primeira vez a usar o sistema V12, aplica a frase dinâmica
                 document.getElementById('cfg-texto1').value = textoPadraoDinamico;
             }     
         }
@@ -763,7 +782,7 @@
                 posDir: document.getElementById('pos-dir').value,
                 posWater: document.getElementById('pos-water').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v12", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v13", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -855,16 +874,16 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
+            // 🔥 A CIDADE PUXADA DO CADASTRO É INSERIDA AQUI!
+            document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
             const corDaFaixa = getCorDaFaixaTexto(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
             elFaixaCor.style.color = corDaFaixa;
 
-            // 🔥 Garante que se o input 1 for apagado inteiramente, ele mostra a frase padrão da equipe para nunca ficar "undefined" ou vazio feio
             const textoInput1 = document.getElementById('cfg-texto1').value;
-            document.getElementById('render-texto1').innerText = (textoInput1 || `A ${nomeEquipeLogada} RECONHECE QUE`).toUpperCase();
+            document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
             
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
@@ -1015,7 +1034,7 @@
                 await addDoc(collection(db, "certificados"), {                    
                     equipe_id: uid, aluno_id: aluno.id, nome_aluno: aluno.nome.toUpperCase(), faixa: faixa.toUpperCase(),                    
                     numero_serie: numeroSerieStr, hash_validador: idHash, data_cerimonia: dataRaw,                    
-                    prof_responsavel: respNome, prof_direto: profNome, data_emissao: new Date().toISOString()                
+                    prof_responsavel: respNome, prof_direto: profNome, cidade_equipe: cidadeEquipeLogada, data_emissao: new Date().toISOString()                
                 });            
             } catch (e) {}
 
@@ -1041,7 +1060,7 @@
                 };
 
                 html2pdf().set(opt).from(clone).save().then(() => {                    
-                    btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> GERAR DIPLOMA OFICIAL (PDF)";                    
+                    btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> GERAR CERTIFICADO OFICIAL EM PDF";                    
                     btn.classList.replace('from-slate-400', 'from-slate-800');                    
                     btn.disabled = false;                                        
                     document.getElementById('combo-aluno').value = "";                    
