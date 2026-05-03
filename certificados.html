@@ -70,7 +70,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 60px;
+            padding: 25px 40px; /* Reduzido para expandir os limites */
             box-sizing: border-box;
             border-radius: 26px; 
             z-index: 1;
@@ -97,8 +97,8 @@
         /* 🔥 DATA NO CANTO SUPERIOR DIREITO (CLÁSSICO) */
         .cert-data { 
             position: absolute;
-            top: 30px;
-            right: 60px;
+            top: 25px; /* Empurrado para a margem */
+            right: 35px; /* Empurrado para a margem */
             font-family: 'Montserrat', sans-serif;
             font-size: 11px; 
             font-weight: 800; 
@@ -112,22 +112,22 @@
         /* 🔥 CABEÇALHO FLEXÍVEL (TÍTULO E LOGOS ALINHADOS) */
         .cert-header-container {
             position: absolute;
-            top: 55px;
-            left: 55px;
-            right: 55px;
+            top: 25px; /* Mais colado à margem de cima */
+            left: 30px; /* Mais colado à margem da esquerda */
+            right: 30px; /* Mais colado à margem da direita */
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
         }
         .cert-header-side {
-            width: 150px; /* Largura fixa para equilibrar o centro perfeito */
+            width: 160px; 
             display: flex;
             justify-content: center;
         }
         .cert-logo {
-            max-width: 140px;
-            max-height: 130px;
+            max-width: 150px;
+            max-height: 140px;
             object-fit: contain;
             transition: opacity 0.3s;
         }
@@ -137,7 +137,7 @@
         }
         .cert-titulo { 
             font-family: 'Playfair Display', serif;
-            font-size: 46px; 
+            font-size: 48px; /* Ligeiramente maior */
             font-weight: 900; 
             text-transform: uppercase; 
             letter-spacing: 4px; 
@@ -155,17 +155,17 @@
             justify-content: center;
             width: 100%;
             z-index: 10;
-            padding-top: 100px; /* Compensa a altura do cabeçalho */
-            padding-bottom: 50px; /* Espaço para as assinaturas */
+            padding-top: 80px; /* Reduzido para dar mais espaço */
+            padding-bottom: 60px; 
         }
 
         .cert-texto-dinamico { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 14px; 
+            font-size: 18px; /* 🔥 Aumentado de 14px para 18px */
             font-weight: 700; 
             text-align: center; 
             margin-top: 25px; 
-            max-width: 800px; 
+            max-width: 850px; 
             line-height: 1.6; 
             color: #334155; 
             letter-spacing: 1px;
@@ -173,7 +173,7 @@
         
         .cert-nome-atleta { 
             font-family: 'Playfair Display', serif;
-            font-size: 52px; 
+            font-size: 56px; /* 🔥 Aumentado de 52px para 56px */
             font-weight: 900; 
             text-transform: uppercase; 
             margin: 15px 0 5px 0; 
@@ -181,17 +181,16 @@
             border-bottom: 2px solid #D4AF37; 
             padding-bottom: 0px; 
             line-height: 1.1;
-            width: 80%; 
+            width: 85%; 
             text-align: center;
             transition: border-color 0.3s;
         }
         
         .cert-faixa-texto { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 24px; 
+            font-size: 28px; /* 🔥 Aumentado de 24px para 28px */
             font-weight: 900; 
             text-transform: uppercase; 
-            color: #B38728; 
             margin: 15px 0 10px 0; 
             letter-spacing: 3px; 
             transition: color 0.3s;
@@ -200,16 +199,16 @@
         /* Rodapé: Assinaturas e Selo */
         .cert-footer { 
             position: absolute; 
-            bottom: 45px; 
+            bottom: 35px; /* Desceu em direção à margem */
             width: 100%; 
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            padding: 0 90px; 
+            padding: 0 70px; /* Abriu mais para os lados */
             box-sizing: border-box; 
             z-index: 10;
         }
-        .cert-assinatura-box { text-align: center; width: 260px; }
+        .cert-assinatura-box { text-align: center; width: 280px; }
         
         .cert-linha { 
             width: 100%; 
@@ -225,7 +224,15 @@
         .cert-selo { width: 155px; height: 155px; object-fit: contain; transition: opacity 0.3s; margin-bottom: -5px;}
 
         /* QR Code Canto */
-        .cert-qr-wrapper { position: absolute; bottom: 40px; right: 50px; display: flex; flex-direction: column; align-items: center; z-index: 10;}
+        .cert-qr-wrapper { 
+            position: absolute; 
+            bottom: 25px; /* Empurrado para a margem */
+            right: 35px; /* Empurrado para a margem */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            z-index: 10;
+        }
         .cert-qr-container { padding: 4px; border: 1px solid #CBD5E1; background: #fff; border-radius: 4px;}
         .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: bold; margin-top: 5px; color: #94a3b8; letter-spacing: 1px;}
 
@@ -366,7 +373,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo, Tipografia e Imagens</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -394,6 +401,15 @@
                                         <option value="'Old Standard TT', serif">Old Standard (Diploma Antigo)</option>
                                         <option value="'Montserrat', sans-serif">Montserrat (Moderna e Limpa)</option>
                                         <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Disposição Predefinida</label>
+                                    <select id="cfg-logos" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="todas">Marcas Laterais + Fundo</option>
+                                        <option value="sem_fundo">Apenas Marcas Laterais</option>
+                                        <option value="apenas_fundo">Apenas Marca d'Água no Fundo</option>
+                                        <option value="limpo">Limpo (Sem Logos)</option>
                                     </select>
                                 </div>
                             </div>
@@ -725,9 +741,6 @@
             }
         }
 
-        // ==============================================
-        // 👁️ O CÉREBRO DA PERSONALIZAÇÃO DE LOGOS
-        // ==============================================
         function getImagemEscolhida(valor) {
             if (valor === 'equipe') return logoBase64Global;
             if (valor === 'extra') return customLogoBase64;
@@ -735,7 +748,26 @@
             return null;
         }
 
+        // 🔥 FUNÇÃO INTELIGENTE DE CORES DAS FAIXAS
+        function getCorDaFaixaTexto(faixaStr) {
+            const f = faixaStr.toLowerCase();
+            if (f.includes('preta')) return '#0F172A'; // Preto Slate 900
+            if (f.includes('marrom')) return '#78350F'; // Marrom Amber 900
+            if (f.includes('roxa')) return '#7E22CE'; // Roxa Purple 700
+            if (f.includes('azul')) return '#1D4ED8'; // Azul Blue 700
+            if (f.includes('verde')) return '#15803D'; // Verde Green 700
+            if (f.includes('laranja')) return '#C2410C'; // Laranja Orange 700
+            if (f.includes('amarela')) return '#A16207'; // Amarela Yellow 700
+            if (f.includes('cinza')) return '#475569'; // Cinza Slate 600
+            if (f.includes('branca')) return '#334155'; // Branca Slate 700 (Para ler bem no branco)
+            return '#B38728'; // Dourado fallback
+        }
+
+        // ==============================================
+        // 👁️ ATUALIZADOR DO PREVIEW (A MÁGICA VISUAL)
+        // ==============================================
         window.atualizarPreviewLive = function() {
+            // 1. Textos
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome.toUpperCase() : "NOME DO ATLETA";
@@ -758,24 +790,21 @@
             document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            // 📸 APLICAR LOGOS ESCOLHIDAS
-            const imgBlank = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; // Gif Transparente 1x1
+            // 2. Aplicar Logos Escolhidas
+            const imgBlank = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-            // 1. Logo Esquerda
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
             const elEsq = document.getElementById('render-logo-esq');
             elEsq.src = srcEsq || imgBlank;
             elEsq.style.opacity = (srcEsq && valEsq !== 'nenhuma') ? 1 : 0;
 
-            // 2. Logo Direita
             const valDir = document.getElementById('pos-dir').value;
             const srcDir = getImagemEscolhida(valDir);
             const elDir = document.getElementById('render-logo-dir');
             elDir.src = srcDir || imgBlank;
             elDir.style.opacity = (srcDir && valDir !== 'nenhuma') ? 1 : 0;
 
-            // 3. Marca D'Agua
             const valWater = document.getElementById('pos-water').value;
             const srcWater = getImagemEscolhida(valWater);
             const elWater = document.getElementById('render-watermark');
@@ -787,7 +816,6 @@
                 elWater.style.opacity = 0;
             }
 
-            // 4. Selo
             const valSelo = document.getElementById('pos-selo').value;
             const srcSelo = getImagemEscolhida(valSelo);
             const elSelo = document.getElementById('render-selo');
@@ -799,14 +827,13 @@
                 elSelo.style.opacity = 0;
             }
 
-            // ✍️ APLICAR FONTES E ESTILOS
+            // 3. Aplicar Fontes
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             const elTitulo = document.getElementById('render-titulo');
             
             elTitulo.style.fontFamily = fonteTitulo;
             
-            // Controle especial para fontes cursivas
             if (fonteTitulo.includes('cursive')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.fontSize = '85px';      
@@ -814,7 +841,7 @@
                 elTitulo.style.lineHeight = '0.8';
             } else {
                 elTitulo.style.textTransform = 'uppercase';
-                elTitulo.style.fontSize = '46px';
+                elTitulo.style.fontSize = '48px';
                 elTitulo.style.letterSpacing = '4px';
                 elTitulo.style.lineHeight = '1.2';
             }
@@ -823,12 +850,11 @@
             document.getElementById('render-ass1-nome').style.fontFamily = fonteTexto;
             document.getElementById('render-ass2-nome').style.fontFamily = fonteTexto;
 
-            // 🎨 TEMA METÁLICO
+            // 4. Tema Metálico
             const tema = document.getElementById('cfg-tema').value;
             const elBordaMetal = document.getElementById('render-border-metal');
             const elBordaInner = document.getElementById('render-border-inner');
             const elNome = document.getElementById('render-nome');
-            const elFaixa = document.getElementById('render-faixa');
             const elLinhas = document.querySelectorAll('.render-linhas-metal');
 
             let corDestaque = "#D4AF37"; 
@@ -848,8 +874,11 @@
             elBordaMetal.style.background = gradMetalico;
             elBordaInner.style.borderColor = corDestaque;
             elNome.style.borderBottomColor = corDestaque;
-            elFaixa.style.color = corDestaque;
             elLinhas.forEach(l => l.style.background = `linear-gradient(to right, transparent, ${corDestaque}, transparent)`);
+
+            // 🔥 A MÁGICA DA COR DA FAIXA
+            const elFaixa = document.getElementById('render-faixa');
+            elFaixa.style.color = getCorDaFaixaTexto(faixa);
         }
 
         // ==============================================
