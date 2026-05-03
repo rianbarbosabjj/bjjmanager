@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>        
     
     <!-- FONTES PREMIUM ATUALIZADAS -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,700&family=Great+Vibes&family=Montserrat:wght@300;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,700&family=Great+Vibes&family=Montserrat:wght@300;700;900&family=Playfair+Display:wght@400;700;900&family=Pinyon+Script&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -31,7 +31,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
         /* =======================================================
-           🏅 DESIGN ULTRA PREMIUM DO CERTIFICADO (VERSÃO 3.0)
+           🏅 DESIGN ULTRA PREMIUM DO CERTIFICADO
            ======================================================= */
         #certificado-render {            
             width: 1123px; /* A4 Landscape */            
@@ -112,7 +112,7 @@
             pointer-events: none;
         }
 
-        /* 🔥 DATA: MAIS ALTA E SEGURA */
+        /* DATA CLÁSSICA (Livre de sobreposições) */
         .cert-data { 
             position: absolute;
             top: 20px;
@@ -126,10 +126,10 @@
             z-index: 10;
         }
 
-        /* 🔥 CABEÇALHO */
+        /* CABEÇALHO */
         .cert-header-container {
             position: absolute;
-            top: 55px; /* Distante da data */
+            top: 55px; 
             left: 55px;
             right: 55px;
             display: flex;
@@ -152,6 +152,7 @@
             letter-spacing: 5px;
             margin: 0;
             text-transform: uppercase;
+            transition: all 0.3s ease;
         }
 
         .cert-text-wrapper {
@@ -166,10 +167,9 @@
             padding-bottom: 40px;
         }
 
-        /* 🔥 TEXTOS PRINCIPAIS MAIORES */
         .cert-texto-dinamico { 
             font-family: 'Cormorant Garamond', serif;
-            font-size: 23px; /* AUMENTADO */
+            font-size: 23px; 
             font-weight: 700;
             text-align: center;
             margin-top: 22px;
@@ -180,9 +180,10 @@
             font-style: italic;
         }
         
+        /* 🔥 NOME DO ATLETA DINÂMICO */
         .cert-nome-atleta { 
             font-family: 'Great Vibes', cursive;
-            font-size: 78px; /* AUMENTADO */
+            font-size: 85px; 
             font-weight: 400;
             text-transform: capitalize;
             margin: 15px 0 10px 0;
@@ -192,29 +193,34 @@
             line-height: 1.1;
             width: 85%;
             text-align: center;
+            transition: all 0.3s ease;
         }
         
-        /* 🔥 FAIXA DINÂMICA MAIOR */
+        /* 🔥 FAIXA COM CORES SEPARADAS */
         .cert-faixa-texto { 
             font-family: 'Montserrat', sans-serif;
-            font-size: 28px; /* AUMENTADO */
+            font-size: 28px; 
             font-weight: 900;
             text-transform: uppercase;
             margin: 15px 0 10px 0;
             letter-spacing: 4px;
+            color: #1E293B; /* Cor base da frase */
+        }
+        .cert-faixa-cor-destaque {
+            transition: color 0.3s; /* Apenas o nome da faixa muda de cor */
         }
 
-        /* 🔥 RODAPÉ ALINHADO COM AS LOGOS */
+        /* 🔥 RODAPÉ MAIS AO CENTRO (Descolado do QR Code) */
         .cert-footer { 
             position: absolute;
-            bottom: 40px; /* Pouco mais abaixo */
+            bottom: 40px;
             left: 0;
             right: 0;
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            padding: 0 55px; /* Exatamente alinhado com as logos (left: 55px) */
+            padding: 0 130px; /* 🔥 Aumentado de 55px para 130px para trazer para o meio */
             box-sizing: border-box;
             z-index: 10;
         }
@@ -246,25 +252,24 @@
             letter-spacing: 1px;
         }
         
-        /* 🔥 SELO GIGANTE E PURO (SEM EFEITO DE CERA VERMELHA) */
         .cert-selo-img {
             width: 165px;
             height: 165px;
             object-fit: contain;
-            margin-bottom: -15px; /* Deixa descer um bocadinho a linha base */
+            margin-bottom: -15px; 
             z-index: 20;
         }
 
-        /* 🔥 QR CODE EMPURRADO PARA O CANTO E MENOR */
+        /* 🔥 QR CODE EMPURRADO PARA O CANTO */
         .cert-qr-wrapper { 
             position: absolute;
-            bottom: 20px;
-            right: 25px;
+            bottom: 25px; /* Bem no cantinho */
+            right: 35px;
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 10;
-            transform: scale(0.85); /* Fica discreto */
+            transform: scale(0.85); 
             transform-origin: bottom right;
         }
         
@@ -296,6 +301,7 @@
                         <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Crie diplomas ultra premium com design profissional e identidade oficial.</p>                    
                     </div>
 
+                    <!-- ÁREA DE PRÉ-VISUALIZAÇÃO -->
                     <div class="mb-8">
                         <h3 class="font-black text-slate-700 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
                             <span class="text-xl">👁️</span> Pré-visualização Premium
@@ -303,6 +309,7 @@
                         <div class="preview-wrapper">
                             <div class="preview-scaler">
                                 
+                                <!-- CERTIFICADO PREMIUM -->
                                 <div id="certificado-render">
                                     <div class="cert-border-outer">
                                         <div id="render-border-metal" class="cert-border-metal">
@@ -327,7 +334,8 @@
                                                     <p id="render-texto1" class="cert-texto-dinamico">A GRAPPLING FIGHT TEAM E PROJETO RESGATE PARQUE IRAJÁ AFILIADA RECONHECE QUE</p>
                                                     <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
-                                                    <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA AMARELA</h3>
+                                                    <!-- 🔥 FAIXA COM SPAN COLORIDO -->
+                                                    <h3 id="render-faixa-texto" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA <span id="render-faixa-cor" class="cert-faixa-cor-destaque">AMARELA</span></h3>
                                                     <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
                                                 </div>
 
@@ -356,11 +364,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- FIM DO CERTIFICADO -->
 
                             </div>
                         </div>
                     </div>
 
+                    <!-- PAINEL DE CONFIGURAÇÕES -->
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col mb-10">                                                
                         
                         <!-- 1. ATLETA -->
@@ -395,7 +405,8 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                            <!-- 🔥 PAINEL COM AS 3 FONTES -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -408,9 +419,19 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
                                     <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cinzel', serif">Cinzel (Épica)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita)</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                        <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome do Atleta</label>
+                                    <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                        <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
+                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -419,6 +440,7 @@
                                         <option value="'Cormorant Garamond', serif">Cormorant (Clássica)</option>
                                         <option value="'Playfair Display', serif">Playfair (Elegante)</option>
                                         <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
+                                        <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
                                     </select>
                                 </div>
                             </div>
@@ -428,11 +450,11 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo da Equipe/Lateral</label>
-                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
+                                        <input type="file" id="upload-logo-custom" accept="image/*" onchange="carregarLogoCustomizada(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Selo/Brasão (ficará no rodapé)</label>
-                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5">
+                                        <input type="file" id="upload-selo-custom" accept="image/*" onchange="carregarSeloCustomizado(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer border border-slate-200 rounded-xl bg-slate-50 p-1.5 outline-none">
                                     </div>
                                 </div>
                             </div>
@@ -646,7 +668,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v7");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v8");            
             if(memoria) {                
                 try {                    
                     const p = JSON.parse(memoria);                    
@@ -661,6 +683,7 @@
                     if(p.tema) document.getElementById('cfg-tema').value = p.tema;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
                     if(p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
+                    if(p.fonteNome) document.getElementById('cfg-fonte-nome').value = p.fonteNome;
                     
                     if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
@@ -680,10 +703,11 @@
                 tema: document.getElementById('cfg-tema').value,
                 fonteTitulo: document.getElementById('cfg-fonte-titulo').value,
                 fonteTexto: document.getElementById('cfg-fonte-texto').value,
+                fonteNome: document.getElementById('cfg-fonte-nome').value,
                 posEsq: document.getElementById('pos-esq').value,
                 posDir: document.getElementById('pos-dir').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v7", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v8", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -723,7 +747,7 @@
             return null;
         }
 
-        // CORES DINÂMICAS PARA AS FAIXAS
+        // 🔥 CORES DINÂMICAS PARA AS FAIXAS (O Ouro da casa!)
         function getCorDaFaixaTexto(faixaStr) {
             const f = faixaStr.toLowerCase();
             if (f.includes('preta')) return '#0F172A';
@@ -734,14 +758,14 @@
             if (f.includes('laranja')) return '#C2410C';
             if (f.includes('amarela')) return '#A16207';
             if (f.includes('cinza')) return '#475569';
-            if (f.includes('branca')) return '#334155'; // Cinza escuro elegante
+            if (f.includes('branca')) return '#334155'; // Cinza escuro elegante p/ ler no fundo
             return '#B38728'; // Dourado fallback
         }
 
         window.atualizarPreviewLive = function() {
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
-            const nomeAtleta = aluno ? aluno.nome.toUpperCase() : "NOME DO ATLETA";
+            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; // Retirado o toUpperCase automático
             const faixa = document.getElementById('combo-faixa').value.toUpperCase();            
             const dataRaw = document.getElementById('entry-data').value;
             
@@ -750,9 +774,14 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            document.getElementById('render-data').innerText = `RIO DE JANEIRO, ${dataExtenso}`;
+            document.getElementById('render-data').innerText = `BRASIL, ${dataExtenso}`;
             document.getElementById('render-nome').innerText = nomeAtleta;
-            document.getElementById('render-faixa').innerText = `RECEBEU A GRADUAÇÃO DE FAIXA ${faixa}`;
+            
+            // 🔥 Aplica a cor SÓ na faixa
+            const corDaFaixa = getCorDaFaixaTexto(faixa);
+            document.getElementById('render-faixa-cor').innerText = faixa;
+            document.getElementById('render-faixa-cor').style.color = corDaFaixa;
+
             document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "").toUpperCase();
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
@@ -783,7 +812,7 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado Puro
+            // Selo Customizado
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -792,21 +821,42 @@
                 elSelo.classList.add('hidden');
             }
 
-            // Fontes
+            // 🔥 FONTES (Título, Nome e Texto separadas)
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
+            const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             
             const elTitulo = document.getElementById('render-titulo');
+            const elNome = document.getElementById('render-nome');
+            
             elTitulo.style.fontFamily = fonteTitulo;
+            if (fonteTitulo.includes('cursive')) {
+                elTitulo.style.textTransform = 'none'; 
+                elTitulo.style.fontSize = '80px';      
+                elTitulo.style.letterSpacing = '1px';
+            } else {
+                elTitulo.style.textTransform = 'uppercase';
+                elTitulo.style.fontSize = '48px';
+                elTitulo.style.letterSpacing = '5px';
+            }
+
+            elNome.style.fontFamily = fonteNome;
+            if (fonteNome.includes('cursive')) {
+                elNome.style.textTransform = 'capitalize'; 
+                elNome.style.fontSize = '85px';      
+                elNome.style.letterSpacing = '1px';
+            } else {
+                elNome.style.textTransform = 'uppercase';
+                elNome.style.fontSize = '56px';
+                elNome.style.letterSpacing = '4px';
+            }
 
             const elsTextosCorpo = [
                 document.getElementById('render-texto1'),
                 document.getElementById('render-texto2'),
                 document.getElementById('render-texto3')
             ];
-            elsTextosCorpo.forEach(el => {
-                if(el) el.style.fontFamily = fonteTexto;
-            });
+            elsTextosCorpo.forEach(el => { if(el) el.style.fontFamily = fonteTexto; });
 
             // Tema
             const tema = document.getElementById('cfg-tema').value;
@@ -822,10 +872,6 @@
             }
 
             elBordaMetal.style.background = gradMetalico;
-            
-            // Cor da faixa dinâmica
-            const elFaixa = document.getElementById('render-faixa');
-            elFaixa.style.color = getCorDaFaixaTexto(faixa);
         }
 
         window.gerarCertificado = async function() {            
