@@ -42,8 +42,9 @@
             position: relative;
         }
 
+        /* Sistema de Bordas de Luxo com Bordas Arredondadas */
         .cert-border-outer {
-            background: #FFFFFF; /* 🔥 Margem preta removida, agora é branca e limpa */
+            background: #FFFFFF; 
             padding: 12px;
             height: 100%;
             width: 100%;
@@ -57,6 +58,7 @@
             width: 100%;
             box-sizing: border-box;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            border-radius: 30px; /* 🔥 Borda metálica arredondada */
             transition: background 0.3s ease;
         }
         
@@ -71,10 +73,12 @@
             align-items: center;
             padding: 40px 60px;
             box-sizing: border-box;
+            border-radius: 26px; /* 🔥 Fundo principal arredondado acompanhando o metal */
             z-index: 1;
             transition: border-color 0.3s ease;
         }
 
+        /* Marca de Água Central Gigante */
         .cert-watermark {
             position: absolute;
             top: 50%;
@@ -91,8 +95,9 @@
             transition: opacity 0.3s;
         }
 
-        .cert-logo-esq { position: absolute; top: 60px; left: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
-        .cert-logo-dir { position: absolute; top: 60px; right: 50px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
+        /* Logos e Cabeçalho */
+        .cert-logo-esq { position: absolute; top: 55px; left: 55px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
+        .cert-logo-dir { position: absolute; top: 55px; right: 55px; width: 140px; max-height: 140px; object-fit: contain; z-index: 10; transition: opacity 0.3s;}
         
         .cert-data { 
             position: absolute;
@@ -108,15 +113,26 @@
             text-align: right;
         }
 
+        /* 🔥 WRAPPER CENTRALIZADOR Y 
+           Esta classe pega todo o espaço livre e centra o texto no meio exato da página */
+        .cert-text-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            z-index: 10;
+            padding-bottom: 60px; /* Dá espaço para o selo e assinaturas não baterem no texto */
+        }
+
         .cert-titulo { 
             font-family: 'Playfair Display', serif;
             font-size: 46px; 
             font-weight: 900; 
             text-transform: uppercase; 
             letter-spacing: 4px; 
-            margin-top: 10px; 
             color: #0F172A; 
-            z-index: 10;
             transition: all 0.3s ease;
         }
 
@@ -125,28 +141,25 @@
             font-size: 14px; 
             font-weight: 700; 
             text-align: center; 
-            margin-top: 35px; 
+            margin-top: 25px; 
             max-width: 800px; 
             line-height: 1.6; 
             color: #334155; 
             letter-spacing: 1px;
-            z-index: 10;
         }
         
-        /* 🔥 NOME EM DESTAQUE (Agora colado na linha) */
         .cert-nome-atleta { 
             font-family: 'Playfair Display', serif;
             font-size: 52px; 
             font-weight: 900; 
             text-transform: uppercase; 
-            margin: 20px 0 10px 0; /* Margens ajustadas */
+            margin: 15px 0 5px 0; 
             color: #1E293B; 
             border-bottom: 2px solid #D4AF37; 
-            padding-bottom: 0px; /* Colado na linha */
-            line-height: 1.1; /* Remove o espaço fantasma em baixo das letras */
+            padding-bottom: 0px; 
+            line-height: 1.1;
             width: 80%; 
             text-align: center;
-            z-index: 10;
             transition: border-color 0.3s;
         }
         
@@ -158,10 +171,10 @@
             color: #B38728; 
             margin: 15px 0 10px 0; 
             letter-spacing: 3px; 
-            z-index: 10;
             transition: color 0.3s;
         }
 
+        /* Rodapé: Assinaturas e Selo */
         .cert-footer { 
             position: absolute; 
             bottom: 45px; 
@@ -186,10 +199,12 @@
         .cert-ass-nome { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #1E293B; }
         .cert-ass-grad { font-family: 'Montserrat', sans-serif; font-size: 11px; color: #64748b; font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px;}
         
-        .cert-selo { width: 110px; height: 110px; object-fit: contain; transition: opacity 0.3s;}
+        /* 🔥 SELO AUMENTADO PARA 155px */
+        .cert-selo { width: 155px; height: 155px; object-fit: contain; transition: opacity 0.3s; margin-bottom: -5px;}
 
+        /* QR Code Canto */
         .cert-qr-wrapper { position: absolute; bottom: 40px; right: 50px; display: flex; flex-direction: column; align-items: center; z-index: 10;}
-        .cert-qr-container { padding: 4px; border: 1px solid #CBD5E1; background: #fff; }
+        .cert-qr-container { padding: 4px; border: 1px solid #CBD5E1; background: #fff; border-radius: 4px;}
         .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: bold; margin-top: 5px; color: #94a3b8; letter-spacing: 1px;}
 
         /* =======================================================
@@ -242,22 +257,25 @@
                                                 <!-- DATA NO CANTO SUPERIOR DIREITO -->
                                                 <p id="render-data" class="cert-data">BRASIL, 01 DE JANEIRO DE 2026</p>
 
-                                                <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
+                                                <!-- 🔥 CÁPSULA FLEXÍVEL DE TEXTO (CENTRALIZA NO EIXO Y) -->
+                                                <div class="cert-text-wrapper">
+                                                    <h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1>
 
-                                                <!-- TEXTO 1 -->
-                                                <p id="render-texto1" class="cert-texto-dinamico">A EQUIPE RECONHECE QUE</p>
+                                                    <!-- TEXTO 1 -->
+                                                    <p id="render-texto1" class="cert-texto-dinamico">A EQUIPE RECONHECE QUE</p>
 
-                                                <!-- NOME -->
-                                                <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
+                                                    <!-- NOME -->
+                                                    <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
 
-                                                <!-- TEXTO 2 -->
-                                                <p id="render-texto2" class="cert-texto-dinamico" style="margin-top: 15px;">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
+                                                    <!-- TEXTO 2 -->
+                                                    <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
 
-                                                <!-- FAIXA -->
-                                                <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA BRANCA</h3>
+                                                    <!-- FAIXA -->
+                                                    <h3 id="render-faixa" class="cert-faixa-texto">RECEBEU A GRADUAÇÃO DE FAIXA BRANCA</h3>
 
-                                                <!-- TEXTO 3 -->
-                                                <p id="render-texto3" class="cert-texto-dinamico" style="margin-top: 10px;">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
+                                                    <!-- TEXTO 3 -->
+                                                    <p id="render-texto3" class="cert-texto-dinamico">COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO</p>
+                                                </div>
 
                                                 <!-- FOOTER (ASSINATURAS E SELO) -->
                                                 <div class="cert-footer">
@@ -267,7 +285,7 @@
                                                         <div id="render-ass1-grad" class="cert-ass-grad">Grau</div>
                                                     </div>
 
-                                                    <!-- SELO CENTRAL -->
+                                                    <!-- SELO CENTRAL (MAIOR) -->
                                                     <img id="render-selo" src="" class="cert-selo hidden">
 
                                                     <div class="cert-assinatura-box">
@@ -718,7 +736,7 @@
                         imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                         imgWater.style.opacity = 0.04; imgWater.classList.remove('hidden');
                     }
-                } else { 
+                } else { // Limpo
                     imgEsq.style.opacity = 0; imgEsq.classList.add('hidden');
                     imgDir.style.opacity = 0; imgDir.classList.add('hidden');
                     imgWater.style.opacity = 0; imgWater.classList.add('hidden');
@@ -735,7 +753,7 @@
             
             if (fonteTitulo.includes('cursive')) {
                 elTitulo.style.textTransform = 'none'; 
-                elTitulo.style.fontSize = '75px';      
+                elTitulo.style.fontSize = '80px';      
                 elTitulo.style.letterSpacing = '1px';
             } else {
                 elTitulo.style.textTransform = 'uppercase';
