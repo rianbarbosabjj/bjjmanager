@@ -342,7 +342,8 @@
                                                 </div>
 
                                                 <div class="cert-text-wrapper">
-                                                    <p id="render-texto1" class="cert-texto-dinamico">A SUA EQUIPE RECONHECE QUE</p>
+                                                    <!-- 🔥 O texto superior agora pode ser modificado facilmente no menu abaixo -->
+                                                    <p id="render-texto1" class="cert-texto-dinamico">CARREGANDO DADOS...</p>
                                                     
                                                     <div id="render-nome-container" class="cert-nome-container">
                                                         <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
@@ -424,7 +425,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -511,7 +512,6 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
-                                        <!-- 🔥 Padrão atualizado para Logo da Equipe -->
                                         <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
                                             <option value="equipe" selected>Logo da Equipe Oficial</option>
                                             <option value="extra">Logo Personalizada Upload</option>
@@ -521,9 +521,9 @@
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="nenhuma" selected>Nenhuma</option>
-                                            <option value="equipe">Logo da Equipe Oficial</option>
+                                            <option value="equipe" selected>Logo da Equipe Oficial</option>
                                             <option value="extra">Logo Personalizada Upload</option>
+                                            <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
                                     <div>
@@ -545,6 +545,7 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
                                     <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="" placeholder="Carregando nome da equipe..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <p class="text-[9px] text-slate-400 mt-1 font-medium italic">Dica: Pode clicar na caixa acima e escrever livremente "A GRAPPLING FIGHT TEAM RECONHECE QUE" caso o sistema puxe o nome errado do seu cadastro.</p>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
@@ -688,7 +689,8 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "SUA EQUIPE";
+                    // 🔥 BUSCA ROBUSTA: Se não achar num campo, tenta noutro.
+                    nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
                     if (dadosEquipe.cidade) {
                         cidadeEquipeLogada = dadosEquipe.cidade;
@@ -702,11 +704,11 @@
                         cidadeEquipeLogada = "RIO DE JANEIRO";
                     }
 
-                    const logoEquipeOficial = dadosEquipe.url_logo || null;
+                    // 🔥 BUSCA ROBUSTA DE LOGO: Procura em todos os campos possíveis
+                    const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
 
                     if (logoEquipeOficial) {
-                        // 🔥 Fallback direto para o src no caso de bloqueio de blob
-                        logoBase64Global = logoEquipeOficial; 
+                        logoBase64Global = logoEquipeOficial; // Fallback imediato
                         try {
                             const respLogo = await fetch(logoEquipeOficial);
                             if (respLogo.ok) {
@@ -753,10 +755,17 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v17");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v18");            
             
-            // Texto dinâmico perfeitamente limpo (sem repetir a palavra EQUIPE se o nome já for Equipe Algo)
-            const textoPadraoDinamico = `A ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
+            // 🔥 Lógica inteligente para montar a frase "A EQUIPE..."
+            let prefixo = "";
+            let nLimpo = nomeEquipeLogada.toUpperCase();
+            if(!nLimpo.includes("EQUIPE") && !nLimpo.includes("TEAM") && !nLimpo.includes("ACADEMIA") && !nLimpo.includes("PROJETO") && !nLimpo.includes("ASSOCIAÇÃO")) {
+                prefixo = "A EQUIPE ";
+            } else if (!nLimpo.startsWith("A ") && !nLimpo.startsWith("O ")) {
+                prefixo = "A ";
+            }
+            const textoPadraoDinamico = `${prefixo}${nLimpo} RECONHECE QUE`;
 
             if(memoria) {                
                 try {                    
@@ -766,7 +775,13 @@
                     if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;                    
                     if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
                     
-                    document.getElementById('cfg-texto1').value = p.txt1 ? p.txt1 : textoPadraoDinamico;
+                    // Impede o cache de prender frases genéricas antigas
+                    if (p.txt1 && !p.txt1.includes("SUA EQUIPE") && !p.txt1.includes("BJJ MANEGER")) {
+                        document.getElementById('cfg-texto1').value = p.txt1;
+                    } else {
+                        document.getElementById('cfg-texto1').value = textoPadraoDinamico;
+                    }
+
                     document.getElementById('cfg-texto2').value = p.txt2 ? p.txt2 : "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
                     document.getElementById('cfg-texto3').value = p.txt3 ? p.txt3 : "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
                     
@@ -806,7 +821,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v17", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v18", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -851,7 +866,7 @@
             const cores = {
                 branca: '#FFFFFF',
                 cinza: '#64748B', 
-                amarela: '#FFD700', 
+                amarela: '#F59E0B', 
                 laranja: '#EA580C', 
                 verde: '#15803D', 
                 azul: '#1D4ED8', 
@@ -947,7 +962,7 @@
             }
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
-            document.getElementById('render-texto1').innerText = (textoInput1 || `A ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
+            document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
             
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
