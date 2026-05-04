@@ -40,14 +40,32 @@
             height: 794px;            
             --cor-destaque: #D4AF37;
             --grad-metalico: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-            background: #E8E5DF; 
+            --fundo-outer: #FFFFFF;
+            --fundo-inner: #FFFFFF;
+            --opacidade-manchas: 0;
+            
+            background: var(--fundo-outer); 
             box-sizing: border-box;
             position: relative;
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transition: background 0.3s ease;
+        }
+
+        #certificado-render::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(212,175,55,0.12), transparent 26%),
+                radial-gradient(circle at 86% 82%, rgba(120,83,35,0.10), transparent 30%),
+                linear-gradient(135deg, rgba(255,255,255,0.35), rgba(191,149,63,0.06));
+            opacity: var(--opacidade-manchas);
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s ease;
         }
 
         .cert-border-outer {
-            background: #FFFFFF;
             padding: 20px;
             height: 100%;
             width: 100%;
@@ -68,10 +86,8 @@
         }
         
         .cert-border-inner {
-            background:
-                radial-gradient(circle at center, rgba(212,175,55,0.055), transparent 38%),
-                repeating-linear-gradient(0deg, rgba(15,23,42,0.012) 0px, rgba(15,23,42,0.012) 1px, transparent 1px, transparent 5px),
-                linear-gradient(135deg, #fffdf6 0%, #FCFAF2 45%, #f7f1df 100%);
+            background-color: var(--fundo-inner);
+            background-image: radial-gradient(circle at center, rgba(212,175,55,0.03), transparent 60%);
             border: 1px solid var(--cor-destaque);
             height: 100%;
             width: 100%;
@@ -81,9 +97,9 @@
             align-items: center;
             padding: 45px 55px;
             box-sizing: border-box;
-            box-shadow: inset 0 0 0 8px #FCFAF2, inset 0 0 0 9px var(--cor-destaque);
+            box-shadow: inset 0 0 0 8px var(--fundo-inner), inset 0 0 0 9px var(--cor-destaque);
             z-index: 2;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         }
 
         .cert-textura-fundo {
@@ -298,10 +314,6 @@
         .preview-scaler { transform: scale(0.42); transform-origin: top center; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         @media (min-width: 768px) { .preview-wrapper { height: 450px; } .preview-scaler { transform: scale(0.48); } }
         @media (min-width: 1024px) { .preview-wrapper { height: 520px; } .preview-scaler { transform: scale(0.58); } }
-        
-        /* Oculta o input de cor por padrão (estilização inline também é usada no JS) */
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -438,10 +450,8 @@
                                             <option value="prata">Prata Titanium (Moderno)</option>
                                             <option value="bronze">Bronze Antigo (Clássico)</option>
                                             <option value="preto">Preto Nobre (Dark)</option>
-                                            <!-- 🔥 NOVA OPÇÃO INTELIGENTE -->
                                             <option value="custom">Cor da Equipe (Personalizada)</option>
                                         </select>
-                                        <!-- Aparece apenas se custom for selecionado -->
                                         <input type="color" id="cfg-cor-custom" onchange="atualizarPreviewLive()" value="#1D4ED8" class="h-[46px] w-12 cursor-pointer border-0 p-0 hidden bg-transparent" title="Escolha a Cor da Equipe">
                                     </div>
                                 </div>
@@ -481,13 +491,13 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Textura do Papel</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cor do Fundo & Textura</label>
                                     <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="aged-paper">Papel Envelhecido (Clássico)</option>
-                                        <option value="cream-paper">Papel Creme (Liso)</option>
-                                        <option value="woven">Textura de Linho</option>
-                                        <option value="white-wall">Parede de Mármore / Estuque</option>
-                                        <option value="none">Limpo (Sem Textura)</option>
+                                        <option value="none">Fundo Branco (Limpo)</option>
+                                        <option value="woven">Fundo Branco (Linho)</option>
+                                        <option value="white-wall">Mármore Frio (Cinza Claro)</option>
+                                        <option value="cream-paper">Papel Creme (Quente)</option>
+                                        <option value="aged-paper">Papel Envelhecido (Clássico Bege)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -785,7 +795,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v22");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v23");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -855,7 +865,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v22", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v23", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -945,7 +955,6 @@
             let corDestaque = "#D4AF37"; 
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
 
-            // 🔥 LÓGICA DO TEMA PERSONALIZADO COM DEGRADÊ METÁLICO AUTOMÁTICO
             if (tema === 'custom') {
                 inputCorCustom.classList.remove('hidden');
                 corDestaque = inputCorCustom.value;
@@ -967,6 +976,7 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
+            // 🔥 O SEGREDO DO PAPEL: Fundo inteligente que muda consoante a textura
             const texturasMap = {
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
@@ -976,19 +986,37 @@
 
             const texturaSel = document.getElementById('cfg-textura').value;
             const divTextura = document.getElementById('render-textura');
+            
+            let fundoOuter = "#FFFFFF";
+            let fundoInner = "#FFFFFF";
+            let opacidadeManchas = "0";
+
             if (texturaSel === 'none') {
                 divTextura.style.backgroundImage = 'none';
+                fundoOuter = "#FFFFFF";
+                fundoInner = "#FFFFFF";
             } else {
                 divTextura.style.backgroundImage = `url('${texturasMap[texturaSel]}')`;
                 
-                if (texturaSel === 'woven') {
-                    divTextura.style.opacity = '0.15'; 
+                if (texturaSel === 'aged-paper') {
+                    fundoOuter = "#E8E5DF"; // Borda de fora bege escuro
+                    fundoInner = "#FCFAF2"; // Miolo bege clássico
+                    opacidadeManchas = "0.75"; // Liga a sujidade natural do papel
+                } else if (texturaSel === 'cream-paper') {
+                    fundoOuter = "#F0EBE1";
+                    fundoInner = "#FDFBF7"; // Miolo creme suave
                 } else if (texturaSel === 'white-wall') {
-                    divTextura.style.opacity = '0.50';
-                } else {
-                    divTextura.style.opacity = '0.75'; 
+                    fundoOuter = "#E2E8F0";
+                    fundoInner = "#F8FAFC"; // Tom frio de pedra/mármore
+                } else if (texturaSel === 'woven') {
+                    fundoOuter = "#FFFFFF";
+                    fundoInner = "#FFFFFF"; // Fundo branco puro para linho
                 }
             }
+            
+            certRender.style.setProperty('--fundo-outer', fundoOuter);
+            certRender.style.setProperty('--fundo-inner', fundoInner);
+            certRender.style.setProperty('--opacidade-manchas', opacidadeManchas);
 
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
