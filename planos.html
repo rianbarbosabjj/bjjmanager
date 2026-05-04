@@ -26,6 +26,7 @@
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }        
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
         
+        /* Estilos do Radio Button Modificado */
         .radio-pacote:checked + div {
             border-color: #6366f1;
             background-color: #e0e7ff;
@@ -197,7 +198,7 @@
             <div class="p-6 space-y-6">
                 <div>
                     <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-3 text-center">Selecione o Pacote</label>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
                         <!-- Opção 1 -->
                         <label class="relative cursor-pointer group">
                             <input type="radio" name="pacote_fichas" value="1" class="peer sr-only radio-pacote" checked onchange="atualizarTotalFichas()">
@@ -236,6 +237,24 @@
                             </div>
                         </label>
                     </div>
+
+                    <!-- 🔥 OPÇÃO DE QUANTIDADE LIVRE -->
+                    <label class="relative cursor-pointer group block">
+                        <input type="radio" name="pacote_fichas" value="custom" id="radio-custom" class="peer sr-only radio-pacote" onchange="atualizarTotalFichas()">
+                        <div class="border-2 border-slate-200 rounded-2xl p-4 flex flex-row items-center justify-between transition-all hover:bg-slate-50 overflow-hidden relative">
+                            <div class="flex items-center gap-3 relative z-10">
+                                <div class="w-5 h-5 rounded-full border-2 border-indigo-500 flex items-center justify-center absolute -left-1 opacity-0 transition-opacity check-icon bg-indigo-500 text-white"><span class="text-[10px]">✓</span></div>
+                                <span class="text-2xl ml-6">✍️</span>
+                                <span class="font-black text-slate-800">Quantidade Livre</span>
+                            </div>
+                            <div class="relative z-20 w-24">
+                                <input type="number" id="input-fichas-custom" min="1" placeholder="Qtd" 
+                                    class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-center font-black text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all shadow-sm" 
+                                    onfocus="document.getElementById('radio-custom').checked = true; atualizarTotalFichas();" 
+                                    oninput="document.getElementById('radio-custom').checked = true; atualizarTotalFichas();">
+                            </div>
+                        </div>
+                    </label>
                 </div>
 
                 <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex justify-between items-center">
@@ -425,11 +444,9 @@
                 });
             }
 
-            // Atualiza botões
             const btn = document.getElementById(`btn-${prefixId}`);
             if(equipeDataCache) {
                 let st = equipeDataCache.status_plano || "TESTE";
-                // Normaliza
                 if(st === 'BÁSICO') st = 'BASICO';
                 if(st === 'INTERMEDIÁRIO') st = 'INTERMEDIARIO';
                 
@@ -457,7 +474,14 @@
         window.atualizarTotalFichas = function() {
             const radioSelecionado = document.querySelector('input[name="pacote_fichas"]:checked');
             if(radioSelecionado) {
-                const qtd = parseInt(radioSelecionado.value);
+                let qtd = 0;
+                if (radioSelecionado.value === 'custom') {
+                    qtd = parseInt(document.getElementById('input-fichas-custom').value) || 0;
+                } else {
+                    qtd = parseInt(radioSelecionado.value);
+                    document.getElementById('input-fichas-custom').value = ''; // Limpa o campo custom
+                }
+
                 const total = qtd * precoFichaGlobal;
                 document.getElementById('fichas-valor-total').innerText = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             }
@@ -467,7 +491,15 @@
             const radioSelecionado = document.querySelector('input[name="pacote_fichas"]:checked');
             if(!radioSelecionado) return;
             
-            const qtd = parseInt(radioSelecionado.value);
+            let qtd = 0;
+            if (radioSelecionado.value === 'custom') {
+                qtd = parseInt(document.getElementById('input-fichas-custom').value) || 0;
+            } else {
+                qtd = parseInt(radioSelecionado.value);
+            }
+
+            if(qtd < 1) return showToast("Por favor, selecione ou digite uma quantidade válida.", "error");
+            
             const total = qtd * precoFichaGlobal;
             
             const btn = document.getElementById('btn-gerar-fichas');
