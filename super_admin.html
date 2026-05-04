@@ -624,6 +624,7 @@
         </div>
     </div>
 
+    <!-- 🔥 MODAL ATUALIZADO: GESTÃO DA LICENÇA E FICHAS -->
     <div id="modal-editar-equipe" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-transform">
             <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800">
@@ -651,14 +652,19 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensal. Específica (R$)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensal. (R$)</label>
                         <input type="number" id="edit-valor-plano" placeholder="Ex: 49.90" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto (%)</label>
                         <input type="number" id="edit-desconto" placeholder="Ex: 10" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
+                    </div>
+                    <div>
+                        <!-- 🔥 CAMPO PARA EDITAR FICHAS DIRETAMENTE -->
+                        <label class="block text-[10px] font-black text-indigo-400 uppercase mb-2">Fichas (Saldo)</label>
+                        <input type="number" id="edit-fichas" placeholder="Ex: 50" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-indigo-500 transition-colors">
                     </div>
                 </div>
 
@@ -1853,6 +1859,10 @@
             
             document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
             document.getElementById('edit-desconto').value = eq.desconto_plano || 0;
+            
+            // 🔥 NOVO: CARREGA O SALDO DE FICHAS ATUAL
+            document.getElementById('edit-fichas').value = parseInt(eq.creditos_certificados) || 0;
+            
             document.getElementById('edit-isento').checked = (eq.isento === true || String(eq.isento) === "true");
             document.getElementById('modal-editar-equipe').classList.replace('hidden', 'flex');
         }
@@ -1866,6 +1876,7 @@
             try {
                 let valPlano = document.getElementById('edit-valor-plano').value;
                 let descPlano = document.getElementById('edit-desconto').value;
+                let saldoFichas = parseInt(document.getElementById('edit-fichas').value) || 0;
                 
                 valPlano = parseFloat(String(valPlano).replace(',', '.')) || 0;
                 descPlano = parseFloat(String(descPlano).replace(',', '.')) || 0;
@@ -1874,6 +1885,7 @@
                     status_plano: document.getElementById('edit-status-plano').value,
                     valor_plano: valPlano,
                     desconto_plano: descPlano,
+                    creditos_certificados: saldoFichas, // 🔥 SALVA O NOVO SALDO DE FICHAS
                     isento: document.getElementById('edit-isento').checked
                 });
                 
