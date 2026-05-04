@@ -125,10 +125,12 @@
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Novo Grau</label>
                                     <select id="grad-grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
                                         <option value="Sem grau">Sem grau</option>
-                                        <option value="1º">1º Grau</option>
-                                        <option value="2º">2º Grau</option>
-                                        <option value="3º">3º Grau</option>
-                                        <option value="4º">4º Grau</option>
+                                        <option value="1º Grau">1º Grau</option>
+                                        <option value="2º Grau">2º Grau</option>
+                                        <option value="3º Grau">3º Grau</option>
+                                        <option value="4º Grau">4º Grau</option>
+                                        <option value="5º Grau">5º Grau</option>
+                                        <option value="6º Grau">6º Grau</option>
                                     </select>
                                 </div>
                                 
@@ -208,7 +210,7 @@
         }
 
         // =====================================================================================
-        // 🔥 LÓGICA DE AUTENTICAÇÃO BLINDADA COM MODO SUPORTE
+        // 🔥 LÓGICA DE AUTENTICAÇÃO E INICIALIZAÇÃO
         // =====================================================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -241,7 +243,11 @@
                     }
                     
                     await carregarInfoEquipe(user); 
-                    carregarAlunos();
+
+                    // 🤖 RODA O GATILHO INTELIGENTE ASSIM QUE ABRIR O HISTÓRICO
+                    await processarAgendamentosPendentes();
+
+                    await carregarAlunos();
                     document.getElementById('grad-data').valueAsDate = new Date();
                     
                 } catch (error) { console.log(error); }
@@ -249,6 +255,89 @@
                 window.location.href = "index.html";
             }
         });
+
+        // =====================================================================================
+        // 🤖 GATILHO DE AUTOMAÇÃO DE GRADUAÇÃO (CERIMÔNIAS DE CERTIFICADO)
+        // =====================================================================================
+        async function processarAgendamentosPendentes() {
+            try {
+                // Pega a data de hoje no formato YYYY-MM-DD
+                const hoje = new Date();
+                const yyyy = hoje.getFullYear();
+                const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+                const dd = String(hoje.getDate()).padStart(2, '0');
+                const hojeStr = `${yyyy}-${mm}-${dd}`;
+
+                // Busca todos os certificados agendados desta equipe
+                const q = query(
+                    collection(db, "historico_faixas"), 
+                    where("equipe_id", "==", uid), 
+                    where("status", "==", "AGENDADO")
+                );
+                
+                const snap = await getDocs(q);
+                let graduacoesRealizadas = 0;
+
+                for (const docSnap of snap.docs) {
+                    const agenda = docSnap.data();
+                    
+                    // SE A DATA DA CERIMÔNIA JÁ CHEGOU OU PASSOU...
+                    if (agenda.data_promocao && agenda.data_promocao <= hojeStr) {
+                        
+                        // 1. Extrai a faixa e o grau da string (ex: "PRETA - 1º GRAU" vira "PRETA" e "1º Grau")
+                        let f = agenda.faixa || "BRANCA";
+                        let grau = "Sem grau";
+                        
+                        if (f.includes(" - ")) {
+                            let partes = f.split(" - ");
+                            f = partes[0].trim();
+                            // Normaliza o grau para não ficar tudo em maiúsculo (ex: 1º GRAU -> 1º Grau)
+                            grau = partes[1].trim();
+                            grau = grau.charAt(0).toUpperCase() + grau.slice(1).toLowerCase();
+                        } else {
+                            // Se não tiver grau (ex: AMARELA), apenas corrige a capitalização
+                            f = f.trim();
+                        }
+
+                        // Formata a faixa para o padrão do select (Apenas a primeira letra maiúscula)
+                        const faixaFormatada = f.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
+                        // 2. Grava na linha do tempo principal
+                        await addDoc(collection(db, "graduacoes"), {
+                            equipe_id: uid,
+                            aluno_id: agenda.aluno_id,
+                            data: agenda.data_promocao,
+                            faixa: faixaFormatada,
+                            grau: grau,
+                            certificado_url: agenda.certificado_url || null, // Liga o PDF!
+                            registado_em: new Date().toISOString(),
+                            origem: "SISTEMA_CERTIFICADOS"
+                        });
+
+                        // 3. Atualiza o cadastro do aluno oficial
+                        await updateDoc(doc(db, "alunos", agenda.aluno_id), {
+                            faixa: faixaFormatada,
+                            grau: grau
+                        });
+
+                        // 4. Marca o agendamento como Efetivado para não rodar duas vezes
+                        await updateDoc(doc(db, "historico_faixas", docSnap.id), {
+                            status: "EFETIVADO",
+                            data_efetivacao: new Date().toISOString()
+                        });
+
+                        graduacoesRealizadas++;
+                    }
+                }
+
+                if (graduacoesRealizadas > 0) {
+                    showToast(`🎉 Cerimônia Ativada! ${graduacoesRealizadas} atleta(s) foram graduados automaticamente hoje.`, "success");
+                }
+
+            } catch(e) {
+                console.error("Erro na automação do certificado:", e);
+            }
+        }
 
         async function carregarInfoEquipe(user) {
             const elEmailLogado = document.getElementById('email-logado');
@@ -296,7 +385,7 @@
             } catch (error) { console.log(error); }
         }
 
-        // === MAGIA DAS DUAS CORES (Igual ao Dashboard) ===
+        // === MAGIA DAS DUAS CORES ===
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -462,7 +551,6 @@
             container.innerHTML = `<div class="text-center text-slate-400 mt-5 text-sm">Carregando histórico...</div>`;
 
             try {
-                // Filtro duplo: Garante a segurança do Firebase puxando apenas graduações desta equipe
                 const q = query(collection(db, "graduacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId));
                 const snap = await getDocs(q);
                 
@@ -471,7 +559,6 @@
                     historico.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Proteção contra dados corrompidos na ordenação
                 historico.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
                 if(historico.length > 0) {
@@ -510,10 +597,14 @@
                     dataBR = `${p[2]}/${p[1]}/${p[0]}`;
                 }
 
+                // 🔥 Se tiver link do certificado gerado, exibe o botão
+                const btnCertificado = grad.certificado_url 
+                    ? `<a href="${grad.certificado_url}" target="_blank" class="mt-3 text-[10px] md:text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 px-3 py-2 rounded-xl transition-colors flex items-center justify-center gap-1.5 w-max"><span class="text-sm">🎓</span> Ver Diploma Oficial</a>` 
+                    : '';
+
                 const item = document.createElement('div');
                 item.className = "timeline-item relative pl-8 pb-6";
                 
-                // O círculo da timeline agora respeita a cor/degradê da faixa!
                 item.innerHTML = `
                     <div class="absolute left-0 top-1 w-5 h-5 md:w-6 md:h-6 rounded-full border-4 border-white shadow-sm flex items-center justify-center ${getCorFaixa(grad.faixa)} z-10"></div>
                     
@@ -525,6 +616,8 @@
                             </div>
                             <span class="text-[9px] md:text-[10px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${dataBR}</span>
                         </div>
+                        
+                        ${btnCertificado}
                         
                         <div class="mt-3 flex justify-end">
                             <button id="btn-del-${grad.id}" onclick="excluirGraduacao('${grad.id}', '${alunoSelecionado.id}')" class="text-[9px] md:text-[10px] font-bold text-rose-400 hover:text-rose-600 uppercase transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">Excluir</button>
@@ -545,7 +638,6 @@
 
             if (!data) return showToast("A data da graduação é obrigatória!", "error");
 
-            // TRAVA ANTI-CLIQUES DUPLOS (Mão Pesada)
             const btn = document.getElementById('btn-salvar-grad');
             const originalTxt = btn.innerHTML;
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> Salvando...";
@@ -559,7 +651,8 @@
                     data: data,
                     faixa: faixa,
                     grau: grau,
-                    registado_em: new Date().toISOString()
+                    registado_em: new Date().toISOString(),
+                    origem: "MANUAL"
                 });
 
                 await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
@@ -576,7 +669,6 @@
                 console.error(error);
                 showToast("Erro ao registar graduação.", "error");
             } finally {
-                // Desbloqueia o botão, quer tenha dado erro ou sucesso
                 btn.innerHTML = originalTxt;
                 btn.disabled = false;
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');
