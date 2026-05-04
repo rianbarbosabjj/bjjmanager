@@ -622,7 +622,7 @@
                             </div>
                         </div>
 
-                        <!-- 4. ASSINATURAS -->
+                        <!-- 4. ASSINATURAS E BOTÃO FINAL -->
                         <div class="p-6 md:p-8 bg-white">                            
                             <div class="flex justify-between items-center mb-6">                                
                                 <h3 class="font-black text-amber-500 text-sm uppercase tracking-widest">4. Assinaturas</h3>                                
@@ -644,9 +644,14 @@
                                 </div>                            
                             </div>                                                        
                             
+                            <!-- 🔥 BOTÃO DE EMISSÃO COM DESCONTO DE FICHAS -->
                             <div class="pt-4 border-t border-slate-100">                                
+                                <div class="flex justify-between items-center mb-3 px-2">
+                                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas Disponíveis:</span>
+                                    <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg">Carregando...</span>
+                                </div>
                                 <button id="btn-gerar" onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-5 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center border border-slate-700">                                    
-                                    <span class="mr-2 text-xl">🎓</span> GERAR CERTIFICADO OFICIAL EM PDF                                
+                                    <span class="mr-2 text-xl">🎓</span> EMITIR CERTIFICADO (1 FICHA)                                
                                 </button>                            
                             </div>                        
                         </div>                    
@@ -687,6 +692,7 @@
         let logoBase64Global = null; 
         let customLogoBase64 = null;
         let customSeloBase64 = null;
+        let fichasDisponiveis = 0;
 
         window.showToast = function(message, type = 'error') {            
             const container = document.getElementById('toast-container');            
@@ -753,6 +759,10 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
+                    // CARREGA E ATUALIZA O SALDO DE FICHAS
+                    fichasDisponiveis = parseInt(dadosEquipe.creditos_certificados) || 0;
+                    document.getElementById('display-fichas').innerText = `${fichasDisponiveis} Disponíve${fichasDisponiveis === 1 ? 'l' : 'is'}`;
+
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
                     if (dadosEquipe.cidade) {
@@ -839,7 +849,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v25");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v26");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -911,7 +921,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v25", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v26", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1253,6 +1263,11 @@
         }
 
         window.gerarCertificado = async function() {            
+            // 🛑 BLOQUEIO INTELIGENTE: Verifica se tem fichas antes de qualquer coisa
+            if (fichasDisponiveis <= 0) {
+                return showToast("Você não possui Fichas suficientes. Compre mais no menu 'Assinatura'!", "error");
+            }
+
             const alunoId = document.getElementById('combo-aluno').value;            
             const aluno = alunosCache.find(a => a.id === alunoId);                        
             if(!aluno) return showToast("Selecione um Atleta na lista primeiro!", "error");
@@ -1276,7 +1291,18 @@
             const numeroSerieStr = `${mesStr}${anoStr}${seqStr}`; 
             serialEquipeAtual += 1;                        
             
-            try { await updateDoc(doc(db, "equipes", uid), { contador_certificados: serialEquipeAtual }); } catch(e) { }
+            // 🔥 DESCONTO DA FICHA: Subtrai 1 ficha do saldo atual
+            fichasDisponiveis -= 1;
+
+            try { 
+                await updateDoc(doc(db, "equipes", uid), { 
+                    contador_certificados: serialEquipeAtual,
+                    creditos_certificados: fichasDisponiveis
+                }); 
+                
+                // Atualiza o contador na tela em tempo real
+                document.getElementById('display-fichas').innerText = `${fichasDisponiveis} Disponíve${fichasDisponiveis === 1 ? 'l' : 'is'}`;
+            } catch(e) { }
 
             const idHash = Math.random().toString(36).substring(2, 10).toUpperCase();                        
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
@@ -1301,7 +1327,7 @@
                 const clone = certificadoReal.cloneNode(true);
                 clone.style.transform = 'none';
 
-                // 🔥 REMOVE A MARCA D'ÁGUA DE PREVIEW ANTES DE GERAR O PDF!
+                // 🔥 MAGIA: Remove a marca d'água invisivelmente só no PDF gerado!
                 const marcaPreview = clone.querySelector('#preview-watermark');
                 if (marcaPreview) marcaPreview.remove();
 
@@ -1316,7 +1342,7 @@
                 };
 
                 html2pdf().set(opt).from(clone).save().then(() => {                    
-                    btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> GERAR CERTIFICADO OFICIAL EM PDF";                    
+                    btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> EMITIR CERTIFICADO (1 FICHA)";                    
                     btn.classList.replace('from-slate-400', 'from-slate-800');                    
                     btn.disabled = false;                                        
                     document.getElementById('combo-aluno').value = "";                    
