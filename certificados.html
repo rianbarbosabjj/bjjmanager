@@ -90,12 +90,12 @@
         .cert-textura-fundo {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 0.75; /* Aumentado drasticamente para ser notável */
-            mix-blend-mode: multiply; /* Faz a textura mesclar com as cores perfeitamente */
+            opacity: 0.75; /* O JS vai controlar isso dinamicamente agora! */
+            mix-blend-mode: multiply;
             pointer-events: none;
             z-index: 1;
             background-repeat: repeat;
-            transition: background-image 0.3s ease;
+            transition: background-image 0.3s ease, opacity 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
@@ -326,6 +326,7 @@
                                         <div id="render-border-metal" class="cert-border-metal">
                                             <div id="render-border-inner" class="cert-border-inner">
                                                 
+                                                <!-- 🔥 A CAMADA DE TEXTURA INDEPENDENTE -->
                                                 <div id="render-textura" class="cert-textura-fundo"></div>
 
                                                 <div class="cert-corner corner-tl"></div>
@@ -776,7 +777,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v20");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v21");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -840,7 +841,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v20", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v21", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -943,7 +944,7 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
-            // 🔥 TEXTURAS 100% GARANTIDAS
+            // 🔥 TEXTURAS 100% GARANTIDAS COM OPACIDADE DINÂMICA
             const texturasMap = {
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
@@ -957,6 +958,15 @@
                 divTextura.style.backgroundImage = 'none';
             } else {
                 divTextura.style.backgroundImage = `url('${texturasMap[texturaSel]}')`;
+                
+                // 🔥 Reduz a força especificamente da textura de linho (woven) para não escurecer demais
+                if (texturaSel === 'woven') {
+                    divTextura.style.opacity = '0.15'; 
+                } else if (texturaSel === 'white-wall') {
+                    divTextura.style.opacity = '0.50';
+                } else {
+                    divTextura.style.opacity = '0.75'; // Mantém forte nos papéis mais claros
+                }
             }
 
             const alunoId = document.getElementById('combo-aluno').value;
