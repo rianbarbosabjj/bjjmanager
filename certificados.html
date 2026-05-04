@@ -136,6 +136,24 @@
             pointer-events: none;
         }
 
+        /* 🔥 ESCUDO ANTI-ESPERTINHOS: MARCA D'ÁGUA DE PREVIEW */
+        .cert-preview-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            font-size: 160px;
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
+            color: rgba(0, 0, 0, 0.06);
+            text-transform: uppercase;
+            letter-spacing: 40px;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+            user-select: none;
+        }
+
         .cert-data { 
             position: absolute;
             top: 20px;
@@ -353,6 +371,9 @@
                                                 
                                                 <img id="render-watermark" src="" class="cert-watermark">
 
+                                                <!-- 🔥 MARCA D'ÁGUA DE PREVIEW PARA PROTEGER O DESIGN -->
+                                                <div id="preview-watermark" class="cert-preview-overlay">PREVIEW</div>
+
                                                 <p id="render-data" class="cert-data">CARREGANDO LOCAL E DATA...</p>
 
                                                 <div class="cert-header-container">
@@ -440,92 +461,12 @@
                             </div>                        
                         </div>
 
-                        <!-- 2. ESTILOS E LOGOS -->
+                        <!-- 2. ESTILO E PERSONALIZAÇÃO (NOVA ORDEM) -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
-                                    <div class="flex gap-2">
-                                        <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                            <option value="dourado">Ouro Metálico (Premium)</option>
-                                            <option value="prata">Prata Titanium (Moderno)</option>
-                                            <option value="bronze">Bronze Antigo (Clássico)</option>
-                                            <option value="preto">Preto Nobre (Dark)</option>
-                                            <option value="custom">Cor da Equipe (Personalizada)</option>
-                                        </select>
-                                        <input type="color" id="cfg-cor-custom" onchange="atualizarPreviewLive()" value="#1D4ED8" class="h-[46px] w-12 cursor-pointer border-0 p-0 hidden bg-transparent" title="Escolha a Cor da Equipe">
-                                    </div>
-                                </div>
-                                <!-- 🔥 NOVO MENU: ESTILO DA BORDA -->
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Estilo da Borda</label>
-                                    <select id="cfg-estilo-borda" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="classica">Clássica (Com Cantoneiras)</option>
-                                        <option value="moderna">Moderna (Linha Grossa)</option>
-                                        <option value="dupla">Dupla (Linhas Finas)</option>
-                                        <option value="minimalista">Minimalista (Linha Única)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
-                                    <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
-                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
-                                        <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
-                                    <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
-                                        <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
-                                        <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
-                                        <option value="'Alex Brush', cursive">Alex Brush (Moderna e Fluida)</option>
-                                        <option value="'Parisienne', cursive">Parisienne (Romântica)</option>
-                                        <option value="'Tangerine', cursive">Tangerine (Elegante e Estreita)</option>
-                                        <option value="'Dancing Script', cursive">Dancing Script (Descontraída)</option>
-                                        <option value="'Playfair Display', serif">Playfair (Serifada Elegante)</option>
-                                        <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
-                                    <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="'Cormorant Garamond', serif">Cormorant (Clássica)</option>
-                                        <option value="'Playfair Display', serif">Playfair (Elegante)</option>
-                                        <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
-                                        <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
-                                        <option value="'Lora', serif">Lora (Serifada Suave)</option>
-                                        <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cor do Fundo & Textura</label>
-                                    <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="none">Fundo Branco (Limpo)</option>
-                                        <option value="woven">Fundo Branco (Linho)</option>
-                                        <option value="white-wall">Mármore Frio (Cinza Claro)</option>
-                                        <option value="cream-paper">Papel Creme (Quente)</option>
-                                        <option value="aged-paper">Papel Envelhecido (Clássico Bege)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sombra do Título</label>
-                                    <select id="cfg-sombra-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
-                                        <option value="none">Sem Sombra</option>
-                                        <option value="leve">Sombra Leve</option>
-                                        <option value="forte">Sombra Forte Projetada</option>
-                                        <option value="brilho">Brilho (Efeito Glow)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- UPLOADS -->
-                            <div class="border-t border-slate-100 pt-5">
+                            <!-- 2.1 IMAGENS PERSONALIZADAS -->
+                            <div class="mb-8">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
@@ -539,8 +480,8 @@
                                 </div>
                             </div>
 
-                            <!-- POSICIONAMENTO -->
-                            <div class="border-t border-slate-100 mt-6 pt-5 bg-slate-50/50 -mx-6 md:-mx-8 px-6 md:px-8 pb-4">
+                            <!-- 2.2 POSICIONAMENTO DAS LOGOS -->
+                            <div class="mb-8 pt-5 border-t border-slate-100">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento das Logos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div>
@@ -565,6 +506,96 @@
                                             <option value="equipe" selected>Logo da Equipe Oficial</option>
                                             <option value="extra">Logo Personalizada Upload</option>
                                             <option value="nenhuma">Nenhuma</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2.3 ESTILOS VISUAIS -->
+                            <div class="pt-5 border-t border-slate-100">
+                                <h4 class="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-4">Aparência Visual</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                    <!-- 1. Tema de Cores -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
+                                        <div class="flex gap-2">
+                                            <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                                <option value="dourado">Ouro Metálico (Premium)</option>
+                                                <option value="prata">Prata Titanium (Moderno)</option>
+                                                <option value="bronze">Bronze Antigo (Clássico)</option>
+                                                <option value="preto">Preto Nobre (Dark)</option>
+                                                <option value="custom">Cor da Equipe (Personalizada)</option>
+                                            </select>
+                                            <input type="color" id="cfg-cor-custom" onchange="atualizarPreviewLive()" value="#1D4ED8" class="h-[46px] w-12 cursor-pointer border-0 p-0 hidden bg-transparent" title="Escolha a Cor da Equipe">
+                                        </div>
+                                    </div>
+                                    <!-- 2. Estilo da Borda -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Estilo da Borda</label>
+                                        <select id="cfg-estilo-borda" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                            <option value="classica">Clássica (Com Cantoneiras)</option>
+                                            <option value="moderna">Moderna (Linha Grossa)</option>
+                                            <option value="dupla">Dupla (Linhas Finas)</option>
+                                            <option value="minimalista">Minimalista (Linha Única)</option>
+                                        </select>
+                                    </div>
+                                    <!-- 3. Cor do Fundo & Textura -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cor do Fundo & Textura</label>
+                                        <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                            <option value="none">Fundo Branco (Limpo)</option>
+                                            <option value="woven">Fundo Branco (Linho)</option>
+                                            <option value="white-wall">Mármore Frio (Cinza Claro)</option>
+                                            <option value="cream-paper">Papel Creme (Quente)</option>
+                                            <option value="aged-paper">Papel Envelhecido (Clássico Bege)</option>
+                                        </select>
+                                    </div>
+                                    <!-- 4. Fonte do Título -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
+                                        <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                            <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
+                                            <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                            <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
+                                            <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                            <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
+                                        </select>
+                                    </div>
+                                    <!-- 5. Sombra do Título -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sombra do Título</label>
+                                        <select id="cfg-sombra-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                            <option value="none">Sem Sombra</option>
+                                            <option value="leve">Sombra Leve</option>
+                                            <option value="forte">Sombra Forte Projetada</option>
+                                            <option value="brilho">Brilho (Efeito Glow)</option>
+                                        </select>
+                                    </div>
+                                    <!-- 6. Fonte do Nome -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
+                                        <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                            <option value="'Oswald', sans-serif" selected>Oswald (Forte e Limpa)</option>
+                                            <option value="'Great Vibes', cursive">Great Vibes (Manuscrita Clássica)</option>
+                                            <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
+                                            <option value="'Alex Brush', cursive">Alex Brush (Moderna e Fluida)</option>
+                                            <option value="'Parisienne', cursive">Parisienne (Romântica)</option>
+                                            <option value="'Tangerine', cursive">Tangerine (Elegante e Estreita)</option>
+                                            <option value="'Dancing Script', cursive">Dancing Script (Descontraída)</option>
+                                            <option value="'Playfair Display', serif">Playfair (Serifada Elegante)</option>
+                                            <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
+                                        </select>
+                                    </div>
+                                    <!-- 7. Fonte dos Textos -->
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
+                                        <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                            <option value="'Cormorant Garamond', serif">Cormorant (Clássica)</option>
+                                            <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+                                            <option value="'Montserrat', sans-serif">Montserrat (Moderna)</option>
+                                            <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
+                                            <option value="'Lora', serif">Lora (Serifada Suave)</option>
+                                            <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -808,7 +839,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v24");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v25");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -880,7 +911,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v24", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v25", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -991,7 +1022,6 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
-            // 🔥 NOVO: LÓGICA DE ESTILO DE BORDA SEM QUEBRAR O LAYOUT
             const estiloBorda = document.getElementById('cfg-estilo-borda').value;
             const cantos = document.querySelectorAll('.cert-corner');
             const metalBorder = document.getElementById('render-border-metal');
@@ -1059,7 +1089,6 @@
                 } else if (texturaSel === 'woven') {
                     fundoOuter = "#FFFFFF";
                     fundoInner = "#FFFFFF"; 
-                    // 🔥 LINHO CORRIGIDO E ELEGANTE (4% opacidade)
                     divTextura.style.opacity = '0.04'; 
                     divTextura.style.mixBlendMode = 'normal'; 
                 }
@@ -1271,6 +1300,11 @@
                 wrapperParaPDF.innerHTML = '';
                 const clone = certificadoReal.cloneNode(true);
                 clone.style.transform = 'none';
+
+                // 🔥 REMOVE A MARCA D'ÁGUA DE PREVIEW ANTES DE GERAR O PDF!
+                const marcaPreview = clone.querySelector('#preview-watermark');
+                if (marcaPreview) marcaPreview.remove();
+
                 wrapperParaPDF.appendChild(clone);
 
                 const opt = {                    
