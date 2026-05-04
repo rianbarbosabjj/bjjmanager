@@ -136,7 +136,6 @@
             pointer-events: none;
         }
 
-        /* 🔥 ESCUDO ANTI-ESPERTINHOS: MARCA D'ÁGUA DE PREVIEW */
         .cert-preview-overlay {
             position: absolute;
             top: 50%;
@@ -320,9 +319,6 @@
         .cert-qr-container { padding: 4px; background: #fff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .cert-serial { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; margin-top: 4px; color: #64748b; letter-spacing: 1px; }
 
-        /* =======================================================
-           📱 CONTAINER DE PREVIEW
-           ======================================================= */
         .preview-wrapper {
             width: 100%; overflow: hidden; display: flex; justify-content: center;
             background: linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 100%);
@@ -355,7 +351,6 @@
                         </h3>
                         <div class="preview-wrapper">
                             <div class="preview-scaler">
-                                
                                 <!-- CERTIFICADO PREMIUM -->
                                 <div id="certificado-render">
                                     <div class="cert-border-outer">
@@ -370,8 +365,6 @@
                                                 <div class="cert-corner corner-br"></div>
                                                 
                                                 <img id="render-watermark" src="" class="cert-watermark">
-
-                                                <!-- 🔥 MARCA D'ÁGUA DE PREVIEW PARA PROTEGER O DESIGN -->
                                                 <div id="preview-watermark" class="cert-preview-overlay">PREVIEW</div>
 
                                                 <p id="render-data" class="cert-data">CARREGANDO LOCAL E DATA...</p>
@@ -425,7 +418,6 @@
                                     </div>
                                 </div>
                                 <!-- FIM DO CERTIFICADO -->
-
                             </div>
                         </div>
                     </div>
@@ -436,14 +428,16 @@
                         <!-- 1. ATLETA -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
                             <h3 class="font-black text-cyan-600 text-sm uppercase tracking-widest mb-6">1. Dados da Emissão</h3>                                                        
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">                                
-                                <div class="md:col-span-1">                                    
+                            
+                            <!-- 🔥 GRID 4 COLUNAS: AGORA COM O GRAU -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">                                
+                                <div>                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Atleta</label>                                    
                                     <select id="combo-aluno" onchange="aoSelecionarAluno()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
                                         <option value="">Selecione...</option>                                    
                                     </select>                                
                                 </div>                                                                
-                                <div class="md:col-span-1">                                    
+                                <div>                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nova Faixa</label>                                    
                                     <select id="combo-faixa" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
                                         <option value="Branca">Branca</option>                                        
@@ -453,19 +447,31 @@
                                         <option value="Verde e Branca">Verde e Branca</option><option value="Verde">Verde</option><option value="Verde e Preta">Verde e Preta</option>                                        
                                         <option value="Azul">Azul</option><option value="Roxa">Roxa</option><option value="Marrom">Marrom</option><option value="Preta">Preta</option>                                    
                                     </select>                                
-                                </div>                                                                
-                                <div class="md:col-span-1">                                    
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data</label>                                    
+                                </div> 
+                                <!-- 🔥 NOVO CAMPO: GRAU -->
+                                <div>                                    
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau Adicional (Opcional)</label>                                    
+                                    <select id="combo-grau" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
+                                        <option value="">Nenhum (Apenas a Faixa)</option>                                        
+                                        <option value="1º Grau">1º Grau</option>
+                                        <option value="2º Grau">2º Grau</option>
+                                        <option value="3º Grau">3º Grau</option>
+                                        <option value="4º Grau">4º Grau</option>
+                                        <option value="5º Grau">5º Grau</option>
+                                        <option value="6º Grau">6º Grau</option>
+                                    </select>                                
+                                </div>                                                               
+                                <div>                                    
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data da Cerimônia</label>                                    
                                     <input type="date" id="entry-data" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all">                                
                                 </div>                            
                             </div>                        
                         </div>
 
-                        <!-- 2. ESTILO E PERSONALIZAÇÃO (NOVA ORDEM) -->
+                        <!-- 2. ESTILO E PERSONALIZAÇÃO -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <!-- 2.1 IMAGENS PERSONALIZADAS -->
                             <div class="mb-8">
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Imagens Personalizadas</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -480,7 +486,6 @@
                                 </div>
                             </div>
 
-                            <!-- 2.2 POSICIONAMENTO DAS LOGOS -->
                             <div class="mb-8 pt-5 border-t border-slate-100">
                                 <h4 class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-4">Posicionamento das Logos</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -511,11 +516,9 @@
                                 </div>
                             </div>
 
-                            <!-- 2.3 ESTILOS VISUAIS -->
                             <div class="pt-5 border-t border-slate-100">
                                 <h4 class="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-4">Aparência Visual</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                    <!-- 1. Tema de Cores -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                         <div class="flex gap-2">
@@ -529,7 +532,6 @@
                                             <input type="color" id="cfg-cor-custom" onchange="atualizarPreviewLive()" value="#1D4ED8" class="h-[46px] w-12 cursor-pointer border-0 p-0 hidden bg-transparent" title="Escolha a Cor da Equipe">
                                         </div>
                                     </div>
-                                    <!-- 2. Estilo da Borda -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Estilo da Borda</label>
                                         <select id="cfg-estilo-borda" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -539,7 +541,6 @@
                                             <option value="minimalista">Minimalista (Linha Única)</option>
                                         </select>
                                     </div>
-                                    <!-- 3. Cor do Fundo & Textura -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cor do Fundo & Textura</label>
                                         <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -550,7 +551,6 @@
                                             <option value="aged-paper">Papel Envelhecido (Clássico Bege)</option>
                                         </select>
                                     </div>
-                                    <!-- 4. Fonte do Título -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
                                         <select id="cfg-fonte-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -561,7 +561,6 @@
                                             <option value="'Pinyon Script', cursive">Pinyon (Manuscrita Fina)</option>
                                         </select>
                                     </div>
-                                    <!-- 5. Sombra do Título -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sombra do Título</label>
                                         <select id="cfg-sombra-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -571,7 +570,6 @@
                                             <option value="brilho">Brilho (Efeito Glow)</option>
                                         </select>
                                     </div>
-                                    <!-- 6. Fonte do Nome -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Nome</label>
                                         <select id="cfg-fonte-nome" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -586,7 +584,6 @@
                                             <option value="'Cinzel', serif">Cinzel (Épica / Romana)</option>
                                         </select>
                                     </div>
-                                    <!-- 7. Fonte dos Textos -->
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte dos Textos</label>
                                         <select id="cfg-fonte-texto" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -609,7 +606,6 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
                                     <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="" placeholder="Carregando nome da equipe..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
-                                    <p class="text-[9px] text-slate-400 mt-1 font-medium italic">Dica: Pode clicar na caixa acima e escrever livremente "A GRAPPLING FIGHT TEAM RECONHECE QUE" caso o sistema puxe o nome errado do seu cadastro.</p>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
@@ -644,11 +640,11 @@
                                 </div>                            
                             </div>                                                        
                             
-                            <!-- 🔥 BOTÃO DE EMISSÃO COM DESCONTO DE FICHAS -->
+                            <!-- 🔥 BOTÃO DE EMISSÃO COM DESCONTO DE FICHAS E AVISO INTELIGENTE -->
                             <div class="pt-4 border-t border-slate-100">                                
-                                <div class="flex justify-between items-center mb-3 px-2">
-                                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas Disponíveis:</span>
-                                    <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg">Carregando...</span>
+                                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 px-2 gap-2 text-center sm:text-left">
+                                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas Disponíveis: <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg ml-2">...</span></span>
+                                    <span class="text-[9px] text-emerald-500 font-bold uppercase bg-emerald-50 px-2 py-1 rounded border border-emerald-100">O sistema agendará a troca de faixa automática para a data escolhida!</span>
                                 </div>
                                 <button id="btn-gerar" onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-5 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center border border-slate-700">                                    
                                     <span class="mr-2 text-xl">🎓</span> EMITIR CERTIFICADO (1 FICHA)                                
@@ -759,9 +755,8 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    // CARREGA E ATUALIZA O SALDO DE FICHAS
                     fichasDisponiveis = parseInt(dadosEquipe.creditos_certificados) || 0;
-                    document.getElementById('display-fichas').innerText = `${fichasDisponiveis} Disponíve${fichasDisponiveis === 1 ? 'l' : 'is'}`;
+                    document.getElementById('display-fichas').innerText = `${fichasDisponiveis}`;
 
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
@@ -1111,7 +1106,12 @@
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
-            const faixa = document.getElementById('combo-faixa').value.toUpperCase();            
+            
+            // 🔥 COMBINAÇÃO INTELIGENTE DE FAIXA + GRAU
+            const faixaBase = document.getElementById('combo-faixa').value.toUpperCase();            
+            const grauAdd = document.getElementById('combo-grau').value;
+            const faixaTexto = grauAdd ? `${faixaBase} - ${grauAdd.toUpperCase()}` : faixaBase;
+
             const dataRaw = document.getElementById('entry-data').value;
             
             let dt;            
@@ -1121,9 +1121,9 @@
 
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
-            const corDaFaixa = getCoresFaixa(faixa);
+            const corDaFaixa = getCoresFaixa(faixaBase); // Usa só a base para não quebrar a cor
             const elFaixaCor = document.getElementById('render-faixa-cor');
-            elFaixaCor.innerText = faixa;
+            elFaixaCor.innerText = faixaTexto;
             elFaixaCor.style.color = corDaFaixa.fill;
             
             if (corDaFaixa.stroke) {
@@ -1263,7 +1263,6 @@
         }
 
         window.gerarCertificado = async function() {            
-            // 🛑 BLOQUEIO INTELIGENTE: Verifica se tem fichas antes de qualquer coisa
             if (fichasDisponiveis <= 0) {
                 return showToast("Você não possui Fichas suficientes. Compre mais no menu 'Assinatura'!", "error");
             }
@@ -1277,10 +1276,20 @@
             btn.classList.replace('from-slate-800', 'from-slate-400');            
             btn.disabled = true;
 
-            const faixa = document.getElementById('combo-faixa').value;            
+            const faixaBase = document.getElementById('combo-faixa').value;
+            const grauAdd = document.getElementById('combo-grau').value;
+            const faixaTexto = grauAdd ? `${faixaBase} - ${grauAdd}`.toUpperCase() : faixaBase.toUpperCase();
+            
             const dataRaw = document.getElementById('entry-data').value;            
             const respNome = document.getElementById('resp-nome').value.trim();            
             const profNome = document.getElementById('prof-nome').value.trim();            
+
+            if(!dataRaw) {
+                btn.innerHTML = "<span class='mr-2 text-xl'>🎓</span> EMITIR CERTIFICADO (1 FICHA)";
+                btn.classList.replace('from-slate-400', 'from-slate-800');
+                btn.disabled = false;
+                return showToast("Escolha a Data da Cerimônia!", "error");
+            }
 
             let dt;            
             if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }                        
@@ -1291,7 +1300,6 @@
             const numeroSerieStr = `${mesStr}${anoStr}${seqStr}`; 
             serialEquipeAtual += 1;                        
             
-            // 🔥 DESCONTO DA FICHA: Subtrai 1 ficha do saldo atual
             fichasDisponiveis -= 1;
 
             try { 
@@ -1300,7 +1308,6 @@
                     creditos_certificados: fichasDisponiveis
                 }); 
                 
-                // Atualiza o contador na tela em tempo real
                 document.getElementById('display-fichas').innerText = `${fichasDisponiveis} Disponíve${fichasDisponiveis === 1 ? 'l' : 'is'}`;
             } catch(e) { }
 
@@ -1308,12 +1315,34 @@
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
 
             try {                
+                // Salva o Certificado
                 await addDoc(collection(db, "certificados"), {                    
-                    equipe_id: uid, aluno_id: aluno.id, nome_aluno: aluno.nome.toUpperCase(), faixa: faixa.toUpperCase(),                    
-                    numero_serie: numeroSerieStr, hash_validador: idHash, data_cerimonia: dataRaw,                    
-                    prof_responsavel: respNome, prof_direto: profNome, cidade_equipe: cidadeEquipeLogada, data_emissao: new Date().toISOString()                
-                });            
-            } catch (e) {}
+                    equipe_id: uid, 
+                    aluno_id: aluno.id, 
+                    nome_aluno: aluno.nome.toUpperCase(), 
+                    faixa: faixaTexto,                    
+                    numero_serie: numeroSerieStr, 
+                    hash_validador: idHash, 
+                    data_cerimonia: dataRaw,                    
+                    prof_responsavel: respNome, 
+                    prof_direto: profNome, 
+                    cidade_equipe: cidadeEquipeLogada, 
+                    data_emissao: new Date().toISOString()                
+                });
+
+                // 🔥 CRIA O AGENDAMENTO DE MUDANÇA DE FAIXA PARA O HISTÓRICO
+                await addDoc(collection(db, "historico_faixas"), {
+                    equipe_id: uid,
+                    aluno_id: aluno.id,
+                    faixa: faixaTexto,
+                    data_promocao: dataRaw, // Data que o gatilho vai olhar
+                    status: "AGENDADO",     // Fica na espera
+                    certificado_url: urlValidador
+                });
+
+            } catch (e) {
+                console.error("Erro ao salvar no banco", e);
+            }
 
             document.getElementById('render-serial').innerText = `VALIDADOR: ${numeroSerieStr}`;                        
             qrcodeObj.clear();            
@@ -1327,7 +1356,6 @@
                 const clone = certificadoReal.cloneNode(true);
                 clone.style.transform = 'none';
 
-                // 🔥 MAGIA: Remove a marca d'água invisivelmente só no PDF gerado!
                 const marcaPreview = clone.querySelector('#preview-watermark');
                 if (marcaPreview) marcaPreview.remove();
 
@@ -1346,7 +1374,8 @@
                     btn.classList.replace('from-slate-400', 'from-slate-800');                    
                     btn.disabled = false;                                        
                     document.getElementById('combo-aluno').value = "";                    
-                    window.atualizarPreviewLive();                
+                    window.atualizarPreviewLive();
+                    showToast("Diploma gerado e Graduação Agendada!", "success");
                 }).catch(err => {                    
                     showToast("Erro ao gerar PDF.", "error");                    
                     btn.disabled = false;                
