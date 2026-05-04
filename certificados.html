@@ -46,19 +46,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        #certificado-render::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(circle at 12% 18%, rgba(212,175,55,0.12), transparent 26%),
-                radial-gradient(circle at 86% 82%, rgba(120,83,35,0.10), transparent 30%),
-                linear-gradient(135deg, rgba(255,255,255,0.35), rgba(191,149,63,0.06));
-            opacity: 0.75;
-            pointer-events: none;
-            z-index: 0;
-        }
-
         .cert-border-outer {
             background: #FFFFFF;
             padding: 20px;
@@ -99,6 +86,16 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
+        .cert-textura-fundo {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.15; 
+            pointer-events: none;
+            z-index: 0;
+            background-repeat: repeat;
+            transition: background-image 0.3s ease;
+        }
+
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
         .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
         .cert-corner::before { width: 2px; height: 100%; }
@@ -118,7 +115,7 @@
             object-fit: contain;
             opacity: 0.04;
             filter: grayscale(100%);
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
         }
 
@@ -327,6 +324,8 @@
                                         <div id="render-border-metal" class="cert-border-metal">
                                             <div id="render-border-inner" class="cert-border-inner">
                                                 
+                                                <div id="render-textura" class="cert-textura-fundo"></div>
+
                                                 <div class="cert-corner corner-tl"></div>
                                                 <div class="cert-corner corner-tr"></div>
                                                 <div class="cert-corner corner-bl"></div>
@@ -425,7 +424,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -470,6 +469,25 @@
                                         <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
                                     </select>
                                 </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Textura do Papel</label>
+                                    <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="aged-paper">Papel Envelhecido (Clássico)</option>
+                                        <option value="cream-paper">Papel Creme (Liso)</option>
+                                        <option value="woven">Textura de Linho</option>
+                                        <option value="white-wall">Parede de Mármore / Estuque</option>
+                                        <option value="none">Limpo (Sem Textura)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sombra do Título</label>
+                                    <select id="cfg-sombra-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="none">Sem Sombra</option>
+                                        <option value="leve">Sombra Leve</option>
+                                        <option value="forte">Sombra Forte Projetada</option>
+                                        <option value="brilho">Brilho (Efeito Glow)</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- UPLOADS -->
@@ -493,25 +511,26 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Esquerda</label>
+                                        <!-- 🔥 Padrão atualizado para Logo da Equipe -->
                                         <select id="pos-esq" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="extra">Logo Personalizada</option>
-                                            <option value="equipe">Logo da Plataforma</option>
+                                            <option value="equipe" selected>Logo da Equipe Oficial</option>
+                                            <option value="extra">Logo Personalizada Upload</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="nenhuma">Nenhuma</option>
-                                            <option value="equipe">Logo da Plataforma</option>
-                                            <option value="extra">Logo Personalizada</option>
+                                            <option value="nenhuma" selected>Nenhuma</option>
+                                            <option value="equipe">Logo da Equipe Oficial</option>
+                                            <option value="extra">Logo Personalizada Upload</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fundo / Marca d'água</label>
                                         <select id="pos-water" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="equipe">Logo da Plataforma</option>
-                                            <option value="extra">Logo Personalizada</option>
+                                            <option value="equipe" selected>Logo da Equipe Oficial</option>
+                                            <option value="extra">Logo Personalizada Upload</option>
                                             <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
@@ -686,6 +705,8 @@
                     const logoEquipeOficial = dadosEquipe.url_logo || null;
 
                     if (logoEquipeOficial) {
+                        // 🔥 Fallback direto para o src no caso de bloqueio de blob
+                        logoBase64Global = logoEquipeOficial; 
                         try {
                             const respLogo = await fetch(logoEquipeOficial);
                             if (respLogo.ok) {
@@ -732,9 +753,10 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v15");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v17");            
             
-            const textoPadraoDinamico = `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
+            // Texto dinâmico perfeitamente limpo (sem repetir a palavra EQUIPE se o nome já for Equipe Algo)
+            const textoPadraoDinamico = `A ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
 
             if(memoria) {                
                 try {                    
@@ -756,6 +778,9 @@
                     if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
                     if(p.posWater) document.getElementById('pos-water').value = p.posWater;
+                    
+                    if(p.textura) document.getElementById('cfg-textura').value = p.textura;
+                    if(p.sombraTitulo) document.getElementById('cfg-sombra-titulo').value = p.sombraTitulo;
                 } catch(e) {}            
             } else {
                 document.getElementById('cfg-texto1').value = textoPadraoDinamico;
@@ -777,9 +802,11 @@
                 fonteNome: document.getElementById('cfg-fonte-nome').value,
                 posEsq: document.getElementById('pos-esq').value,
                 posDir: document.getElementById('pos-dir').value,
-                posWater: document.getElementById('pos-water').value
+                posWater: document.getElementById('pos-water').value,
+                textura: document.getElementById('cfg-textura').value,
+                sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v15", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v17", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -819,18 +846,41 @@
             return null;
         }
 
-        function getCorDaFaixaTexto(faixaStr) {
+        function getCoresFaixa(faixaStr) {
             const f = faixaStr.toLowerCase();
-            if (f.includes('preta')) return '#000000'; 
-            if (f.includes('marrom')) return '#5C4033'; 
-            if (f.includes('roxa')) return '#581C87'; 
-            if (f.includes('azul')) return '#1D4ED8'; 
-            if (f.includes('verde')) return '#166534'; 
-            if (f.includes('laranja')) return '#EA580C'; 
-            if (f.includes('amarela')) return '#FFD700'; // 🔥 Amarelo Ouro restaurado!
-            if (f.includes('cinza')) return '#64748B'; 
-            if (f.includes('branca')) return '#475569'; 
-            return '#1E293B'; 
+            const cores = {
+                branca: '#FFFFFF',
+                cinza: '#64748B', 
+                amarela: '#FFD700', 
+                laranja: '#EA580C', 
+                verde: '#15803D', 
+                azul: '#1D4ED8', 
+                roxa: '#6B21A8', 
+                marrom: '#5C4033', 
+                preta: '#0F172A' 
+            };
+
+            if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza };
+            if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza };
+            if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela };
+            if (f.includes('amarela e preta')) return { fill: cores.preta, stroke: cores.amarela };
+            if (f.includes('laranja e branca')) return { fill: cores.branca, stroke: cores.laranja };
+            if (f.includes('laranja e preta')) return { fill: cores.preta, stroke: cores.laranja };
+            if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde };
+            if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde };
+
+            if (f.includes('preta')) return { fill: cores.preta, stroke: null };
+            if (f.includes('marrom')) return { fill: cores.marrom, stroke: null };
+            if (f.includes('roxa')) return { fill: cores.roxa, stroke: null };
+            if (f.includes('azul')) return { fill: cores.azul, stroke: null };
+            if (f.includes('verde')) return { fill: cores.verde, stroke: null };
+            if (f.includes('laranja')) return { fill: cores.laranja, stroke: null };
+            if (f.includes('amarela')) return { fill: cores.amarela, stroke: null };
+            if (f.includes('cinza')) return { fill: cores.cinza, stroke: null };
+            
+            if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8' }; 
+
+            return { fill: '#B38728', stroke: null }; 
         }
 
         function formatarNome(nome, isCursive) {
@@ -859,6 +909,14 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
+            const texturaSel = document.getElementById('cfg-textura').value;
+            const divTextura = document.getElementById('render-textura');
+            if (texturaSel === 'none') {
+                divTextura.style.backgroundImage = 'none';
+            } else {
+                divTextura.style.backgroundImage = `url('https://www.transparenttextures.com/patterns/${texturaSel}.png')`;
+            }
+
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
@@ -872,13 +930,24 @@
 
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
-            const corDaFaixa = getCorDaFaixaTexto(faixa);
+            const corDaFaixa = getCoresFaixa(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
-            elFaixaCor.style.color = corDaFaixa;
+            elFaixaCor.style.color = corDaFaixa.fill;
+            
+            if (corDaFaixa.stroke) {
+                const s = corDaFaixa.stroke;
+                elFaixaCor.style.textShadow = `
+                    -1.5px -1.5px 0 ${s}, 1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 1.5px 1.5px 0 ${s}, 
+                    -2px 0 0 ${s}, 2px 0 0 ${s}, 0 -2px 0 ${s}, 0 2px 0 ${s},
+                    0px 3px 5px rgba(0,0,0,0.15)
+                `;
+            } else {
+                elFaixaCor.style.textShadow = 'none';
+            }
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
-            document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
+            document.getElementById('render-texto1').innerText = (textoInput1 || `A ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
             
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
@@ -887,7 +956,6 @@
             document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            // Logos Laterais
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
             const elEsq = document.getElementById('render-logo-esq');
@@ -900,7 +968,6 @@
             elDir.src = srcDir || '';
             elDir.style.display = (srcDir && valDir !== 'nenhuma') ? 'block' : 'none';
 
-            // Marca de Água
             const imgWater = document.getElementById('render-watermark');
             const valWater = document.getElementById('pos-water') ? document.getElementById('pos-water').value : 'equipe';
             const srcWater = getImagemEscolhida(valWater);
@@ -911,7 +978,6 @@
                 imgWater.classList.add('hidden');
             }
 
-            // Selo Customizado
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
                 elSelo.src = customSeloBase64;
@@ -920,10 +986,10 @@
                 elSelo.classList.add('hidden');
             }
 
-            // Fontes
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
+            const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
@@ -941,6 +1007,16 @@
                 } else {
                     maxFontSizeTitulo = 42;
                 }
+            }
+
+            if (sombraTitulo === 'leve') {
+                elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
+            } else if (sombraTitulo === 'forte') {
+                elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
+            } else if (sombraTitulo === 'brilho') {
+                elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
+            } else {
+                elTitulo.style.textShadow = 'none';
             }
 
             const elNome = document.getElementById('render-nome');
@@ -987,7 +1063,6 @@
                 }
             });
 
-            // Encolhimento de Segurança Sincronizado
             document.fonts.ready.then(() => {
                 setTimeout(() => {
                     ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680); 
