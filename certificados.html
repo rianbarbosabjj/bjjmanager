@@ -86,12 +86,13 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* 🔥 CAMADA DE TEXTURA CORRIGIDA E MAIS VISÍVEL */
         .cert-textura-fundo {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 0.15; 
+            opacity: 0.35; /* Mais visível */
             pointer-events: none;
-            z-index: 0;
+            z-index: 1; /* Fica acima do degradê do inner-border */
             background-repeat: repeat;
             transition: background-image 0.3s ease;
         }
@@ -544,6 +545,7 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
                                     <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="" placeholder="Carregando nome da equipe..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
+                                    <p class="text-[9px] text-slate-400 mt-1 font-medium italic">Dica: Pode clicar na caixa acima e escrever livremente "A GRAPPLING FIGHT TEAM RECONHECE QUE" caso o sistema puxe o nome errado do seu cadastro.</p>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
@@ -687,6 +689,7 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
+                    // 🔥 BUSCA ROBUSTA DE NOME
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
                     if (dadosEquipe.cidade) {
@@ -701,6 +704,7 @@
                         cidadeEquipeLogada = "RIO DE JANEIRO";
                     }
 
+                    // 🔥 BUSCA ROBUSTA DE LOGO
                     const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
 
                     if (logoEquipeOficial) {
@@ -718,20 +722,20 @@
                         } catch(e) {}
                     }
 
-                    // 🔥 MÁGICA PARA FORÇAR A ATUALIZAÇÃO DO MENU LATERAL ESCURO
+                    // 🔥 "HACK" NINJA: INJEÇÃO NO MENU.JS ANTIGO PARA CORRIGIR O NOME E AVATAR NA BARRA LATERAL
                     setTimeout(() => {
                         try {
-                            // Atualiza o nome da equipe no menu
                             const elementosTexto = document.querySelectorAll('span, p, div, h1, h2, h3, h4, h5, h6');
+                            
+                            // Atualiza "SUA EQUIPE"
                             elementosTexto.forEach(el => {
-                                if (el.childNodes.length === 1 && el.innerText && el.innerText.trim() === 'SUA EQUIPE') {
+                                if (el.childNodes.length === 1 && el.innerText && el.innerText.trim().toUpperCase() === 'SUA EQUIPE') {
                                     el.innerText = nomeEquipeLogada.toUpperCase();
                                 }
                             });
 
-                            // Atualiza a logo no menu
+                            // Atualiza a letra "S" pela logo verdadeira
                             if (logoEquipeOficial) {
-                                // Se for um avatar com a letra "S"
                                 elementosTexto.forEach(el => {
                                     if (el.childNodes.length === 1 && el.innerText && el.innerText.trim() === 'S') {
                                         el.innerHTML = `<img src="${logoEquipeOficial}" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" alt="Logo da Equipe">`;
@@ -740,7 +744,7 @@
                                     }
                                 });
                             }
-                        } catch(err) { console.log("Erro ao atualizar menu:", err); }
+                        } catch(err) { console.log("Erro ao atualizar menu lateral:", err); }
                     }, 800);
                 }            
             } catch (error) { console.log(error); }        
@@ -776,8 +780,9 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v18");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v19");            
             
+            // Lógica inteligente para frase
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
             if(!nLimpo.includes("EQUIPE") && !nLimpo.includes("TEAM") && !nLimpo.includes("ACADEMIA") && !nLimpo.includes("PROJETO") && !nLimpo.includes("ASSOCIAÇÃO")) {
@@ -795,7 +800,7 @@
                     if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;                    
                     if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
                     
-                    if (p.txt1 && !p.txt1.includes("SUA EQUIPE") && !p.txt1.includes("BJJ MANEGER")) {
+                    if (p.txt1 && !p.txt1.includes("SUA EQUIPE") && !p.txt1.includes("BJJ MANEGER") && !p.txt1.includes("EQUIPE EQUIPE")) {
                         document.getElementById('cfg-texto1').value = p.txt1;
                     } else {
                         document.getElementById('cfg-texto1').value = textoPadraoDinamico;
@@ -840,7 +845,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v18", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v19", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -943,12 +948,20 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
+            // 🔥 TEXTURAS 100% GARANTIDAS
+            const texturasMap = {
+                'aged-paper': 'https://www.transparenttextures.com/patterns/parchment.png',
+                'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
+                'woven': 'https://www.transparenttextures.com/patterns/woven.png',
+                'white-wall': 'https://www.transparenttextures.com/patterns/stucco.png'
+            };
+
             const texturaSel = document.getElementById('cfg-textura').value;
             const divTextura = document.getElementById('render-textura');
             if (texturaSel === 'none') {
                 divTextura.style.backgroundImage = 'none';
             } else {
-                divTextura.style.backgroundImage = `url('https://www.transparenttextures.com/patterns/${texturaSel}.png')`;
+                divTextura.style.backgroundImage = `url('${texturasMap[texturaSel]}')`;
             }
 
             const alunoId = document.getElementById('combo-aluno').value;
