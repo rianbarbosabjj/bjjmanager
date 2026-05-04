@@ -86,13 +86,14 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* 🔥 CAMADA DE TEXTURA CORRIGIDA E MAIS VISÍVEL */
+        /* 🔥 TEXTURA INTELIGENTE QUE SE MISTURA COM O FUNDO */
         .cert-textura-fundo {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 0.35; /* Mais visível */
+            opacity: 0.75; /* Aumentado drasticamente para ser notável */
+            mix-blend-mode: multiply; /* Faz a textura mesclar com as cores perfeitamente */
             pointer-events: none;
-            z-index: 1; /* Fica acima do degradê do inner-border */
+            z-index: 1;
             background-repeat: repeat;
             transition: background-image 0.3s ease;
         }
@@ -689,7 +690,6 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    // 🔥 BUSCA ROBUSTA DE NOME
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
                     if (dadosEquipe.cidade) {
@@ -704,7 +704,6 @@
                         cidadeEquipeLogada = "RIO DE JANEIRO";
                     }
 
-                    // 🔥 BUSCA ROBUSTA DE LOGO
                     const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
 
                     if (logoEquipeOficial) {
@@ -722,19 +721,16 @@
                         } catch(e) {}
                     }
 
-                    // 🔥 "HACK" NINJA: INJEÇÃO NO MENU.JS ANTIGO PARA CORRIGIR O NOME E AVATAR NA BARRA LATERAL
                     setTimeout(() => {
                         try {
                             const elementosTexto = document.querySelectorAll('span, p, div, h1, h2, h3, h4, h5, h6');
                             
-                            // Atualiza "SUA EQUIPE"
                             elementosTexto.forEach(el => {
                                 if (el.childNodes.length === 1 && el.innerText && el.innerText.trim().toUpperCase() === 'SUA EQUIPE') {
                                     el.innerText = nomeEquipeLogada.toUpperCase();
                                 }
                             });
 
-                            // Atualiza a letra "S" pela logo verdadeira
                             if (logoEquipeOficial) {
                                 elementosTexto.forEach(el => {
                                     if (el.childNodes.length === 1 && el.innerText && el.innerText.trim() === 'S') {
@@ -780,9 +776,8 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v19");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v20");            
             
-            // Lógica inteligente para frase
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
             if(!nLimpo.includes("EQUIPE") && !nLimpo.includes("TEAM") && !nLimpo.includes("ACADEMIA") && !nLimpo.includes("PROJETO") && !nLimpo.includes("ASSOCIAÇÃO")) {
@@ -845,7 +840,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v19", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v20", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -950,10 +945,10 @@
 
             // 🔥 TEXTURAS 100% GARANTIDAS
             const texturasMap = {
-                'aged-paper': 'https://www.transparenttextures.com/patterns/parchment.png',
+                'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
                 'woven': 'https://www.transparenttextures.com/patterns/woven.png',
-                'white-wall': 'https://www.transparenttextures.com/patterns/stucco.png'
+                'white-wall': 'https://www.transparenttextures.com/patterns/concrete-wall.png'
             };
 
             const texturaSel = document.getElementById('cfg-textura').value;
