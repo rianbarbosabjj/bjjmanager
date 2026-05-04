@@ -46,19 +46,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        #certificado-render::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(circle at 12% 18%, rgba(212,175,55,0.12), transparent 26%),
-                radial-gradient(circle at 86% 82%, rgba(120,83,35,0.10), transparent 30%),
-                linear-gradient(135deg, rgba(255,255,255,0.35), rgba(191,149,63,0.06));
-            opacity: 0.75;
-            pointer-events: none;
-            z-index: 0;
-        }
-
         .cert-border-outer {
             background: #FFFFFF;
             padding: 20px;
@@ -99,6 +86,17 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* 🔥 CAMADA DE TEXTURA INDEPENDENTE E INTELIGENTE */
+        .cert-textura-fundo {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.15; /* Intensidade da textura do papel */
+            pointer-events: none;
+            z-index: 0;
+            background-repeat: repeat;
+            transition: background-image 0.3s ease;
+        }
+
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
         .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
         .cert-corner::before { width: 2px; height: 100%; }
@@ -118,7 +116,7 @@
             object-fit: contain;
             opacity: 0.04;
             filter: grayscale(100%);
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
         }
 
@@ -150,6 +148,7 @@
         
         .cert-titulo-wrapper { flex: 1; text-align: center; }
         
+        /* 🔥 TÍTULO COM SOMBRA VARIÁVEL VIA INLINE STYLE */
         .cert-titulo { 
             color: #1E293B; 
             margin: 0;
@@ -208,14 +207,13 @@
             margin-bottom: 10px;
         }
 
-        /* 🔥 FAIXA COM CONTORNO E COR INTELIGENTE */
         .cert-faixa-cor-destaque { 
             font-family: 'Montserrat', sans-serif;
             font-size: 26px; 
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            /* A linha inferior agora segue EXATAMENTE a cor do tema e não a da faixa */
+            color: #1E293B; 
             border-bottom: 3px solid var(--cor-destaque); 
             padding-bottom: 0px;
             display: inline-block;
@@ -328,6 +326,9 @@
                                         <div id="render-border-metal" class="cert-border-metal">
                                             <div id="render-border-inner" class="cert-border-inner">
                                                 
+                                                <!-- 🔥 A CAMADA DE TEXTURA AGORA É INDEPENDENTE -->
+                                                <div id="render-textura" class="cert-textura-fundo"></div>
+
                                                 <div class="cert-corner corner-tl"></div>
                                                 <div class="cert-corner corner-tr"></div>
                                                 <div class="cert-corner corner-bl"></div>
@@ -426,7 +427,8 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                            <!-- 🔥 GRID DE 6 COLUNAS PARA CABER TUDO -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <select id="cfg-tema" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
@@ -469,6 +471,26 @@
                                         <option value="'Old Standard TT', serif">Old Standard (Antiga)</option>
                                         <option value="'Lora', serif">Lora (Serifada Suave)</option>
                                         <option value="'Roboto', sans-serif">Roboto (Corporativa)</option>
+                                    </select>
+                                </div>
+                                <!-- 🔥 NOVOS CAMPOS: TEXTURA E SOMBRA -->
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Textura do Papel</label>
+                                    <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="aged-paper">Papel Envelhecido (Clássico)</option>
+                                        <option value="cream-paper">Papel Creme (Liso)</option>
+                                        <option value="woven">Textura de Linho</option>
+                                        <option value="white-wall">Parede de Mármore / Estuque</option>
+                                        <option value="none">Limpo (Sem Textura)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sombra do Título</label>
+                                    <select id="cfg-sombra-titulo" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="none">Sem Sombra</option>
+                                        <option value="leve">Sombra Leve</option>
+                                        <option value="forte">Sombra Forte Projetada</option>
+                                        <option value="brilho">Brilho (Efeito Glow)</option>
                                     </select>
                                 </div>
                             </div>
@@ -733,7 +755,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v14");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v16");            
             
             const textoPadraoDinamico = `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`;
 
@@ -757,6 +779,9 @@
                     if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
                     if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
                     if(p.posWater) document.getElementById('pos-water').value = p.posWater;
+                    
+                    if(p.textura) document.getElementById('cfg-textura').value = p.textura;
+                    if(p.sombraTitulo) document.getElementById('cfg-sombra-titulo').value = p.sombraTitulo;
                 } catch(e) {}            
             } else {
                 document.getElementById('cfg-texto1').value = textoPadraoDinamico;
@@ -778,9 +803,11 @@
                 fonteNome: document.getElementById('cfg-fonte-nome').value,
                 posEsq: document.getElementById('pos-esq').value,
                 posDir: document.getElementById('pos-dir').value,
-                posWater: document.getElementById('pos-water').value
+                posWater: document.getElementById('pos-water').value,
+                textura: document.getElementById('cfg-textura').value,
+                sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v14", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v16", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -820,14 +847,13 @@
             return null;
         }
 
-        // 🔥 O SEGREDO DAS FAIXAS DE DUAS CORES (Corrigido e Puro)
         function getCoresFaixa(faixaStr) {
             const f = faixaStr.toLowerCase();
             const cores = {
                 branca: '#FFFFFF',
                 cinza: '#64748B', 
-                amarela: '#FFD700', // Ouro brilhante
-                laranja: '#EA580C', // Laranja vibrante
+                amarela: '#F59E0B', 
+                laranja: '#EA580C', 
                 verde: '#15803D', 
                 azul: '#1D4ED8', 
                 roxa: '#6B21A8', 
@@ -835,7 +861,6 @@
                 preta: '#0F172A' 
             };
 
-            // Miolo = Cor 2, Contorno = Cor 1
             if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza };
             if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza };
             if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela };
@@ -845,7 +870,6 @@
             if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde };
             if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde };
 
-            // Sólidas
             if (f.includes('preta')) return { fill: cores.preta, stroke: null };
             if (f.includes('marrom')) return { fill: cores.marrom, stroke: null };
             if (f.includes('roxa')) return { fill: cores.roxa, stroke: null };
@@ -855,7 +879,6 @@
             if (f.includes('amarela')) return { fill: cores.amarela, stroke: null };
             if (f.includes('cinza')) return { fill: cores.cinza, stroke: null };
             
-            // Branca ganha um leve contorno cinza para ler bem no fundo claro
             if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8' }; 
 
             return { fill: '#B38728', stroke: null }; 
@@ -887,6 +910,15 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
+            // 🔥 TEXTURAS DE FUNDO
+            const texturaSel = document.getElementById('cfg-textura').value;
+            const divTextura = document.getElementById('render-textura');
+            if (texturaSel === 'none') {
+                divTextura.style.backgroundImage = 'none';
+            } else {
+                divTextura.style.backgroundImage = `url('https://www.transparenttextures.com/patterns/${texturaSel}.png')`;
+            }
+
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
@@ -900,7 +932,7 @@
 
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
-            // 🔥 APLICAÇÃO DE CONTORNOS E CORES DA FAIXA SEM DEFORMAÇÃO
+            // FAIXA
             const corDaFaixa = getCoresFaixa(faixa);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixa;
@@ -908,7 +940,6 @@
             
             if (corDaFaixa.stroke) {
                 const s = corDaFaixa.stroke;
-                // Text-shadow cria um contorno limpo "para fora", mantendo o miolo perfeito
                 elFaixaCor.style.textShadow = `
                     -1.5px -1.5px 0 ${s}, 1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 1.5px 1.5px 0 ${s}, 
                     -2px 0 0 ${s}, 2px 0 0 ${s}, 0 -2px 0 ${s}, 0 2px 0 ${s},
@@ -917,9 +948,6 @@
             } else {
                 elFaixaCor.style.textShadow = 'none';
             }
-            
-            // A borda agora segue a cor de destaque do TEMA e não da faixa
-            // Removi elFaixaCor.style.borderBottomColor = corDaFaixa.border;
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
             document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
@@ -964,10 +992,11 @@
                 elSelo.classList.add('hidden');
             }
 
-            // Fontes
+            // Fontes e Sombras
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
+            const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
@@ -985,6 +1014,17 @@
                 } else {
                     maxFontSizeTitulo = 42;
                 }
+            }
+
+            // 🔥 APLICAÇÃO DA SOMBRA DO TÍTULO
+            if (sombraTitulo === 'leve') {
+                elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
+            } else if (sombraTitulo === 'forte') {
+                elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
+            } else if (sombraTitulo === 'brilho') {
+                elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
+            } else {
+                elTitulo.style.textShadow = 'none';
             }
 
             const elNome = document.getElementById('render-nome');
