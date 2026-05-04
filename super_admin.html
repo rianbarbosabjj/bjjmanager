@@ -811,6 +811,19 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
+        // 🔥 A FUNÇÃO QUE EU TINHA APAGADO SEM QUERER!
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-blue-500' : 'bg-rose-500');
+            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
         // ==========================================
         // 🚦 CONTROLE DE AMBIENTE DINÂMICO (FIRESTORE)
         // ==========================================
