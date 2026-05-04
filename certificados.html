@@ -82,7 +82,7 @@
             box-sizing: border-box;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             position: relative;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, padding 0.3s ease;
         }
         
         .cert-border-inner {
@@ -99,7 +99,7 @@
             box-sizing: border-box;
             box-shadow: inset 0 0 0 8px var(--fundo-inner), inset 0 0 0 9px var(--cor-destaque);
             z-index: 2;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border 0.3s ease;
         }
 
         .cert-textura-fundo {
@@ -110,7 +110,7 @@
             pointer-events: none;
             z-index: 1;
             background-repeat: repeat;
-            transition: background-image 0.3s ease, opacity 0.3s ease;
+            transition: background-image 0.3s ease, opacity 0.3s ease, mix-blend-mode 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
@@ -314,6 +314,9 @@
         .preview-scaler { transform: scale(0.42); transform-origin: top center; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         @media (min-width: 768px) { .preview-wrapper { height: 450px; } .preview-scaler { transform: scale(0.48); } }
         @media (min-width: 1024px) { .preview-wrapper { height: 520px; } .preview-scaler { transform: scale(0.58); } }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -441,7 +444,7 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-white">                            
                             <h3 class="font-black text-purple-600 text-sm uppercase tracking-widest mb-6">2. Estilo e Personalização</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tema de Cores</label>
                                     <div class="flex gap-2">
@@ -454,6 +457,16 @@
                                         </select>
                                         <input type="color" id="cfg-cor-custom" onchange="atualizarPreviewLive()" value="#1D4ED8" class="h-[46px] w-12 cursor-pointer border-0 p-0 hidden bg-transparent" title="Escolha a Cor da Equipe">
                                     </div>
+                                </div>
+                                <!-- 🔥 NOVO MENU: ESTILO DA BORDA -->
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Estilo da Borda</label>
+                                    <select id="cfg-estilo-borda" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
+                                        <option value="classica">Clássica (Com Cantoneiras)</option>
+                                        <option value="moderna">Moderna (Linha Grossa)</option>
+                                        <option value="dupla">Dupla (Linhas Finas)</option>
+                                        <option value="minimalista">Minimalista (Linha Única)</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Fonte do Título</label>
@@ -795,7 +808,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v23");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v24");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -829,6 +842,7 @@
                             document.getElementById('cfg-cor-custom').value = p.corCustom;
                         }
                     }
+                    if(p.estiloBorda) document.getElementById('cfg-estilo-borda').value = p.estiloBorda;
                     if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
                     if(p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
                     if(p.fonteNome) document.getElementById('cfg-fonte-nome').value = p.fonteNome;
@@ -856,6 +870,7 @@
                 txt3: document.getElementById('cfg-texto3').value,
                 tema: document.getElementById('cfg-tema').value,
                 corCustom: document.getElementById('cfg-cor-custom').value,
+                estiloBorda: document.getElementById('cfg-estilo-borda').value,
                 fonteTitulo: document.getElementById('cfg-fonte-titulo').value,
                 fonteTexto: document.getElementById('cfg-fonte-texto').value,
                 fonteNome: document.getElementById('cfg-fonte-nome').value,
@@ -865,7 +880,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v23", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v24", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -976,7 +991,34 @@
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
-            // 🔥 O SEGREDO DO PAPEL: Fundo inteligente que muda consoante a textura
+            // 🔥 NOVO: LÓGICA DE ESTILO DE BORDA SEM QUEBRAR O LAYOUT
+            const estiloBorda = document.getElementById('cfg-estilo-borda').value;
+            const cantos = document.querySelectorAll('.cert-corner');
+            const metalBorder = document.getElementById('render-border-metal');
+            const innerBorder = document.getElementById('render-border-inner');
+
+            if (estiloBorda === 'classica') {
+                cantos.forEach(c => c.style.display = 'block');
+                metalBorder.style.padding = '3px';
+                innerBorder.style.border = '1px solid var(--cor-destaque)';
+                innerBorder.style.boxShadow = 'inset 0 0 0 8px var(--fundo-inner), inset 0 0 0 9px var(--cor-destaque)';
+            } else if (estiloBorda === 'moderna') {
+                cantos.forEach(c => c.style.display = 'none');
+                metalBorder.style.padding = '8px'; 
+                innerBorder.style.border = 'none';
+                innerBorder.style.boxShadow = 'none';
+            } else if (estiloBorda === 'dupla') {
+                cantos.forEach(c => c.style.display = 'none');
+                metalBorder.style.padding = '2px';
+                innerBorder.style.border = '1px solid var(--cor-destaque)';
+                innerBorder.style.boxShadow = 'inset 0 0 0 4px var(--fundo-inner), inset 0 0 0 5px var(--cor-destaque)';
+            } else if (estiloBorda === 'minimalista') {
+                cantos.forEach(c => c.style.display = 'none');
+                metalBorder.style.padding = '1px';
+                innerBorder.style.border = '1px solid var(--cor-destaque)';
+                innerBorder.style.boxShadow = 'none';
+            }
+
             const texturasMap = {
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
@@ -999,18 +1041,27 @@
                 divTextura.style.backgroundImage = `url('${texturasMap[texturaSel]}')`;
                 
                 if (texturaSel === 'aged-paper') {
-                    fundoOuter = "#E8E5DF"; // Borda de fora bege escuro
-                    fundoInner = "#FCFAF2"; // Miolo bege clássico
-                    opacidadeManchas = "0.75"; // Liga a sujidade natural do papel
+                    fundoOuter = "#E8E5DF"; 
+                    fundoInner = "#FCFAF2"; 
+                    opacidadeManchas = "0.75"; 
+                    divTextura.style.opacity = '0.5';
+                    divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'cream-paper') {
                     fundoOuter = "#F0EBE1";
-                    fundoInner = "#FDFBF7"; // Miolo creme suave
+                    fundoInner = "#FDFBF7"; 
+                    divTextura.style.opacity = '0.5';
+                    divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'white-wall') {
                     fundoOuter = "#E2E8F0";
-                    fundoInner = "#F8FAFC"; // Tom frio de pedra/mármore
+                    fundoInner = "#F8FAFC"; 
+                    divTextura.style.opacity = '0.4';
+                    divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'woven') {
                     fundoOuter = "#FFFFFF";
-                    fundoInner = "#FFFFFF"; // Fundo branco puro para linho
+                    fundoInner = "#FFFFFF"; 
+                    // 🔥 LINHO CORRIGIDO E ELEGANTE (4% opacidade)
+                    divTextura.style.opacity = '0.04'; 
+                    divTextura.style.mixBlendMode = 'normal'; 
                 }
             }
             
