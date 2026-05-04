@@ -21,7 +21,7 @@
     <!-- FONTES PREMIUM ATUALIZADAS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;600;700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&family=Alex+Brush&family=Parisienne&family=Tangerine:wght@400;700&family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Great+Vibes&family=Montserrat:wght@400;600;700;900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;600;700&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Alex+Brush&family=Parisienne&family=Tangerine:wght@400;700&family=Dancing+Script:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
     
     <style>        
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }                
@@ -342,8 +342,7 @@
                                                 </div>
 
                                                 <div class="cert-text-wrapper">
-                                                    <!-- 🔥 O texto superior agora pode ser modificado facilmente no menu abaixo -->
-                                                    <p id="render-texto1" class="cert-texto-dinamico">CARREGANDO DADOS...</p>
+                                                    <p id="render-texto1" class="cert-texto-dinamico">A SUA EQUIPE RECONHECE QUE</p>
                                                     
                                                     <div id="render-nome-container" class="cert-nome-container">
                                                         <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
@@ -521,9 +520,9 @@
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logo Direita</label>
                                         <select id="pos-dir" onchange="atualizarPreviewLive()" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="equipe" selected>Logo da Equipe Oficial</option>
+                                            <option value="nenhuma" selected>Nenhuma</option>
+                                            <option value="equipe">Logo da Equipe Oficial</option>
                                             <option value="extra">Logo Personalizada Upload</option>
-                                            <option value="nenhuma">Nenhuma</option>
                                         </select>
                                     </div>
                                     <div>
@@ -545,7 +544,6 @@
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Superior (Antes do Nome)</label>
                                     <input type="text" id="cfg-texto1" oninput="atualizarPreviewLive()" value="" placeholder="Carregando nome da equipe..." class="w-full p-3 bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase text-xs">
-                                    <p class="text-[9px] text-slate-400 mt-1 font-medium italic">Dica: Pode clicar na caixa acima e escrever livremente "A GRAPPLING FIGHT TEAM RECONHECE QUE" caso o sistema puxe o nome errado do seu cadastro.</p>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Texto Central (Motivo)</label>
@@ -689,7 +687,6 @@
                     const dadosEquipe = docSnap.data();
                     if (dadosEquipe.contador_certificados) serialEquipeAtual = parseInt(dadosEquipe.contador_certificados) || 427;                    
                     
-                    // 🔥 BUSCA ROBUSTA: Se não achar num campo, tenta noutro.
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
                     if (dadosEquipe.cidade) {
@@ -704,11 +701,10 @@
                         cidadeEquipeLogada = "RIO DE JANEIRO";
                     }
 
-                    // 🔥 BUSCA ROBUSTA DE LOGO: Procura em todos os campos possíveis
                     const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
 
                     if (logoEquipeOficial) {
-                        logoBase64Global = logoEquipeOficial; // Fallback imediato
+                        logoBase64Global = logoEquipeOficial; 
                         try {
                             const respLogo = await fetch(logoEquipeOficial);
                             if (respLogo.ok) {
@@ -721,6 +717,31 @@
                             }
                         } catch(e) {}
                     }
+
+                    // 🔥 MÁGICA PARA FORÇAR A ATUALIZAÇÃO DO MENU LATERAL ESCURO
+                    setTimeout(() => {
+                        try {
+                            // Atualiza o nome da equipe no menu
+                            const elementosTexto = document.querySelectorAll('span, p, div, h1, h2, h3, h4, h5, h6');
+                            elementosTexto.forEach(el => {
+                                if (el.childNodes.length === 1 && el.innerText && el.innerText.trim() === 'SUA EQUIPE') {
+                                    el.innerText = nomeEquipeLogada.toUpperCase();
+                                }
+                            });
+
+                            // Atualiza a logo no menu
+                            if (logoEquipeOficial) {
+                                // Se for um avatar com a letra "S"
+                                elementosTexto.forEach(el => {
+                                    if (el.childNodes.length === 1 && el.innerText && el.innerText.trim() === 'S') {
+                                        el.innerHTML = `<img src="${logoEquipeOficial}" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" alt="Logo da Equipe">`;
+                                        el.style.padding = '0';
+                                        el.style.backgroundColor = 'transparent';
+                                    }
+                                });
+                            }
+                        } catch(err) { console.log("Erro ao atualizar menu:", err); }
+                    }, 800);
                 }            
             } catch (error) { console.log(error); }        
         }
@@ -757,7 +778,6 @@
         function carregarPadroes() {            
             const memoria = localStorage.getItem("bjj_cert_padroes_v18");            
             
-            // 🔥 Lógica inteligente para montar a frase "A EQUIPE..."
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
             if(!nLimpo.includes("EQUIPE") && !nLimpo.includes("TEAM") && !nLimpo.includes("ACADEMIA") && !nLimpo.includes("PROJETO") && !nLimpo.includes("ASSOCIAÇÃO")) {
@@ -775,13 +795,12 @@
                     if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;                    
                     if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
                     
-                    // Impede o cache de prender frases genéricas antigas
                     if (p.txt1 && !p.txt1.includes("SUA EQUIPE") && !p.txt1.includes("BJJ MANEGER")) {
                         document.getElementById('cfg-texto1').value = p.txt1;
                     } else {
                         document.getElementById('cfg-texto1').value = textoPadraoDinamico;
                     }
-
+                    
                     document.getElementById('cfg-texto2').value = p.txt2 ? p.txt2 : "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
                     document.getElementById('cfg-texto3').value = p.txt3 ? p.txt3 : "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
                     
@@ -866,7 +885,7 @@
             const cores = {
                 branca: '#FFFFFF',
                 cinza: '#64748B', 
-                amarela: '#F59E0B', 
+                amarela: '#FFD700', 
                 laranja: '#EA580C', 
                 verde: '#15803D', 
                 azul: '#1D4ED8', 
@@ -962,7 +981,7 @@
             }
 
             const textoInput1 = document.getElementById('cfg-texto1').value;
-            document.getElementById('render-texto1').innerText = (textoInput1 || `A EQUIPE ${nomeEquipeLogada.toUpperCase()} RECONHECE QUE`).toUpperCase();
+            document.getElementById('render-texto1').innerText = textoInput1.toUpperCase();
             
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
