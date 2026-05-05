@@ -26,22 +26,10 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 🎨 SCROLLBARS MODERNAS (ESTILO MACOS) */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.4); 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(51, 65, 85, 0.8); 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(71, 85, 105, 1); 
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(71, 85, 105, 1); }
         
         .status-blink { animation: blink 2s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -304,46 +292,52 @@
             
         </div>
 
+        <!-- 🔥 DASHBOARD FINANCEIRO ATUALIZADO (ABRANGENTE) -->
         <div id="aba-faturamento" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Dashboard Financeiro</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Acompanhe as receitas de planos, fichas e o impacto dos projetos sociais.</p>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Controle de caixa, extrato analítico de métodos de pagamento e saúde do MRR.</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="exportarCSV('faturamento')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
-                        <span>📥</span> Exportar CSV
-                    </button>
-                    <button onclick="renderizarFaturamento(); carregarSaldoMaster();" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                        <span>🔄</span> Atualizar
+                    <button onclick="carregarExtratoCompletoMaster(); renderizarFaturamento(); carregarSaldoMaster();" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                        <span>🔄</span> Atualizar Tudo
                     </button>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
-                <div class="flex items-center gap-4 w-full lg:w-auto">
-                    <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-black shrink-0">🏦</div>
-                    <div>
-                        <h3 class="text-white font-black text-lg uppercase tracking-tight">Cofre Asaas (Master)</h3>
-                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Sincronizado automaticamente</p>
+            <!-- 💰 O COFRE ASAAS DETALHADO -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Saldo Livre -->
+                <div class="bg-gradient-to-br from-emerald-900/40 to-slate-900 border border-emerald-500/30 p-6 rounded-3xl shadow-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl">🟢</span>
+                        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Disponível para Saque</p>
                     </div>
+                    <h3 id="wallet-saldo" class="text-4xl font-black text-white">⏳...</h3>
+                    <p class="text-[9px] text-slate-400 mt-2 uppercase tracking-widest">Liberado no Asaas</p>
                 </div>
 
-                <div class="w-full lg:w-auto flex flex-col md:flex-row items-center gap-6">
-                    <div class="text-center md:text-right bg-slate-950/50 px-6 py-2 rounded-xl border border-slate-700">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Disponível</p>
-                        <h3 id="wallet-saldo" class="text-2xl font-black text-emerald-400">⏳...</h3>
-                        <p id="wallet-saldo-pendente" class="text-[9px] font-bold text-amber-500 mt-0.5">A liberar: ...</p>
+                <!-- Saldo Preso (Cartão/Boleto) -->
+                <div class="bg-gradient-to-br from-amber-900/40 to-slate-900 border border-amber-500/30 p-6 rounded-3xl shadow-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl">⏳</span>
+                        <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest">A Liberar (Cartão/Boleto)</p>
                     </div>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="abrirModalPixMaster()" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2">
-                            <span>💸</span> Sacar PIX
-                        </button>
-                    </div>
+                    <h3 id="wallet-saldo-pendente" class="text-4xl font-black text-white">⏳...</h3>
+                    <p class="text-[9px] text-slate-400 mt-2 uppercase tracking-widest">Aguardando prazo de compensação</p>
+                </div>
+
+                <!-- Botão Sacar -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col items-center justify-center gap-4">
+                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center text-3xl">🏦</div>
+                    <button onclick="abrirModalPixMaster()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 px-5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2">
+                        <span>💸</span> Enviar PIX (Sacar)
+                    </button>
                 </div>
             </div>
 
-            <!-- 🔥 NOVOS CARDS DE MÉTRICAS FINANCEIRAS SEPARADAS -->
+            <!-- 🔥 CARDS DE MÉTRICAS FIREBASE (MRR, IMPACTO) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg relative overflow-hidden">
                     <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">MRR Ativo (Planos)</p>
@@ -367,9 +361,49 @@
                 </div>
             </div>
 
-            <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+            <!-- 🔥 NOVA ÁREA ANALÍTICA: GRÁFICO E EXTRATO ASAAS -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico Metodos de Pagamento -->
+                <div class="lg:col-span-1 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Meios de Pagamento (Real)</h3>
+                    <div class="flex-1 flex items-center justify-center relative min-h-[250px]">
+                        <canvas id="chartMetodosPagamento"></canvas>
+                        <!-- Loader visual pro grafico -->
+                        <div id="loader-grafico" class="absolute inset-0 flex items-center justify-center text-slate-500 text-xs italic">Buscando Asaas...</div>
+                    </div>
+                </div>
+                
+                <!-- Extrato e Tabela -->
+                <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl shadow-xl flex flex-col overflow-hidden">
+                    <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
+                        <h3 class="text-xs font-black text-white uppercase tracking-widest">Últimas Transações Recebidas</h3>
+                        <button onclick="exportarRelatorioAsaas()" class="bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2">
+                            <span>📄</span> CSV (Asaas)
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto w-full flex-1">
+                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+                            <thead>
+                                <tr class="bg-slate-950/50 border-b border-slate-800 text-slate-400">
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Data</th>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Cliente</th>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Descrição</th>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Forma</th>
+                                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Líquido (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-extrato-master" class="divide-y divide-slate-800/50 text-sm">
+                                <tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Aguardando dados bancários...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela Detalhada de MRR Antiga -->
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col mt-8">
                 <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
-                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Detalhamento por Academia</h3>
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Detalhamento Faturamento por Academia</h3>
                 </div>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
@@ -662,7 +696,6 @@
                         <input type="number" id="edit-desconto" placeholder="Ex: 10" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                     <div>
-                        <!-- 🔥 CAMPO PARA EDITAR FICHAS DIRETAMENTE -->
                         <label class="block text-[10px] font-black text-indigo-400 uppercase mb-2">Fichas (Saldo)</label>
                         <input type="number" id="edit-fichas" placeholder="Ex: 50" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-indigo-500 transition-colors">
                     </div>
@@ -811,7 +844,6 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
-        // 🔥 A FUNÇÃO QUE EU TINHA APAGADO SEM QUERER!
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -915,15 +947,19 @@
         let cuponsCache = [];
         let chamadosCache = [];
         let auditoriaCache = [];
+        let extratoAsaasCache = []; // 🔥 CACHE DO EXTRATO DO ASAAS
+        
         let equipeEditandoId = null;
         let equipeAcessoId = null; 
         let totalAlunosGeral = 0;
         
         let chartMrrInstance = null;
         let chartAcademiasInstance = null;
+        let chartMetodosInstance = null; // 🔥 GRAFICO DE ROSCA
 
         const consultarSaldoMaster = httpsCallable(functions, 'consultarSaldoMaster');
         const solicitarSaqueMaster = httpsCallable(functions, 'solicitarSaqueMaster');
+        const extratoMasterAsaas = httpsCallable(functions, 'extratoMasterAsaas'); // 🔥 FUNÇÃO DE EXTRATO
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -1546,7 +1582,7 @@
         }
 
         // ==========================================
-        // 💳 LOGICA DE FATURAMENTO E FINANCEIRO
+        // 💳 LOGICA DE FATURAMENTO E FINANCEIRO ASAAS
         // ==========================================
         window.carregarSaldoMaster = async function() {
             try {
@@ -1557,8 +1593,11 @@
                 if(res.data.success) {
                     const saldoReal = Number(res.data.balance) || 0;
                     const saldoEst = Number(res.data.estimatedBalance) || 0;
+                    
                     if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = `R$ ${saldoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                    if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${saldoEst.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    
+                    // O Estimated Balance é o que está aguardando compensação (Ex: Cartão)
+                    if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = `R$ ${saldoEst.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 } else {
                     if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = "Erro!";
                     if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
@@ -1567,6 +1606,141 @@
                 if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = "Falha";
                 if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = "Sem conexão.";
             }
+        }
+
+        // 🔥 NOVA FUNÇÃO: PUXA O EXTRATO REAL DO ASAAS
+        window.carregarExtratoCompletoMaster = async function() {
+            const tabela = document.getElementById('tabela-extrato-master');
+            const loader = document.getElementById('loader-grafico');
+            
+            tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Comunicando com Banco Central...</td></tr>';
+            if(loader) loader.style.display = 'flex';
+
+            try {
+                const res = await extratoMasterAsaas({ uid: masterUid });
+                if(res.data.success) {
+                    extratoAsaasCache = res.data.pagamentos || [];
+                    renderizarExtratoAsaas();
+                } else {
+                    tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">${res.data.error}</td></tr>`;
+                    if(loader) loader.style.display = 'none';
+                }
+            } catch(e) {
+                tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">Erro ao buscar extrato no Asaas.</td></tr>';
+                if(loader) loader.style.display = 'none';
+            }
+        }
+
+        function renderizarExtratoAsaas() {
+            const tabela = document.getElementById('tabela-extrato-master');
+            tabela.innerHTML = '';
+            
+            const loader = document.getElementById('loader-grafico');
+            if(loader) loader.style.display = 'none';
+
+            let somaPix = 0;
+            let somaCartao = 0;
+            let somaBoleto = 0;
+
+            if (extratoAsaasCache.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Nenhuma transação recebida recentemente.</td></tr>';
+            } else {
+                extratoAsaasCache.forEach(pgto => {
+                    // Soma para o gráfico (apenas recebidos/confirmados)
+                    const valLiq = parseFloat(pgto.netValue) || 0;
+                    if(pgto.billingType === 'PIX') somaPix += valLiq;
+                    else if(pgto.billingType === 'CREDIT_CARD' || pgto.billingType === 'DEBIT_CARD') somaCartao += valLiq;
+                    else if(pgto.billingType === 'BOLETO') somaBoleto += valLiq;
+
+                    // Formatação da Tabela
+                    let dataFormat = pgto.paymentDate || pgto.clientPaymentDate || pgto.dateCreated;
+                    dataFormat = dataFormat ? new Date(dataFormat).toLocaleDateString('pt-BR') : '--/--/----';
+
+                    let iconeForma = "📄";
+                    if(pgto.billingType === 'PIX') iconeForma = "💠";
+                    if(pgto.billingType === 'CREDIT_CARD') iconeForma = "💳";
+                    
+                    const clienteNome = pgto.customerName || (pgto.customer ? "ID: "+pgto.customer : "Desconhecido");
+                    
+                    const descOriginal = pgto.description || "Pagamento";
+                    // Simplifica a descrição para não quebrar a tabela
+                    const descCurta = descOriginal.length > 30 ? descOriginal.substring(0, 30) + "..." : descOriginal;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 font-mono text-[10px] text-slate-400">${dataFormat}</td>
+                        <td class="px-6 py-4 text-xs font-bold text-white uppercase truncate max-w-[150px]">${clienteNome}</td>
+                        <td class="px-6 py-4 text-xs text-slate-300 truncate max-w-[200px]" title="${descOriginal}">${descCurta}</td>
+                        <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-[10px] font-black tracking-widest text-slate-300">${iconeForma} ${pgto.billingType}</span></td>
+                        <td class="px-6 py-4 text-right font-mono text-sm font-black text-emerald-400">R$ ${valLiq.toFixed(2)}</td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+            }
+
+            // 🔥 Atualiza o Gráfico de Pizza/Rosca
+            const ctx = document.getElementById('chartMetodosPagamento');
+            if(chartMetodosInstance) chartMetodosInstance.destroy();
+            
+            if(somaPix === 0 && somaCartao === 0 && somaBoleto === 0) {
+                // Sem dados, mostra gráfico vazio
+                chartMetodosInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: ['Sem Dados'], datasets: [{ data: [1], backgroundColor: ['#1e293b'] }] },
+                    options: { plugins: { legend: { display: false } }, cutout: '75%' }
+                });
+            } else {
+                chartMetodosInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['PIX', 'Cartão', 'Boleto'],
+                        datasets: [{
+                            data: [somaPix, somaCartao, somaBoleto],
+                            backgroundColor: ['#10b981', '#6366f1', '#f59e0b'],
+                            borderWidth: 0,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } } }
+                        }
+                    }
+                });
+            }
+        }
+
+        window.exportarRelatorioAsaas = function() {
+            if (extratoAsaasCache.length === 0) return showToast("Não há transações recebidas para exportar.", "info");
+
+            const dataToExport = extratoAsaasCache.map(p => {
+                return {
+                    "Data": p.paymentDate || p.clientPaymentDate || p.dateCreated || "",
+                    "ID Asaas": p.id,
+                    "Cliente": p.customerName || p.customer || "",
+                    "Descricao": p.description || "",
+                    "Metodo": p.billingType || "",
+                    "Valor Bruto": p.value ? p.value.toString().replace('.',',') : "0,00",
+                    "Taxa": p.netValue && p.value ? (p.value - p.netValue).toFixed(2).replace('.',',') : "0,00",
+                    "Valor Liquido": p.netValue ? p.netValue.toString().replace('.',',') : "0,00"
+                };
+            });
+
+            const header = Object.keys(dataToExport[0]).join(';');
+            const rows = dataToExport.map(obj => Object.values(obj).map(v => `"${v}"`).join(';'));
+            const csvContent = [header, ...rows].join('\n');
+
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Extrato_Asaas_BJJManager.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         window.renderizarFaturamento = function() {
@@ -1598,7 +1772,6 @@
                 let desconto = parseFloat(eq.desconto_plano) || 0;
                 let valorLiquido = isIsento ? 0 : valorBase * (1 - (desconto / 100));
 
-                // Cálculo de Fichas (Emissão + Saldo)
                 let fichasSaldo = parseInt(eq.creditos_certificados) || 0;
                 let certsEmitidos = (parseInt(eq.contador_certificados) || 427) - 427;
                 if(certsEmitidos < 0) certsEmitidos = 0;
@@ -1661,7 +1834,6 @@
 
             const impactoSocialTotal = valorIsencoesPlanos + valorIsencoesFichas;
             document.getElementById('fat-valor-isencoes').innerText = `R$ ${impactoSocialTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            // Contagem de academias isentas
             const qtdPlanosIsentos = equipesCache.filter(eq => eq.isento === true || String(eq.isento) === "true").length;
             document.getElementById('fat-qtd-isencoes').innerText = `${totalFichasIsentas} certs / ${qtdPlanosIsentos} planos`;
 
@@ -1703,7 +1875,7 @@
         }
 
         // ==========================================
-        // MENU MOBILE TOGGLE
+        // MENU MOBILE TOGGLE E NAVEGAÇÃO
         // ==========================================
         window.toggleMenuMaster = function() {
             const sidebar = document.getElementById('sidebar-master');
@@ -1718,9 +1890,6 @@
             }
         }
 
-        // ==========================================
-        // NAVEGAÇÃO
-        // ==========================================
         window.mudarAbaMaster = function(abaID) {
             document.querySelectorAll('[id^="aba-"]').forEach(a => {
                 a.classList.add('hidden');
@@ -1735,6 +1904,7 @@
             if(abaID === 'faturamento') {
                 renderizarFaturamento();
                 carregarSaldoMaster();
+                carregarExtratoCompletoMaster(); // 🔥 CHAMA O ASAAS QUANDO ABRE A ABA
             }
             if(abaID === 'planos') carregarConfigPlanos();
             if(abaID === 'cupons') carregarCupons();
@@ -1823,7 +1993,6 @@
             try {
                 const dados = {};
                 
-                // Configuração Global de Créditos
                 dados.preco_certificado = parseFloat(document.getElementById('cfg-preco-cert').value) || 2.50;
 
                 ['p1','p2','p3'].forEach(p => {
@@ -1873,7 +2042,6 @@
             document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
             document.getElementById('edit-desconto').value = eq.desconto_plano || 0;
             
-            // 🔥 NOVO: CARREGA O SALDO DE FICHAS ATUAL
             document.getElementById('edit-fichas').value = parseInt(eq.creditos_certificados) || 0;
             
             document.getElementById('edit-isento').checked = (eq.isento === true || String(eq.isento) === "true");
@@ -1898,7 +2066,7 @@
                     status_plano: document.getElementById('edit-status-plano').value,
                     valor_plano: valPlano,
                     desconto_plano: descPlano,
-                    creditos_certificados: saldoFichas, // 🔥 SALVA O NOVO SALDO DE FICHAS
+                    creditos_certificados: saldoFichas,
                     isento: document.getElementById('edit-isento').checked
                 });
                 
