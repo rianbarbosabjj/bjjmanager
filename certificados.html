@@ -430,14 +430,14 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
                             <h3 class="font-black text-cyan-600 text-sm uppercase tracking-widest mb-6">1. Dados da Emissão</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">                                
-                                <div>                                    
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-5">                                
+                                <div class="md:col-span-2">                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Atleta</label>                                    
                                     <select id="combo-aluno" onchange="aoSelecionarAluno()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
                                         <option value="">Selecione...</option>                                    
                                     </select>                                
                                 </div>                                                                
-                                <div>                                    
+                                <div class="md:col-span-1">                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nova Faixa</label>                                    
                                     <select id="combo-faixa" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
                                         <option value="Branca">Branca</option>                                        
@@ -448,7 +448,7 @@
                                         <option value="Azul">Azul</option><option value="Roxa">Roxa</option><option value="Marrom">Marrom</option><option value="Preta">Preta</option>                                    
                                     </select>                                
                                 </div> 
-                                <div>                                    
+                                <div class="md:col-span-1">                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau Adicional (Opcional)</label>                                    
                                     <select id="combo-grau" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
                                         <option value="">Nenhum (Apenas a Faixa)</option>                                        
@@ -459,18 +459,14 @@
                                         <option value="5º Grau">5º Grau</option>
                                         <option value="6º Grau">6º Grau</option>
                                     </select>                                
-                                </div> 
+                                </div>                                                               
                             </div>
                             
-                            <!-- 🔥 NOVA LINHA COM DATA E CIDADE -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div>                                    
+                            <!-- DATA -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                                <div class="md:col-span-1">                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data da Cerimônia</label>                                    
                                     <input type="date" id="entry-data" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all">                                
-                                </div> 
-                                <div>                                    
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Local (Cidade)</label>                                    
-                                    <input type="text" id="entry-cidade" oninput="atualizarPreviewLive()" placeholder="Sua Cidade..." class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all uppercase">                                
                                 </div> 
                             </div>
                         </div>
@@ -648,7 +644,6 @@
                             </div>                                                        
                             
                             <div class="pt-4 border-t border-slate-100">                                
-                                <!-- 🔥 ATUALIZAÇÃO NO LAYOUT DA COMPRA DE FICHAS -->
                                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 px-2 gap-2 text-center sm:text-left">
                                     <div class="flex items-center gap-2">
                                         <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas: <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg ml-1">...</span></span>
@@ -723,22 +718,10 @@
             }
         }
 
-        function formatarNomeAssinatura(nome) {
+        function formatarNomeInteligente(nome) {
             if (!nome) return "";
-            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
-            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
-                if (index === 0 || !excecoes.includes(palavra)) {
-                    return palavra.charAt(0).toUpperCase() + palavra.slice(1);
-                }
-                return palavra; 
-            }).join(' ');
-        }
-
-        function formatarNome(nome, isCursive) {
-            if (!isCursive) return nome.toUpperCase(); 
-            
-            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
-            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
+            const excecoes = ['da', 'de', 'di', 'do', 'du', 'das', 'dos', 'e'];
+            return nome.trim().toLowerCase().split(/\s+/).map((palavra, index) => {
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
@@ -793,8 +776,10 @@
 
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
-                    // 🔥 BUSCA A CIDADE E PREENCHE O NOVO CAMPO AUTOMATICAMENTE
-                    if (dadosEquipe.cidade) {
+                    // 🔥 BUSCA A CIDADE E DEIXA INVISÍVEL NO FUNDO PARA A DATA!
+                    if (dadosEquipe.endereco_cidade) {
+                        cidadeEquipeLogada = dadosEquipe.endereco_cidade;
+                    } else if (dadosEquipe.cidade) {
                         cidadeEquipeLogada = dadosEquipe.cidade;
                     } else if (dadosEquipe.cidade_equipe) {
                         cidadeEquipeLogada = dadosEquipe.cidade_equipe;
@@ -805,8 +790,6 @@
                     } else {
                         cidadeEquipeLogada = "RIO DE JANEIRO";
                     }
-                    
-                    document.getElementById('entry-cidade').value = cidadeEquipeLogada.toUpperCase();
 
                     const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
 
@@ -880,7 +863,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v33");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v32");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -952,7 +935,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v33", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v32", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1122,7 +1105,7 @@
                 } else if (texturaSel === 'white-wall') {
                     fundoOuter = "#E2E8F0";
                     fundoInner = "#F8FAFC"; 
-                    divTextura.style.opacity = '0.75'; 
+                    divTextura.style.opacity = '0.35'; 
                     divTextura.style.mixBlendMode = 'multiply';
                     divTextura.style.filter = 'contrast(250%) brightness(0.9)'; 
                     divTextura.style.backgroundSize = '400px'; 
@@ -1154,9 +1137,8 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            // 🔥 PUXA A CIDADE DIRETO DO CAMPO INPUT AGORA!
-            const cidadeInp = document.getElementById('entry-cidade').value.trim() || 'RIO DE JANEIRO';
-            document.getElementById('render-data').innerText = `${cidadeInp.toUpperCase()}, ${dataExtenso}`;
+            // 🔥 A CIDADE É PUXADA INVISIVELMENTE AQUI!
+            document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
             const corDaFaixa = getCoresFaixa(faixaBase); 
             const elFaixaCor = document.getElementById('render-faixa-cor');
@@ -1180,8 +1162,8 @@
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
             
-            const ass1Nome = formatarNomeAssinatura(document.getElementById('resp-nome').value) || "Professor Responsável";
-            const ass2Nome = formatarNomeAssinatura(document.getElementById('prof-nome').value) || "Professor";
+            const ass1Nome = formatarNomeInteligente(document.getElementById('resp-nome').value) || "Professor Responsável";
+            const ass2Nome = formatarNomeInteligente(document.getElementById('prof-nome').value) || "Professor";
             
             document.getElementById('render-ass1-nome').innerText = ass1Nome;
             document.getElementById('render-ass1-grad').innerText = (document.getElementById('resp-grad').value || "Grau").toUpperCase();
@@ -1256,10 +1238,10 @@
             elNome.style.fontFamily = fonteNome;
             let maxFontSizeNome = 56;
             
-            elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
+            elNome.style.textTransform = 'none';
+            elNome.innerText = formatarNome(nomeAtleta, fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine'));
 
-            if (isNomeCursive) {
-                elNome.style.textTransform = 'none'; 
+            if (fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine')) {
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
                     maxFontSizeNome = 95; 
@@ -1267,7 +1249,6 @@
                     maxFontSizeNome = 80;
                 }
             } else {
-                elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
                     maxFontSizeNome = 45; 
@@ -1353,14 +1334,11 @@
                     creditos_certificados: fichasDisponiveis
                 }); 
                 
-                document.getElementById('display-fichas').innerText = `${fichasDisponiveis} Disponíve${fichasDisponiveis === 1 ? 'l' : 'is'}`;
+                document.getElementById('display-fichas').innerText = `${fichasDisponiveis}`;
             } catch(e) { }
 
             const idHash = Math.random().toString(36).substring(2, 10).toUpperCase();                        
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
-            
-            // Puxa o campo novo da Cidade
-            const cidadeInp = document.getElementById('entry-cidade').value.trim() || 'RIO DE JANEIRO';
 
             try {                
                 await addDoc(collection(db, "certificados"), {                    
@@ -1371,9 +1349,9 @@
                     numero_serie: numeroSerieStr, 
                     hash_validador: idHash, 
                     data_cerimonia: dataRaw,                    
-                    prof_responsavel: formatarNomeAssinatura(respNome), 
-                    prof_direto: formatarNomeAssinatura(profNome), 
-                    cidade_equipe: cidadeInp.toUpperCase(), 
+                    prof_responsavel: formatarNomeInteligente(respNome), 
+                    prof_direto: formatarNomeInteligente(profNome), 
+                    cidade_equipe: cidadeEquipeLogada.toUpperCase(), 
                     data_emissao: new Date().toISOString()                
                 });
 
