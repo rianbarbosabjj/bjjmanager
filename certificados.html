@@ -277,12 +277,13 @@
             transition: background 0.3s ease;
         }
         
+        /* 🔥 ESTILO CORRIGIDO: NOME DO PROFESSOR (MAIS ELEGANTE E ITÁLICO) */
         .cert-ass-nome { 
-            font-family: 'Cinzel', serif;
+            font-family: 'Playfair Display', serif; /* Fonte mais estreita e elegante */
             font-size: 18px;
-            font-weight: 900;
+            font-weight: 700;
+            font-style: italic; /* Imitando assinatura */
             color: #1E293B;
-            letter-spacing: 1px;
             white-space: nowrap;
         }
         
@@ -429,7 +430,6 @@
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
                             <h3 class="font-black text-cyan-600 text-sm uppercase tracking-widest mb-6">1. Dados da Emissão</h3>                                                        
                             
-                            <!-- 🔥 GRID 4 COLUNAS: AGORA COM O GRAU -->
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-5">                                
                                 <div>                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Atleta</label>                                    
@@ -448,7 +448,6 @@
                                         <option value="Azul">Azul</option><option value="Roxa">Roxa</option><option value="Marrom">Marrom</option><option value="Preta">Preta</option>                                    
                                     </select>                                
                                 </div> 
-                                <!-- 🔥 NOVO CAMPO: GRAU -->
                                 <div>                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau Adicional (Opcional)</label>                                    
                                     <select id="combo-grau" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
@@ -630,17 +629,18 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
+                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
+                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 uppercase"></div>                                    
+                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
+                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
                             </div>                                                        
                             
-                            <!-- 🔥 BOTÃO DE EMISSÃO COM DESCONTO DE FICHAS E AVISO INTELIGENTE -->
                             <div class="pt-4 border-t border-slate-100">                                
                                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 px-2 gap-2 text-center sm:text-left">
                                     <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas Disponíveis: <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg ml-2">...</span></span>
@@ -702,15 +702,22 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima) {
+        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (AGORA ACEITA TAMANHO MÍNIMO)
+        function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
             let tamanhoAtual = tamanhoMaximo;
             
-            while (elemento.scrollWidth > larguraMaxima && tamanhoAtual > 15) {
+            while (elemento.scrollWidth > larguraMaxima && tamanhoAtual > tamanhoMinimo) {
                 tamanhoAtual -= 1;
                 elemento.style.fontSize = tamanhoAtual + 'px';
             }
+        }
+
+        // 🔥 FORMATA O NOME DO PROFESSOR (Primeira Letra Maiúscula)
+        function formatarNomeAssinatura(nome) {
+            if (!nome) return "";
+            return nome.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
         }
 
         onAuthStateChanged(auth, async (user) => {            
@@ -844,7 +851,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v26");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v27");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -916,7 +923,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v26", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v27", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1107,7 +1114,6 @@
             const aluno = alunosCache.find(a => a.id === alunoId);
             const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
             
-            // 🔥 COMBINAÇÃO INTELIGENTE DE FAIXA + GRAU
             const faixaBase = document.getElementById('combo-faixa').value.toUpperCase();            
             const grauAdd = document.getElementById('combo-grau').value;
             const faixaTexto = grauAdd ? `${faixaBase} - ${grauAdd.toUpperCase()}` : faixaBase;
@@ -1121,7 +1127,7 @@
 
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
-            const corDaFaixa = getCoresFaixa(faixaBase); // Usa só a base para não quebrar a cor
+            const corDaFaixa = getCoresFaixa(faixaBase); 
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixaTexto;
             elFaixaCor.style.color = corDaFaixa.fill;
@@ -1142,9 +1148,15 @@
             
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
-            document.getElementById('render-ass1-nome').innerText = document.getElementById('resp-nome').value || "Responsável";
+            
+            // 🔥 FORMATAÇÃO DOS NOMES DOS PROFESSORES PARA TITLE CASE
+            const ass1Nome = formatarNomeAssinatura(document.getElementById('resp-nome').value) || "Professor Responsável";
+            const ass2Nome = formatarNomeAssinatura(document.getElementById('prof-nome').value) || "Professor";
+            
+            document.getElementById('render-ass1-nome').innerText = ass1Nome;
             document.getElementById('render-ass1-grad').innerText = (document.getElementById('resp-grad').value || "Grau").toUpperCase();
-            document.getElementById('render-ass2-nome').innerText = document.getElementById('prof-nome').value || "Professor";
+            
+            document.getElementById('render-ass2-nome').innerText = ass2Nome;
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
             const valEsq = document.getElementById('pos-esq').value;
@@ -1256,8 +1268,15 @@
 
             document.fonts.ready.then(() => {
                 setTimeout(() => {
-                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680); 
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 800); 
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680, 15); 
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 800, 15); 
+                    
+                    // 🔥 PROTEÇÃO PARA NOMES GIGANTES DE PROFESSORES
+                    const elAss1 = document.getElementById('render-ass1-nome');
+                    const elAss2 = document.getElementById('render-ass2-nome');
+                    // A caixa tem 280px de largura. Parametro 260 deixa uma margem de segurança de 10px de cada lado. Reduz até 10px se for preciso.
+                    ajustarTamanhoTexto(elAss1, 18, 260, 10);
+                    ajustarTamanhoTexto(elAss2, 18, 260, 10);
                 }, 50);
             });
         }
@@ -1335,8 +1354,8 @@
                     equipe_id: uid,
                     aluno_id: aluno.id,
                     faixa: faixaTexto,
-                    data_promocao: dataRaw, // Data que o gatilho vai olhar
-                    status: "AGENDADO",     // Fica na espera
+                    data_promocao: dataRaw,
+                    status: "AGENDADO",
                     certificado_url: urlValidador
                 });
 
