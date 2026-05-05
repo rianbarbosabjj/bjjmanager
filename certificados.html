@@ -204,12 +204,12 @@
         .cert-texto-dinamico { 
             text-align: center;
             margin-top: 22px;
-            max-width: 980px; /* 🔥 AUMENTADO PARA DAR MAIS ESPAÇO ÀS PALAVRAS */
+            max-width: 800px; /* 🔥 LARGURA AJUSTADA PARA QUEBRAR O "EXIGIDA" CORRETAMENTE */
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
             transition: font-size 0.3s ease;
-            text-wrap: balance; /* 🔥 MAGIA TIPOGRÁFICA QUE EQUILIBRA AS LINHAS */
+            text-wrap: balance; 
         }
         
         .cert-nome-container {
@@ -629,11 +629,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
+                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
                                     <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
+                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
                                     <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
@@ -1073,12 +1075,12 @@
                 innerBorder.style.boxShadow = 'none';
             }
 
-            // 🔥 TEXTURA DE MÁRMORE PROCEDURAL (SVG VEINS)
+            // 🔥 TEXTURA DE MÁRMORE PROCEDURAL E ROCHAS (html2canvas safe)
             const texturasMap = {
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
                 'woven': 'https://www.transparenttextures.com/patterns/woven.png',
-                'white-wall': "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.12 0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23m)'/%3E%3C/svg%3E"
+                'white-wall': 'https://www.transparenttextures.com/patterns/cracked-wall.png' // ROCHA/MÁRMORE SEGURO PARA O PDF
             };
 
             const texturaSel = document.getElementById('cfg-textura').value;
@@ -1107,10 +1109,10 @@
                     divTextura.style.opacity = '0.5';
                     divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'white-wall') {
-                    // 🔥 MÁRMORE NOVO E ELEGANTE
+                    // 🔥 MÁRMORE NOVO E ELEGANTE (VEIAS DE PEDRA)
                     fundoOuter = "#E2E8F0";
                     fundoInner = "#F8FAFC"; 
-                    divTextura.style.opacity = '0.7'; 
+                    divTextura.style.opacity = '0.18'; // Veios finos
                     divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'woven') {
                     fundoOuter = "#FFFFFF";
@@ -1347,6 +1349,7 @@
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
 
             try {                
+                // Salva o Certificado
                 await addDoc(collection(db, "certificados"), {                    
                     equipe_id: uid, 
                     aluno_id: aluno.id, 
@@ -1361,6 +1364,7 @@
                     data_emissao: new Date().toISOString()                
                 });
 
+                // 🔥 CRIA O AGENDAMENTO DE MUDANÇA DE FAIXA PARA O HISTÓRICO
                 await addDoc(collection(db, "historico_faixas"), {
                     equipe_id: uid,
                     aluno_id: aluno.id,
