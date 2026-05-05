@@ -201,15 +201,15 @@
             padding-bottom: 40px;
         }
 
-        /* 🔥 CLÁSSICO RESTAURADO: max-width 950 e sem text-wrap: balance para deixar a EXIGIDA sozinha! */
         .cert-texto-dinamico { 
             text-align: center;
             margin-top: 22px;
-            max-width: 950px; 
+            max-width: 800px; 
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
             transition: font-size 0.3s ease;
+            text-wrap: balance; 
         }
         
         .cert-nome-container {
@@ -380,7 +380,6 @@
                                                     <p id="render-texto1" class="cert-texto-dinamico">A SUA EQUIPE RECONHECE QUE</p>
                                                     
                                                     <div id="render-nome-container" class="cert-nome-container">
-                                                        <!-- Placeholder agora reflete o Title Case correto -->
                                                         <h2 id="render-nome" class="cert-nome-atleta">Nome do Atleta</h2>
                                                     </div>
 
@@ -427,11 +426,11 @@
                     <!-- PAINEL DE CONFIGURAÇÕES -->
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col mb-10">                                                
                         
-                        <!-- 1. ATLETA -->
+                        <!-- 1. ATLETA E EMISSÃO -->
                         <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50">                            
                             <h3 class="font-black text-cyan-600 text-sm uppercase tracking-widest mb-6">1. Dados da Emissão</h3>                                                        
                             
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">                                
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">                                
                                 <div>                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Atleta</label>                                    
                                     <select id="combo-aluno" onchange="aoSelecionarAluno()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">                                        
@@ -460,12 +459,20 @@
                                         <option value="5º Grau">5º Grau</option>
                                         <option value="6º Grau">6º Grau</option>
                                     </select>                                
-                                </div>                                                               
+                                </div> 
+                            </div>
+                            
+                            <!-- 🔥 NOVA LINHA COM DATA E CIDADE -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>                                    
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data da Cerimônia</label>                                    
                                     <input type="date" id="entry-data" onchange="atualizarPreviewLive()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all">                                
-                                </div>                            
-                            </div>                        
+                                </div> 
+                                <div>                                    
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Local (Cidade)</label>                                    
+                                    <input type="text" id="entry-cidade" oninput="atualizarPreviewLive()" placeholder="Sua Cidade..." class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all uppercase">                                
+                                </div> 
+                            </div>
                         </div>
 
                         <!-- 2. ESTILO E PERSONALIZAÇÃO -->
@@ -630,20 +637,24 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
+                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
+                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
                             </div>                                                        
                             
                             <div class="pt-4 border-t border-slate-100">                                
+                                <!-- 🔥 ATUALIZAÇÃO NO LAYOUT DA COMPRA DE FICHAS -->
                                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 px-2 gap-2 text-center sm:text-left">
-                                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas Disponíveis: <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg ml-2">...</span></span>
-                                    <span class="text-[9px] text-emerald-500 font-bold uppercase bg-emerald-50 px-2 py-1 rounded border border-emerald-100">O sistema agendará a troca de faixa automática para a data escolhida!</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1"><span>🎫</span> Fichas: <span id="display-fichas" class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg ml-1">...</span></span>
+                                        <a href="planos.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Comprar +</a>
+                                    </div>
+                                    <span class="text-[9px] text-emerald-500 font-bold uppercase bg-emerald-50 px-2 py-1 rounded border border-emerald-100">O sistema agendará a troca de faixa automática!</span>
                                 </div>
                                 <button id="btn-gerar" onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-5 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center border border-slate-700">                                    
                                     <span class="mr-2 text-xl">🎓</span> EMITIR CERTIFICADO (1 FICHA)                                
@@ -701,7 +712,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (COM TAMANHO MÍNIMO)
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
@@ -713,15 +723,26 @@
             }
         }
 
-        // 🔥 FUNÇÃO GRAMATICAL INTELIGENTE (Mantém 'da, de, do' minúsculos)
-        function formatarNomeInteligente(nome) {
+        function formatarNomeAssinatura(nome) {
             if (!nome) return "";
-            const excecoes = ['da', 'de', 'di', 'do', 'du', 'das', 'dos', 'e'];
-            return nome.trim().toLowerCase().split(/\s+/).map((palavra, index) => {
+            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
-                return palavra; // Preposição continua minúscula
+                return palavra; 
+            }).join(' ');
+        }
+
+        function formatarNome(nome, isCursive) {
+            if (!isCursive) return nome.toUpperCase(); 
+            
+            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
+                if (index === 0 || !excecoes.includes(palavra)) {
+                    return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+                }
+                return palavra; 
             }).join(' ');
         }
 
@@ -772,6 +793,7 @@
 
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
+                    // 🔥 BUSCA A CIDADE E PREENCHE O NOVO CAMPO AUTOMATICAMENTE
                     if (dadosEquipe.cidade) {
                         cidadeEquipeLogada = dadosEquipe.cidade;
                     } else if (dadosEquipe.cidade_equipe) {
@@ -783,6 +805,8 @@
                     } else {
                         cidadeEquipeLogada = "RIO DE JANEIRO";
                     }
+                    
+                    document.getElementById('entry-cidade').value = cidadeEquipeLogada.toUpperCase();
 
                     const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
 
@@ -856,7 +880,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v32");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v33");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -928,7 +952,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v32", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v33", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1065,7 +1089,7 @@
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
                 'woven': 'https://www.transparenttextures.com/patterns/woven.png',
-                'white-wall': 'https://www.transparenttextures.com/patterns/concrete-wall.png'
+                'white-wall': 'https://www.transparenttextures.com/patterns/cracked-wall.png'
             };
 
             const texturaSel = document.getElementById('cfg-textura').value;
@@ -1096,10 +1120,9 @@
                     divTextura.style.mixBlendMode = 'multiply';
                     divTextura.style.backgroundSize = 'auto';
                 } else if (texturaSel === 'white-wall') {
-                    // 🔥 MÁRMORE NOVO (VEIAS LARGAS E MARCADAS)
                     fundoOuter = "#E2E8F0";
                     fundoInner = "#F8FAFC"; 
-                    divTextura.style.opacity = '0.35'; 
+                    divTextura.style.opacity = '0.75'; 
                     divTextura.style.mixBlendMode = 'multiply';
                     divTextura.style.filter = 'contrast(250%) brightness(0.9)'; 
                     divTextura.style.backgroundSize = '400px'; 
@@ -1118,7 +1141,7 @@
 
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
-            let nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
+            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
             
             const faixaBase = document.getElementById('combo-faixa').value.toUpperCase();            
             const grauAdd = document.getElementById('combo-grau').value;
@@ -1131,7 +1154,9 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
+            // 🔥 PUXA A CIDADE DIRETO DO CAMPO INPUT AGORA!
+            const cidadeInp = document.getElementById('entry-cidade').value.trim() || 'RIO DE JANEIRO';
+            document.getElementById('render-data').innerText = `${cidadeInp.toUpperCase()}, ${dataExtenso}`;
             
             const corDaFaixa = getCoresFaixa(faixaBase); 
             const elFaixaCor = document.getElementById('render-faixa-cor');
@@ -1155,9 +1180,8 @@
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
             
-            // 🔥 FORMATAÇÃO DOS NOMES DOS PROFESSORES PARA TITLE CASE INTELIGENTE
-            const ass1Nome = formatarNomeInteligente(document.getElementById('resp-nome').value) || "Professor Responsável";
-            const ass2Nome = formatarNomeInteligente(document.getElementById('prof-nome').value) || "Professor";
+            const ass1Nome = formatarNomeAssinatura(document.getElementById('resp-nome').value) || "Professor Responsável";
+            const ass2Nome = formatarNomeAssinatura(document.getElementById('prof-nome').value) || "Professor";
             
             document.getElementById('render-ass1-nome').innerText = ass1Nome;
             document.getElementById('render-ass1-grad').innerText = (document.getElementById('resp-grad').value || "Grau").toUpperCase();
@@ -1232,11 +1256,10 @@
             elNome.style.fontFamily = fonteNome;
             let maxFontSizeNome = 56;
             
-            // 🔥 NOME DO ATLETA AGORA TAMBÉM PASSA PELA INTELIGÊNCIA GRAMATICAL!
-            elNome.style.textTransform = 'none';
-            elNome.innerText = formatarNomeInteligente(nomeAtleta);
+            elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
 
-            if (fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine')) {
+            if (isNomeCursive) {
+                elNome.style.textTransform = 'none'; 
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
                     maxFontSizeNome = 95; 
@@ -1244,6 +1267,7 @@
                     maxFontSizeNome = 80;
                 }
             } else {
+                elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
                     maxFontSizeNome = 45; 
@@ -1334,6 +1358,9 @@
 
             const idHash = Math.random().toString(36).substring(2, 10).toUpperCase();                        
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
+            
+            // Puxa o campo novo da Cidade
+            const cidadeInp = document.getElementById('entry-cidade').value.trim() || 'RIO DE JANEIRO';
 
             try {                
                 await addDoc(collection(db, "certificados"), {                    
@@ -1344,9 +1371,9 @@
                     numero_serie: numeroSerieStr, 
                     hash_validador: idHash, 
                     data_cerimonia: dataRaw,                    
-                    prof_responsavel: formatarNomeInteligente(respNome), 
-                    prof_direto: formatarNomeInteligente(profNome), 
-                    cidade_equipe: cidadeEquipeLogada, 
+                    prof_responsavel: formatarNomeAssinatura(respNome), 
+                    prof_direto: formatarNomeAssinatura(profNome), 
+                    cidade_equipe: cidadeInp.toUpperCase(), 
                     data_emissao: new Date().toISOString()                
                 });
 
