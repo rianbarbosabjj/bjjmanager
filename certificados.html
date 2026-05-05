@@ -204,11 +204,12 @@
         .cert-texto-dinamico { 
             text-align: center;
             margin-top: 22px;
-            max-width: 950px; 
+            max-width: 980px; /* 🔥 AUMENTADO PARA DAR MAIS ESPAÇO ÀS PALAVRAS */
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
             transition: font-size 0.3s ease;
+            text-wrap: balance; /* 🔥 MAGIA TIPOGRÁFICA QUE EQUILIBRA AS LINHAS */
         }
         
         .cert-nome-container {
@@ -277,12 +278,11 @@
             transition: background 0.3s ease;
         }
         
-        /* 🔥 ESTILO CORRIGIDO: NOME DO PROFESSOR (MAIS ELEGANTE E ITÁLICO) */
         .cert-ass-nome { 
-            font-family: 'Playfair Display', serif; /* Fonte mais estreita e elegante */
+            font-family: 'Playfair Display', serif; 
             font-size: 18px;
             font-weight: 700;
-            font-style: italic; /* Imitando assinatura */
+            font-style: italic; 
             color: #1E293B;
             white-space: nowrap;
         }
@@ -545,7 +545,7 @@
                                         <select id="cfg-textura" onchange="atualizarPreviewLive()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-purple-500 outline-none cursor-pointer">
                                             <option value="none">Fundo Branco (Limpo)</option>
                                             <option value="woven">Fundo Branco (Linho)</option>
-                                            <option value="white-wall">Mármore Frio (Cinza Claro)</option>
+                                            <option value="white-wall">Mármore Frio (Realista)</option>
                                             <option value="cream-paper">Papel Creme (Quente)</option>
                                             <option value="aged-paper">Papel Envelhecido (Clássico Bege)</option>
                                         </select>
@@ -629,13 +629,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
                                     <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
                                     <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
                                     <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
@@ -702,7 +700,7 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (AGORA ACEITA TAMANHO MÍNIMO)
+        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (COM TAMANHO MÍNIMO)
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
@@ -714,10 +712,29 @@
             }
         }
 
-        // 🔥 FORMATA O NOME DO PROFESSOR (Primeira Letra Maiúscula)
+        // 🔥 FORMATA O NOME DO PROFESSOR (Regra Gramatical Inteligente)
         function formatarNomeAssinatura(nome) {
             if (!nome) return "";
-            return nome.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
+                if (index === 0 || !excecoes.includes(palavra)) {
+                    return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+                }
+                return palavra; // Deixa a preposição minúscula
+            }).join(' ');
+        }
+
+        // 🔥 FORMATA O NOME DO ALUNO (Regra Gramatical Inteligente)
+        function formatarNome(nome, isCursive) {
+            if (!isCursive) return nome.toUpperCase(); // Se não for cursiva, mantém o padrão Maiúsculo de sempre
+            
+            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
+                if (index === 0 || !excecoes.includes(palavra)) {
+                    return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+                }
+                return palavra; 
+            }).join(' ');
         }
 
         onAuthStateChanged(auth, async (user) => {            
@@ -851,7 +868,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v27");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v28");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -923,7 +940,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v27", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v28", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1000,11 +1017,6 @@
             return { fill: '#B38728', stroke: null }; 
         }
 
-        function formatarNome(nome, isCursive) {
-            if (!isCursive) return nome.toUpperCase();
-            return nome.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-        }
-
         window.atualizarPreviewLive = function() {
             const certRender = document.getElementById('certificado-render');
             
@@ -1061,11 +1073,12 @@
                 innerBorder.style.boxShadow = 'none';
             }
 
+            // 🔥 TEXTURA DE MÁRMORE PROCEDURAL (SVG VEINS)
             const texturasMap = {
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
                 'woven': 'https://www.transparenttextures.com/patterns/woven.png',
-                'white-wall': 'https://www.transparenttextures.com/patterns/concrete-wall.png'
+                'white-wall': "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.12 0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23m)'/%3E%3C/svg%3E"
             };
 
             const texturaSel = document.getElementById('cfg-textura').value;
@@ -1094,9 +1107,10 @@
                     divTextura.style.opacity = '0.5';
                     divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'white-wall') {
+                    // 🔥 MÁRMORE NOVO E ELEGANTE
                     fundoOuter = "#E2E8F0";
                     fundoInner = "#F8FAFC"; 
-                    divTextura.style.opacity = '0.4';
+                    divTextura.style.opacity = '0.7'; 
                     divTextura.style.mixBlendMode = 'multiply';
                 } else if (texturaSel === 'woven') {
                     fundoOuter = "#FFFFFF";
@@ -1228,6 +1242,8 @@
             
             const isNomeCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
             
+            elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
+
             if (isNomeCursive) {
                 elNome.style.textTransform = 'none'; 
                 elNome.style.letterSpacing = '1px';
@@ -1245,8 +1261,6 @@
                     maxFontSizeNome = 50;
                 }
             }
-            
-            elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
 
             let baseTextSize = 22;
             if (fonteTexto.includes('Playfair')) baseTextSize = 16;
@@ -1274,7 +1288,6 @@
                     // 🔥 PROTEÇÃO PARA NOMES GIGANTES DE PROFESSORES
                     const elAss1 = document.getElementById('render-ass1-nome');
                     const elAss2 = document.getElementById('render-ass2-nome');
-                    // A caixa tem 280px de largura. Parametro 260 deixa uma margem de segurança de 10px de cada lado. Reduz até 10px se for preciso.
                     ajustarTamanhoTexto(elAss1, 18, 260, 10);
                     ajustarTamanhoTexto(elAss2, 18, 260, 10);
                 }, 50);
@@ -1334,7 +1347,6 @@
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
 
             try {                
-                // Salva o Certificado
                 await addDoc(collection(db, "certificados"), {                    
                     equipe_id: uid, 
                     aluno_id: aluno.id, 
@@ -1349,7 +1361,6 @@
                     data_emissao: new Date().toISOString()                
                 });
 
-                // 🔥 CRIA O AGENDAMENTO DE MUDANÇA DE FAIXA PARA O HISTÓRICO
                 await addDoc(collection(db, "historico_faixas"), {
                     equipe_id: uid,
                     aluno_id: aluno.id,
