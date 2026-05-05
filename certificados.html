@@ -110,7 +110,7 @@
             pointer-events: none;
             z-index: 1;
             background-repeat: repeat;
-            transition: background-image 0.3s ease, opacity 0.3s ease, mix-blend-mode 0.3s ease;
+            transition: background-image 0.3s ease, opacity 0.3s ease, mix-blend-mode 0.3s ease, filter 0.3s ease, background-size 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
@@ -201,15 +201,15 @@
             padding-bottom: 40px;
         }
 
+        /* 🔥 CLÁSSICO RESTAURADO: max-width 950 e sem text-wrap: balance para deixar a EXIGIDA sozinha! */
         .cert-texto-dinamico { 
             text-align: center;
             margin-top: 22px;
-            max-width: 800px; /* LARGURA AJUSTADA PARA QUEBRAR O "EXIGIDA" CORRETAMENTE */
+            max-width: 950px; 
             line-height: 1.4;
             color: #334155;
             letter-spacing: 0.5px;
             transition: font-size 0.3s ease;
-            text-wrap: balance; 
         }
         
         .cert-nome-container {
@@ -380,7 +380,8 @@
                                                     <p id="render-texto1" class="cert-texto-dinamico">A SUA EQUIPE RECONHECE QUE</p>
                                                     
                                                     <div id="render-nome-container" class="cert-nome-container">
-                                                        <h2 id="render-nome" class="cert-nome-atleta">NOME DO ATLETA</h2>
+                                                        <!-- Placeholder agora reflete o Title Case correto -->
+                                                        <h2 id="render-nome" class="cert-nome-atleta">Nome do Atleta</h2>
                                                     </div>
 
                                                     <p id="render-texto2" class="cert-texto-dinamico">APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA</p>
@@ -629,14 +630,12 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 1 (Esquerda)</h4>                                    
-                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
-                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
+                                    <div><input type="text" id="resp-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
                                     <div><input type="text" id="resp-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                                                                
                                 <div class="space-y-4">                                    
                                     <h4 class="text-xs font-bold text-slate-500 uppercase border-b border-slate-200 pb-2">Assinatura 2 (Direita)</h4>                                    
-                                    <!-- 🔥 REMOVIDA A CLASSE 'UPPERCASE', ADICIONADA 'CAPITALIZE' -->
-                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700 capitalize"></div>                                    
+                                    <div><input type="text" id="prof-nome" oninput="atualizarPreviewLive()" value="" placeholder="Nome do Professor..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-bold text-slate-700"></div>                                    
                                     <div><input type="text" id="prof-grad" oninput="atualizarPreviewLive()" value="" placeholder="Faixa / Grau..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition-all font-medium text-slate-600 text-sm uppercase"></div>                                
                                 </div>                            
                             </div>                                                        
@@ -702,6 +701,7 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
+        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (COM TAMANHO MÍNIMO)
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
@@ -713,28 +713,15 @@
             }
         }
 
-        // 🔥 FORMATA O NOME DO PROFESSOR
-        function formatarNomeAssinatura(nome) {
+        // 🔥 FUNÇÃO GRAMATICAL INTELIGENTE (Mantém 'da, de, do' minúsculos)
+        function formatarNomeInteligente(nome) {
             if (!nome) return "";
-            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
-            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
+            const excecoes = ['da', 'de', 'di', 'do', 'du', 'das', 'dos', 'e'];
+            return nome.trim().toLowerCase().split(/\s+/).map((palavra, index) => {
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
-                return palavra;
-            }).join(' ');
-        }
-
-        // 🔥 FORMATA O NOME DO ALUNO
-        function formatarNome(nome, isCursive) {
-            if (!isCursive) return nome.toUpperCase(); 
-            
-            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
-            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
-                if (index === 0 || !excecoes.includes(palavra)) {
-                    return palavra.charAt(0).toUpperCase() + palavra.slice(1);
-                }
-                return palavra; 
+                return palavra; // Preposição continua minúscula
             }).join(' ');
         }
 
@@ -869,7 +856,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v31");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v32");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -941,7 +928,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v31", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v32", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1078,7 +1065,7 @@
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
                 'woven': 'https://www.transparenttextures.com/patterns/woven.png',
-                'white-wall': 'https://www.transparenttextures.com/patterns/cracked-wall.png'
+                'white-wall': 'https://www.transparenttextures.com/patterns/concrete-wall.png'
             };
 
             const texturaSel = document.getElementById('cfg-textura').value;
@@ -1101,26 +1088,27 @@
                     opacidadeManchas = "0.75"; 
                     divTextura.style.opacity = '0.5';
                     divTextura.style.mixBlendMode = 'multiply';
-                    divTextura.style.zIndex = '1';
+                    divTextura.style.backgroundSize = 'auto';
                 } else if (texturaSel === 'cream-paper') {
                     fundoOuter = "#F0EBE1";
                     fundoInner = "#FDFBF7"; 
                     divTextura.style.opacity = '0.5';
                     divTextura.style.mixBlendMode = 'multiply';
-                    divTextura.style.zIndex = '1';
+                    divTextura.style.backgroundSize = 'auto';
                 } else if (texturaSel === 'white-wall') {
+                    // 🔥 MÁRMORE NOVO (VEIAS LARGAS E MARCADAS)
                     fundoOuter = "#E2E8F0";
                     fundoInner = "#F8FAFC"; 
-                    // 🔥 MÁRMORE CORRIGIDO
-                    divTextura.style.opacity = '0.75'; // Agora sim os veios vão aparecer!
+                    divTextura.style.opacity = '0.35'; 
                     divTextura.style.mixBlendMode = 'multiply';
-                    divTextura.style.zIndex = '1';
+                    divTextura.style.filter = 'contrast(250%) brightness(0.9)'; 
+                    divTextura.style.backgroundSize = '400px'; 
                 } else if (texturaSel === 'woven') {
                     fundoOuter = "#FFFFFF";
                     fundoInner = "#FFFFFF"; 
                     divTextura.style.opacity = '0.04'; 
                     divTextura.style.mixBlendMode = 'normal'; 
-                    divTextura.style.zIndex = '1';
+                    divTextura.style.backgroundSize = 'auto';
                 }
             }
             
@@ -1130,7 +1118,7 @@
 
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
-            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
+            let nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
             
             const faixaBase = document.getElementById('combo-faixa').value.toUpperCase();            
             const grauAdd = document.getElementById('combo-grau').value;
@@ -1167,8 +1155,9 @@
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
             
-            const ass1Nome = formatarNomeAssinatura(document.getElementById('resp-nome').value) || "Professor Responsável";
-            const ass2Nome = formatarNomeAssinatura(document.getElementById('prof-nome').value) || "Professor";
+            // 🔥 FORMATAÇÃO DOS NOMES DOS PROFESSORES PARA TITLE CASE INTELIGENTE
+            const ass1Nome = formatarNomeInteligente(document.getElementById('resp-nome').value) || "Professor Responsável";
+            const ass2Nome = formatarNomeInteligente(document.getElementById('prof-nome').value) || "Professor";
             
             document.getElementById('render-ass1-nome').innerText = ass1Nome;
             document.getElementById('render-ass1-grad').innerText = (document.getElementById('resp-grad').value || "Grau").toUpperCase();
@@ -1243,12 +1232,11 @@
             elNome.style.fontFamily = fonteNome;
             let maxFontSizeNome = 56;
             
-            const isNomeCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
-            
-            elNome.innerText = formatarNome(nomeAtleta, isNomeCursive);
+            // 🔥 NOME DO ATLETA AGORA TAMBÉM PASSA PELA INTELIGÊNCIA GRAMATICAL!
+            elNome.style.textTransform = 'none';
+            elNome.innerText = formatarNomeInteligente(nomeAtleta);
 
-            if (isNomeCursive) {
-                elNome.style.textTransform = 'none'; 
+            if (fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine')) {
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
                     maxFontSizeNome = 95; 
@@ -1256,7 +1244,6 @@
                     maxFontSizeNome = 80;
                 }
             } else {
-                elNome.style.textTransform = 'uppercase';
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
                     maxFontSizeNome = 45; 
@@ -1352,13 +1339,13 @@
                 await addDoc(collection(db, "certificados"), {                    
                     equipe_id: uid, 
                     aluno_id: aluno.id, 
-                    nome_aluno: aluno.nome.toUpperCase(), 
+                    nome_aluno: formatarNomeInteligente(aluno.nome), 
                     faixa: faixaTexto,                    
                     numero_serie: numeroSerieStr, 
                     hash_validador: idHash, 
                     data_cerimonia: dataRaw,                    
-                    prof_responsavel: respNome, 
-                    prof_direto: profNome, 
+                    prof_responsavel: formatarNomeInteligente(respNome), 
+                    prof_direto: formatarNomeInteligente(profNome), 
                     cidade_equipe: cidadeEquipeLogada, 
                     data_emissao: new Date().toISOString()                
                 });
