@@ -188,6 +188,7 @@
             display: inline-block;
         }
 
+        /* 🔥 O GRANDE AJUSTE: Empurrando o eixo central de texto para cima! */
         .cert-text-wrapper {
             flex: 1;
             display: flex;
@@ -196,25 +197,22 @@
             justify-content: center;
             width: 100%;
             z-index: 10;
-            padding-top: 50px;
-            padding-bottom: 40px;
+            padding-top: 20px; /* Reduzido */
+            padding-bottom: 90px; /* 🔥 Área de proteção do SELO aumentada */
         }
 
-        /* 🔥 ATUALIZAÇÃO: MAIS LARGURA E MELHOR USO DE ESPAÇO */
         .cert-texto-dinamico { 
             text-align: center;
-            margin-top: 28px; /* Mais respiro vertical */
-            max-width: 920px; /* Mais largura para o texto se espalhar */
-            line-height: 1.6; /* Mais elegante */
+            margin-top: 18px; /* Recalibrado para evitar blocão gigante */
+            max-width: 920px; 
+            line-height: 1.4; 
             color: #334155;
-            letter-spacing: 1px; /* Um pouco mais espaçado */
-            transition: font-size 0.3s ease;
-            /* text-wrap: balance foi removido para evitar o bloco espremido central! */
+            letter-spacing: 1px;
         }
         
         .cert-nome-container {
             width: 85%;
-            margin: 15px auto 10px auto;
+            margin: 12px auto 8px auto; /* Recalibrado */
             border-bottom: 2px solid var(--cor-destaque);
             padding-bottom: 5px;
             display: flex;
@@ -235,8 +233,8 @@
             align-items: baseline; 
             justify-content: center;
             gap: 12px; 
-            margin-top: 20px;
-            margin-bottom: 10px;
+            margin-top: 16px;
+            margin-bottom: 6px;
         }
 
         .cert-faixa-cor-destaque { 
@@ -705,7 +703,6 @@
         }
 
         // 🔥 O SEGredo DE MESTRE: Medição Síncrona Exata
-        // Remove a transição (se existir), aplica o tamanho, mede e desce se precisar.
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             
@@ -1185,7 +1182,6 @@
             document.getElementById('render-ass2-nome').innerText = ass2Nome;
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
-            // 🔥 LÓGICA DE OCULTAÇÃO REAL: Tira do layout se não tiver logo
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
             const elEsq = document.getElementById('render-logo-esq');
@@ -1221,28 +1217,34 @@
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
+            let larguraLivreTitulo = 1050;
+            if (srcEsq && valEsq !== 'nenhuma') larguraLivreTitulo -= 140; 
+            if (srcDir && valDir !== 'nenhuma') larguraLivreTitulo -= 140; 
+            larguraLivreTitulo -= 20; 
+
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
             
-            let maxFontSizeTitulo = 50; 
+            let maxFontSizeTitulo = 55; 
             if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon') || fonteTitulo.includes('Parisienne') || fonteTitulo.includes('Alex Brush') || fonteTitulo.includes('Dancing') || fonteTitulo.includes('Great Vibes') || fonteTitulo.includes('Tangerine')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
-                if (fonteTitulo.includes('Pinyon')) maxFontSizeTitulo = 140; 
-                else if (fonteTitulo.includes('Tangerine')) maxFontSizeTitulo = 120;
-                else if (fonteTitulo.includes('Great Vibes')) maxFontSizeTitulo = 85;
-                else maxFontSizeTitulo = 80;
+                if (fonteTitulo.includes('Pinyon')) maxFontSizeTitulo = 130; 
+                else if (fonteTitulo.includes('Tangerine')) maxFontSizeTitulo = 110;
+                else maxFontSizeTitulo = 95;
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
-                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) maxFontSizeTitulo = 45; 
-                else maxFontSizeTitulo = 45; // Cinzel
+                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) maxFontSizeTitulo = 55; 
+                else maxFontSizeTitulo = 60; 
             }
 
             if (sombraTitulo === 'leve') elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
             else if (sombraTitulo === 'forte') elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
             else if (sombraTitulo === 'brilho') elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
             else elTitulo.style.textShadow = 'none';
+            
+            let larguraLivreNome = 850;
             
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
@@ -1256,13 +1258,12 @@
             if (isCursive) {
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Pinyon')) maxFontSizeNome = 160;
-                else if (fonteNome.includes('Tangerine')) maxFontSizeNome = 140; 
-                else if (fonteNome.includes('Great Vibes')) maxFontSizeNome = 100;
-                else maxFontSizeNome = 95; 
+                else if (fonteNome.includes('Tangerine')) maxFontSizeNome = 130; 
+                else maxFontSizeNome = 100; 
             } else {
                 elNome.style.letterSpacing = '4px';
-                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) maxFontSizeNome = 60; 
-                else maxFontSizeNome = 60; // Cinzel
+                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) maxFontSizeNome = 65; 
+                else maxFontSizeNome = 70; 
             }
 
             let baseTextSize = 24;
@@ -1283,34 +1284,24 @@
                 }
             });
 
-            // 🔥 A MÁGICA FINAL: MEDIÇÃO SÍNCRONA
-            // Colocamos o Timeout para garantir que a fonte cursiva carregue visualmente na tela antes de medir
-            setTimeout(() => {
-                
-                // 1. TÍTULO: Mede o wrapper que fica exatamente entre as logos
-                const wrapperTitulo = document.getElementById('wrapper-titulo');
-                // Força um tamanho pequeno para medir o espaço real vazio da div
-                elTitulo.style.fontSize = '10px';
-                const espaçoLivreTitulo = wrapperTitulo.clientWidth - 20; 
-                ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, espaçoLivreTitulo, 20);
-                
-                // 2. NOME: Mede a linha sólida onde ele está pisando
-                const containerNome = document.getElementById('render-nome-container');
-                elNome.style.fontSize = '10px';
-                const espaçoLivreNome = containerNome.clientWidth - 30; // Desconto pras perninhas cursivas
-                ajustarTamanhoTexto(elNome, maxFontSizeNome, espaçoLivreNome, 20);
-                
-                // 3. ASSINATURAS: Mesma lógica
-                const caixaAssinatura = document.querySelector('.cert-assinatura-box');
-                const espaçoAssinatura = caixaAssinatura.clientWidth - 10;
-                
-                const elAss1 = document.getElementById('render-ass1-nome');
-                const elAss2 = document.getElementById('render-ass2-nome');
-                
-                ajustarTamanhoTexto(elAss1, 18, espaçoAssinatura, 9);
-                ajustarTamanhoTexto(elAss2, 18, espaçoAssinatura, 9);
-                
-            }, 150);
+            document.fonts.ready.then(() => {
+                setTimeout(() => {
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, larguraLivreTitulo, 25); 
+                    
+                    const containerNome = document.getElementById('render-nome-container');
+                    const larguraExataLinhaNome = containerNome.clientWidth - 10;
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, larguraExataLinhaNome, 20); 
+                    
+                    const elAss1 = document.getElementById('render-ass1-nome');
+                    const elAss2 = document.getElementById('render-ass2-nome');
+                    const caixaAssinatura = document.querySelector('.cert-assinatura-box');
+                    const larguraExataAssinatura = caixaAssinatura.clientWidth - 10;
+                    
+                    ajustarTamanhoTexto(elAss1, 18, larguraExataAssinatura, 9);
+                    ajustarTamanhoTexto(elAss2, 18, larguraExataAssinatura, 9);
+                    
+                }, 150);
+            });
         }
 
         window.gerarCertificado = async function() {            
