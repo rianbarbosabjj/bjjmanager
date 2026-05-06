@@ -176,12 +176,9 @@
             align-items: center;
             z-index: 10;
         }
-        
-        /* 🔥 Alterado para suportar ocultação inteligente */
         .cert-header-side { width: 140px; display: flex; justify-content: center; } 
         .cert-logo { max-width: 135px; max-height: 120px; object-fit: contain; } 
         
-        /* 🔥 Wrapper agora tem min-width: 0 para permitir que o texto flexível encolha sem deformar a div */
         .cert-titulo-wrapper { flex: 1; text-align: center; min-width: 0; }
         
         .cert-titulo { 
@@ -374,7 +371,6 @@
                                                 <p id="render-data" class="cert-data">CARREGANDO LOCAL E DATA...</p>
 
                                                 <div class="cert-header-container">
-                                                    <!-- 🔥 ID adicionado aos wrappers para controle de layout -->
                                                     <div class="cert-header-side" id="wrapper-logo-esq"><img id="render-logo-esq" src="" class="cert-logo"></div>
                                                     <div class="cert-titulo-wrapper"><h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1></div>
                                                     <div class="cert-header-side" id="wrapper-logo-dir"><img id="render-logo-dir" src="" class="cert-logo"></div>
@@ -1225,16 +1221,15 @@
             const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
             // 🔥 CÁLCULO MATEMÁTICO DO ESPAÇO LIVRE PARA O TÍTULO
-            // Largura total interna do A4 = 1053px
             let larguraLivreTitulo = 1050;
-            if (srcEsq && valEsq !== 'nenhuma') larguraLivreTitulo -= 140; // Desconta a logo esquerda
-            if (srcDir && valDir !== 'nenhuma') larguraLivreTitulo -= 140; // Desconta a logo direita
-            larguraLivreTitulo -= 20; // Margem de respiro
+            if (srcEsq && valEsq !== 'nenhuma') larguraLivreTitulo -= 140; 
+            if (srcDir && valDir !== 'nenhuma') larguraLivreTitulo -= 140; 
+            larguraLivreTitulo -= 20; 
 
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
             
-            let maxFontSizeTitulo = 55; // Padrão seguro
+            let maxFontSizeTitulo = 55; 
             if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon') || fonteTitulo.includes('Parisienne') || fonteTitulo.includes('Alex Brush') || fonteTitulo.includes('Dancing') || fonteTitulo.includes('Great Vibes') || fonteTitulo.includes('Tangerine')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
@@ -1245,16 +1240,13 @@
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
                 if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) maxFontSizeTitulo = 55; 
-                else maxFontSizeTitulo = 60; // Cinzel (Ficará 60 se houver espaço, senão o JS encolhe)
+                else maxFontSizeTitulo = 60; 
             }
 
             if (sombraTitulo === 'leve') elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
             else if (sombraTitulo === 'forte') elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
             else if (sombraTitulo === 'brilho') elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
             else elTitulo.style.textShadow = 'none';
-
-            // 🔥 ESPAÇO LIVRE PARA O NOME (85% do A4)
-            let larguraLivreNome = 850;
             
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
@@ -1273,7 +1265,7 @@
             } else {
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) maxFontSizeNome = 65; 
-                else maxFontSizeNome = 70; // Cinzel
+                else maxFontSizeNome = 70; 
             }
 
             let baseTextSize = 24;
@@ -1296,15 +1288,24 @@
 
             document.fonts.ready.then(() => {
                 setTimeout(() => {
-                    // 🔥 APPLICAÇÃO DO CÁLCULO MATEMÁTICO: O texto encolhe só o necessário para não quebrar a tela
+                    // 🔥 AJUSTE DINÂMICO USANDO AS LARGURAS EXATAS DOS RECIPIENTES (LINHAS)
                     ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, larguraLivreTitulo, 25); 
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, larguraLivreNome, 25); 
                     
+                    // Limita o nome exatamente pelo tamanho da linha (container) sob ele
+                    const containerNome = document.getElementById('render-nome-container');
+                    const larguraExataLinhaNome = containerNome.clientWidth - 10;
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, larguraExataLinhaNome, 20); 
+                    
+                    // Limita as assinaturas exatamente pelas linhas acima delas
                     const elAss1 = document.getElementById('render-ass1-nome');
                     const elAss2 = document.getElementById('render-ass2-nome');
-                    ajustarTamanhoTexto(elAss1, 18, 260, 10);
-                    ajustarTamanhoTexto(elAss2, 18, 260, 10);
-                }, 50);
+                    const caixaAssinatura = document.querySelector('.cert-assinatura-box');
+                    const larguraExataAssinatura = caixaAssinatura.clientWidth - 10;
+                    
+                    ajustarTamanhoTexto(elAss1, 18, larguraExataAssinatura, 9);
+                    ajustarTamanhoTexto(elAss2, 18, larguraExataAssinatura, 9);
+                    
+                }, 150); // ⏱️ Tempo aumentado para garantir a medição perfeita de fontes Premium curvosas
             });
         }
 
