@@ -188,7 +188,6 @@
             display: inline-block;
         }
 
-        /* 🔥 O GRANDE AJUSTE: Empurrando o eixo central de texto para cima! */
         .cert-text-wrapper {
             flex: 1;
             display: flex;
@@ -197,22 +196,22 @@
             justify-content: center;
             width: 100%;
             z-index: 10;
-            padding-top: 20px; /* Reduzido */
-            padding-bottom: 90px; /* 🔥 Área de proteção do SELO aumentada */
+            padding-top: 20px;
+            padding-bottom: 90px;
         }
 
         .cert-texto-dinamico { 
             text-align: center;
-            margin-top: 18px; /* Recalibrado para evitar blocão gigante */
+            margin-top: 18px; 
             max-width: 920px; 
-            line-height: 1.4; 
+            line-height: 1.6; 
             color: #334155;
             letter-spacing: 1px;
         }
         
         .cert-nome-container {
             width: 85%;
-            margin: 12px auto 8px auto; /* Recalibrado */
+            margin: 12px auto 8px auto; 
             border-bottom: 2px solid var(--cor-destaque);
             padding-bottom: 5px;
             display: flex;
@@ -702,7 +701,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        // 🔥 O SEGredo DE MESTRE: Medição Síncrona Exata
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             
@@ -1182,17 +1180,20 @@
             document.getElementById('render-ass2-nome').innerText = ass2Nome;
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
+            // 🔥 LÓGICA DE OCULTAÇÃO FANTASMA: Deixa invisível, mas mantém o peso para centralizar o título
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
             const elEsq = document.getElementById('render-logo-esq');
             elEsq.src = srcEsq || '';
-            document.getElementById('wrapper-logo-esq').style.display = (srcEsq && valEsq !== 'nenhuma') ? 'flex' : 'none';
+            document.getElementById('wrapper-logo-esq').style.display = 'flex'; 
+            document.getElementById('wrapper-logo-esq').style.visibility = (srcEsq && valEsq !== 'nenhuma') ? 'visible' : 'hidden';
 
             const valDir = document.getElementById('pos-dir').value;
             const srcDir = getImagemEscolhida(valDir);
             const elDir = document.getElementById('render-logo-dir');
             elDir.src = srcDir || '';
-            document.getElementById('wrapper-logo-dir').style.display = (srcDir && valDir !== 'nenhuma') ? 'flex' : 'none';
+            document.getElementById('wrapper-logo-dir').style.display = 'flex'; 
+            document.getElementById('wrapper-logo-dir').style.visibility = (srcDir && valDir !== 'nenhuma') ? 'visible' : 'hidden';
 
             const imgWater = document.getElementById('render-watermark');
             const valWater = document.getElementById('pos-water') ? document.getElementById('pos-water').value : 'equipe';
@@ -1217,11 +1218,6 @@
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
-            let larguraLivreTitulo = 1050;
-            if (srcEsq && valEsq !== 'nenhuma') larguraLivreTitulo -= 140; 
-            if (srcDir && valDir !== 'nenhuma') larguraLivreTitulo -= 140; 
-            larguraLivreTitulo -= 20; 
-
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
             
@@ -1243,8 +1239,6 @@
             else if (sombraTitulo === 'forte') elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
             else if (sombraTitulo === 'brilho') elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
             else elTitulo.style.textShadow = 'none';
-            
-            let larguraLivreNome = 850;
             
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
@@ -1286,19 +1280,22 @@
 
             document.fonts.ready.then(() => {
                 setTimeout(() => {
-                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, larguraLivreTitulo, 25); 
+                    const wrapperTitulo = document.getElementById('wrapper-titulo');
+                    elTitulo.style.fontSize = '10px';
+                    const espaçoLivreTitulo = wrapperTitulo.clientWidth - 20; 
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, espaçoLivreTitulo, 25); 
                     
                     const containerNome = document.getElementById('render-nome-container');
-                    const larguraExataLinhaNome = containerNome.clientWidth - 10;
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, larguraExataLinhaNome, 20); 
+                    elNome.style.fontSize = '10px';
+                    const espaçoLivreNome = containerNome.clientWidth - 30;
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, espaçoLivreNome, 20); 
                     
+                    const caixaAssinatura = document.querySelector('.cert-assinatura-box');
+                    const espaçoAssinatura = caixaAssinatura.clientWidth - 10;
                     const elAss1 = document.getElementById('render-ass1-nome');
                     const elAss2 = document.getElementById('render-ass2-nome');
-                    const caixaAssinatura = document.querySelector('.cert-assinatura-box');
-                    const larguraExataAssinatura = caixaAssinatura.clientWidth - 10;
-                    
-                    ajustarTamanhoTexto(elAss1, 18, larguraExataAssinatura, 9);
-                    ajustarTamanhoTexto(elAss2, 18, larguraExataAssinatura, 9);
+                    ajustarTamanhoTexto(elAss1, 18, espaçoAssinatura, 9);
+                    ajustarTamanhoTexto(elAss2, 18, espaçoAssinatura, 9);
                     
                 }, 150);
             });
@@ -1389,6 +1386,17 @@
             qrcodeObj.makeCode(urlValidador);
 
             setTimeout(() => {
+                // Aplica a mesma lógica de visibilidade para o PDF gerado
+                const valEsq = document.getElementById('pos-esq').value;
+                const srcEsq = getImagemEscolhida(valEsq);
+                document.getElementById('wrapper-logo-esq').style.display = 'flex';
+                document.getElementById('wrapper-logo-esq').style.visibility = (srcEsq && valEsq !== 'nenhuma') ? 'visible' : 'hidden';
+
+                const valDir = document.getElementById('pos-dir').value;
+                const srcDir = getImagemEscolhida(valDir);
+                document.getElementById('wrapper-logo-dir').style.display = 'flex';
+                document.getElementById('wrapper-logo-dir').style.visibility = (srcDir && valDir !== 'nenhuma') ? 'visible' : 'hidden';
+
                 const certificadoReal = document.getElementById('certificado-render');
                 const wrapperParaPDF = document.getElementById('wrapper-render');
                 
