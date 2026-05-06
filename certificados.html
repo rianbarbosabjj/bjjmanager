@@ -707,6 +707,7 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
+        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (COM TAMANHO MÍNIMO)
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
@@ -718,10 +719,24 @@
             }
         }
 
+        // 🔥 FUNÇÃO GRAMATICAL INTELIGENTE (Mantém 'da, de, do' minúsculos)
+        function formatarNome(nome, isCursive) {
+            if (!nome) return "";
+            if (!isCursive) return nome.toUpperCase(); // Se não for cursiva, tudo maiúsculo
+            
+            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
+                if (index === 0 || !excecoes.includes(palavra)) {
+                    return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+                }
+                return palavra; // Preposição continua minúscula
+            }).join(' ');
+        }
+        
         function formatarNomeInteligente(nome) {
             if (!nome) return "";
-            const excecoes = ['da', 'de', 'di', 'do', 'du', 'das', 'dos', 'e'];
-            return nome.trim().toLowerCase().split(/\s+/).map((palavra, index) => {
+            const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
+            return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
@@ -776,7 +791,6 @@
 
                     nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
                     
-                    // 🔥 BUSCA A CIDADE E DEIXA INVISÍVEL NO FUNDO PARA A DATA!
                     if (dadosEquipe.endereco_cidade) {
                         cidadeEquipeLogada = dadosEquipe.endereco_cidade;
                     } else if (dadosEquipe.cidade) {
@@ -863,7 +877,7 @@
         }
 
         function carregarPadroes() {            
-            const memoria = localStorage.getItem("bjj_cert_padroes_v32");            
+            const memoria = localStorage.getItem("bjj_cert_padroes_v33");            
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
@@ -935,7 +949,7 @@
                 textura: document.getElementById('cfg-textura').value,
                 sombraTitulo: document.getElementById('cfg-sombra-titulo').value
             };            
-            localStorage.setItem("bjj_cert_padroes_v32", JSON.stringify(padroes));            
+            localStorage.setItem("bjj_cert_padroes_v33", JSON.stringify(padroes));            
             showToast("Padrões salvos com sucesso!", "success");        
         }
 
@@ -1137,7 +1151,6 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];            
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            // 🔥 A CIDADE É PUXADA INVISIVELMENTE AQUI!
             document.getElementById('render-data').innerText = `${String(cidadeEquipeLogada || 'RIO DE JANEIRO').toUpperCase()}, ${dataExtenso}`;
             
             const corDaFaixa = getCoresFaixa(faixaBase); 
@@ -1206,21 +1219,22 @@
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
+            // 🔥 CORREÇÃO 1: TAMANHO DO TÍTULO AUMENTADO PARA O A4 REAL
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
-            let maxFontSizeTitulo = 42;
+            let maxFontSizeTitulo = 55; 
             
             if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
-                maxFontSizeTitulo = 75; 
+                maxFontSizeTitulo = 85; // Aumentado
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
                 if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) {
-                    maxFontSizeTitulo = 36;
+                    maxFontSizeTitulo = 48; // Aumentado
                 } else {
-                    maxFontSizeTitulo = 42;
+                    maxFontSizeTitulo = 55; // Aumentado
                 }
             }
 
@@ -1234,33 +1248,37 @@
                 elTitulo.style.textShadow = 'none';
             }
 
+            // 🔥 CORREÇÃO 2: TAMANHO DO NOME AUMENTADO PARA O A4 REAL
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
-            let maxFontSizeNome = 56;
+            let maxFontSizeNome = 70;
+            
+            const isCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
             
             elNome.style.textTransform = 'none';
-            elNome.innerText = formatarNome(nomeAtleta, fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine'));
+            elNome.innerText = formatarNome(nomeAtleta, isCursive);
 
-            if (fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine')) {
+            if (isCursive) {
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
-                    maxFontSizeNome = 95; 
+                    maxFontSizeNome = 120; // Aumentado (Para fontes muito estreitas)
                 } else {
-                    maxFontSizeNome = 80;
+                    maxFontSizeNome = 95; // Aumentado (Para cursivas normais)
                 }
             } else {
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
-                    maxFontSizeNome = 45; 
+                    maxFontSizeNome = 60; // Aumentado
                 } else {
-                    maxFontSizeNome = 50;
+                    maxFontSizeNome = 65; // Aumentado
                 }
             }
 
-            let baseTextSize = 22;
-            if (fonteTexto.includes('Playfair')) baseTextSize = 16;
-            if (fonteTexto.includes('Montserrat') || fonteTexto.includes('Roboto')) baseTextSize = 14;
-            if (fonteTexto.includes('Old Standard')) baseTextSize = 19;
+            // 🔥 CORREÇÃO 3: TAMANHOS DO TEXTO CORPO AUMENTADOS
+            let baseTextSize = 24;
+            if (fonteTexto.includes('Playfair')) baseTextSize = 18;
+            if (fonteTexto.includes('Montserrat') || fonteTexto.includes('Roboto')) baseTextSize = 16;
+            if (fonteTexto.includes('Old Standard')) baseTextSize = 22;
 
             const elsTextosCorpo = [
                 document.getElementById('render-texto1'),
@@ -1277,8 +1295,9 @@
 
             document.fonts.ready.then(() => {
                 setTimeout(() => {
-                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 680, 15); 
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 800, 15); 
+                    // Aumentei um pouco a largura máxima permitida para evitar quebras desnecessárias
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700, 15); 
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 850, 15); 
                     
                     const elAss1 = document.getElementById('render-ass1-nome');
                     const elAss2 = document.getElementById('render-ass2-nome');
