@@ -1222,19 +1222,25 @@
             // 🔥 CORREÇÃO 1: TAMANHO DO TÍTULO AUMENTADO PARA O A4 REAL
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
-            let maxFontSizeTitulo = 55; 
+            let maxFontSizeTitulo = 44; // Reduzido (Cinzel)
             
-            if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon')) {
+            if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon') || fonteTitulo.includes('Parisienne') || fonteTitulo.includes('Alex Brush') || fonteTitulo.includes('Dancing') || fonteTitulo.includes('Great Vibes') || fonteTitulo.includes('Tangerine')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
-                maxFontSizeTitulo = 85; // Aumentado
+                if (fonteTitulo.includes('Pinyon')) {
+                    maxFontSizeTitulo = 110; // 🔥 Pinyon muito maior
+                } else if (fonteTitulo.includes('Tangerine')) {
+                    maxFontSizeTitulo = 95;
+                } else {
+                    maxFontSizeTitulo = 80;
+                }
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
                 if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) {
-                    maxFontSizeTitulo = 48; // Aumentado
+                    maxFontSizeTitulo = 42; 
                 } else {
-                    maxFontSizeTitulo = 55; // Aumentado
+                    maxFontSizeTitulo = 40; // Cinzel e outros não cursivos
                 }
             }
 
@@ -1248,10 +1254,10 @@
                 elTitulo.style.textShadow = 'none';
             }
 
-            // 🔥 CORREÇÃO 2: TAMANHO DO NOME AUMENTADO PARA O A4 REAL
+            // 🔥 CORREÇÃO 2: TAMANHO DO NOME
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
-            let maxFontSizeNome = 70;
+            let maxFontSizeNome = 55;
             
             const isCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
             
@@ -1260,21 +1266,23 @@
 
             if (isCursive) {
                 elNome.style.letterSpacing = '1px';
-                if (fonteNome.includes('Tangerine') || fonteNome.includes('Pinyon')) {
-                    maxFontSizeNome = 120; // Aumentado (Para fontes muito estreitas)
+                if (fonteNome.includes('Pinyon')) {
+                    maxFontSizeNome = 160; // 🔥 Pinyon gigantesca (pois a base dela é minúscula)
+                } else if (fonteNome.includes('Tangerine')) {
+                    maxFontSizeNome = 130; 
                 } else {
-                    maxFontSizeNome = 95; // Aumentado (Para cursivas normais)
+                    maxFontSizeNome = 95; 
                 }
             } else {
                 elNome.style.letterSpacing = '4px';
                 if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
-                    maxFontSizeNome = 60; // Aumentado
+                    maxFontSizeNome = 55; 
                 } else {
-                    maxFontSizeNome = 65; // Aumentado
+                    maxFontSizeNome = 52; // Cinzel e outros
                 }
             }
 
-            // 🔥 CORREÇÃO 3: TAMANHOS DO TEXTO CORPO AUMENTADOS
+            // 🔥 CORREÇÃO 3: TAMANHOS DO TEXTO CORPO
             let baseTextSize = 24;
             if (fonteTexto.includes('Playfair')) baseTextSize = 18;
             if (fonteTexto.includes('Montserrat') || fonteTexto.includes('Roboto')) baseTextSize = 16;
@@ -1295,9 +1303,9 @@
 
             document.fonts.ready.then(() => {
                 setTimeout(() => {
-                    // Aumentei um pouco a largura máxima permitida para evitar quebras desnecessárias
-                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 700, 15); 
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 850, 15); 
+                    // 🔥 DIMINUÍDA A LARGURA MÁXIMA PARA EVITAR EMPURRAR A LOGO
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 580, 15); 
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 800, 15); 
                     
                     const elAss1 = document.getElementById('render-ass1-nome');
                     const elAss2 = document.getElementById('render-ass2-nome');
