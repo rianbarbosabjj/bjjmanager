@@ -67,7 +67,6 @@
                 <button onclick="mudarAbaMaster('faturamento')" id="menu-faturamento" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">💳</span> Faturamento
                 </button>
-                <!-- 🔥 NOVO BOTÃO DATA EXPLORER -->
                 <button onclick="mudarAbaMaster('bi')" id="menu-bi" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">📊</span> Data Explorer (BI)
                 </button>
@@ -325,12 +324,12 @@
             </div>
         </div>
 
-        <!-- 🔥 NOVA ABA: DATA EXPLORER (BI) -->
+        <!-- 🔥 ABA: DATA EXPLORER (BI) COM EXCLUSÃO -->
         <div id="aba-bi" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Data Explorer (BI)</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Extração de dados brutos das tabelas do banco para inteligência de negócios.</p>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Extração de dados brutos das tabelas do banco para inteligência de negócios e manutenção.</p>
                 </div>
                 <button onclick="exportarCSV_BI()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg flex items-center gap-2">
                     <span>📥</span> Exportar Dados (CSV)
@@ -1002,8 +1001,8 @@
         let chamadosCache = [];
         let auditoriaCache = [];
         let extratoAsaasCache = []; 
-        let biCache = []; // 🔥 CACHE DO DATA EXPLORER
-        let biColumns = []; // 🔥 COLUNAS DINÂMICAS DO BI
+        let biCache = []; 
+        let biColumns = []; 
         
         let equipeEditandoId = null;
         let equipeAcessoId = null; 
@@ -1034,7 +1033,7 @@
         });
 
         // ==========================================
-        // 📊 DATA EXPLORER (BUSINESS INTELLIGENCE)
+        // 📊 DATA EXPLORER (BUSINESS INTELLIGENCE) COM EXCLUSÃO
         // ==========================================
         window.carregarDadosBI = async function() {
             const colecao = document.getElementById('bi-colecao').value;
@@ -1047,7 +1046,6 @@
             counter.innerText = "⏳";
             
             try {
-                // Buscamos até 1000 registros para evitar travamento no navegador
                 const q = query(collection(db, colecao), limit(1000));
                 const snap = await getDocs(q);
                 
@@ -1062,45 +1060,49 @@
                     return;
                 }
 
-                // Identificar todas as chaves (colunas) únicas entre todos os documentos
                 const keysSet = new Set();
                 biCache.forEach(doc => {
                     Object.keys(doc).forEach(key => keysSet.add(key));
                 });
                 
-                // Forçar _id a ser a primeira coluna
                 biColumns = ['_id', ...Array.from(keysSet).filter(k => k !== '_id').sort()];
 
-                // Montar o Cabeçalho (THEAD)
+                // Montar Cabeçalho com Coluna de Ações
                 let headerRow = '<tr>';
                 biColumns.forEach(col => {
                     headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 sticky top-0 border-b border-slate-800">${col}</th>`;
                 });
+                headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 sticky top-0 border-b border-slate-800 text-center">Ações</th>`;
                 headerRow += '</tr>';
                 tabelaHead.innerHTML = headerRow;
 
-                // Montar as Linhas (TBODY)
+                // Montar as Linhas com Botão de Excluir
                 tabelaBody.innerHTML = '';
                 biCache.forEach(row => {
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
                     
+                    let tdContent = "";
                     biColumns.forEach(col => {
                         let val = row[col];
                         let disp = val !== undefined && val !== null ? val : '';
                         
-                        // Limitar strings muito grandes para não quebrar a tabela
                         if(typeof disp === 'string' && disp.length > 50 && !disp.includes('http')) {
                             disp = disp.substring(0, 50) + '...';
                         }
-                        // Transformar Objetos/Arrays em strings JSON
                         if(typeof disp === 'object') {
                             disp = JSON.stringify(disp);
                         }
                         
-                        tr.innerHTML += `<td class="px-6 py-3 font-mono text-[10px] text-slate-400 max-w-[200px] truncate" title="${String(val).replace(/"/g, '&quot;')}">${disp}</td>`;
+                        tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-slate-400 max-w-[200px] truncate" title="${String(val).replace(/"/g, '&quot;')}">${disp}</td>`;
                     });
                     
+                    // Botão de Excluir na Tabela Bruta
+                    tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-center">
+                        <button onclick="excluirRegistroBI('${colecao}', '${row._id}')" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-2 py-1 rounded transition-colors" title="Excluir Definitivamente">🗑️</button>
+                    </td>`;
+                    
+                    tr.innerHTML = tdContent;
                     tabelaBody.appendChild(tr);
                 });
                 
@@ -1111,19 +1113,29 @@
             }
         }
 
+        window.excluirRegistroBI = async function(colecao, id) {
+            if(!confirm(`⚠️ ATENÇÃO EXTREMA: Você está prestes a deletar o registro "${id}" da coleção "${colecao}".\n\nIsso NÃO pode ser desfeito. Deseja continuar?`)) return;
+
+            try {
+                await deleteDoc(doc(db, colecao, id));
+                showToast("Registro excluído com sucesso!", "success");
+                carregarDadosBI(); // Recarrega a tabela
+            } catch(e) {
+                console.error("Erro ao excluir:", e);
+                showToast("Erro ao excluir. Verifique permissões.", "error");
+            }
+        }
+
         window.exportarCSV_BI = function() {
             if (biCache.length === 0) return showToast("Não há dados na tabela para exportar.", "info");
 
             const colecao = document.getElementById('bi-colecao').value;
-            
-            // Usamos as mesmas colunas geradas no Thead
             const header = biColumns.join(';');
             
             const rows = biCache.map(obj => {
                 return biColumns.map(col => {
                     let val = obj[col] !== undefined && obj[col] !== null ? obj[col] : '';
                     if(typeof val === 'object') val = JSON.stringify(val);
-                    // Escapar aspas e limpar quebras de linha para o CSV
                     let cleaned = String(val).replace(/"/g, '""').replace(/\n/g, ' ');
                     return `"${cleaned}"`;
                 }).join(';');
@@ -1300,7 +1312,6 @@
             }
         }
 
-        // Função de Resgate
         window.executarResgateAcesso = async function() {
             const email = document.getElementById('email-resgate').value.trim();
             const btn = document.getElementById('btn-resgate');
@@ -2159,7 +2170,6 @@
                 carregarExtratoCompletoMaster(); 
             }
             if(abaID === 'bi') {
-                // Ao abrir a aba BI, carrega as equipes por padrão
                 document.getElementById('bi-colecao').value = 'equipes';
                 carregarDadosBI();
             }
