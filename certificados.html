@@ -48,6 +48,7 @@
             box-sizing: border-box;
             position: relative;
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transition: background 0.3s ease;
         }
 
         #certificado-render::before {
@@ -61,6 +62,7 @@
             opacity: var(--opacidade-manchas);
             pointer-events: none;
             z-index: 0;
+            transition: opacity 0.3s ease;
         }
 
         .cert-border-outer {
@@ -80,6 +82,7 @@
             box-sizing: border-box;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             position: relative;
+            transition: background 0.3s ease, padding 0.3s ease;
         }
         
         .cert-border-inner {
@@ -96,6 +99,7 @@
             box-sizing: border-box;
             box-shadow: inset 0 0 0 8px var(--fundo-inner), inset 0 0 0 9px var(--cor-destaque);
             z-index: 2;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border 0.3s ease;
         }
 
         .cert-textura-fundo {
@@ -106,10 +110,11 @@
             pointer-events: none;
             z-index: 1;
             background-repeat: repeat;
+            transition: background-image 0.3s ease, opacity 0.3s ease, mix-blend-mode 0.3s ease, filter 0.3s ease, background-size 0.3s ease;
         }
 
         .cert-corner { position: absolute; width: 40px; height: 40px; z-index: 15; }
-        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); }
+        .cert-corner::before, .cert-corner::after { content: ''; position: absolute; background: var(--cor-destaque); transition: background 0.3s ease; }
         .cert-corner::before { width: 2px; height: 100%; }
         .cert-corner::after { width: 100%; height: 2px; }
         .corner-tl { top: 20px; left: 20px; } .corner-tl::before { left: 0; top: 0; } .corner-tl::after { left: 0; top: 0; }
@@ -171,12 +176,9 @@
             align-items: center;
             z-index: 10;
         }
-        
-        /* 🔥 flex-shrink: 0 garante que a logo NUNCA seja esmagada por um título gigante */
         .cert-header-side { width: 140px; display: flex; justify-content: center; flex-shrink: 0; } 
         .cert-logo { max-width: 135px; max-height: 120px; object-fit: contain; } 
         
-        /* 🔥 padding adicionado para as pernas da Great Vibes não invadirem a logo */
         .cert-titulo-wrapper { flex: 1; text-align: center; min-width: 0; padding: 0 15px; }
         
         .cert-titulo { 
@@ -198,14 +200,16 @@
             padding-bottom: 40px;
         }
 
+        /* 🔥 ATUALIZAÇÃO: MAIS LARGURA E MELHOR USO DE ESPAÇO */
         .cert-texto-dinamico { 
             text-align: center;
-            margin-top: 22px;
-            max-width: 800px; 
-            line-height: 1.4;
+            margin-top: 28px; /* Mais respiro vertical */
+            max-width: 920px; /* Mais largura para o texto se espalhar */
+            line-height: 1.6; /* Mais elegante */
             color: #334155;
-            letter-spacing: 0.5px;
-            text-wrap: balance; 
+            letter-spacing: 1px; /* Um pouco mais espaçado */
+            transition: font-size 0.3s ease;
+            /* text-wrap: balance foi removido para evitar o bloco espremido central! */
         }
         
         .cert-nome-container {
@@ -223,7 +227,7 @@
             line-height: 1.1;
             white-space: nowrap; 
             margin: 0;
-            padding: 0 15px; /* Respiro para as fontes cursivas não tocarem as bordas laterais do container */
+            padding: 0 15px; 
         }
         
         .cert-bloco-faixa {
@@ -364,7 +368,6 @@
                                                 <p id="render-data" class="cert-data">CARREGANDO LOCAL E DATA...</p>
 
                                                 <div class="cert-header-container">
-                                                    <!-- 🔥 IDs adicionados aos wrappers para controle matemático de layout -->
                                                     <div class="cert-header-side" id="wrapper-logo-esq"><img id="render-logo-esq" src="" class="cert-logo"></div>
                                                     <div class="cert-titulo-wrapper" id="wrapper-titulo"><h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1></div>
                                                     <div class="cert-header-side" id="wrapper-logo-dir"><img id="render-logo-dir" src="" class="cert-logo"></div>
@@ -706,7 +709,6 @@
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             
-            // Trava qualquer animação CSS que possa falsificar a leitura do scrollWidth
             const transicaoOriginal = elemento.style.transition;
             elemento.style.transition = 'none';
             
@@ -717,9 +719,6 @@
                 tamanhoAtual -= 1;
                 elemento.style.fontSize = tamanhoAtual + 'px';
             }
-            
-            // Devolve o estilo original (opcional, mas mantemos desligado para segurança em renderização)
-            // elemento.style.transition = transicaoOriginal;
         }
 
         function formatarNome(nome, isCursive) {
