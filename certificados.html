@@ -176,10 +176,13 @@
             align-items: center;
             z-index: 10;
         }
-        .cert-header-side { width: 130px; display: flex; justify-content: center; } 
-        .cert-logo { max-width: 125px; max-height: 120px; object-fit: contain; } 
         
-        .cert-titulo-wrapper { flex: 1; text-align: center; }
+        /* 🔥 Alterado para suportar ocultação inteligente */
+        .cert-header-side { width: 140px; display: flex; justify-content: center; } 
+        .cert-logo { max-width: 135px; max-height: 120px; object-fit: contain; } 
+        
+        /* 🔥 Wrapper agora tem min-width: 0 para permitir que o texto flexível encolha sem deformar a div */
+        .cert-titulo-wrapper { flex: 1; text-align: center; min-width: 0; }
         
         .cert-titulo { 
             color: #1E293B; 
@@ -371,9 +374,10 @@
                                                 <p id="render-data" class="cert-data">CARREGANDO LOCAL E DATA...</p>
 
                                                 <div class="cert-header-container">
-                                                    <div class="cert-header-side"><img id="render-logo-esq" src="" class="cert-logo"></div>
+                                                    <!-- 🔥 ID adicionado aos wrappers para controle de layout -->
+                                                    <div class="cert-header-side" id="wrapper-logo-esq"><img id="render-logo-esq" src="" class="cert-logo"></div>
                                                     <div class="cert-titulo-wrapper"><h1 id="render-titulo" class="cert-titulo">Certificado de Graduação</h1></div>
-                                                    <div class="cert-header-side"><img id="render-logo-dir" src="" class="cert-logo"></div>
+                                                    <div class="cert-header-side" id="wrapper-logo-dir"><img id="render-logo-dir" src="" class="cert-logo"></div>
                                                 </div>
 
                                                 <div class="cert-text-wrapper">
@@ -707,7 +711,7 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);        
         }
 
-        // 🔥 FUNÇÃO DE REDUÇÃO INTELIGENTE (COM TAMANHO MÍNIMO)
+        // 🔥 FUNÇÃO INTELIGENTE DE ENCOLHIMENTO DE TEXTO
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
             elemento.style.fontSize = tamanhoMaximo + 'px';
@@ -719,17 +723,17 @@
             }
         }
 
-        // 🔥 FUNÇÃO GRAMATICAL INTELIGENTE (Mantém 'da, de, do' minúsculos)
+        // 🔥 FORMATAÇÃO GRAMATICAL (Mantém de, do, da minúsculos)
         function formatarNome(nome, isCursive) {
             if (!nome) return "";
-            if (!isCursive) return nome.toUpperCase(); // Se não for cursiva, tudo maiúsculo
+            if (!isCursive) return nome.toUpperCase(); 
             
             const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
             return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
-                return palavra; // Preposição continua minúscula
+                return palavra; 
             }).join(' ');
         }
         
@@ -1184,17 +1188,18 @@
             document.getElementById('render-ass2-nome').innerText = ass2Nome;
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
+            // 🔥 LÓGICA DE OCULTAÇÃO REAL DOS WRAPPERS DE LOGO PARA LIBERAR ESPAÇO
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
             const elEsq = document.getElementById('render-logo-esq');
             elEsq.src = srcEsq || '';
-            elEsq.style.display = (srcEsq && valEsq !== 'nenhuma') ? 'block' : 'none';
+            elEsq.parentElement.style.display = (srcEsq && valEsq !== 'nenhuma') ? 'flex' : 'none';
 
             const valDir = document.getElementById('pos-dir').value;
             const srcDir = getImagemEscolhida(valDir);
             const elDir = document.getElementById('render-logo-dir');
             elDir.src = srcDir || '';
-            elDir.style.display = (srcDir && valDir !== 'nenhuma') ? 'block' : 'none';
+            elDir.parentElement.style.display = (srcDir && valDir !== 'nenhuma') ? 'flex' : 'none';
 
             const imgWater = document.getElementById('render-watermark');
             const valWater = document.getElementById('pos-water') ? document.getElementById('pos-water').value : 'equipe';
@@ -1219,45 +1224,41 @@
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
             
-            // 🔥 CORREÇÃO 1: TAMANHO DO TÍTULO AUMENTADO PARA O A4 REAL
+            // 🔥 CÁLCULO MATEMÁTICO DO ESPAÇO LIVRE PARA O TÍTULO
+            // Largura total interna do A4 = 1053px
+            let larguraLivreTitulo = 1050;
+            if (srcEsq && valEsq !== 'nenhuma') larguraLivreTitulo -= 140; // Desconta a logo esquerda
+            if (srcDir && valDir !== 'nenhuma') larguraLivreTitulo -= 140; // Desconta a logo direita
+            larguraLivreTitulo -= 20; // Margem de respiro
+
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
-            let maxFontSizeTitulo = 44; // Reduzido (Cinzel)
             
+            let maxFontSizeTitulo = 55; // Padrão seguro
             if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon') || fonteTitulo.includes('Parisienne') || fonteTitulo.includes('Alex Brush') || fonteTitulo.includes('Dancing') || fonteTitulo.includes('Great Vibes') || fonteTitulo.includes('Tangerine')) {
                 elTitulo.style.textTransform = 'none'; 
                 elTitulo.style.letterSpacing = '1px';
-                if (fonteTitulo.includes('Pinyon')) {
-                    maxFontSizeTitulo = 110; // 🔥 Pinyon muito maior
-                } else if (fonteTitulo.includes('Tangerine')) {
-                    maxFontSizeTitulo = 95;
-                } else {
-                    maxFontSizeTitulo = 80;
-                }
+                if (fonteTitulo.includes('Pinyon')) maxFontSizeTitulo = 130; 
+                else if (fonteTitulo.includes('Tangerine')) maxFontSizeTitulo = 110;
+                else maxFontSizeTitulo = 95;
             } else {
                 elTitulo.style.textTransform = 'uppercase';
                 elTitulo.style.letterSpacing = '5px';
-                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) {
-                    maxFontSizeTitulo = 42; 
-                } else {
-                    maxFontSizeTitulo = 40; // Cinzel e outros não cursivos
-                }
+                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) maxFontSizeTitulo = 55; 
+                else maxFontSizeTitulo = 60; // Cinzel (Ficará 60 se houver espaço, senão o JS encolhe)
             }
 
-            if (sombraTitulo === 'leve') {
-                elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
-            } else if (sombraTitulo === 'forte') {
-                elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
-            } else if (sombraTitulo === 'brilho') {
-                elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
-            } else {
-                elTitulo.style.textShadow = 'none';
-            }
+            if (sombraTitulo === 'leve') elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
+            else if (sombraTitulo === 'forte') elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
+            else if (sombraTitulo === 'brilho') elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
+            else elTitulo.style.textShadow = 'none';
 
-            // 🔥 CORREÇÃO 2: TAMANHO DO NOME
+            // 🔥 ESPAÇO LIVRE PARA O NOME (85% do A4)
+            let larguraLivreNome = 850;
+            
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
-            let maxFontSizeNome = 55;
+            let maxFontSizeNome = 65;
             
             const isCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
             
@@ -1266,23 +1267,15 @@
 
             if (isCursive) {
                 elNome.style.letterSpacing = '1px';
-                if (fonteNome.includes('Pinyon')) {
-                    maxFontSizeNome = 160; // 🔥 Pinyon gigantesca (pois a base dela é minúscula)
-                } else if (fonteNome.includes('Tangerine')) {
-                    maxFontSizeNome = 130; 
-                } else {
-                    maxFontSizeNome = 95; 
-                }
+                if (fonteNome.includes('Pinyon')) maxFontSizeNome = 160;
+                else if (fonteNome.includes('Tangerine')) maxFontSizeNome = 130; 
+                else maxFontSizeNome = 100; 
             } else {
                 elNome.style.letterSpacing = '4px';
-                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) {
-                    maxFontSizeNome = 55; 
-                } else {
-                    maxFontSizeNome = 52; // Cinzel e outros
-                }
+                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) maxFontSizeNome = 65; 
+                else maxFontSizeNome = 70; // Cinzel
             }
 
-            // 🔥 CORREÇÃO 3: TAMANHOS DO TEXTO CORPO
             let baseTextSize = 24;
             if (fonteTexto.includes('Playfair')) baseTextSize = 18;
             if (fonteTexto.includes('Montserrat') || fonteTexto.includes('Roboto')) baseTextSize = 16;
@@ -1303,9 +1296,9 @@
 
             document.fonts.ready.then(() => {
                 setTimeout(() => {
-                    // 🔥 DIMINUÍDA A LARGURA MÁXIMA PARA EVITAR EMPURRAR A LOGO
-                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, 580, 15); 
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, 800, 15); 
+                    // 🔥 APPLICAÇÃO DO CÁLCULO MATEMÁTICO: O texto encolhe só o necessário para não quebrar a tela
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, larguraLivreTitulo, 25); 
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, larguraLivreNome, 25); 
                     
                     const elAss1 = document.getElementById('render-ass1-nome');
                     const elAss2 = document.getElementById('render-ass2-nome');
