@@ -67,6 +67,10 @@
                 <button onclick="mudarAbaMaster('faturamento')" id="menu-faturamento" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">💳</span> Faturamento
                 </button>
+                <!-- 🔥 NOVO BOTÃO DATA EXPLORER -->
+                <button onclick="mudarAbaMaster('bi')" id="menu-bi" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
+                    <span class="text-lg">📊</span> Data Explorer (BI)
+                </button>
                 <button onclick="mudarAbaMaster('auditoria')" id="menu-auditoria" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">🕵️‍♂️</span> Auditoria (Logs)
                 </button>
@@ -244,7 +248,6 @@
                 </div>
             </div>
 
-            <!-- 🔥 CARDS DE MÉTRICAS FIREBASE (AGORA COM 3 COLUNAS) -->
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg relative overflow-hidden">
                     <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">MRR Ativo (Planos)</p>
@@ -316,6 +319,56 @@
                         </thead>
                         <tbody id="tabela-faturamento" class="divide-y divide-slate-800/50 text-sm">
                             <tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Calculando faturamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔥 NOVA ABA: DATA EXPLORER (BI) -->
+        <div id="aba-bi" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Data Explorer (BI)</h2>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Extração de dados brutos das tabelas do banco para inteligência de negócios.</p>
+                </div>
+                <button onclick="exportarCSV_BI()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg flex items-center gap-2">
+                    <span>📥</span> Exportar Dados (CSV)
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col md:flex-row gap-4 items-center">
+                <div class="w-full md:w-1/3">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Coleção do Banco</label>
+                    <select id="bi-colecao" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 outline-none focus:border-indigo-500 font-mono text-sm font-bold cursor-pointer">
+                        <option value="equipes">equipes (Academias)</option>
+                        <option value="alunos">alunos (Atletas)</option>
+                        <option value="financeiro">financeiro (Faturas)</option>
+                        <option value="certificados">certificados (Diplomas Emitidos)</option>
+                        <option value="historico_faixas">historico_faixas</option>
+                        <option value="cupons">cupons</option>
+                        <option value="chamados_suporte">chamados_suporte</option>
+                    </select>
+                </div>
+                <div class="w-full md:w-auto mt-4 md:mt-0 pt-0 md:pt-6">
+                    <button onclick="carregarDadosBI()" class="w-full md:w-auto bg-slate-800 hover:bg-slate-700 text-white font-black py-3 px-8 rounded-xl text-xs uppercase tracking-widest transition-all">
+                        🔍 Buscar Dados
+                    </button>
+                </div>
+                <div class="ml-auto text-right">
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Registros Lidos</p>
+                    <h3 id="bi-count" class="text-2xl font-black text-white">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+                <div class="overflow-x-auto w-full max-h-[600px] custom-scroll">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
+                        <thead id="bi-thead" class="bg-slate-950/80 sticky top-0 z-10 shadow-sm border-b border-slate-800">
+                            <tr><th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Selecione uma coleção</th></tr>
+                        </thead>
+                        <tbody id="bi-tbody" class="divide-y divide-slate-800/50 text-sm">
+                            <tr><td class="text-center p-8 text-slate-500 italic text-xs">Pronto para buscar dados.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -826,7 +879,6 @@
 
     <!-- 🔥 TELA OCULTA PARA O RELATÓRIO EM PDF -->
     <div id="relatorio-pdf-container" class="hidden bg-white text-black p-10 w-[800px] font-sans">
-        <!-- O conteúdo será gerado dinamicamente via JS -->
     </div>
 
     <script type="module">
@@ -950,6 +1002,8 @@
         let chamadosCache = [];
         let auditoriaCache = [];
         let extratoAsaasCache = []; 
+        let biCache = []; // 🔥 CACHE DO DATA EXPLORER
+        let biColumns = []; // 🔥 COLUNAS DINÂMICAS DO BI
         
         let equipeEditandoId = null;
         let equipeAcessoId = null; 
@@ -978,6 +1032,114 @@
                 }
             } else window.location.href = "index.html";
         });
+
+        // ==========================================
+        // 📊 DATA EXPLORER (BUSINESS INTELLIGENCE)
+        // ==========================================
+        window.carregarDadosBI = async function() {
+            const colecao = document.getElementById('bi-colecao').value;
+            const tabelaHead = document.getElementById('bi-thead');
+            const tabelaBody = document.getElementById('bi-tbody');
+            const counter = document.getElementById('bi-count');
+            
+            tabelaHead.innerHTML = '';
+            tabelaBody.innerHTML = '<tr><td class="text-center p-8 text-slate-500 italic text-xs">Puxando dados brutos do Firebase...</td></tr>';
+            counter.innerText = "⏳";
+            
+            try {
+                // Buscamos até 1000 registros para evitar travamento no navegador
+                const q = query(collection(db, colecao), limit(1000));
+                const snap = await getDocs(q);
+                
+                biCache = snap.docs.map(doc => {
+                    return { _id: doc.id, ...doc.data() };
+                });
+                
+                counter.innerText = biCache.length;
+                
+                if(biCache.length === 0) {
+                    tabelaBody.innerHTML = '<tr><td class="text-center p-8 text-slate-500 italic text-xs">A coleção está vazia.</td></tr>';
+                    return;
+                }
+
+                // Identificar todas as chaves (colunas) únicas entre todos os documentos
+                const keysSet = new Set();
+                biCache.forEach(doc => {
+                    Object.keys(doc).forEach(key => keysSet.add(key));
+                });
+                
+                // Forçar _id a ser a primeira coluna
+                biColumns = ['_id', ...Array.from(keysSet).filter(k => k !== '_id').sort()];
+
+                // Montar o Cabeçalho (THEAD)
+                let headerRow = '<tr>';
+                biColumns.forEach(col => {
+                    headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 sticky top-0 border-b border-slate-800">${col}</th>`;
+                });
+                headerRow += '</tr>';
+                tabelaHead.innerHTML = headerRow;
+
+                // Montar as Linhas (TBODY)
+                tabelaBody.innerHTML = '';
+                biCache.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
+                    
+                    biColumns.forEach(col => {
+                        let val = row[col];
+                        let disp = val !== undefined && val !== null ? val : '';
+                        
+                        // Limitar strings muito grandes para não quebrar a tabela
+                        if(typeof disp === 'string' && disp.length > 50 && !disp.includes('http')) {
+                            disp = disp.substring(0, 50) + '...';
+                        }
+                        // Transformar Objetos/Arrays em strings JSON
+                        if(typeof disp === 'object') {
+                            disp = JSON.stringify(disp);
+                        }
+                        
+                        tr.innerHTML += `<td class="px-6 py-3 font-mono text-[10px] text-slate-400 max-w-[200px] truncate" title="${String(val).replace(/"/g, '&quot;')}">${disp}</td>`;
+                    });
+                    
+                    tabelaBody.appendChild(tr);
+                });
+                
+            } catch(e) {
+                console.error("Erro no Data Explorer:", e);
+                tabelaBody.innerHTML = `<tr><td class="text-center p-8 text-rose-500 font-bold text-xs">Falha de Permissão ou Leitura. Detalhe: ${e.message}</td></tr>`;
+                counter.innerText = "Erro";
+            }
+        }
+
+        window.exportarCSV_BI = function() {
+            if (biCache.length === 0) return showToast("Não há dados na tabela para exportar.", "info");
+
+            const colecao = document.getElementById('bi-colecao').value;
+            
+            // Usamos as mesmas colunas geradas no Thead
+            const header = biColumns.join(';');
+            
+            const rows = biCache.map(obj => {
+                return biColumns.map(col => {
+                    let val = obj[col] !== undefined && obj[col] !== null ? obj[col] : '';
+                    if(typeof val === 'object') val = JSON.stringify(val);
+                    // Escapar aspas e limpar quebras de linha para o CSV
+                    let cleaned = String(val).replace(/"/g, '""').replace(/\n/g, ' ');
+                    return `"${cleaned}"`;
+                }).join(';');
+            });
+            
+            const csvContent = [header, ...rows].join('\n');
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `DataExplorer_${colecao}_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         // ==========================================
         // 🕵️‍♂️ AUDITORIA (LOGS)
@@ -1740,7 +1902,6 @@
             const dataInicio = new Date(dataInicioStr + "T00:00:00");
             const dataFim = new Date(dataFimStr + "T23:59:59");
 
-            // Filtrar extratoAsaasCache
             const extratoFiltrado = extratoAsaasCache.filter(p => {
                 const dataPgto = new Date(p.paymentDate || p.clientPaymentDate || p.dateCreated);
                 return dataPgto >= dataInicio && dataPgto <= dataFim;
@@ -1756,7 +1917,6 @@
 
             let linhasTabela = '';
 
-            // Ordenar por data crescente para o PDF
             extratoFiltrado.sort((a, b) => new Date(a.paymentDate || a.clientPaymentDate || a.dateCreated) - new Date(b.paymentDate || b.clientPaymentDate || b.dateCreated));
 
             extratoFiltrado.forEach(p => {
@@ -1997,6 +2157,11 @@
                 renderizarFaturamento();
                 carregarSaldoMaster();
                 carregarExtratoCompletoMaster(); 
+            }
+            if(abaID === 'bi') {
+                // Ao abrir a aba BI, carrega as equipes por padrão
+                document.getElementById('bi-colecao').value = 'equipes';
+                carregarDadosBI();
             }
             if(abaID === 'planos') carregarConfigPlanos();
             if(abaID === 'cupons') carregarCupons();
