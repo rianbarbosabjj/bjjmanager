@@ -237,13 +237,6 @@ function carregarMenu() {
                         <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
                         ${!canExtra ? blockIcon : ''}
                     </button>
-                    
-                    <div class="mt-auto pt-8 pb-4 w-full flex flex-col items-center justify-center cursor-default">
-                        <span class="text-[7px] text-slate-600 font-black uppercase tracking-[0.3em] mb-1.5">Powered By</span>
-                        <a href="#" target="_blank" title="Sistema BJJ Manager">
-                            <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-4 w-auto opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                        </a>
-                    </div>
                 </nav>
                 
                 <div class="p-3 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-2 shrink-0">
@@ -289,6 +282,21 @@ function carregarMenu() {
         }
 
         if (document.body) document.body.insertAdjacentHTML('beforeend', btnHamburguer);
+
+        // 🔥 INJETAR MARCA D'ÁGUA NO FINAL DO CONTEÚDO (RODAPÉ DA PÁGINA)
+        const mainContainer = document.querySelector('main');
+        if (mainContainer && !document.getElementById('bjj-footer-powered')) {
+            const poweredHTML = `
+                <div id="bjj-footer-powered" class="w-full flex flex-col items-center justify-center py-10 mt-auto cursor-default">
+                    <span class="text-[7px] text-slate-400 font-black uppercase tracking-[0.3em] mb-2">Powered By</span>
+                    <a href="https://bjjdigital.com.br" target="_blank" title="Sistema BJJ Manager">
+                        <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-6 w-auto opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </a>
+                </div>
+            `;
+            // Adiciona no final da tag <main>, forçando-a para baixo.
+            mainContainer.insertAdjacentHTML('beforeend', poweredHTML);
+        }
 
     } catch (error) {
         console.error("Erro interno ao renderizar o menu:", error);
