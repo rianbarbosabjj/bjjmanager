@@ -10,6 +10,11 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&display=swap');
         
@@ -67,6 +72,17 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500/40 selection:text-white">
@@ -195,6 +211,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+                <!-- Cards de módulos (mantidos) -->
                 <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
                     <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-chart-line text-xl"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Dashboard Principal</h3>
@@ -325,7 +342,7 @@
         </div>
     </section>
 
-    <!-- Seção de Preços - AGORA COM PLANOS ESTÁTICOS E CORRETOS -->
+    <!-- Seção de Preços - Buscando do Firebase igual ao SaaS Master -->
     <section id="precos" class="py-20 bg-slate-950 relative border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -333,101 +350,38 @@
                 <p class="text-slate-400 font-medium">Eleve a gestão e a percepção de valor da sua academia hoje mesmo.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-                
-                <!-- Plano Básico -->
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-cyan-500/40 transition-all">
-                    <h3 class="text-2xl font-black text-white mb-2">BJJ Manager</h3>
-                    <p class="text-xs text-cyan-400 font-bold uppercase tracking-wider mb-4">Básico</p>
-                    <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Ideal para academias que estão começando a digitalizar a gestão.</p>
-                    
-                    <div class="mb-6 border-b border-slate-800 pb-6">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-2xl font-bold text-white">R$</span>
-                            <span class="text-5xl font-black text-white">97</span>
-                            <span class="text-slate-500 font-bold">/ mês</span>
-                        </div>
-                        <p class="text-[10px] text-emerald-400 mt-3 uppercase tracking-widest font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded w-max">7 dias de Teste Grátis</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto" id="planos-container">
+                <!-- Skeleton loaders -->
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800">
+                    <div class="skeleton h-8 w-32 rounded mb-4"></div>
+                    <div class="skeleton h-4 w-48 rounded mb-6"></div>
+                    <div class="skeleton h-12 w-36 rounded mb-6"></div>
+                    <div class="space-y-3">
+                        <div class="skeleton h-5 w-full rounded"></div>
+                        <div class="skeleton h-5 w-full rounded"></div>
+                        <div class="skeleton h-5 w-3/4 rounded"></div>
                     </div>
-                    
-                    <ul class="space-y-3 mb-8 flex-1 text-sm">
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Até 50 alunos ativos</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Portal do aluno com carteirinha digital</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Check-in com geolocalização</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Gestão financeira básica</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Emissão de certificados</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-times-circle text-slate-600 text-sm mt-0.5"></i> <span class="text-slate-500">Suporte prioritário</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-times-circle text-slate-600 text-sm mt-0.5"></i> <span class="text-slate-500">API de integração</span></li>
-                    </ul>
-                    
-                    <a href='/cadastro_equipe?plano=básico' class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all border border-slate-700">
-                        Começar Teste Grátis
-                    </a>
                 </div>
-
-                <!-- Plano Profissional (Recomendado) -->
-                <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform md:-translate-y-4 h-full">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                        Mais Escolhido
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800">
+                    <div class="skeleton h-8 w-32 rounded mb-4"></div>
+                    <div class="skeleton h-4 w-48 rounded mb-6"></div>
+                    <div class="skeleton h-12 w-36 rounded mb-6"></div>
+                    <div class="space-y-3">
+                        <div class="skeleton h-5 w-full rounded"></div>
+                        <div class="skeleton h-5 w-full rounded"></div>
+                        <div class="skeleton h-5 w-3/4 rounded"></div>
                     </div>
-                    <h3 class="text-2xl font-black text-cyan-400 mb-2 mt-2">BJJ Manager</h3>
-                    <p class="text-xs text-white/80 font-bold uppercase tracking-wider mb-4">Profissional</p>
-                    <p class="text-sm text-slate-300 mb-6 min-h-[40px]">Para academias que buscam gestão avançada e automação total.</p>
-                    
-                    <div class="mb-6 border-b border-slate-700 pb-6">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-2xl font-bold text-white">R$</span>
-                            <span class="text-5xl font-black text-white">197</span>
-                            <span class="text-slate-400 font-bold">/ mês</span>
-                        </div>
-                        <p class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max">15 dias de Teste Grátis</p>
-                    </div>
-                    
-                    <ul class="space-y-3 mb-8 flex-1 text-sm">
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Alunos ilimitados</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Portal do aluno completo + loja virtual</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Check-in com geolocalização</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Integração Asaas (Pix, Cartão, Boleto)</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Emissão de certificados com assinatura digital</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Suporte prioritário via WhatsApp</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Link de auto-cadastro ilimitado</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Relatórios avançados e exportação de dados</span></li>
-                    </ul>
-                    
-                    <a href='/cadastro_equipe?plano=profissional' class="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
-                        Assinar Agora
-                    </a>
                 </div>
-
-                <!-- Plano Master -->
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-purple-500/40 transition-all">
-                    <h3 class="text-2xl font-black text-white mb-2">BJJ Manager</h3>
-                    <p class="text-xs text-purple-400 font-bold uppercase tracking-wider mb-4">Master</p>
-                    <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Para redes de academias e grandes equipes.</p>
-                    
-                    <div class="mb-6 border-b border-slate-800 pb-6">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-2xl font-bold text-white">R$</span>
-                            <span class="text-5xl font-black text-white">397</span>
-                            <span class="text-slate-500 font-bold">/ mês</span>
-                        </div>
-                        <p class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max">30 dias de Teste Grátis</p>
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800">
+                    <div class="skeleton h-8 w-32 rounded mb-4"></div>
+                    <div class="skeleton h-4 w-48 rounded mb-6"></div>
+                    <div class="skeleton h-12 w-36 rounded mb-6"></div>
+                    <div class="space-y-3">
+                        <div class="skeleton h-5 w-full rounded"></div>
+                        <div class="skeleton h-5 w-full rounded"></div>
+                        <div class="skeleton h-5 w-3/4 rounded"></div>
                     </div>
-                    
-                    <ul class="space-y-3 mb-8 flex-1 text-sm">
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Tudo do plano Profissional +</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Múltiplas unidades (redes)</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>API de integração completa</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Dashboard consolidado de todas as unidades</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Gerente de conta exclusivo</span></li>
-                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Treinamento in loco (consulte condições)</span></li>
-                    </ul>
-                    
-                    <a href='/cadastro_equipe?plano=master' class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all border border-slate-700">
-                        Falar com Consultor
-                    </a>
                 </div>
-
             </div>
         </div>
     </section>
@@ -454,6 +408,141 @@
     </footer>
 
     <script>
+        // Configuração do Firebase (mesma do SaaS Master)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Função para formatar preço
+        function formatarPreco(valor) {
+            if (valor === 0) return "Grátis";
+            return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Processar lista de features (mesmo formato do SaaS Master)
+        function processarFeatures(featuresStr, cor) {
+            if (!featuresStr) return [];
+            
+            const linhas = featuresStr.split('\n');
+            const features = [];
+            
+            linhas.forEach(linha => {
+                if (!linha.trim()) return;
+                
+                const isChecked = linha.startsWith('✓');
+                const texto = linha.replace(/^[✓❌]\s*/, '').trim();
+                
+                features.push({ texto, isChecked, cor });
+            });
+            
+            return features;
+        }
+
+        // Carregar planos do Firestore (mesmo documento do SaaS Master)
+        async function carregarPlanos() {
+            const container = document.getElementById('planos-container');
+            
+            try {
+                const docSnap = await db.collection('sistema').doc('config_planos').get();
+                
+                if (!docSnap.exists) {
+                    container.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-12">Nenhum plano configurado no sistema.</div>';
+                    return;
+                }
+                
+                const data = docSnap.data();
+                const planos = { p1: data.p1, p2: data.p2, p3: data.p3 };
+                
+                // Cores e estilos para cada plano
+                const estilos = {
+                    p1: { cor: 'slate', corTexto: 'white', bgHover: 'hover:border-slate-500', destaque: false, nomeDisplay: 'Básico' },
+                    p2: { cor: 'cyan', corTexto: 'cyan-400', bgHover: 'hover:border-cyan-500', destaque: true, nomeDisplay: 'Profissional', maisEscolhido: true },
+                    p3: { cor: 'purple', corTexto: 'purple-400', bgHover: 'hover:border-purple-500', destaque: false, nomeDisplay: 'Master' }
+                };
+                
+                let html = '';
+                
+                for (const [key, plano] of Object.entries(planos)) {
+                    if (!plano) continue;
+                    
+                    const estilo = estilos[key];
+                    const precoAtual = plano.preco || 0;
+                    const precoOriginal = plano.preco_original || 0;
+                    const temDesconto = precoOriginal > precoAtual && precoAtual > 0;
+                    const trialDias = plano.trial_dias || 7;
+                    
+                    const features = processarFeatures(plano.features, estilo.cor);
+                    
+                    // Separar features inclusas e não inclusas
+                    const featuresInclusas = features.filter(f => f.isChecked);
+                    const featuresExcluidas = features.filter(f => !f.isChecked).slice(0, 3); // Mostrar apenas algumas excluídas
+                    
+                    const cardClass = estilo.destaque 
+                        ? "bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-purple-500 flex flex-col relative shadow-[0_0_30px_rgba(168,85,247,0.15)] transform md:-translate-y-4 h-full"
+                        : "bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full " + estilo.bgHover;
+                    
+                    const maisEscolhidoBadge = estilo.maisEscolhido 
+                        ? `<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Mais Escolhido</div>`
+                        : '';
+                    
+                    html += `
+                        <div class="${cardClass} relative">
+                            ${maisEscolhidoBadge}
+                            <h3 class="text-2xl font-black text-white mb-1">${plano.nome || 'BJJ Manager'}</h3>
+                            <p class="text-xs text-${estilo.corTexto} font-bold uppercase tracking-wider mb-3">${estilo.nomeDisplay}</p>
+                            <p class="text-sm text-slate-400 mb-6 min-h-[50px]">${plano.desc || 'Solução completa para sua academia'}</p>
+                            
+                            <div class="mb-6 border-b border-slate-800 pb-6">
+                                ${temDesconto ? `<p class="text-sm text-slate-500 line-through font-bold mb-1">De R$ ${formatarPreco(precoOriginal)}</p>` : ''}
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-2xl font-bold text-white">R$</span>
+                                    <span class="text-5xl font-black text-white">${precoAtual === 0 ? '0' : formatarPreco(precoAtual)}</span>
+                                    ${precoAtual > 0 ? `<span class="text-slate-500 font-bold">/ mês</span>` : ''}
+                                </div>
+                                <p class="text-[10px] text-${estilo.cor === 'slate' ? 'emerald' : estilo.cor}-400 mt-3 uppercase tracking-widest font-bold bg-${estilo.cor === 'slate' ? 'emerald' : estilo.cor}-500/10 border border-${estilo.cor === 'slate' ? 'emerald' : estilo.cor}-500/20 px-2 py-1 rounded w-max">
+                                    🎁 ${trialDias} dias de Teste Grátis
+                                </p>
+                            </div>
+                            
+                            <ul class="space-y-3 mb-6 flex-1 text-sm">
+                                ${featuresInclusas.slice(0, 6).map(f => `
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check-circle text-${f.cor === 'slate' ? 'emerald' : f.cor}-500 text-sm mt-0.5"></i>
+                                        <span class="text-slate-300">${f.texto}</span>
+                                    </li>
+                                `).join('')}
+                                ${featuresExcluidas.length > 0 ? featuresExcluidas.map(f => `
+                                    <li class="flex items-start gap-2 opacity-60">
+                                        <i class="fas fa-times-circle text-slate-600 text-sm mt-0.5"></i>
+                                        <span class="text-slate-500 line-through">${f.texto}</span>
+                                    </li>
+                                `).join('') : ''}
+                            </ul>
+                            
+                            <a href="/cadastro_equipe?plano=${key}" class="w-full ${estilo.destaque ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-black' : 'bg-slate-800 hover:bg-slate-700 text-white font-bold border border-slate-700'} py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 block">
+                                ${precoAtual === 0 ? 'Começar Agora' : (estilo.destaque ? 'Assinar Agora' : 'Testar Grátis')}
+                            </a>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error("Erro ao carregar planos:", error);
+                container.innerHTML = '<div class="col-span-3 text-center text-rose-400 py-12">Erro ao carregar planos. Tente novamente mais tarde.</div>';
+            }
+        }
+
         // Função de demonstração
         window.entrarNaDemo = async function() {
             const btn = event.currentTarget;
@@ -462,7 +551,6 @@
             btn.disabled = true;
 
             try {
-                // Redireciona para a demonstração
                 window.location.href = "https://maneger.bjjdigital.com.br/demo";
             } catch (error) {
                 console.error("Erro ao entrar na demo:", error);
@@ -471,6 +559,11 @@
                 btn.disabled = false;
             }
         };
+
+        // Carregar planos ao iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarPlanos();
+        });
     </script>
 </body>
 </html>
