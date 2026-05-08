@@ -9,16 +9,11 @@
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome 6 (gratuito) para ícones consistentes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
             font-family: 'Inter', sans-serif; 
@@ -30,10 +25,6 @@
             background-size: 24px 24px; 
         }
         
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Animação pulsar WhatsApp */
         @keyframes pulse-whatsapp {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
@@ -65,7 +56,6 @@
         }
         .animate-float { animation: float 5s ease-in-out infinite; }
         
-        /* Cards e efeitos */
         .card-module {
             transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
@@ -74,30 +64,19 @@
             box-shadow: 0 25px 35px -12px rgba(0,0,0,0.25);
         }
         
-        .gradient-border {
-            background: linear-gradient(135deg, #06b6d4, #3b82f6);
-        }
-        
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #06b6d4;
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500/40 selection:text-white">
 
-    <!-- WhatsApp flutuante (mantido original) -->
+    <!-- WhatsApp flutuante -->
     <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o BJJ Manager." target="_blank" class="btn-whatsapp">
         <i class="fab fa-whatsapp text-2xl"></i>
     </a>
 
-    <!-- NAVBAR mais elegante -->
+    <!-- NAVBAR -->
     <nav class="fixed w-full z-50 bg-slate-900/85 backdrop-blur-xl border-b border-slate-800/60 shadow-lg transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20 md:h-24">
@@ -141,7 +120,7 @@
         </div>
     </nav>
 
-    <!-- Hero Section refinado -->
+    <!-- Hero Section -->
     <section class="relative pt-36 pb-20 lg:pt-48 lg:pb-28 overflow-hidden">
         <div class="absolute inset-0 bg-pattern opacity-30"></div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
@@ -188,7 +167,7 @@
         </div>
     </section>
 
-    <!-- Parceria Social (mantido original) -->
+    <!-- Parceria Social -->
     <section id="modulos" class="py-20 bg-slate-50 relative border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-20 max-w-5xl mx-auto bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 text-left">
@@ -216,7 +195,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-                <!-- Cards mantidos com ícones Font Awesome -->
                 <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
                     <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-chart-line text-xl"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Dashboard Principal</h3>
@@ -286,7 +264,7 @@
         </div>
     </section>
 
-    <!-- Recursos / Seção de diferenciais (premium refinado) -->
+    <!-- Recursos / Diferenciais -->
     <section id="recursos" class="py-20 bg-slate-900 relative border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -347,7 +325,7 @@
         </div>
     </section>
 
-    <!-- Tabela de Preços (exatamente os dados originais, sem inventar) -->
+    <!-- Seção de Preços - AGORA COM PLANOS ESTÁTICOS E CORRETOS -->
     <section id="precos" class="py-20 bg-slate-950 relative border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -356,10 +334,143 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-                <!-- Plano 1 (carregado dinamicamente) -->
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-slate-600 transition-all">
-                    <h3 id="p1-nome" class="text-xl font-black text-white mb-2">Carregando...</h3>
-                    <p id="p1-desc" class="text-xs text-slate-400 mb-6 min-h-[40px]">...</p>
-                    <div class="mb-6 border-b border-slate-800 pb-6 flex flex-col min-h-[90px] justify-end">
-                        <div id="p1-preco-antigo-container" class="hidden mb-1"><span id="p1-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span></div>
-                        <div class="flex items-end gap-1"><span id="p1-moeda" class="text-sm text-white font-bold mb-1 hidden">R$</span><span id="p1-preco" class="text-4xl font-black text-white leading-none">⏳</span><span id="p1-periodo" class="text-slate-500 text-sm font-bold mb-1 hidden"> / mês</
+                
+                <!-- Plano Básico -->
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-cyan-500/40 transition-all">
+                    <h3 class="text-2xl font-black text-white mb-2">BJJ Manager</h3>
+                    <p class="text-xs text-cyan-400 font-bold uppercase tracking-wider mb-4">Básico</p>
+                    <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Ideal para academias que estão começando a digitalizar a gestão.</p>
+                    
+                    <div class="mb-6 border-b border-slate-800 pb-6">
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-2xl font-bold text-white">R$</span>
+                            <span class="text-5xl font-black text-white">97</span>
+                            <span class="text-slate-500 font-bold">/ mês</span>
+                        </div>
+                        <p class="text-[10px] text-emerald-400 mt-3 uppercase tracking-widest font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded w-max">7 dias de Teste Grátis</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8 flex-1 text-sm">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Até 50 alunos ativos</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Portal do aluno com carteirinha digital</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Check-in com geolocalização</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Gestão financeira básica</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Emissão de certificados</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-times-circle text-slate-600 text-sm mt-0.5"></i> <span class="text-slate-500">Suporte prioritário</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-times-circle text-slate-600 text-sm mt-0.5"></i> <span class="text-slate-500">API de integração</span></li>
+                    </ul>
+                    
+                    <a href='/cadastro_equipe?plano=básico' class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all border border-slate-700">
+                        Começar Teste Grátis
+                    </a>
+                </div>
+
+                <!-- Plano Profissional (Recomendado) -->
+                <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform md:-translate-y-4 h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                        Mais Escolhido
+                    </div>
+                    <h3 class="text-2xl font-black text-cyan-400 mb-2 mt-2">BJJ Manager</h3>
+                    <p class="text-xs text-white/80 font-bold uppercase tracking-wider mb-4">Profissional</p>
+                    <p class="text-sm text-slate-300 mb-6 min-h-[40px]">Para academias que buscam gestão avançada e automação total.</p>
+                    
+                    <div class="mb-6 border-b border-slate-700 pb-6">
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-2xl font-bold text-white">R$</span>
+                            <span class="text-5xl font-black text-white">197</span>
+                            <span class="text-slate-400 font-bold">/ mês</span>
+                        </div>
+                        <p class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max">15 dias de Teste Grátis</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8 flex-1 text-sm">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Alunos ilimitados</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Portal do aluno completo + loja virtual</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Check-in com geolocalização</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Integração Asaas (Pix, Cartão, Boleto)</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Emissão de certificados com assinatura digital</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Suporte prioritário via WhatsApp</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Link de auto-cadastro ilimitado</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> <span>Relatórios avançados e exportação de dados</span></li>
+                    </ul>
+                    
+                    <a href='/cadastro_equipe?plano=profissional' class="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
+                        Assinar Agora
+                    </a>
+                </div>
+
+                <!-- Plano Master -->
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-purple-500/40 transition-all">
+                    <h3 class="text-2xl font-black text-white mb-2">BJJ Manager</h3>
+                    <p class="text-xs text-purple-400 font-bold uppercase tracking-wider mb-4">Master</p>
+                    <p class="text-sm text-slate-400 mb-6 min-h-[40px]">Para redes de academias e grandes equipes.</p>
+                    
+                    <div class="mb-6 border-b border-slate-800 pb-6">
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-2xl font-bold text-white">R$</span>
+                            <span class="text-5xl font-black text-white">397</span>
+                            <span class="text-slate-500 font-bold">/ mês</span>
+                        </div>
+                        <p class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max">30 dias de Teste Grátis</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8 flex-1 text-sm">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Tudo do plano Profissional +</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Múltiplas unidades (redes)</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>API de integração completa</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Dashboard consolidado de todas as unidades</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Gerente de conta exclusivo</span></li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-purple-400 text-sm mt-0.5"></i> <span>Treinamento in loco (consulte condições)</span></li>
+                    </ul>
+                    
+                    <a href='/cadastro_equipe?plano=master' class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all border border-slate-700">
+                        Falar com Consultor
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-950 py-12 border-t border-slate-900 text-center md:text-left">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <div class="p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
+                    <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-8 md:h-10 w-auto">
+                </div>
+                <span class="font-black text-slate-400 tracking-widest uppercase text-xs">Manager &copy; 2026</span>
+            </div>
+            
+            <div class="text-slate-500 text-xs font-medium">
+                Desenvolvido para facilitar a vida de quem trabalha com Jiu-Jitsu.
+            </div>
+            
+            <div class="flex flex-wrap gap-6 justify-center text-sm font-bold text-slate-500">
+                <a href='/validar' class="hover:text-cyan-400 transition-colors">Validador de Documentos</a>
+                <a href='/termos' class="hover:text-cyan-400 transition-colors">Termos de Uso</a>
+                <a href='/termos' class="hover:text-cyan-400 transition-colors">Política de Privacidade</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Função de demonstração
+        window.entrarNaDemo = async function() {
+            const btn = event.currentTarget;
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Acessando...";
+            btn.disabled = true;
+
+            try {
+                // Redireciona para a demonstração
+                window.location.href = "https://maneger.bjjdigital.com.br/demo";
+            } catch (error) {
+                console.error("Erro ao entrar na demo:", error);
+                alert("O ambiente de demonstração está em manutenção. Tente novamente em alguns minutos ou fale com nosso consultor.");
+                btn.innerHTML = txtOriginal;
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
