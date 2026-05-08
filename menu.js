@@ -288,9 +288,9 @@ function carregarMenu() {
         if (mainContainer && !document.getElementById('bjj-footer-powered')) {
             const poweredHTML = `
                 <div id="bjj-footer-powered" class="w-full flex items-center justify-center gap-2 py-3 mt-auto cursor-default text-slate-500 hover:text-slate-400 transition-colors">
-                    <span class="text-[7px] font-semibold uppercase tracking-[0.2em]">Powered By</span>
+                    <span class="text-[7px] font-semibold uppercase tracking-[0.2em]">Um sistema BJJ Digital</span>
                     <a href="https://bjjdigital.com.br" target="_blank" title="BJJ Manager">
-                        <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-3.5 w-auto opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300">
+                        <img src="https://bjjdigital.com.br/logo_bjj_digital.png" alt="BJJ Manager" class="h-3.5 w-auto opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300">
                     </a>
                 </div>
             `;
