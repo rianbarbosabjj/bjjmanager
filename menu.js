@@ -172,7 +172,7 @@ function carregarMenu() {
         const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`; };
 
         const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
-        const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
+        const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75 4.365-9.75 9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
 
         // --- HTML DO MENU LATERAL ---
         const menuSidebar = `
@@ -283,14 +283,14 @@ function carregarMenu() {
 
         if (document.body) document.body.insertAdjacentHTML('beforeend', btnHamburguer);
 
-        // 🔥 INJETAR MARCA D'ÁGUA NO FINAL DO CONTEÚDO (RODAPÉ DA PÁGINA)
+        // 🔥 INJETAR MARCA D'ÁGUA NO FINAL DO CONTEÚDO (SUPER COMPACTA)
         const mainContainer = document.querySelector('main');
         if (mainContainer && !document.getElementById('bjj-footer-powered')) {
             const poweredHTML = `
-                <div id="bjj-footer-powered" class="w-full flex flex-col items-center justify-center py-10 mt-auto cursor-default">
-                    <span class="text-[7px] text-slate-400 font-black uppercase tracking-[0.3em] mb-2">Powered By</span>
-                    <a href="https://bjjdigital.com.br" target="_blank" title="Sistema BJJ Manager">
-                        <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-6 w-auto opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                <div id="bjj-footer-powered" class="w-full flex items-center justify-center gap-2 py-3 mt-auto cursor-default text-slate-500 hover:text-slate-400 transition-colors">
+                    <span class="text-[7px] font-semibold uppercase tracking-[0.2em]">Powered By</span>
+                    <a href="https://bjjdigital.com.br" target="_blank" title="BJJ Manager">
+                        <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-3.5 w-auto opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300">
                     </a>
                 </div>
             `;
