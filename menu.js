@@ -99,17 +99,6 @@ const injetarEstilosGlobais = () => {
     }
 };
 
-// 🖨️ TRUQUE DA IMPRESSORA (Desliga o Dark Mode na hora de imprimir)
-window.addEventListener('beforeprint', () => {
-    document.documentElement.classList.remove('dark');
-});
-window.addEventListener('afterprint', () => {
-    if (localStorage.getItem('bjj-theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-    }
-});
-
-injetarEstilosGlobais();
 window.toggleDarkMode = function() {
     const htmlTag = document.documentElement;
     if (htmlTag.classList.contains('dark')) {
@@ -133,7 +122,9 @@ window.addEventListener('afterprint', () => {
     }
 });
 
-// Lógica de Abrir/Fechar a Gaveta Mobile
+injetarEstilosGlobais();
+
+// Lógica de Abrir/Fechar a Gaveta (Agora funciona em Mobile e Desktop)
 window.toggleBjjMenu = function() {
     const sidebar = document.getElementById('bjj-sidebar');
     const overlay = document.getElementById('bjj-menu-overlay');
@@ -152,7 +143,7 @@ window.toggleBjjMenu = function() {
 };
 
 // ==========================================
-// 📱 CONSTRUTOR DO MENU (GAVETA + HAMBÚRGUER)
+// 📱 CONSTRUTOR DO MENU GAVETA UNIVERSAL
 // ==========================================
 function carregarMenu() {
     try {
@@ -200,17 +191,17 @@ function carregarMenu() {
 
         const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`; };
 
-        const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
-        const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
+        const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
+        const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
 
-        // --- HTML DO MENU LATERAL (GAVETA NO MOBILE, FIXO NO DESKTOP) ---
+        // --- HTML DO MENU LATERAL (GAVETA UNIVERSAL) ---
         const menuSidebar = `
-            <div id="bjj-menu-overlay" onclick="toggleBjjMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] hidden md:hidden transition-opacity opacity-0"></div>
+            <div id="bjj-menu-overlay" onclick="toggleBjjMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] hidden transition-opacity opacity-0"></div>
             
-            <aside id="bjj-sidebar" class="fixed md:static inset-y-0 left-0 w-[280px] md:w-64 bg-slate-900 text-white flex-col h-full shadow-[5px_0_25px_rgba(0,0,0,0.5)] z-[60] border-r border-slate-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex shrink-0">
+            <aside id="bjj-sidebar" class="fixed inset-y-0 left-0 w-[260px] bg-slate-900 text-white flex-col h-full shadow-[5px_0_25px_rgba(0,0,0,0.5)] z-[60] border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex shrink-0">
                 
-                <button onclick="toggleBjjMenu()" class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800/50 p-2 rounded-xl transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                <button onclick="toggleBjjMenu()" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800/50 p-2 rounded-xl transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
 
                 <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30 shrink-0">
@@ -268,23 +259,25 @@ function carregarMenu() {
                     </button>
                 </nav>
                 
-                <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-2 shrink-0">
-                    <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[10px] font-bold uppercase tracking-widest py-2 group ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
-                        <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgSuporte}</span> Suporte
-                    </button>
-                    <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest py-2 group" title="Alternar Modo Escuro">
-                        <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgTema}</span> Tema
-                    </button>
-                    <button onclick="sairDoSistema()" class="w-full px-4 py-3 mt-1 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
-                        <span class="mr-2 text-base leading-none opacity-70">🚪</span> Sair
+                <div class="p-3 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-2 shrink-0">
+                    <div class="flex gap-2">
+                        <button onclick="${clickAcao('suporte.html', true)}" class="flex-1 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest py-2 rounded-lg group ${paginaAtual === 'suporte.html' ? 'text-indigo-400 bg-slate-800' : ''}">
+                            <span class="opacity-70 group-hover:opacity-100 transition-opacity">${svgSuporte}</span> Sup.
+                        </button>
+                        <button onclick="toggleDarkMode()" class="flex-1 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-[9px] font-bold uppercase tracking-widest py-2 rounded-lg group" title="Alternar Modo Escuro">
+                            <span class="opacity-70 group-hover:opacity-100 transition-opacity">${svgTema}</span> Tema
+                        </button>
+                    </div>
+                    <button onclick="sairDoSistema()" class="w-full py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
+                        <span class="mr-2 text-sm leading-none opacity-70">🚪</span> Sair
                     </button>
                 </div>
             </aside>
         `;
 
-        // --- BOTÃO FLUTUANTE DE MENU (Apenas Mobile - Canto Superior Esquerdo) ---
+        // --- BOTÃO FLUTUANTE UNIVERSAL (Aparece em Desktop e Mobile) ---
         const btnHamburguer = `
-            <button id="bjj-hamburger-btn" onclick="toggleBjjMenu()" class="md:hidden fixed top-4 left-4 z-[45] bg-slate-900 text-white p-2.5 rounded-xl shadow-lg border border-slate-800 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+            <button id="bjj-hamburger-btn" onclick="toggleBjjMenu()" class="fixed top-4 left-4 z-[45] bg-slate-900/90 backdrop-blur-sm text-white p-2.5 rounded-xl shadow-lg border border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
             </button>
         `;
@@ -292,11 +285,10 @@ function carregarMenu() {
         // --- RENDERIZAÇÃO ---
         const containerPrincipal = document.getElementById('interface-sistema');
         
-        // Remove a antiga barra inferior mobile (se existir)
+        // Remove barras antigas
         const oldMobile = document.querySelector('nav.md\\:hidden');
         if (oldMobile) oldMobile.remove();
 
-        // Remove o antigo painel desktop e botão hambúrguer antigo (se existir)
         if (containerPrincipal) {
             const oldMenu = containerPrincipal.querySelector('aside');
             if (oldMenu) oldMenu.remove();
@@ -308,7 +300,7 @@ function carregarMenu() {
             containerPrincipal.insertAdjacentHTML('afterbegin', menuSidebar);
         }
 
-        // Insere o Botão Hambúrguer e o Overlay no corpo da página
+        // Insere o Botão Hambúrguer Universal
         if (document.body) {
             document.body.insertAdjacentHTML('beforeend', btnHamburguer);
         }
