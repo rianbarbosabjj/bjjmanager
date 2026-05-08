@@ -48,6 +48,18 @@
             100% { transform: translateY(0px); }
         }
         .animate-float { animation: float 6s ease-in-out infinite; }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.2s infinite;
+            border-radius: 12px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white">
@@ -313,76 +325,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-                
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-slate-600 transition-colors">
-                    <h3 id="p1-nome" class="text-xl font-black text-white mb-2">Carregando...</h3>
-                    <p id="p1-desc" class="text-xs text-slate-400 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 border-b border-slate-800 pb-6 flex flex-col min-h-[90px] justify-end">
-                        <div id="p1-preco-antigo-container" class="hidden mb-1">
-                            <span id="p1-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
-                        </div>
-                        <div class="flex items-end gap-1">
-                            <span id="p1-moeda" class="text-sm text-white font-bold mb-1 hidden">R$</span>
-                            <span id="p1-preco" class="text-4xl font-black text-white leading-none">⏳</span>
-                            <span id="p1-periodo" class="text-slate-500 text-sm font-bold mb-1 hidden"> / mês</span>
-                        </div>
-                        <span id="p1-trial-text" class="text-[10px] text-emerald-400 mt-3 uppercase tracking-widest font-bold hidden bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded w-max"></span>
-                    </div>
-                    
-                    <ul id="p1-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html?plano=p1" id="btn-p1" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700">
-                        Testar Agora
-                    </a>
-                </div>
-
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-cyan-500/50 transition-colors">
-                    <h3 id="p2-nome" class="text-xl font-black text-cyan-400 mb-2">Carregando...</h3>
-                    <p id="p2-desc" class="text-xs text-slate-400 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 border-b border-slate-800 pb-6 flex flex-col min-h-[90px] justify-end">
-                        <div id="p2-preco-antigo-container" class="hidden mb-1">
-                            <span id="p2-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
-                        </div>
-                        <div class="flex items-end gap-1">
-                            <span id="p2-moeda" class="text-sm text-cyan-400 font-bold mb-1">R$</span>
-                            <span id="p2-preco" class="text-4xl font-black text-white leading-none">⏳</span>
-                            <span id="p2-periodo" class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
-                        </div>
-                        <span id="p2-trial-text" class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold hidden bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max"></span>
-                    </div>
-                    
-                    <ul id="p2-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html?plano=p2" id="btn-p2" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700 hover:border-cyan-500/50">
-                        Assinar Agora
-                    </a>
-                </div>
-
-                <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-purple-500 flex flex-col relative shadow-[0_0_30px_rgba(168,85,247,0.15)] transform md:-translate-y-4 h-full">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                        Mais Escolhido
-                    </div>
-                    <h3 id="p3-nome" class="text-xl font-black text-purple-400 mb-2 mt-2">Carregando...</h3>
-                    <p id="p3-desc" class="text-xs text-slate-300 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 border-b border-slate-700 pb-6 flex flex-col min-h-[90px] justify-end">
-                        <div id="p3-preco-antigo-container" class="hidden mb-1">
-                            <span id="p3-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
-                        </div>
-                        <div class="flex items-end gap-1">
-                            <span id="p3-moeda" class="text-sm text-purple-400 font-bold mb-1">R$</span>
-                            <span id="p3-preco" class="text-4xl font-black text-white leading-none">⏳</span>
-                            <span id="p3-periodo" class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
-                        </div>
-                        <span id="p3-trial-text" class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold hidden bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max"></span>
-                    </div>
-                    
-                    <ul id="p3-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-200"></ul>
-                    <a href="cadastro_equipe.html?plano=p3" id="btn-p3" class="w-full mt-auto bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
-                        Assinar Agora
-                    </a>
-                </div>
-
+                <!-- Container onde os planos serão carregados dinamicamente -->
+                <div id="planos-container" class="contents"></div>
             </div>
         </div>
     </section>
@@ -410,7 +354,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // 🔥 Importação necessária para o login automático da Demo
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -426,7 +369,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 🔥 A MÁGICA: Função para entrar na conta de Demonstração
+        // 🔥 Função para entrar na conta de Demonstração
         window.entrarNaDemo = async function() {
             const btn = event.currentTarget;
             const txtOriginal = btn.innerHTML;
@@ -434,9 +377,7 @@
             btn.disabled = true;
 
             try {
-                // Autentica com os dados que você passou
                 await signInWithEmailAndPassword(auth, "bjjmaneger@teste.com.br", "teste123");
-                // Leva o visitante direto para ver a plataforma
                 window.location.href = "dashboard.html";
             } catch (error) {
                 console.error("Erro ao entrar na demo:", error);
@@ -510,11 +451,12 @@
         async function carregarPlanos() {
             try {
                 const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                
                 if (docSnap.exists()) {
                     const planos = docSnap.data();
 
                     // ==============================
-                    // PLANO 1
+                    // PLANO 1 (BÁSICO)
                     // ==============================
                     if(planos.p1) {
                         document.getElementById('p1-nome').innerText = planos.p1.nome;
@@ -533,7 +475,7 @@
                     }
 
                     // ==============================
-                    // PLANO 2
+                    // PLANO 2 (INTERMEDIÁRIO)
                     // ==============================
                     if(planos.p2) {
                         document.getElementById('p2-nome').innerText = planos.p2.nome;
@@ -552,7 +494,7 @@
                     }
 
                     // ==============================
-                    // PLANO 3 (MASTER)
+                    // PLANO 3 (PREMIUM) - MAIS ESCOLHIDO
                     // ==============================
                     if(planos.p3) {
                         document.getElementById('p3-nome').innerText = planos.p3.nome;
