@@ -15,7 +15,7 @@ const injetarEstilosGlobais = () => {
             html.dark .bg-white:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .card-premium:not(.ignorar-dark):not(.ignorar-dark *) { background-color: #0f172a !important; border-color: #1e293b !important; }
             
-            /* Engloba tons de cinza usados em fundos (Slate, Gray, Zinc, etc) */
+            /* Engloba tons de cinza usados em fundos */
             html.dark .bg-slate-50:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .bg-slate-100:not(.ignorar-dark):not(.ignorar-dark *),
             html.dark .bg-slate-200:not(.ignorar-dark):not(.ignorar-dark *),
@@ -27,7 +27,7 @@ const injetarEstilosGlobais = () => {
                 border-color: #334155 !important; 
             }
             
-            /* Textos padrão (Agora cobre também Gray) */
+            /* Textos padrão */
             html.dark .text-slate-900:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .text-slate-800:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .text-slate-700:not(.ignorar-dark):not(.ignorar-dark *),
@@ -45,10 +45,8 @@ const injetarEstilosGlobais = () => {
             html.dark .border-gray-200:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .border-gray-100:not(.ignorar-dark):not(.ignorar-dark *) { border-color: #1e293b !important; }
 
-            /* 🔥 CORREÇÃO: Força as Labels a ficarem claras no modo escuro */
             html.dark label:not(.ignorar-dark):not(.ignorar-dark *) { color: #cbd5e1 !important; }
             
-            /* 🔥 CORREÇÃO: Inputs ficam num tom mais escuro para não se misturarem com os cartões */
             html.dark input:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark select:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark textarea:not(.ignorar-dark):not(.ignorar-dark *) { 
@@ -65,24 +63,13 @@ const injetarEstilosGlobais = () => {
             html.dark .bg-amber-50:not(.ignorar-dark), html.dark .bg-yellow-50:not(.ignorar-dark) { background-color: rgba(120, 53, 15, 0.2) !important; border-color: rgba(120, 53, 15, 0.4) !important; }
             html.dark .bg-rose-50:not(.ignorar-dark), html.dark .bg-red-50:not(.ignorar-dark) { background-color: rgba(136, 19, 55, 0.2) !important; border-color: rgba(136, 19, 55, 0.4) !important; }
 
-            html.dark .text-emerald-800:not(.ignorar-dark), html.dark .text-emerald-900:not(.ignorar-dark) { color: #6ee7b7 !important; }
-            html.dark .text-cyan-800:not(.ignorar-dark), html.dark .text-indigo-800:not(.ignorar-dark), html.dark .text-blue-800:not(.ignorar-dark) { color: #7dd3fc !important; }
-            html.dark .text-amber-800:not(.ignorar-dark), html.dark .text-amber-900:not(.ignorar-dark) { color: #fcd34d !important; }
-            html.dark .text-rose-800:not(.ignorar-dark), html.dark .text-rose-900:not(.ignorar-dark) { color: #fda4af !important; }
+            html.dark .text-emerald-800:not(.ignorar-dark) { color: #6ee7b7 !important; }
+            html.dark .text-cyan-800:not(.ignorar-dark), html.dark .text-indigo-800:not(.ignorar-dark) { color: #7dd3fc !important; }
+            html.dark .text-amber-800:not(.ignorar-dark) { color: #fcd34d !important; }
+            html.dark .text-rose-800:not(.ignorar-dark) { color: #fda4af !important; }
 
-            /* CAÇA-FANTASMAS HOVER NAS TABELAS */
             html.dark tr:hover td { background-color: #1e293b !important; }
-            html.dark .hover\\:bg-slate-50:hover:not(.ignorar-dark),
-            html.dark .hover\\:bg-slate-100:hover:not(.ignorar-dark),
-            html.dark .hover\\:bg-slate-200:hover:not(.ignorar-dark),
-            html.dark .hover\\:bg-gray-50:hover:not(.ignorar-dark),
-            html.dark .hover\\:bg-gray-100:hover:not(.ignorar-dark),
-            html.dark .hover\\:bg-white:hover:not(.ignorar-dark) {
-                background-color: #1e293b !important;
-                color: #f8fafc !important;
-            }
 
-            /* SCROLLBAR CUSTOMIZADA */
             .custom-scroll::-webkit-scrollbar { width: 5px; }
             .custom-scroll::-webkit-scrollbar-track { background: transparent; }
             .custom-scroll::-webkit-scrollbar-thumb { background-color: #334155; border-radius: 10px; }
@@ -110,35 +97,32 @@ window.toggleDarkMode = function() {
     }
 };
 
-// ==========================================
-// 🖨️ TRUQUE DA IMPRESSORA (Desliga o Dark Mode na hora de imprimir)
-// ==========================================
-window.addEventListener('beforeprint', () => {
-    document.documentElement.classList.remove('dark');
-});
-window.addEventListener('afterprint', () => {
-    if (localStorage.getItem('bjj-theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-    }
-});
+window.addEventListener('beforeprint', () => { document.documentElement.classList.remove('dark'); });
+window.addEventListener('afterprint', () => { if (localStorage.getItem('bjj-theme') === 'dark') document.documentElement.classList.add('dark'); });
 
 injetarEstilosGlobais();
 
-// Lógica de Abrir/Fechar a Gaveta (Agora funciona em Mobile e Desktop)
 window.toggleBjjMenu = function() {
     const sidebar = document.getElementById('bjj-sidebar');
     const overlay = document.getElementById('bjj-menu-overlay');
 
     if (sidebar.classList.contains('-translate-x-full')) {
-        // Abrir
         sidebar.classList.remove('-translate-x-full');
         overlay.classList.remove('hidden');
         setTimeout(() => overlay.classList.remove('opacity-0'), 10);
     } else {
-        // Fechar
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('opacity-0');
         setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+};
+
+// 🔥 FUNÇÃO PARA LIGAR/DESLIGAR A BOLINHA DO SUPORTE
+window.atualizarBadgeSuporte = function(temNotificacao) {
+    const badge = document.getElementById('badge-suporte');
+    if (badge) {
+        if (temNotificacao) badge.classList.remove('hidden');
+        else badge.classList.add('hidden');
     }
 };
 
@@ -149,13 +133,10 @@ function carregarMenu() {
     try {
         const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
-        // --- RECUPERA O ESTADO GLOBAL DE FORMA SEGURA ---
         if (!window.funcionalidadesEquipe) {
             const cacheFeatures = sessionStorage.getItem('bjj_features');
             if (cacheFeatures && cacheFeatures !== "undefined" && cacheFeatures !== "null") {
-                try {
-                    window.funcionalidadesEquipe = JSON.parse(cacheFeatures);
-                } catch(e) { window.funcionalidadesEquipe = []; }
+                try { window.funcionalidadesEquipe = JSON.parse(cacheFeatures); } catch(e) { window.funcionalidadesEquipe = []; }
             }
         }
 
@@ -169,7 +150,6 @@ function carregarMenu() {
             cacheLogoBg = "background: transparent;";
         }
 
-        // --- LÓGICA DE ESTILOS DOS BOTÕES ---
         const classItem = (pagina, isBloqueado = false) => {
             if (isBloqueado) return "w-full text-left flex items-center justify-between px-6 py-3.5 text-[13px] font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
             return paginaAtual === pagina 
@@ -194,7 +174,7 @@ function carregarMenu() {
         const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
         const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
 
-        // --- HTML DO MENU LATERAL (GAVETA UNIVERSAL) ---
+        // --- HTML DO MENU LATERAL ---
         const menuSidebar = `
             <div id="bjj-menu-overlay" onclick="toggleBjjMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] hidden transition-opacity opacity-0"></div>
             
@@ -209,7 +189,7 @@ function carregarMenu() {
                         ${cacheLogoHTML}
                     </div>
                     <h1 class="text-xs font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
-                    <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-2 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20">BJJ Manager</p>
+                    <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-2 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20">Portal da Academia</p>
                 </div>
                 
                 <nav class="flex-1 py-4 space-y-1 overflow-y-auto custom-scroll flex flex-col">
@@ -257,13 +237,25 @@ function carregarMenu() {
                         <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
                         ${!canExtra ? blockIcon : ''}
                     </button>
+                    
+                    <div class="mt-auto pt-8 pb-4 w-full flex flex-col items-center justify-center cursor-default">
+                        <span class="text-[7px] text-slate-600 font-black uppercase tracking-[0.3em] mb-1.5">Powered By</span>
+                        <a href="#" target="_blank" title="Sistema BJJ Manager">
+                            <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-4 w-auto opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                        </a>
+                    </div>
                 </nav>
                 
                 <div class="p-3 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-2 shrink-0">
                     <div class="flex gap-2">
-                        <button onclick="${clickAcao('suporte.html', true)}" class="flex-1 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest py-2 rounded-lg group ${paginaAtual === 'suporte.html' ? 'text-indigo-400 bg-slate-800' : ''}">
+                        <button onclick="${clickAcao('suporte.html', true)}" class="relative flex-1 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest py-2 rounded-lg group ${paginaAtual === 'suporte.html' ? 'text-indigo-400 bg-slate-800' : ''}">
                             <span class="opacity-70 group-hover:opacity-100 transition-opacity">${svgSuporte}</span> Sup.
+                            <span id="badge-suporte" class="hidden absolute -top-1.5 -right-1.5 flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500 border-2 border-slate-900"></span>
+                            </span>
                         </button>
+
                         <button onclick="toggleDarkMode()" class="flex-1 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-[9px] font-bold uppercase tracking-widest py-2 rounded-lg group" title="Alternar Modo Escuro">
                             <span class="opacity-70 group-hover:opacity-100 transition-opacity">${svgTema}</span> Tema
                         </button>
@@ -275,17 +267,14 @@ function carregarMenu() {
             </aside>
         `;
 
-        // --- BOTÃO FLUTUANTE UNIVERSAL (Aparece em Desktop e Mobile) ---
         const btnHamburguer = `
             <button id="bjj-hamburger-btn" onclick="toggleBjjMenu()" class="fixed top-4 left-4 z-[45] bg-slate-900/90 backdrop-blur-sm text-white p-2.5 rounded-xl shadow-lg border border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
             </button>
         `;
 
-        // --- RENDERIZAÇÃO ---
         const containerPrincipal = document.getElementById('interface-sistema');
         
-        // Remove barras antigas
         const oldMobile = document.querySelector('nav.md\\:hidden');
         if (oldMobile) oldMobile.remove();
 
@@ -296,27 +285,19 @@ function carregarMenu() {
             const oldBtn = document.getElementById('bjj-hamburger-btn');
             if (oldBtn) oldBtn.remove();
             
-            // Insere o novo Menu Gaveta
             containerPrincipal.insertAdjacentHTML('afterbegin', menuSidebar);
         }
 
-        // Insere o Botão Hambúrguer Universal
-        if (document.body) {
-            document.body.insertAdjacentHTML('beforeend', btnHamburguer);
-        }
+        if (document.body) document.body.insertAdjacentHTML('beforeend', btnHamburguer);
 
     } catch (error) {
         console.error("Erro interno ao renderizar o menu:", error);
     }
 }
 
-// Alerta Padrão de Bloqueio
 window.mostrarAvisoUpgrade = function() {
-    if(typeof showToast === 'function') {
-        showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
-    } else {
-        alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
-    }
+    if(typeof showToast === 'function') showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
+    else alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
 };
 
 window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
@@ -325,7 +306,6 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     carregarMenu(); 
 };
 
-// Render Inicial
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', carregarMenu);
 } else {
