@@ -2,21 +2,29 @@
 <html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>BJJ Manager | O Sistema mais completo para gerenciar sua Equipe</title>
     
     <meta name="description" content="Portal do aluno completo, carteirinhas, certificados e controle financeiro automático. Personalizado com a logo da sua equipe.">
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .bg-pattern { background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 20px 20px; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a;
+        }
 
-        /* Animação Pulsar para o WhatsApp */
+        .bg-pattern { 
+            background-image: radial-gradient(#1e293b 1px, transparent 1px); 
+            background-size: 24px 24px; 
+        }
+        
         @keyframes pulse-whatsapp {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
@@ -24,116 +32,134 @@
         }
         .btn-whatsapp {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             background-color: #25D366;
             color: white;
             border-radius: 50%;
-            width: 55px;
-            height: 55px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
             z-index: 9999;
             transition: all 0.3s ease;
-            animation: pulse-whatsapp 2s infinite;
+            animation: pulse-whatsapp 2.2s infinite;
         }
-        .btn-whatsapp:hover { background-color: #20ba5a; transform: scale(1.1); }
+        .btn-whatsapp:hover { background-color: #20ba5a; transform: scale(1.08); }
         
-        /* Animação de Flutuação Suave para a Logo Central */
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
             100% { transform: translateY(0px); }
         }
-        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        
+        .card-module {
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .card-module:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.25);
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+<body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500/40 selection:text-white">
 
+    <!-- WhatsApp flutuante -->
     <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o BJJ Manager." target="_blank" class="btn-whatsapp">
-        <svg class="w-7 h-7 fill-current shrink-0" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-        </svg>
+        <i class="fab fa-whatsapp text-2xl"></i>
     </a>
 
-    <nav class="fixed w-full z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <!-- NAVBAR -->
+    <nav class="fixed w-full z-50 bg-slate-900/85 backdrop-blur-xl border-b border-slate-800/60 shadow-lg transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-24">
-                <div class="flex items-center gap-3">
-                    <a href="#" class="inline-flex items-center justify-center p-2 rounded-2xl transition-all hover:scale-105 group relative">
-                        <div class="absolute inset-0 bg-cyan-500/20 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-10 md:h-14 w-auto relative z-10 filter drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">
+            <div class="flex justify-between items-center h-20 md:h-24">
+                <div class="flex items-center gap-2">
+                    <a href="#" class="flex items-center gap-3 transition-all hover:scale-[1.02] group">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-cyan-500/30 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-10 md:h-14 w-auto relative z-10 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+                        </div>
+                        <span class="font-black text-lg tracking-tight bg-gradient-to-r from-white to-cyan-300 bg-clip-text text-transparent hidden sm:block">BJJ Manager</span>
                     </a>
                 </div>
 
-                <div class="hidden md:flex items-center space-x-8 text-sm font-bold text-slate-400">
-                    <a href="#modulos" class="hover:text-cyan-400 transition-colors">Módulos</a>
-                    <a href="#recursos" class="hover:text-cyan-400 transition-colors">Destaques</a>
-                    <a href="#precos" class="hover:text-cyan-400 transition-colors">Planos</a>
-                    
-                    <a href="validar.html" class="flex items-center gap-1.5 text-slate-300 hover:text-cyan-400 transition-colors px-3 py-1.5 rounded-full border border-slate-700/50 bg-slate-800/30">
-                        <span class="text-cyan-500">✓</span> Validador de Documentos
+                <div class="hidden md:flex items-center space-x-7 text-sm font-bold text-slate-300">
+                    <a href="#modulos" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-th text-[10px]"></i> Módulos</a>
+                    <a href="#recursos" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-gem text-[10px]"></i> Destaques</a>
+                    <a href="#precos" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-tag text-[10px]"></i> Planos</a>
+                    <a href='/validar' class="flex items-center gap-1.5 text-slate-300 hover:text-cyan-400 transition-colors px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/40">
+                        <i class="fas fa-check-circle text-cyan-500 text-xs"></i> <span>Validador</span>
                     </a>
                 </div>
                 
                 <div class="flex items-center gap-2 sm:gap-4">
-                    <a href="validar.html" class="md:hidden text-[10px] font-black uppercase tracking-widest text-slate-300 bg-slate-800/50 border border-slate-700 px-2.5 py-2 rounded-lg hover:text-white transition-colors flex items-center gap-1">
-                        <span class="text-cyan-500">✓</span> Validar
+                    <a href='/validar' class="md:hidden text-[10px] font-black uppercase tracking-widest bg-slate-800/70 border border-slate-700 px-2.5 py-2 rounded-xl hover:text-cyan-300 transition flex items-center gap-1">
+                        <i class="fas fa-check-circle text-cyan-500 text-[9px]"></i> Validar
                     </a>
-
-                    <a href="portal_aluno.html" class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-3 py-2 rounded-lg hover:bg-cyan-500/20 transition-colors flex items-center gap-1.5"><span class="text-sm">🥋</span> <span class="hidden sm:inline"></span>Portal do Aluno</a>
-                    
-                    <a href="login.html" class="text-[11px] sm:text-sm font-bold text-slate-300 hover:text-white transition-colors border-l border-slate-700 pl-2 sm:pl-4 hidden sm:block">Login</a>
-                    <a href="login.html" class="text-[11px] font-bold text-slate-300 hover:text-white transition-colors sm:hidden">Login</a>
-                    
-                    <a href="#precos" class="hidden lg:block bg-cyan-500 hover:bg-cyan-600 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5 whitespace-nowrap">Criar Conta</a>
+                    <a href='/portal_aluno' class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/30 px-3 py-2 rounded-xl hover:bg-cyan-500/20 transition flex items-center gap-1.5 text-cyan-300">
+                        <i class="fas fa-user-graduate text-sm"></i> <span class="hidden sm:inline">Portal do Aluno</span><span class="sm:hidden">Aluno</span>
+                    </a>
+                    <a href='/login' class="text-[11px] sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors border-l border-slate-700 pl-3 hidden sm:block">
+                        <i class="fas fa-lock"></i> Login
+                    </a>
+                    <a href='/login' class="text-[11px] font-semibold text-slate-300 hover:text-white transition-colors sm:hidden">
+                        <i class="fas fa-lock"></i>
+                    </a>
+                    <a href="#precos" class="hidden lg:block bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-0.5 whitespace-nowrap shadow-cyan-500/30">
+                        <i class="fas fa-rocket"></i> Criar Conta
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <section class="relative pt-36 pb-20 lg:pt-48 lg:pb-24 overflow-hidden">
-        <div class="absolute inset-0 bg-pattern opacity-20"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+    <!-- Hero Section -->
+    <section class="relative pt-36 pb-20 lg:pt-48 lg:pb-28 overflow-hidden">
+        <div class="absolute inset-0 bg-pattern opacity-30"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            
             <div class="flex justify-center mb-10">
                 <div class="relative group animate-float">
-                    <div class="absolute -inset-2 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-[2.5rem] blur-xl opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 pointer-events-none"></div>
-                    <div class="relative bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 ring-1 ring-white/10 p-5 md:p-8 rounded-[2rem] shadow-2xl flex items-center justify-center">
-                        <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-24 md:h-36 w-auto filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-transform duration-500 ease-out">
+                    <div class="absolute -inset-3 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-70 transition duration-700"></div>
+                    <div class="relative bg-slate-900/80 backdrop-blur-xl border border-slate-700/60 ring-1 ring-white/10 p-5 md:p-7 rounded-[2rem] shadow-2xl">
+                        <img src="logo_bjj_maneger.png" alt="BJJ Manager" class="h-24 md:h-32 w-auto drop-shadow-2xl group-hover:scale-105 transition duration-500">
                     </div>
                 </div>
             </div>
 
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-6">
-                <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span></span>
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-6 backdrop-blur-sm">
+                <span class="relative flex h-2 w-2"><span class="animate-ping absolute h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative h-2 w-2 rounded-full bg-cyan-500"></span></span>
                 O App da sua Equipe
             </div>
             
             <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 tracking-tight">
                 O seu tatame <br class="hidden md:block" />
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">100% Digital e Lucrativo</span>
+                <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">100% Digital e Lucrativo</span>
             </h1>
             
-            <p class="mt-4 text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
+            <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
                 Portal do aluno exclusivo com a sua logomarca. Automatize cobranças, registre presenças com GPS, emita certificados oficiais e venda produtos na sua vitrine virtual.
             </p>
             
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#precos" class="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                    <span>Começar Agora</span> 🚀
+            <div class="flex flex-col sm:flex-row justify-center gap-5">
+                <a href="#precos" class="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-cyan-500/30">
+                    <i class="fas fa-play"></i> Começar Agora
                 </a>
                 
-                <button onclick="entrarNaDemo()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                    <span>👀 Ver Sistema por Dentro</span>
+                <button onclick="entrarNaDemo()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-indigo-500/20">
+                    <i class="fas fa-eye"></i> Ver Sistema por Dentro
                 </button>
 
-                <a href="https://wa.me/5521981716074?text=Olá! Gostaria de agendar uma demonstração do BJJ Manager." target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                    Falar com Consultor 💬
+                <a href="https://wa.me/5521981716074?text=Olá! Gostaria de agendar uma demonstração do BJJ Manager." target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 px-7 py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp"></i> Falar com Consultor
                 </a>
             </div>
             
@@ -141,24 +167,24 @@
         </div>
     </section>
 
+    <!-- Parceria Social -->
     <section id="modulos" class="py-20 bg-slate-50 relative border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <div class="mb-20 max-w-4xl mx-auto bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 text-left">
+            <div class="mb-20 max-w-5xl mx-auto bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 text-left">
                 <div class="absolute -right-20 -top-20 w-64 h-64 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none"></div>
                 <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none"></div>
 
                 <div class="relative z-10 flex-1 text-center md:text-left">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-4">
-                        <span>🤝</span> Parcerias e Impacto
+                        <i class="fas fa-handshake"></i> Parcerias e Impacto
                     </div>
                     <h3 class="text-2xl md:text-3xl font-black text-white mb-2">Você lidera um Projeto Social?</h3>
                     <p class="text-slate-400 text-sm md:text-base leading-relaxed">No BJJ Manager, nós apoiamos quem resgata vidas e faz a diferença dentro e fora do tatame. Oferecemos <span class="text-white font-bold">isenções e descontos especiais</span> para projetos sociais comprovados.</p>
                 </div>
 
                 <div class="relative z-10 shrink-0 w-full md:w-auto">
-                    <a href="https://wa.me/5521981716074?text=Olá! Tenho um Projeto Social e gostaria de saber sobre as condições especiais do BJJ Manager." target="_blank" class="w-full md:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 whitespace-nowrap">
-                        Pedir Análise 💬
+                    <a href="https://wa.me/5521981716074?text=Olá! Tenho um Projeto Social e gostaria de saber sobre as condições especiais do BJJ Manager." target="_blank" class="w-full md:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <i class="fab fa-whatsapp"></i> Pedir Análise
                     </a>
                 </div>
             </div>
@@ -168,78 +194,77 @@
                 <p class="text-slate-500 font-medium max-w-2xl mx-auto">Módulo por módulo: veja exatamente o que você e os seus alunos vão ter acesso ao utilizar a nossa plataforma.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">📊</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+                <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-chart-line text-xl"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Dashboard Principal</h3>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start gap-2"><span>✓</span> Indicadores de Receitas e Inadimplência</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Gráfico de distribuição de alunos por faixa</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Lista de aniversariantes do mês atual</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Painel em tempo real de quem fez check-in</li>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Indicadores de Receitas e Inadimplência</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Gráfico de distribuição de alunos por faixa</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Lista de aniversariantes do mês atual</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Painel em tempo real de quem fez check-in</li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-6">🥋</div>
+                <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-users"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Gestão de Atletas</h3>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start gap-2"><span>✓</span> Ficha cadastral com foto, faixa e validade</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Termos de Consentimento (LGPD)</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Ficha de Saúde (Anamnese/Neurodivergências)</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Exportação de prontuários em PDF com Logo</li>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Ficha cadastral com foto, faixa e validade</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Termos de Consentimento (LGPD)</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Ficha de Saúde (Anamnese/Neurodivergências)</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Exportação de prontuários em PDF com Logo</li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                    <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-xl flex items-center justify-center text-2xl mb-6">💰</div>
+                <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                    <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-coins"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Centro Financeiro</h3>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start gap-2"><span>✓</span> Lançamento de Mensalidades, Receitas e Despesas</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Integração bancária com Asaas (Pix/Cartão)</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Envio inteligente de cobrança via WhatsApp</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Gestão de bolsas, descontos e isenções</li>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Lançamento de Mensalidades, Receitas e Despesas</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Integração bancária com Asaas (Pix/Cartão)</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Envio inteligente de cobrança via WhatsApp</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Gestão de bolsas, descontos e isenções</li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                    <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-2xl mb-6">📍</div>
+                <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                    <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-calendar-alt"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Turmas & Frequência</h3>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start gap-2"><span>✓</span> Criação de grades (Kids, Competição, etc)</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Check-in mobile apenas 10min antes da aula</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Validação de presença através do GPS do celular</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Relatório mensal de assiduidade do atleta</li>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Criação de grades (Kids, Competição, etc)</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Check-in mobile apenas 10min antes da aula</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Validação de presença através do GPS do celular</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Relatório mensal de assiduidade do atleta</li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                    <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-2xl mb-6">🏆</div>
+                <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                    <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-trophy"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Carreira & Graduação</h3>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start gap-2"><span>✓</span> Linha do tempo de graduações e tempo de faixa</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Registo de competições, medalhas e categorias</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Controle de filiações (IBJJF, CBJJ, Federações)</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Gerador de Certificados com Créditos Virtuais</li>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Linha do tempo de graduações e tempo de faixa</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Registo de competições, medalhas e categorias</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Controle de filiações (IBJJF, CBJJ, Federações)</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Gerador de Certificados com Créditos Virtuais</li>
                     </ul>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow border-b-4 border-b-cyan-500">
-                    <div class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center text-2xl mb-6">📱</div>
+                <div class="card-module bg-white p-7 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all border-b-4 border-b-cyan-500">
+                    <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-2xl mb-5"><i class="fas fa-mobile-alt"></i></div>
                     <h3 class="text-xl font-black text-slate-800 mb-4">Portal do Aluno</h3>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li class="flex items-start gap-2"><span>✓</span> Acesso seguro e exclusivo (Painel Mobile)</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Carteirinha Digital para apresentação oficial</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Vitrine Virtual para compra de kimonos e itens</li>
-                        <li class="flex items-start gap-2"><span>✓</span> Pagamento autônomo das próprias faturas</li>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Acesso seguro e exclusivo (Painel Mobile)</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Carteirinha Digital para apresentação oficial</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Vitrine Virtual para compra de kimonos e itens</li>
+                        <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyan-500 text-sm mt-0.5"></i> Pagamento autônomo das próprias faturas</li>
                     </ul>
                 </div>
-
             </div>
         </div>
     </section>
 
+    <!-- Recursos / Diferenciais -->
     <section id="recursos" class="py-20 bg-slate-900 relative border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -248,59 +273,54 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-cyan-500/50 hover:bg-slate-800/80 transition-all group lg:col-span-3 lg:flex lg:items-center lg:gap-8 relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-64 h-64 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none"></div>
-                    <div class="w-16 h-16 bg-cyan-500 text-white rounded-2xl flex items-center justify-center text-2xl mb-4 lg:mb-0 shrink-0 shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform">📱</div>
-                    <div>
-                        <h3 class="text-2xl font-black text-white mb-2">O Portal do Aluno</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">Entregue uma experiência premium. Os seus alunos terão acesso a uma plataforma exclusiva (que podem salvar no celular como App) para ver treinos, pagar mensalidades, acessar a lojinha, ver a sua carteirinha e preencher a própria anamnese de saúde.</p>
-                    </div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-cyan-500/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fas fa-qrcode"></i></div>
+                    <h3 class="text-lg font-black text-white mb-2">O Portal do Aluno</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Entregue uma experiência premium. Os seus alunos terão acesso a uma plataforma exclusiva (que podem salvar no celular como App) para ver treinos, pagar mensalidades, acessar a lojinha, ver a sua carteirinha e preencher a própria anamnese de saúde.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-pink-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🎨</div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-pink-500/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fas fa-palette"></i></div>
                     <h3 class="text-lg font-black text-white mb-2">Sua Marca em Destaque</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Adicione a sua logomarca no sistema. Ela será aplicada automaticamente em todos os painéis, certificados, carteirinhas e documentos em PDF gerados.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">Adicione a sua logomarca no sistema. Ela será aplicada automaticamente em todos os painéis, certificados, carteirinhas e documentos em PDF gerados.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-emerald-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📍</div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-emerald-500/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fas fa-map-marker-alt"></i></div>
                     <h3 class="text-lg font-black text-white mb-2">Check-in com Geolocalização</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Acabe com as "presenças de casa". O botão de check-in só é liberado 10 min antes da aula e o sistema regista a coordenada exata do aluno no tatame.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">Acabe com as "presenças de casa". O botão de check-in só é liberado 10 min antes da aula e o sistema regista a coordenada exata do aluno no tatame.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-[#25D366]/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">💳</div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-[#25D366]/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fab fa-pix"></i></div>
                     <h3 class="text-lg font-black text-white mb-2">Pix, Cartão e WhatsApp</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Integração nativa com o Asaas para baixa automática de mensalidades. Envie cobranças e links de pagamento com 1 clique pelo WhatsApp.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">Integração nativa com o Asaas para baixa automática de mensalidades. Envie cobranças e links de pagamento com 1 clique pelo WhatsApp.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-violet-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-violet-500/20 text-violet-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🪪</div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-violet-500/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-violet-500/20 text-violet-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fas fa-id-card"></i></div>
                     <h3 class="text-lg font-black text-white mb-2">Carteirinhas c/ QR Code</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Identidades oficiais com foto, faixa, equipe e validade. O QR Code permite que qualquer organizador de campeonato valide o status do atleta no sistema.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">Identidades oficiais com foto, faixa, equipe e validade. O QR Code permite que qualquer organizador de campeonato valide o status do atleta no sistema.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-rose-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">⚖️</div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-rose-500/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fas fa-file-pdf"></i></div>
                     <h3 class="text-lg font-black text-white mb-2">Relatórios Oficiais em PDF</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Gere PDFs assinados digitalmente com Ficha de Anamnese (Saúde e Neurodivergência), Termos de Uso de Imagem (LGPD) e Certificados de Graduação.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">Gere PDFs assinados digitalmente com Ficha de Anamnese (Saúde e Neurodivergência), Termos de Uso de Imagem (LGPD) e Certificados de Graduação.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-amber-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🛒</div>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-amber-500/50 hover:bg-slate-800/70 transition-all group">
+                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fas fa-store"></i></div>
                     <h3 class="text-lg font-black text-white mb-2">Vitrine da Equipe (Loja)</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Cadastre os kimonos, rash guards e produtos da sua marca num carrossel de fotos. Os alunos podem ver e comprar diretamente pelo Portal deles.</p>
+                    <p class="text-slate-400 text-sm leading-relaxed">Cadastre os kimonos, rash guards e produtos da sua marca num carrossel de fotos. Os alunos podem ver e comprar diretamente pelo Portal deles.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-sky-500/50 hover:bg-slate-800/80 transition-all group lg:col-span-3 flex flex-col md:flex-row items-start md:items-center justify-between">
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-sky-500/50 hover:bg-slate-800/70 transition-all group lg:col-span-3 flex flex-col md:flex-row items-start md:items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-black text-white mb-2 flex items-center gap-2">🔗 Link de Auto-Cadastro & Turmas</h3>
+                        <h3 class="text-lg font-black text-white mb-2 flex items-center gap-2"><i class="fas fa-link text-sky-400"></i> Link de Auto-Cadastro & Turmas</h3>
                         <p class="text-slate-400 text-sm max-w-3xl">Pare de anotar dados no papel. Envie o seu link exclusivo; o próprio atleta preenche a ficha completa no celular, aceita os termos e entra automaticamente para a sua lista de alunos e turmas.</p>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
