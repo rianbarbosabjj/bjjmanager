@@ -63,6 +63,9 @@
             transform: translateY(-6px);
             box-shadow: 0 25px 35px -12px rgba(0,0,0,0.25);
         }
+
+        /* Perspective for CSS Phone Mockup */
+        .perspective-1000 { perspective: 1000px; }
         
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
@@ -71,12 +74,10 @@
 </head>
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500/40 selection:text-white">
 
-    <!-- WhatsApp flutuante -->
     <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o BJJ Manager." target="_blank" class="btn-whatsapp">
         <i class="fab fa-whatsapp text-2xl"></i>
     </a>
 
-    <!-- NAVBAR -->
     <nav class="fixed w-full z-50 bg-slate-900/85 backdrop-blur-xl border-b border-slate-800/60 shadow-lg transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20 md:h-24">
@@ -92,11 +93,9 @@
 
                 <div class="hidden md:flex items-center space-x-7 text-sm font-bold text-slate-300">
                     <a href="#modulos" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-th text-[10px]"></i> Módulos</a>
+                    <a href="#portal-preview" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-mobile-alt text-[10px]"></i> Portal Atleta</a>
                     <a href="#recursos" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-gem text-[10px]"></i> Destaques</a>
                     <a href="#precos" class="hover:text-cyan-400 transition-colors flex items-center gap-1"><i class="fas fa-tag text-[10px]"></i> Planos</a>
-                    <a href='/validar' class="flex items-center gap-1.5 text-slate-300 hover:text-cyan-400 transition-colors px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/40">
-                        <i class="fas fa-check-circle text-cyan-500 text-xs"></i> <span>Validador</span>
-                    </a>
                 </div>
                 
                 <div class="flex items-center gap-2 sm:gap-4">
@@ -120,7 +119,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="relative pt-36 pb-20 lg:pt-48 lg:pb-28 overflow-hidden">
         <div class="absolute inset-0 bg-pattern opacity-30"></div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
@@ -167,7 +165,6 @@
         </div>
     </section>
 
-    <!-- Parceria Social -->
     <section id="modulos" class="py-20 bg-slate-50 relative border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-20 max-w-5xl mx-auto bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 text-left">
@@ -264,7 +261,122 @@
         </div>
     </section>
 
-    <!-- Recursos / Diferenciais -->
+    <section id="portal-preview" class="py-24 bg-slate-950 relative border-t border-slate-800 overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+            
+            <div class="flex-1 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-6">
+                    <i class="fas fa-mobile-alt"></i> Web App Exclusivo
+                </div>
+                
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+                    A academia no bolso <br/>
+                    <span class="text-cyan-400">do seu aluno.</span>
+                </h2>
+                
+                <p class="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    O BJJ Manager não é só para o professor. Entregue um aplicativo completo onde o aluno tem acesso à carteirinha, pagamentos via PIX, grade de horários e check-in inteligente.
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-xl mx-auto lg:mx-0">
+                    <div class="bg-slate-900/50 border border-slate-700 p-4 rounded-2xl">
+                        <i class="fas fa-id-card text-cyan-500 text-xl mb-2"></i>
+                        <h4 class="text-white font-bold text-sm mb-1">Carteirinha Digital</h4>
+                        <p class="text-xs text-slate-400">QR Code oficial sempre atualizado com a faixa e graus.</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-700 p-4 rounded-2xl">
+                        <i class="fas fa-map-marker-alt text-cyan-500 text-xl mb-2"></i>
+                        <h4 class="text-white font-bold text-sm mb-1">Check-in GPS</h4>
+                        <p class="text-xs text-slate-400">O aluno confirma presença na porta do tatame pelo celular.</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-700 p-4 rounded-2xl">
+                        <i class="fas fa-qrcode text-cyan-500 text-xl mb-2"></i>
+                        <h4 class="text-white font-bold text-sm mb-1">PIX Automático</h4>
+                        <p class="text-xs text-slate-400">Faturas pagas dão baixa sozinhas no seu painel.</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-700 p-4 rounded-2xl">
+                        <i class="fas fa-shopping-cart text-cyan-500 text-xl mb-2"></i>
+                        <h4 class="text-white font-bold text-sm mb-1">Lojinha Virtual</h4>
+                        <p class="text-xs text-slate-400">Venda kimonos e acessórios direto pelo portal.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-10">
+                    <button onclick="entrarDemoPortal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-cyan-500/20 w-full sm:w-auto mx-auto lg:mx-0">
+                        <i class="fas fa-sign-in-alt"></i> Testar o Portal do Aluno
+                    </button>
+                    <p class="text-xs text-slate-500 mt-3">*Entrar como aluno de teste.</p>
+                </div>
+            </div>
+
+            <div class="relative shrink-0 perspective-1000 mt-10 lg:mt-0">
+                <div class="absolute inset-0 bg-cyan-500/20 blur-3xl rounded-[3rem] transform translate-y-10 scale-90"></div>
+                
+                <div class="relative w-[300px] h-[600px] bg-slate-900 border-[10px] border-slate-800 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col transform rotate-y-[-10deg] rotate-x-[5deg] transition-transform duration-700 hover:rotate-0 hover:scale-105">
+                    
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-30"></div>
+                    
+                    <div class="pt-10 pb-4 px-5 bg-slate-800/50 flex justify-between items-center z-20">
+                        <div class="flex items-center gap-2">
+                            <img src="logo_bjj_manager.png" class="h-6 w-auto" alt="Logo">
+                        </div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase">Sair 🚪</div>
+                    </div>
+
+                    <div class="flex-1 overflow-hidden flex flex-col gap-4 p-5 bg-[#0f172a] relative z-10">
+                        <div>
+                            <h3 class="text-2xl font-black text-white">Oss, Atleta!</h3>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sua identificação oficial</p>
+                        </div>
+
+                        <div class="bg-slate-800/80 rounded-2xl p-4 border-t-4 border-blue-500 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 blur-xl rounded-full"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full border-2 border-slate-700 bg-blue-600 shadow-inner"></div>
+                                    <div>
+                                        <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Graduação</p>
+                                        <p class="text-sm font-black text-white uppercase">AZUL - 2º Grau</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+                            <div class="flex justify-between items-end mb-3 border-b border-slate-700/50 pb-2">
+                                <h4 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">🥋 Meus Treinos</h4>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50">
+                                <div>
+                                    <p class="text-[9px] font-black text-indigo-300 uppercase">Treino Competição</p>
+                                    <p class="text-[8px] text-slate-400 uppercase mt-0.5">🟢 Hoje • 19:30</p>
+                                </div>
+                                <button class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest cursor-default">📍 Check-in</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center mt-auto mb-2">
+                            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm mb-2">💳</div>
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Mensalidade</p>
+                            <p class="text-xl font-black text-white mb-1">R$ 150,00</p>
+                            <button class="w-full bg-cyan-500 text-white py-2 rounded-lg text-[9px] font-black uppercase tracking-widest mt-1 cursor-default">Realizar Pagamento</button>
+                        </div>
+                    </div>
+
+                    <div class="h-14 bg-slate-900 border-t border-slate-800 flex justify-around items-center px-2 z-20 shrink-0">
+                        <div class="flex flex-col items-center text-cyan-400"><i class="fas fa-home text-sm mb-0.5"></i><span class="text-[6px] font-black uppercase tracking-wider">Início</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><i class="fas fa-id-card text-sm mb-0.5"></i><span class="text-[6px] font-bold uppercase tracking-wider">Cartão</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><i class="fas fa-shopping-cart text-sm mb-0.5"></i><span class="text-[6px] font-bold uppercase tracking-wider">Loja</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><i class="fas fa-user-cog text-sm mb-0.5"></i><span class="text-[6px] font-bold uppercase tracking-wider">Perfil</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <section id="recursos" class="py-20 bg-slate-900 relative border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -429,8 +541,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // 🔥 Importação necessária para o login automático da Demo
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // Importações necessárias para os logins de teste
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -446,7 +558,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 🔥 A MÁGICA: Função para entrar na conta de Demonstração
+        // Função para entrar na conta de Professor (Sistema Principal)
         window.entrarNaDemo = async function() {
             const btn = event.currentTarget;
             const txtOriginal = btn.innerHTML;
@@ -454,13 +566,47 @@
             btn.disabled = true;
 
             try {
-                // Autentica com os dados que você passou
                 await signInWithEmailAndPassword(auth, "bjjmanager@teste.com.br", "teste123");
-                // Leva o visitante direto para ver a plataforma
                 window.location.href = "dashboard.html";
             } catch (error) {
                 console.error("Erro ao entrar na demo:", error);
                 alert("O ambiente de demonstração está em manutenção. Tente novamente em alguns minutos.");
+                btn.innerHTML = txtOriginal;
+                btn.disabled = false;
+            }
+        };
+
+        // 🔥 NOVA FUNÇÃO: Entrar na conta de Aluno (Portal do Atleta)
+        window.entrarDemoPortal = async function() {
+            const btn = event.currentTarget;
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "<span>⏳ Entrando...</span>";
+            btn.disabled = true;
+
+            try {
+                // Como o login do aluno não usa o Auth oficial, buscamos no banco igual ao login real
+                const emailAluno = "aluno@teste.com"; // Email de um aluno que está dentro da equipe bjjmanager@teste.com.br
+                const senhaAluno = "teste123";
+                
+                const q = query(collection(db, "alunos"), where("email", "==", emailAluno), where("senha_portal", "==", senhaAluno));
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) { 
+                    const alunoDoc = snap.docs[0].data();
+                    const alunoId = snap.docs[0].id;
+                    const alunoLogado = { id: alunoId, ...alunoDoc };
+                    
+                    // Salva a sessão e manda pra tela
+                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                    window.location.href = "portal_aluno.html";
+                } else {
+                    alert("A conta do Aluno de Teste não foi encontrada. O professor da conta demo precisa cadastrar um aluno com email aluno@teste.com e senha teste123.");
+                    btn.innerHTML = txtOriginal;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error("Erro ao entrar na demo do portal:", error);
+                alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.");
                 btn.innerHTML = txtOriginal;
                 btn.disabled = false;
             }
@@ -533,9 +679,6 @@
                 if (docSnap.exists()) {
                     const planos = docSnap.data();
 
-                    // ==============================
-                    // PLANO 1
-                    // ==============================
                     if(planos.p1) {
                         document.getElementById('p1-nome').innerText = planos.p1.nome;
                         document.getElementById('p1-desc').innerText = planos.p1.desc;
@@ -552,9 +695,6 @@
                         btn.href = `cadastro_equipe.html?plano=p1`;
                     }
 
-                    // ==============================
-                    // PLANO 2
-                    // ==============================
                     if(planos.p2) {
                         document.getElementById('p2-nome').innerText = planos.p2.nome;
                         document.getElementById('p2-desc').innerText = planos.p2.desc;
@@ -571,9 +711,6 @@
                         btn.href = `cadastro_equipe.html?plano=p2`;
                     }
 
-                    // ==============================
-                    // PLANO 3 (MASTER)
-                    // ==============================
                     if(planos.p3) {
                         document.getElementById('p3-nome').innerText = planos.p3.nome;
                         document.getElementById('p3-desc').innerText = planos.p3.desc;
