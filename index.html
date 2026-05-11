@@ -314,62 +314,82 @@
             <div class="relative shrink-0 perspective-1000 mt-10 lg:mt-0">
                 <div class="absolute inset-0 bg-cyan-500/20 blur-3xl rounded-[3rem] transform translate-y-10 scale-90"></div>
                 
-                <div class="relative w-[300px] h-[600px] bg-slate-900 border-[10px] border-slate-800 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col transform rotate-y-[-10deg] rotate-x-[5deg] transition-transform duration-700 hover:rotate-0 hover:scale-105">
+<div class="relative w-[300px] h-[600px] bg-slate-900 border-[10px] border-slate-800 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col transform rotate-y-[-10deg] rotate-x-[5deg] transition-transform duration-700 hover:rotate-0 hover:scale-105">
                     
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-30"></div>
                     
-                    <div class="pt-10 pb-4 px-5 bg-slate-800/50 flex justify-between items-center z-20">
-                        <div class="flex items-center gap-2">
-                            <img src="logo_bjj_manager.png" class="h-6 w-auto" alt="Logo">
+                    <div class="pt-10 pb-3 px-4 bg-slate-800/50 flex justify-between items-center z-20 shrink-0">
+                        <img src="logo_bjj_manager.png" class="h-6 w-auto filter drop-shadow-md" alt="Logo">
+                        <div class="text-[8px] font-black uppercase tracking-widest text-slate-400 bg-slate-800/50 px-2 py-1 rounded border border-slate-700/50">
+                            Sair 🚪
                         </div>
-                        <div class="text-[10px] font-black text-slate-400 uppercase">Sair 🚪</div>
                     </div>
 
-                    <div class="flex-1 overflow-hidden flex flex-col gap-4 p-5 bg-[#0f172a] relative z-10">
+                    <div class="flex-1 overflow-hidden flex flex-col gap-3 p-4 bg-[#0f172a] relative z-10">
                         <div>
-                            <h3 class="text-2xl font-black text-white">Oss, Atleta!</h3>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sua identificação oficial</p>
+                            <h3 class="text-xl font-black text-white tracking-tight">Oss, <span class="text-cyan-400">Atleta</span>!</h3>
+                            <p class="text-[8px] text-slate-400 font-medium mt-0.5">Sua identificação oficial e acesso à equipe.</p>
                         </div>
 
-                        <div class="bg-slate-800/80 rounded-2xl p-4 border-t-4 border-blue-500 relative overflow-hidden shadow-lg">
-                            <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 blur-xl rounded-full"></div>
-                            <div class="flex justify-between items-center relative z-10">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full border-2 border-slate-700 bg-blue-600 shadow-inner"></div>
-                                    <div>
-                                        <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Graduação</p>
-                                        <p class="text-sm font-black text-white uppercase">AZUL - 2º Grau</p>
+                        <div class="bg-slate-800/70 backdrop-blur-md rounded-xl p-3 border-t-2 border-cyan-500 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-cyan-500/10 blur-xl rounded-full"></div>
+                            <div class="flex items-center gap-3 relative z-10">
+                                <div class="w-10 h-10 shrink-0 rounded-full border-2 border-slate-800 bg-blue-600 shadow-[0_0_10px_rgba(0,0,0,0.5)]"></div>
+                                <div class="flex flex-col flex-1">
+                                    <p class="text-[7px] text-slate-400 font-black uppercase tracking-widest mb-0.5">Sua Graduação</p>
+                                    <p class="text-sm font-black text-white uppercase leading-tight mb-1.5 truncate">AZUL <span class="text-[8px] text-slate-400 font-medium normal-case ml-0.5">• 2º Grau</span></p>
+                                    <div class="inline-flex items-center gap-1 bg-slate-900/60 px-2 py-1 rounded-md border border-slate-700/50 w-max">
+                                        <span class="text-[6px] text-slate-500 font-bold uppercase tracking-widest">Tempo de Faixa:</span>
+                                        <span class="text-cyan-400 font-black text-[7px] tracking-wide">8 meses</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
-                            <div class="flex justify-between items-end mb-3 border-b border-slate-700/50 pb-2">
-                                <h4 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">🥋 Meus Treinos</h4>
+                        <div class="bg-slate-900/40 rounded-xl p-3 border border-slate-700/30">
+                            <div class="flex justify-between items-end mb-2 border-b border-slate-700/50 pb-1.5">
+                                <h3 class="text-[9px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-1">
+                                    <span class="drop-shadow-[0_0_3px_rgba(99,102,241,0.6)]">🥋</span> Meus Treinos
+                                </h3>
                             </div>
-                            <div class="flex items-center justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50">
-                                <div>
-                                    <p class="text-[9px] font-black text-indigo-300 uppercase">Treino Competição</p>
-                                    <p class="text-[8px] text-slate-400 uppercase mt-0.5">🟢 Hoje • 19:30</p>
+                            <div class="flex flex-col bg-slate-900/50 p-2 rounded-lg border border-slate-700/50 gap-2">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[8px] font-black text-indigo-200 uppercase truncate">Treino Competição</p>
+                                        <p class="text-[7px] uppercase text-emerald-400 font-black tracking-widest mt-0.5">🟢 HOJE</p>
+                                    </div>
+                                    <span class="text-[7px] font-black text-white bg-slate-800 px-1.5 py-1 rounded border border-slate-600">19:30</span>
                                 </div>
-                                <button class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest cursor-default">📍 Check-in</button>
+                                <button class="w-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 py-1.5 rounded-md text-[7px] font-black uppercase tracking-widest shadow-sm">📍 Fazer Check-in</button>
                             </div>
                         </div>
 
-                        <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center mt-auto mb-2">
-                            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm mb-2">💳</div>
-                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Mensalidade</p>
-                            <p class="text-xl font-black text-white mb-1">R$ 150,00</p>
-                            <button class="w-full bg-cyan-500 text-white py-2 rounded-lg text-[9px] font-black uppercase tracking-widest mt-1 cursor-default">Realizar Pagamento</button>
+                        <div class="grid grid-cols-2 gap-3 flex-1 mt-1">
+                            <div class="bg-slate-800/50 rounded-xl p-2 border border-slate-700/50 flex flex-col">
+                                <h3 class="text-[7px] font-black text-amber-400 uppercase tracking-widest mb-2 flex items-center gap-1 border-b border-slate-700/50 pb-1">
+                                    <span>📢</span> Avisos
+                                </h3>
+                                <div class="bg-slate-900/50 p-2 rounded-lg border border-rose-500/30">
+                                    <p class="text-[7px] font-black text-white uppercase flex items-center gap-1"><span class="text-rose-400">🚨</span> Seminário</p>
+                                    <p class="text-[6px] text-slate-400 mt-1 leading-tight">Sábado de manhã com Mestre De La Riva.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-amber-900/10 rounded-xl p-2 border-b-2 border-amber-500 flex flex-col justify-center items-center text-center">
+                                <div class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-[10px] mb-1.5 border border-amber-500/50">⏳</div>
+                                <p class="text-[6px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Mensalidade</p>
+                                <p class="text-[12px] font-black text-white mb-1">R$ 150,00</p>
+                                <span class="text-[6px] font-bold text-amber-300 uppercase tracking-widest bg-amber-900/60 border border-amber-500/30 px-1.5 py-0.5 rounded">Vence: 10/11</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="h-14 bg-slate-900 border-t border-slate-800 flex justify-around items-center px-2 z-20 shrink-0">
-                        <div class="flex flex-col items-center text-cyan-400"><i class="fas fa-home text-sm mb-0.5"></i><span class="text-[6px] font-black uppercase tracking-wider">Início</span></div>
-                        <div class="flex flex-col items-center text-slate-500"><i class="fas fa-id-card text-sm mb-0.5"></i><span class="text-[6px] font-bold uppercase tracking-wider">Cartão</span></div>
-                        <div class="flex flex-col items-center text-slate-500"><i class="fas fa-shopping-cart text-sm mb-0.5"></i><span class="text-[6px] font-bold uppercase tracking-wider">Loja</span></div>
-                        <div class="flex flex-col items-center text-slate-500"><i class="fas fa-user-cog text-sm mb-0.5"></i><span class="text-[6px] font-bold uppercase tracking-wider">Perfil</span></div>
+                    <div class="h-12 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around items-center px-1 pb-1 z-20 shrink-0">
+                        <div class="flex flex-col items-center text-cyan-400"><span class="text-sm mb-0.5 drop-shadow-[0_0_5px_rgba(6,182,212,0.8)] scale-110">🏠</span><span class="text-[5px] font-black uppercase tracking-wider">Início</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><span class="text-sm mb-0.5 grayscale">🪪</span><span class="text-[5px] font-bold uppercase tracking-wider">Cartão</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><span class="text-sm mb-0.5 grayscale">💰</span><span class="text-[5px] font-bold uppercase tracking-wider">Faturas</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><span class="text-sm mb-0.5 grayscale">🛒</span><span class="text-[5px] font-bold uppercase tracking-wider">Loja</span></div>
+                        <div class="flex flex-col items-center text-slate-500"><span class="text-sm mb-0.5 grayscale">⚙️</span><span class="text-[5px] font-bold uppercase tracking-wider">Perfil</span></div>
                     </div>
                 </div>
             </div>
