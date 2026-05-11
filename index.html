@@ -576,7 +576,7 @@
             }
         };
 
-        // 🔥 NOVA FUNÇÃO: Entrar na conta de Aluno (Portal do Atleta)
+        // 🔥 NOVA FUNÇÃO: Entrar na conta de Aluno (Portal do Atleta) com Credenciais Reais
         window.entrarDemoPortal = async function() {
             const btn = event.currentTarget;
             const txtOriginal = btn.innerHTML;
@@ -585,8 +585,8 @@
 
             try {
                 // Como o login do aluno não usa o Auth oficial, buscamos no banco igual ao login real
-                const emailAluno = "aluno@teste.com"; // Email de um aluno que está dentro da equipe bjjmanager@teste.com.br
-                const senhaAluno = "teste123";
+                const emailAluno = "alunoteste1@gmail.com";
+                const senhaAluno = "aluno01";
                 
                 const q = query(collection(db, "alunos"), where("email", "==", emailAluno), where("senha_portal", "==", senhaAluno));
                 const snap = await getDocs(q);
@@ -600,7 +600,7 @@
                     localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
                     window.location.href = "portal_aluno.html";
                 } else {
-                    alert("A conta do Aluno de Teste não foi encontrada. O professor da conta demo precisa cadastrar um aluno com email aluno@teste.com e senha teste123.");
+                    alert("A conta do Aluno de Teste não foi encontrada no banco de dados. Cadastre o email alunoteste1@gmail.com com a senha aluno01.");
                     btn.innerHTML = txtOriginal;
                     btn.disabled = false;
                 }
