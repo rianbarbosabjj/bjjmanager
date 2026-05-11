@@ -772,13 +772,16 @@
                 const snap = await getDocs(q);
                 
                 if (snap.empty) { 
-                    showToast("E-mail ou senha incorretos."); 
-                    btn.disabled = false; btn.innerHTML = "Entrar no Tatame"; 
+                    showToast("E-mail ou senha incorretos.", "error"); 
+                    btn.disabled = false; btn.innerHTML = "Entrar no Portal"; 
+                    return;
                 } 
-                else {
-                    const alunoDoc = snap.docs[0].data();
-                    
-                    // 🛑 TRAVA DO PLANO BÁSICO: Verifica a equipe ANTES de deixar o aluno logar
+
+                const alunoDoc = snap.docs[0].data();
+                const alunoId = snap.docs[0].id;
+                
+                // 🛑 TRAVA DO PLANO BÁSICO COM TRY/CATCH ISOLADO
+                try {
                     const equipeDoc = await getDoc(doc(db, "equipes", alunoDoc.equipe_id));
                     if (equipeDoc.exists()) {
                         const eqData = equipeDoc.data();
@@ -788,20 +791,32 @@
 
                         if (!isIsento && planosBasicos.includes(statusAtual.toUpperCase().trim())) {
                             btn.disabled = false; 
-                            btn.innerHTML = "Entrar no Tatame";
-                            return showToast("⚠️ Acesso Indisponível. A sua academia ainda não ativou os recursos digitais do Portal do Aluno. Consulte o seu professor.");
+                            btn.innerHTML = "Entrar no Portal";
+                            return showToast("⚠️ Acesso Indisponível. A sua academia precisa fazer o upgrade do sistema para liberar o Portal do Aluno.");
                         }
                     }
-
-                    // Se a equipe tem permissão, faz o login!
-                    alunoLogado = { id: snap.docs[0].id, ...alunoDoc };
-                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
-                    iniciarPortal();
+                } catch (erroEquipe) {
+                    console.log("Aviso: Não foi possível validar o plano da equipe agora, liberando acesso provisório.", erroEquipe);
                 }
+
+                // Se chegou até aqui (passou ou falhou na equipe), faz o login!
+                alunoLogado = { id: alunoId, ...alunoDoc };
+                localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                showToast("Acesso liberado! Oss!", "success");
+                iniciarPortal();
+                
             } catch (error) { 
-                console.error("ERRO LOGIN:", error);
-                showToast("Erro de comunicação com o servidor."); 
-                btn.disabled = false; btn.innerHTML = "Entrar no Tatame"; 
+                console.error("ERRO CRÍTICO LOGIN:", error);
+                
+                if(error.code === 'permission-denied') {
+                    showToast("Sem permissão para acessar o banco de dados.", "error");
+                } else if(error.message && error.message.includes('network')) {
+                    showToast("Sem conexão com a internet.", "error");
+                } else {
+                    showToast("🚨 Erro de comunicação. Tente novamente.", "error"); 
+                }
+                
+                btn.disabled = false; btn.innerHTML = "Entrar no Portal"; 
             }
         }
         window.sairDoPortal = function() { localStorage.removeItem('bjj_aluno_auth'); window.location.reload(); }
@@ -1271,15 +1286,7 @@
             atualizarWidgetMensalidade();
         }
 
-        window.copiarPixAluno = function(chave) {
-            navigator.clipboard.writeText(chave).then(() => {
-                showToast("Chave PIX copiada! Abra o app do seu banco para pagar.", "success");
-            }).catch(err => {
-                showToast("Erro ao copiar a chave.", "error");
-            });
-        }
-        
-window.abrirPagamento = async function(faturaId) {
+        window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
             
             // 🛑 LÓGICA DE PLANO (Mesma verificação de cima)
@@ -1320,13 +1327,6 @@ window.abrirPagamento = async function(faturaId) {
         }
         window.fecharModalPix = function() { 
             document.getElementById('modal-pix').classList.add('hidden'); document.getElementById('modal-pix').classList.remove('flex');
-        }
-        window.copiarPixAluno = function(chave) {
-            navigator.clipboard.writeText(chave).then(() => {
-                showToast("Chave PIX copiada! Abra o app do seu banco para pagar.", "success");
-            }).catch(err => {
-                showToast("Erro ao copiar a chave.", "error");
-            });
         }
 
         function atualizarWidgetMensalidade() {
@@ -1460,26 +1460,22 @@ window.abrirPagamento = async function(faturaId) {
             }
         }
 
-window.comprarProdutoViaAsaas = async function(produtoId) {
+        window.comprarProdutoViaAsaas = async function(produtoId) {
             const p = produtosCache.find(x => x.id === produtoId);
             if(!p) return showToast("Produto não encontrado.", "error");
 
-            // Busca o WhatsApp da Loja configurado pela Equipe (ou o telefone principal como backup)
             const zapLoja = equipeDados.whatsapp_loja || equipeDados.telefone_whatsapp || equipeDados.celular || '';
             
             if(!zapLoja) {
                 return showToast("A academia não configurou o WhatsApp de atendimento da loja.", "error");
             }
             
-            // Limpa o número para deixar só os dígitos
             const numeroLimpo = zapLoja.replace(/\D/g, '');
             
             const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.',',');
             
-            // Monta a mensagem inteligente
             const msg = encodeURIComponent(`Olá, Oss! Sou o aluno(a) *${alunoLogado.nome}*.\nGostaria de encomendar o produto: *${p.nome}* no valor de R$ ${precoFormatado}.\nComo podemos efetuar o pagamento e combinar a entrega?`);
             
-            // Abre o WhatsApp direto
             window.open(`https://wa.me/55${numeroLimpo}?text=${msg}`, '_blank');
         };
 
@@ -1556,7 +1552,6 @@ window.comprarProdutoViaAsaas = async function(produtoId) {
                         const av = doc.data();
                         if (av.status === 'inativo') return;
                         
-                        // LÓGICA DE EXPIRAÇÃO: Vai até às 23:59:59 do dia escolhido
                         if (av.data_expiracao) {
                             const dataFimAviso = av.data_expiracao.split('T')[0] + "T23:59:59Z";
                             if (dataFimAviso < hojeIso) return; 
