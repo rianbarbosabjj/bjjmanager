@@ -189,7 +189,7 @@ function carregarMenu() {
                         ${cacheLogoHTML}
                     </div>
                     <h1 class="text-xs font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
-                    <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-2 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20">Portal da Academia</p>
+                    <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-2 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20">BJJ MANAGER</p>
                 </div>
                 
                 <nav class="flex-1 py-4 space-y-1 overflow-y-auto custom-scroll flex flex-col">
