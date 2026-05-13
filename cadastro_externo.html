@@ -76,7 +76,7 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data de Nascimento *</label>
-                            <input type="date" id="cad-nasc" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            <input type="date" id="cad-nasc" onchange="verificarIdade()" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faixa Atual</label>
@@ -208,20 +208,51 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <div id="alerta-idade" class="bg-cyan-50 border border-cyan-200 rounded-3xl p-6 text-center shadow-sm">
+                    <span class="text-2xl mb-2 block">📅</span>
+                    <p class="text-sm font-black text-cyan-800 uppercase tracking-widest">Atenção</p>
+                    <p class="text-xs text-cyan-700 mt-1 font-medium">Preencha sua Data de Nascimento acima para liberar a seção de contato de segurança.</p>
+                </div>
+
+                <div id="bloco-responsavel" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 hidden">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">👪</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores)</span></h3>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-rose-500 font-bold ml-2 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Atleta Menor de Idade</span></h3>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável *</label>
                             <input type="text" id="cad-resp-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Nome da mãe, pai ou tutor...">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável *</label>
                             <input type="text" id="cad-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Telefone do Responsável *</label>
+                            <input type="text" id="cad-resp-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bloco-emergencia" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 hidden">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">🚨</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato de Emergência</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="md:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Contato *</label>
+                            <input type="text" id="cad-emerg-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Quem devemos avisar?">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Telefone / WhatsApp *</label>
+                            <input type="text" id="cad-emerg-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau de Parentesco *</label>
+                            <input type="text" id="cad-emerg-parentesco" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Mãe, Cônjuge, Irmão...">
                         </div>
                     </div>
                 </div>
@@ -435,6 +466,7 @@
         let ficheiroFotoSelecionado = null;
         let quantidadeAlunosAtual = 0;
         let uid = null;
+        let idadeAtual = 0; // Guardar a idade para validação na hora de salvar
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -449,6 +481,43 @@
                 toast.classList.add('translate-x-full', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 4500);
+        }
+
+        // 🔥 NOVA FUNÇÃO: Verificar Idade ao preencher a data de nascimento
+        window.verificarIdade = function() {
+            const nasc = document.getElementById('cad-nasc').value;
+            const alertaIdade = document.getElementById('alerta-idade');
+            const blocoResp = document.getElementById('bloco-responsavel');
+            const blocoEmerg = document.getElementById('bloco-emergencia');
+            
+            if (!nasc) {
+                alertaIdade.classList.remove('hidden');
+                blocoResp.classList.add('hidden');
+                blocoEmerg.classList.add('hidden');
+                return;
+            }
+
+            // Esconder o alerta inicial
+            alertaIdade.classList.add('hidden');
+
+            const hoje = new Date();
+            const dataNascimento = new Date(nasc);
+            idadeAtual = hoje.getFullYear() - dataNascimento.getFullYear();
+            const mes = hoje.getMonth() - dataNascimento.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
+                idadeAtual--;
+            }
+
+            if (idadeAtual < 18) {
+                // Menor de Idade -> Responsável Legal
+                blocoResp.classList.remove('hidden');
+                blocoEmerg.classList.add('hidden');
+            } else {
+                // Maior de Idade -> Contato de Emergência
+                blocoResp.classList.add('hidden');
+                blocoEmerg.classList.remove('hidden');
+            }
         }
 
         window.toggleSenha = function(inputId, btnElement) {
@@ -599,6 +668,31 @@
                 return showToast("É obrigatório concordar com os termos no final.", "error");
             }
 
+            // Lógica do Contato de Emergência ou Responsável Legal
+            let nomeResponsavel = '';
+            let cpfResponsavel = '';
+            let telResponsavel = '';
+            
+            let nomeEmergencia = '';
+            let telEmergencia = '';
+            let parentescoEmergencia = '';
+
+            if (idadeAtual < 18) {
+                nomeResponsavel = document.getElementById('cad-resp-nome').value.toUpperCase().trim();
+                cpfResponsavel = document.getElementById('cad-resp-cpf').value.trim();
+                telResponsavel = document.getElementById('cad-resp-tel').value.trim();
+                if (!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
+                    return showToast("Preencha todos os dados do Responsável Legal.", "error");
+                }
+            } else {
+                nomeEmergencia = document.getElementById('cad-emerg-nome').value.toUpperCase().trim();
+                telEmergencia = document.getElementById('cad-emerg-tel').value.trim();
+                parentescoEmergencia = document.getElementById('cad-emerg-parentesco').value.trim();
+                if (!nomeEmergencia || !telEmergencia || !parentescoEmergencia) {
+                    return showToast("Preencha todos os dados do Contato de Emergência.", "error");
+                }
+            }
+
             const anoAtual = new Date().getFullYear();
             const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000;
             const novaMatriculaStr = anoAtual.toString() + numeroAleatorio.toString();
@@ -651,8 +745,15 @@
                     bairro: document.getElementById('cad-bairro').value.trim(),
                     cidade: document.getElementById('cad-cidade').value.trim(),
                     uf: document.getElementById('cad-uf').value,
-                    nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
-                    cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                    
+                    // Salvando Responsável ou Contato Emergência
+                    nome_responsavel: nomeResponsavel,
+                    cpf_responsavel: cpfResponsavel,
+                    telefone_responsavel: telResponsavel,
+                    emergencia_nome: nomeEmergencia,
+                    emergencia_telefone: telEmergencia,
+                    emergencia_parentesco: parentescoEmergencia,
+
                     status: "ATIVO",
                     bolsa_perc: 0,
                     dia_vencimento: 10,
@@ -676,7 +777,7 @@
                         ${fotoErro ? '<p class="text-rose-500 font-bold mt-3 text-xs bg-rose-100 p-2 rounded-lg">Nota: Não foi possível salvar a foto. Tente enviar depois.</p>' : ''}
                         
                         <div class="mt-8 bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm w-full max-w-md">
-                            <p class="text-sm text-slate-500 font-medium mb-5">O seu cadastro foi ativado. Utilize o seu <b>E-mail e Senha</b> para acessar suas informações no Portal do Aluno..</p>
+                            <p class="text-sm text-slate-500 font-medium mb-5">O seu cadastro foi ativado. Utilize o seu <b>E-mail e Senha</b> para acessar suas informações no Portal do Aluno.</p>
                             
                             <a href="portal_aluno.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center gap-2">
                                 <span class="text-xl">📲</span> ACESSAR PORTAL DO ALUNO
