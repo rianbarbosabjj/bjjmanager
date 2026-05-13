@@ -1173,7 +1173,7 @@
 
         window.abrirEImprimirPVC = function() {
             if (!window.verificarAcesso('carteirinha')) return;
-window.abrirModalCarteirinha = function() {
+        window.abrirModalCarteirinha = function() {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno) return;
 
@@ -1237,16 +1237,13 @@ window.abrirModalCarteirinha = function() {
                 fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase();
             }
 
-            // 🛑 LÓGICA DO QR CODE ATUALIZADA (IGUAL AO PORTAL DO ALUNO)
+            // 🛑 LÓGICA DO QR CODE ATUALIZADA - LIMPANDO O CÓDIGO ANTIGO
             const qrCodeImg = document.getElementById('cart-qr-code');
             const urlValidacao = window.location.origin + '/validar.html?mat=' + (aluno.matricula || '');
-            
-            // Usando a API para gerar uma imagem estática de alta qualidade
             qrCodeImg.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlValidacao)}&bgcolor=ffffff&color=000000" class="w-full h-full object-contain" crossorigin="anonymous">`;
 
             document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
         }
-
         window.abrirFichaAluno = (id) => {
             const a = todosAlunosCache.find(x => x.id === id);
             if(!a) return;
