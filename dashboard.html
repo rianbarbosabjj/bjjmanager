@@ -1287,7 +1287,7 @@
             return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
-async function carregarDashboard() {
+        async function carregarDashboard() {
             try {
                 const turmasQuery = query(collection(db, "turmas"), where("equipe_id", "==", uid));
                 const turmasSnap = await getDocs(turmasQuery);
@@ -1380,52 +1380,53 @@ async function carregarDashboard() {
                             turmasMap[nomeTurma].push({ nome: aluno.nome || 'Aluno', faixa: faixa });
                         });
 
-                        // 🔥 CORREÇÃO: ATENÇÃO FINANCEIRA - Só exibe se houver fatura gerada para este mês!
+                        // 🔥 CORREÇÃO: Exibe a fatura gerada SEMPRE, independentemente de faltar mais ou menos de 10 dias.
                         const statusFaturaObj = faturasDoMes[alunoId]; 
                         
                         if (statusFaturaObj) {
                             const statusFatura = statusFaturaObj.status;
-                            let isAlerta = false, msgAlerta = '', tema = 'rose'; 
+                            let msgAlerta = '', tema = 'amber'; 
                             
-                            // Se a fatura existir e não estiver PAGA ou ISENTA, calcula o atraso
+                            // Só entra aqui se não estiver paga nem isenta
                             if (statusFatura === 'PENDENTE' || statusFatura === 'ATRASADO') {
                                 const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
                                 
+                                // Define a mensagem e a cor (Atrasado ou Pendente)
                                 if (diaVenc < diaHoje) { 
-                                    isAlerta = true; 
                                     msgAlerta = `Atrasado desde dia ${diaVenc}`; 
                                     tema = 'rose'; 
-                                } else if (diaVenc >= diaHoje && diaVenc <= diaHoje + 10) { 
-                                    isAlerta = true; 
+                                } else { 
                                     msgAlerta = diaVenc === diaHoje ? `Vence HOJE` : `Vence dia ${diaVenc}`; 
                                     tema = 'amber'; 
                                 }
 
-                                if (isAlerta) {
-                                    const valorDaDivida = statusFaturaObj.valor || 0;
+                                const valorDaDivida = statusFaturaObj.valor || 0;
+                                
+                                // Só soma no "Caixa Atrasado" lá do topo se realmente estiver atrasado (tema rose)
+                                if (tema === 'rose') {
                                     valorAtrasado += valorDaDivida; 
-
-                                    const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
-                                    const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
-                                    const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
-                                    const cssTextDark = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
-                                    const idSafe = `'${statusFaturaObj.id}'`;
-
-                                    pendenciasHTML += `
-                                        <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm">
-                                            <div class="flex-1 overflow-hidden pr-2">
-                                                <p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p>
-                                                <p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
-                                            </div>
-                                            <div class="flex items-center gap-2 shrink-0">
-                                                <span class="text-xs font-black ${cssTextDark}">${valorDaDivida > 0 ? 'R$ ' + valorDaDivida.toFixed(2).replace('.', ',') : '-'}</span>
-                                                <button onclick="pagamentoRapido('${alunoId}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, ${idSafe})" class="bg-white hover:bg-emerald-100 text-emerald-500 border border-emerald-200 p-1.5 rounded-lg transition-colors flex items-center justify-center shadow-sm">
-                                                    ✅
-                                                </button>
-                                            </div>
-                                        </div>
-                                    `;
                                 }
+
+                                const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
+                                const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
+                                const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
+                                const cssTextDark = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
+                                const idSafe = `'${statusFaturaObj.id}'`;
+
+                                pendenciasHTML += `
+                                    <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm">
+                                        <div class="flex-1 overflow-hidden pr-2">
+                                            <p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p>
+                                            <p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="text-xs font-black ${cssTextDark}">${valorDaDivida > 0 ? 'R$ ' + valorDaDivida.toFixed(2).replace('.', ',') : '-'}</span>
+                                            <button onclick="pagamentoRapido('${alunoId}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, ${idSafe})" class="bg-white hover:bg-emerald-100 text-emerald-500 border border-emerald-200 p-1.5 rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Confirmar Pagamento">
+                                                ✅
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
                             }
                         }
                     }
