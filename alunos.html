@@ -1173,9 +1173,78 @@
 
         window.abrirEImprimirPVC = function() {
             if (!window.verificarAcesso('carteirinha')) return;
-            window.abrirModalCarteirinha();
-            showToast("Preparando cartão para impressão em PVC...", "info");
-            setTimeout(() => { window.print(); }, 1000);
+window.abrirModalCarteirinha = function() {
+            const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
+            if (!aluno) return;
+
+            document.getElementById('cart-equipe-nome').innerText = equipeDados.nome.toUpperCase();
+            
+            const logoEquipe = document.getElementById('cart-equipe-logo');
+            const fallbackEquipe = document.getElementById('cart-equipe-fallback');
+            if (equipeDados.logo) {
+                logoEquipe.src = equipeDados.logo;
+                logoEquipe.classList.remove('hidden');
+                fallbackEquipe.classList.add('hidden');
+            } else {
+                logoEquipe.classList.add('hidden');
+                fallbackEquipe.classList.remove('hidden');
+                fallbackEquipe.innerText = equipeDados.nome.charAt(0).toUpperCase();
+            }
+
+            const watermark = document.getElementById('cart-equipe-watermark');
+            const watermarkFallback = document.getElementById('cart-equipe-watermark-fallback');
+            if (equipeDados.logo) {
+                watermark.src = equipeDados.logo;
+                watermark.classList.remove('hidden');
+                watermarkFallback.classList.add('hidden');
+            } else {
+                watermark.classList.add('hidden');
+                watermarkFallback.classList.remove('hidden');
+                watermarkFallback.innerText = equipeDados.nome.charAt(0).toUpperCase();
+            }
+
+            document.getElementById('cart-aluno-nome-txt').innerText = aluno.nome;
+            document.getElementById('cart-aluno-matricula-txt').innerText = aluno.matricula || 'S/N';
+            
+            const faixaTexto = `${aluno.faixa || 'Branca'} ${aluno.grau && aluno.grau !== 'Sem grau' ? aluno.grau : ''}`.trim();
+            document.getElementById('cart-aluno-faixa-texto').innerText = faixaTexto;
+            
+            const corFaixa = getCorFaixaDupla(aluno.faixa);
+            document.getElementById('cart-faixa-border').style.background = corFaixa;
+            if (aluno.faixa && (aluno.faixa.toLowerCase().includes('branca') || aluno.faixa.toLowerCase().includes('amarela'))) {
+                document.getElementById('cart-faixa-border').style.borderRight = '1px solid #cbd5e1';
+            }
+
+            if (aluno.data_nascimento) {
+                const partes = aluno.data_nascimento.split('-');
+                if (partes.length === 3) {
+                    document.getElementById('cart-aluno-nascimento-txt').innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                }
+            }
+
+            const anoAtual = new Date().getFullYear();
+            document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
+
+            const fotoModal = document.getElementById('cart-aluno-foto-modal');
+            const fotoFallback = document.getElementById('cart-aluno-foto-fallback-modal');
+            if (aluno.foto_url) {
+                fotoModal.src = aluno.foto_url;
+                fotoModal.classList.remove('hidden');
+                fotoFallback.classList.add('hidden');
+            } else {
+                fotoModal.classList.add('hidden');
+                fotoFallback.classList.remove('hidden');
+                fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase();
+            }
+
+            // 🛑 LÓGICA DO QR CODE ATUALIZADA (IGUAL AO PORTAL DO ALUNO)
+            const qrCodeImg = document.getElementById('cart-qr-code');
+            const urlValidacao = window.location.origin + '/validar.html?mat=' + (aluno.matricula || '');
+            
+            // Usando a API para gerar uma imagem estática de alta qualidade
+            qrCodeImg.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlValidacao)}&bgcolor=ffffff&color=000000" class="w-full h-full object-contain" crossorigin="anonymous">`;
+
+            document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
         }
 
         window.abrirFichaAluno = (id) => {
