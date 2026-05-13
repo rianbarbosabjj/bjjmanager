@@ -318,11 +318,12 @@
                 </div>
             </section>
 
-            <section id="aba-curriculo" class="aluno-secao hidden transition-opacity duration-300 space-y-4">
+<section id="aba-curriculo" class="aluno-secao hidden transition-opacity duration-300 space-y-4">
                 
-                <div class="flex p-1 bg-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-md">
-                    <button id="btn-tab-conq" onclick="switchCurriculoTab('conq')" class="flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all">Conquistas</button>
-                    <button id="btn-tab-freq" onclick="switchCurriculoTab('freq')" class="flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all">Frequência</button>
+                <div class="flex p-1 bg-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-md overflow-x-auto hide-scrollbar">
+                    <button id="btn-tab-conq" onclick="switchCurriculoTab('conq')" class="flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all whitespace-nowrap">Conquistas</button>
+                    <button id="btn-tab-freq" onclick="switchCurriculoTab('freq')" class="flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all whitespace-nowrap">Frequência</button>
+                    <button id="btn-tab-fed" onclick="switchCurriculoTab('fed')" class="flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all whitespace-nowrap">Federações</button>
                 </div>
 
                 <div id="tab-curriculo-conq" class="space-y-6 block">
@@ -365,8 +366,75 @@
                     </div>
                 </div>
 
-            </section>
+                <div id="tab-curriculo-fed" class="space-y-6 hidden">
+                    
+                    <div class="card-premium p-5 md:p-6 flex flex-col h-fit">
+                        <div class="flex items-center justify-between gap-2 mb-4 md:mb-6 border-b border-slate-700/50 pb-3 md:pb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">🪪</span>
+                                <h3 class="font-black text-white uppercase tracking-widest text-sm" id="titulo-form-fed">Registrar Filiação</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Federação / Órgão</label>
+                                <select id="fed-nome" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl font-bold text-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="CBJJ/IBJJF">CBJJ/IBJJF</option>
+                                    <option value="CBJJD">CBJJD</option>
+                                    <option value="CBJJO">CBJJO</option>
+                                    <option value="FJJRio">FJJRio</option>
+                                    <option value="SJJSAF">SJJSAF</option>
+                                    <option value="UAEJJF/AJP">UAEJJF/AJP</option>
+                                    <option value="[P]BJJF">[P]BJJF</option>
+                                    <option value="Outra">Outra</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Nº Registo Oficial</label>
+                                <input type="text" id="fed-registro" placeholder="Ex: 123456" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-white font-bold">
+                            </div>
 
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Data de Vencimento</label>
+                                    <input type="date" id="fed-vencimento" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-300 font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Status Atual</label>
+                                    <select id="fed-status" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl font-bold text-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                        <option value="Ativo">Ativo</option>
+                                        <option value="Pendente">Pendente</option>
+                                        <option value="Vencido">Vencido</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="cancelarEdicaoFed()" id="btn-cancelar-fed" class="hidden flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 px-4 rounded-xl transition-all text-xs">
+                                    Cancelar
+                                </button>
+                                <button onclick="salvarFederacao()" id="btn-salvar-fed" class="flex-[2] bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3.5 px-4 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                                    <span class="mr-2">💾</span> Salvar Filiação
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-premium p-5 md:p-6 flex flex-col h-full min-h-[250px] overflow-hidden">
+                        <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-700/50 pb-3 md:pb-4 shrink-0">
+                            <span class="text-xl">📋</span>
+                            <h3 class="font-black text-white uppercase tracking-widest text-sm">Minhas Filiações</h3>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto pr-2 hide-scrollbar space-y-3" id="lista-federacoes-aluno">
+                            <div class="text-center text-sm text-slate-500 mt-10">Nenhuma filiação encontrada.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
             <section id="aba-financeiro" class="aluno-secao hidden transition-opacity duration-300">
                 <div class="card-premium overflow-hidden">
                     <div class="p-4 border-b border-slate-700/50 bg-slate-800/80 flex justify-between items-center">
