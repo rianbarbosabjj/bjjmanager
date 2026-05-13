@@ -445,7 +445,72 @@
                     </div>
                 </div>
             </section>
+<section id="aba-federacoes" class="aluno-secao hidden transition-opacity duration-300 space-y-6">
+                <div class="card-premium p-5 md:p-8 flex flex-col h-fit">
+                    <div class="flex items-center justify-between gap-2 mb-4 md:mb-6 border-b border-slate-700/50 pb-3 md:pb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🪪</span>
+                            <h3 class="font-black text-white uppercase tracking-widest text-sm" id="titulo-form-fed">Registrar Filiação</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Federação / Órgão</label>
+                            <select id="fed-nome" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl font-bold text-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option value="CBJJ/IBJJF">CBJJ/IBJJF</option>
+                                <option value="CBJJD">CBJJD</option>
+                                <option value="CBJJO">CBJJO</option>
+                                <option value="FJJRio">FJJRio</option>
+                                <option value="SJJSAF">SJJSAF</option>
+                                <option value="UAEJJF/AJP">UAEJJF/AJP</option>
+                                <option value="[P]BJJF">[P]BJJF</option>
+                                <option value="Outra">Outra</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Nº Registro Oficial</label>
+                            <input type="text" id="fed-registro" placeholder="Ex: 123456" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl outline-none focus:border-cyan-500 transition-all text-white font-bold">
+                        </div>
 
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Data de Vencimento</label>
+                                <input type="date" id="fed-vencimento" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-300 font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Status Atual</label>
+                                <select id="fed-status" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl font-bold text-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Pendente">Pendente</option>
+                                    <option value="Vencido">Vencido</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="cancelarEdicaoFedAluno()" id="btn-cancelar-fed" class="hidden flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 px-4 rounded-xl transition-all text-xs">
+                                Cancelar
+                            </button>
+                            <button onclick="salvarFederacaoAluno()" id="btn-salvar-fed" class="flex-[2] bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3.5 px-4 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                                <span class="mr-2">💾</span> Salvar Filiação
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-premium p-5 md:p-8 flex flex-col h-full min-h-[250px] overflow-hidden">
+                    <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-700/50 pb-3 md:pb-4 shrink-0">
+                        <span class="text-xl">📋</span>
+                        <h3 class="font-black text-white uppercase tracking-widest text-sm">Minhas Filiações</h3>
+                    </div>
+                    <div class="flex-1 overflow-y-auto pr-2 hide-scrollbar space-y-3" id="lista-federacoes-aluno">
+                        <div class="text-center text-sm text-slate-500 mt-10">Buscando filiações...</div>
+                    </div>
+                </div>
+            </section>
+            
             <section id="aba-dados" class="aluno-secao hidden transition-opacity duration-300">
                 <div class="card-premium p-6 sm:p-8 space-y-6">
                     <div class="flex flex-col items-center justify-center pb-6 border-b border-slate-700/50">
@@ -558,30 +623,34 @@
             </section>
         </main>
 
-        <nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-1 pt-2 pb-safe z-40">
-            <button onclick="mudarAbaAluno('aba-inicio')" id="nav-aba-inicio" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-cyan-400 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🏠</span>
-                <span class="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-center">Início</span>
+<nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-1 pt-2 pb-safe z-40 overflow-x-auto hide-scrollbar">
+            <button onclick="mudarAbaAluno('aba-inicio')" id="nav-aba-inicio" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-cyan-400 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🏠</span>
+                <span class="text-[7px] sm:text-[8px] font-black uppercase tracking-wider text-center">Início</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🪪</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Carteirinha</span>
+            <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 grayscale transition-all">🪪</span>
+                <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-wider text-center">Cartão</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">💰</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Mensalidades</span>
+            <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 grayscale transition-all">💰</span>
+                <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-wider text-center">Faturas</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-loja')" id="nav-aba-loja" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🛒</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Loja Virtual</span>
+            <button onclick="mudarAbaAluno('aba-federacoes')" id="nav-aba-federacoes" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 grayscale transition-all">🎖️</span>
+                <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-wider text-center">Federações</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-curriculo')" id="nav-aba-curriculo" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">📜</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Histórico</span>
+            <button onclick="mudarAbaAluno('aba-loja')" id="nav-aba-loja" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 grayscale transition-all">🛒</span>
+                <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-wider text-center">Loja</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-dados')" id="nav-aba-dados" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">⚙️</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Perfil</span>
+            <button onclick="mudarAbaAluno('aba-curriculo')" id="nav-aba-curriculo" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 grayscale transition-all">📜</span>
+                <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-wider text-center">Histórico</span>
+            </button>
+            <button onclick="mudarAbaAluno('aba-dados')" id="nav-aba-dados" class="nav-btn flex-1 min-w-[60px] flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-lg sm:text-xl mb-1 grayscale transition-all">⚙️</span>
+                <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-wider text-center">Perfil</span>
             </button>
         </nav>
     </div>
@@ -719,9 +788,9 @@
         </div>
     </div>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -744,6 +813,8 @@
         let faturasCache = []; 
         let produtosCache = [];
         let checkinsGlobalCache = [];
+        let federacoesAlunoCache = [];
+        let federacaoAlunoEditandoId = null;
 
         // 🧹 LIMPANDO O CACHE ANTIGO PARA DESBLOQUEAR O CELULAR DOS ALUNOS
         if ('serviceWorker' in navigator) {
@@ -921,6 +992,7 @@
             if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades."; }
             if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória: graduações e medalhas."; buscarCurriculoAluno(); }
             if(idAba === 'aba-dados') { subtitulo.innerText = "Mantenha o seu cadastro atualizado."; preencherFormularioDados(); }
+            if(idAba === 'aba-federacoes') { subtitulo.innerText = "Sua documentação esportiva oficial."; carregarFederacoesAluno(); }
         }
 
         window.switchCurriculoTab = function(tab) {
@@ -935,16 +1007,16 @@
                 tabConq.classList.add('hidden');
                 tabConq.classList.remove('block');
 
-                btnFreq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all";
-                btnConq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all";
+                btnFreq.className = "flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all whitespace-nowrap";
+                btnConq.className = "flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all whitespace-nowrap";
             } else {
                 tabConq.classList.remove('hidden');
                 tabConq.classList.add('block');
                 tabFreq.classList.add('hidden');
                 tabFreq.classList.remove('block');
 
-                btnConq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all";
-                btnFreq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all";
+                btnConq.className = "flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all whitespace-nowrap";
+                btnFreq.className = "flex-1 py-2.5 px-3 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all whitespace-nowrap";
             }
         }
 
@@ -1940,6 +2012,137 @@
         }
 
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth'); if(sessaoSalva) { alunoLogado = JSON.parse(sessaoSalva); iniciarPortal(); }
+
+        // --- FUNÇÕES DA ABA FEDERAÇÕES ---
+        async function carregarFederacoesAluno() {
+            const container = document.getElementById('lista-federacoes-aluno');
+            container.innerHTML = '<div class="text-center text-slate-500 mt-5 text-sm">Carregando...</div>';
+            try {
+                const q = query(collection(db, "federacoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
+                const snap = await getDocs(q);
+                federacoesAlunoCache = [];
+                snap.forEach(doc => { federacoesAlunoCache.push({ id: doc.id, ...doc.data() }); });
+                
+                if (federacoesAlunoCache.length === 0) {
+                    container.innerHTML = `<div class="text-center text-slate-500 mt-10">Nenhuma filiação registada. Adicione acima.</div>`;
+                    return;
+                }
+
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
+                let html = '';
+                federacoesAlunoCache.forEach(fed => {
+                    let dataBR = fed.data_vencimento || "--";
+                    if(fed.data_vencimento && fed.data_vencimento.includes('-')) {
+                        const p = fed.data_vencimento.split('-'); dataBR = `${p[2]}/${p[1]}/${p[0]}`;
+                    }
+
+                    let corFundo = "bg-slate-800/40 border-slate-700/50";
+                    let statusBadge = "bg-slate-700 text-slate-300 border-slate-600";
+                    let icone = "✅"; let statusReal = fed.status;
+
+                    if (fed.data_vencimento) {
+                        const dataVenc = new Date(fed.data_vencimento + "T00:00:00");
+                        const diffTime = dataVenc - hoje;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays < 0) { corFundo = "bg-rose-900/20 border-rose-500/30"; statusBadge = "bg-rose-500/20 text-rose-400 border-rose-500/30"; icone = "❌"; statusReal = "Vencido"; } 
+                        else if (diffDays <= 30) { corFundo = "bg-amber-900/20 border-amber-500/30"; statusBadge = "bg-amber-500/20 text-amber-400 border-amber-500/30"; icone = "⚠️"; } 
+                        else if (statusReal === 'Ativo') { corFundo = "bg-emerald-900/20 border-emerald-500/30"; statusBadge = "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"; }
+                    }
+                    if(statusReal === 'Pendente') { corFundo = "bg-slate-800/40 border-slate-700/50"; statusBadge = "bg-slate-700 text-slate-300 border-slate-600"; icone = "⏳"; }
+
+                    html += `
+                        <div class="flex items-center gap-3 p-4 rounded-xl border ${corFundo} mb-2 shadow-sm">
+                            <div class="text-2xl">${icone}</div>
+                            <div class="flex-1 overflow-hidden">
+                                <h4 class="font-black text-white text-xs truncate">${fed.nome_federacao}</h4>
+                                <p class="text-[9px] text-slate-400 font-bold mt-0.5">Registo: <span class="text-slate-300">${fed.numero_registro || 'N/A'}</span></p>
+                                <p class="text-[9px] text-slate-400 font-bold mt-0.5">Validade: <span class="text-slate-300">${dataBR}</span></p>
+                            </div>
+                            <div class="flex flex-col items-end gap-2 shrink-0">
+                                <span class="${statusBadge} px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest border">${statusReal}</span>
+                                <div class="flex gap-1 mt-1">
+                                    <button onclick="editarFederacaoAluno('${fed.id}')" class="text-[10px] bg-slate-800 border border-slate-600 px-2 py-1 rounded text-cyan-400 font-bold hover:bg-slate-700">✏️</button>
+                                    <button onclick="excluirFederacaoAluno('${fed.id}')" class="text-[10px] bg-slate-800 border border-slate-600 px-2 py-1 rounded text-rose-400 font-bold hover:bg-slate-700">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch(e) { container.innerHTML = `<div class="text-center text-rose-500 font-bold mt-5 text-sm">Erro ao buscar dados.</div>`; }
+        }
+
+        window.salvarFederacaoAluno = async function() {
+            const nome = document.getElementById('fed-nome').value;
+            const reg = document.getElementById('fed-registro').value;
+            const venc = document.getElementById('fed-vencimento').value;
+            const stat = document.getElementById('fed-status').value;
+
+            if (!nome) return showToast("A Federação é obrigatória!", "error");
+
+            const dadosFed = {
+                equipe_id: alunoLogado.equipe_id,
+                aluno_id: alunoLogado.id,
+                nome_federacao: nome,
+                numero_registro: reg,
+                data_vencimento: venc,
+                status: stat,
+                atualizado_em: new Date().toISOString()
+            };
+
+            const btn = document.getElementById('btn-salvar-fed');
+            btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
+
+            try {
+                if (federacaoAlunoEditandoId) {
+                    await updateDoc(doc(db, "federacoes", federacaoAlunoEditandoId), dadosFed);
+                    showToast("Filiação atualizada!", "success");
+                } else {
+                    await addDoc(collection(db, "federacoes"), dadosFed);
+                    showToast("Filiação registada!", "success");
+                }
+                cancelarEdicaoFedAluno();
+                carregarFederacoesAluno();
+            } catch (e) { showToast("Erro ao registar.", "error"); } finally {
+                btn.innerHTML = "<span class='mr-2'>💾</span> Salvar Filiação"; btn.disabled = false;
+            }
+        }
+
+        window.editarFederacaoAluno = function(id) {
+            const fed = federacoesAlunoCache.find(f => f.id === id);
+            if(!fed) return;
+            federacaoAlunoEditandoId = id;
+            document.getElementById('fed-nome').value = fed.nome_federacao || "CBJJ/IBJJF";
+            document.getElementById('fed-registro').value = fed.numero_registro || "";
+            document.getElementById('fed-vencimento').value = fed.data_vencimento || "";
+            document.getElementById('fed-status').value = fed.status || "Ativo";
+            
+            document.getElementById('titulo-form-fed').innerText = "Editar Filiação";
+            document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Atualizar";
+            document.getElementById('btn-cancelar-fed').classList.remove('hidden');
+        }
+
+        window.cancelarEdicaoFedAluno = function() {
+            federacaoAlunoEditandoId = null;
+            document.getElementById('fed-nome').value = "CBJJ/IBJJF";
+            document.getElementById('fed-registro').value = "";
+            document.getElementById('fed-vencimento').value = "";
+            document.getElementById('fed-status').value = "Ativo";
+            
+            document.getElementById('titulo-form-fed').innerText = "Registrar Filiação";
+            document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Salvar Filiação";
+            document.getElementById('btn-cancelar-fed').classList.add('hidden');
+        }
+
+        window.excluirFederacaoAluno = async function(id) {
+            if(!confirm("Tem certeza que deseja remover esta filiação?")) return;
+            try {
+                await deleteDoc(doc(db, "federacoes", id));
+                showToast("Filiação removida.", "success");
+                if(federacaoAlunoEditandoId === id) cancelarEdicaoFedAluno();
+                carregarFederacoesAluno();
+            } catch(e) { showToast("Erro ao excluir.", "error"); }
+        }
     </script>
 
 <script>
