@@ -724,18 +724,51 @@
                 };
                 limparAcessando(); setTimeout(limparAcessando, 600);
 
-                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) { teamId = user.uid; } 
-                else {
-                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
-                }
+                // 1. VERIFICA SE O USUÁRIO É SUPER ADMIN (SUPORTE)
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) {
+                        isSuper = true;
+                        window.isSuperAdmin = true;
+                    }
+                } catch(e) { isSuper = false; }
 
-                if (teamId) {
-                    await carregarDadosEquipe();
-                    buscarAlunosFirebase();
+                try {
+                    // 2. DEFINE O TEAM ID (Pega da sessão se for Suporte, ou do banco se for Professor)
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            teamId = equipeImpersonada; 
+                        } else {
+                            window.location.href = "super_admin.html";
+                            return;
+                        }
+                    } else {
+                        teamId = user.uid;
+                        const mestreDoc = await getDoc(doc(db, "equipes", teamId));
+                        if (!mestreDoc.exists()) {
+                            const colabDoc = await getDoc(doc(db, "colaboradores", teamId));
+                            if(colabDoc.exists()) {
+                                teamId = colabDoc.data().equipe_id;
+                            }
+                        }
+                    }
+
+                    // 3. CARREGA OS DADOS SE A EQUIPE FOI ENCONTRADA
+                    if (teamId) {
+                        await carregarDadosEquipe();
+                        await buscarAlunosFirebase();
+                    } else {
+                        document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada no sistema.</td></tr>';
+                    }
+                } catch(e) {
+                    console.error("Erro na autenticação:", e);
+                    document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro de conexão ao verificar usuário.</td></tr>';
                 }
-            } else { window.location.href = "index.html"; }
+            } else { 
+                window.location.href = "index.html"; 
+            }
         });
 
         async function carregarDadosEquipe() {
@@ -763,13 +796,19 @@
         }
 
         async function buscarAlunosFirebase() {
-            const q = query(collection(db, "alunos"), where("equipe_id", "==", teamId));
-            const snap = await getDocs(q);
-            todosAlunosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            todosAlunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
-            renderizarTabela();
+            try {
+                const q = query(collection(db, "alunos"), where("equipe_id", "==", teamId));
+                const snap = await getDocs(q);
+                
+                todosAlunosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                todosAlunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
+                
+                renderizarTabela();
+            } catch (err) {
+                console.error("Erro ao buscar alunos:", err);
+                document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro ao carregar dados do banco. Tente atualizar a página.</td></tr>';
+            }
         }
-
         window.mudarAba = (idAba) => {
             abaIndexAtual = ordemDasAbas.indexOf(idAba);
             
