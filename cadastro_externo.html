@@ -629,8 +629,8 @@
             if (file) {
                 // VERIFICAÇÃO DE TAMANHO (MAX 5MB)
                 const tamanhoEmMB = file.size / (1024 * 1024);
-                if (tamanhoEmMB > 5) {
-                    showToast(`⚠️ A foto é muito pesada (${tamanhoEmMB.toFixed(1)}MB). O limite é 5MB. Por favor, escolha uma imagem menor.`, "error");
+                if (tamanhoEmMB > 3) {
+                    showToast(`⚠️ A foto é muito pesada (${tamanhoEmMB.toFixed(1)}MB). O limite é 3MB. Por favor, escolha uma imagem menor.`, "error");
                     // Limpa o campo para o aluno não achar que a foto vai ser enviada
                     document.getElementById('cad-foto').value = ''; 
                     ficheiroFotoSelecionado = null;
@@ -679,8 +679,8 @@
             }
             if (ficheiroFotoSelecionado) {
                 const tamanhoEmMB = ficheiroFotoSelecionado.size / (1024 * 1024);
-                if (tamanhoEmMB > 5) {
-                    return showToast(`A foto escolhida ultrapassa o limite de 5MB. Por favor, reduza o tamanho ou escolha outra.`, "error");
+                if (tamanhoEmMB > 3) {
+                    return showToast(`A foto escolhida ultrapassa o limite de 3MB. Por favor, reduza o tamanho ou escolha outra.`, "error");
                 }
             }
 
