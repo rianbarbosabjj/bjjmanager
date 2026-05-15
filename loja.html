@@ -93,6 +93,13 @@
                                 <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-emerald-700 font-black">
                             </div>
 
+                            <!-- NOVO CAMPO: LINK EXTERNO / PIX -->
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Link de Pagamento / Chave PIX <span class="font-medium normal-case text-slate-400">(Opcional)</span></label>
+                                <input type="text" id="produto-link" placeholder="Ex: mercadopago.com.br/... ou (11) 99999-9999" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs font-bold text-slate-700">
+                                <p class="text-[9px] text-slate-400 mt-1">O aluno terá a opção de acessar este link/pix além do WhatsApp.</p>
+                            </div>
+
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status do Produto</label>
                                 <select id="produto-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
@@ -152,7 +159,6 @@
         let produtosCache = [];
         let produtoEditandoId = null;
 
-        // Variaveis para o controle de múltiplas imagens
         let imagensUrlsExistentes = []; 
         let novosArquivosImagem = []; 
 
@@ -211,7 +217,6 @@
                     }
                 }
 
-                // ATUALIZA A LOGO E O NOME NO MENU LATERAL
                 if (equipeDados) {
                     const nomeEquipe = equipeDados.nome_equipe || equipeDados.nome || "Sua Equipe";
                     const logoEquipe = equipeDados.url_logo || "";
@@ -230,7 +235,6 @@
                         }
                     }
                     
-                    // Salva na sessão para manter a transição rápida entre as telas
                     sessionStorage.setItem('bjj_equipe_nome', nomeEquipe);
                     sessionStorage.setItem('bjj_equipe_logo', logoEquipe);
                 }
@@ -242,7 +246,6 @@
             } else { window.location.href = "index.html"; }
         });
 
-        // --- SALVAR WHATSAPP DA LOJA ---
         window.salvarWhatsappLoja = async function() {
             const zap = document.getElementById('config-whatsapp-loja').value;
             const btn = document.getElementById('btn-salvar-zap');
@@ -259,7 +262,6 @@
             }
         }
 
-        // --- SISTEMA DE MÚLTIPLAS IMAGENS ---
         window.processarNovasImagens = function(input) {
             if (input.files && input.files.length > 0) {
                 for(let i = 0; i < input.files.length; i++) {
@@ -316,7 +318,6 @@
             return div;
         }
 
-        // --- CARREGAMENTO DOS PRODUTOS DA LOJA ---
         async function carregarProdutos() {
             const container = document.getElementById('lista-produtos');
             try {
@@ -385,8 +386,19 @@
                     </div>
                     <div class="p-4 flex flex-col flex-1">
                         <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${p.nome}">${p.nome}</h4>
-                        <p class="text-base font-black text-emerald-600 mb-4">R$ ${precoFormatado}</p>
+                        <p class="text-base font-black text-emerald-600 mb-2">R$ ${precoFormatado}</p>
                         
+                        <!-- Prévia de Opções do Aluno -->
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            <span class="bg-emerald-50 text-emerald-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-emerald-200 flex items-center gap-1">
+                                💬 WhatsApp
+                            </span>
+                            ${p.link_pagamento ? `
+                            <span class="bg-indigo-50 text-indigo-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-indigo-200 flex items-center gap-1 max-w-full truncate" title="${p.link_pagamento}">
+                                🔗 Link/PIX
+                            </span>` : ''}
+                        </div>
+
                         <div class="mt-auto grid grid-cols-2 gap-2">
                             <button onclick="editarProduto('${p.id}')" class="bg-slate-100 hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 border border-slate-200 hover:border-cyan-200 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Editar</button>
                             <button onclick="excluirProduto('${p.id}')" class="bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Excluir</button>
@@ -400,6 +412,7 @@
         window.salvarProduto = async function() {
             const nome = document.getElementById('produto-nome').value.trim();
             const valor = parseFloat(document.getElementById('produto-valor').value);
+            const linkPagamento = document.getElementById('produto-link').value.trim();
             const status = document.getElementById('produto-status').value;
 
             if (!nome || isNaN(valor)) return showToast("Preencha o nome e o preço corretamente.", "error");
@@ -412,7 +425,8 @@
                 let dados = { 
                     nome: nome, 
                     valor: valor, 
-                    status: status 
+                    status: status,
+                    link_pagamento: linkPagamento
                 };
 
                 let urlsGeradas = [];
@@ -427,20 +441,17 @@
                     }
                 }
 
-                // A nova lista de URLs junta o que sobrou das antigas com as recém subidas.
                 dados.imagens_urls = [...imagensUrlsExistentes, ...urlsGeradas];
 
                 if (produtoEditandoId) {
                     const pAntigo = produtosCache.find(x => x.id === produtoEditandoId);
                     
-                    // Compara e apaga do Storage as fotos antigas que o usuário removeu da UI
                     if (pAntigo && pAntigo.imagens_urls) {
                         const fotosRemovidas = pAntigo.imagens_urls.filter(urlAntiga => !imagensUrlsExistentes.includes(urlAntiga));
                         for (let urlRemover of fotosRemovidas) {
                             try { await deleteObject(ref(storage, urlRemover)); } catch(e) { console.error("Erro ao apagar foto velha", e); }
                         }
                     } else if (pAntigo && pAntigo.imagem_url && !imagensUrlsExistentes.includes(pAntigo.imagem_url)) {
-                        // Compatibilidade com a versão antiga do banco que tinha apenas 'imagem_url'
                          try { await deleteObject(ref(storage, pAntigo.imagem_url)); } catch(e) {}
                     }
 
@@ -482,6 +493,7 @@
             document.getElementById('produto-nome').value = p.nome || "";
             document.getElementById('produto-valor').value = p.valor || "";
             document.getElementById('produto-status').value = p.status || "ATIVO";
+            document.getElementById('produto-link').value = p.link_pagamento || "";
 
             document.getElementById('titulo-form').innerText = "✏️ Editar Produto";
             document.getElementById('btn-cancelar-produto').classList.remove('hidden');
@@ -521,6 +533,7 @@
             document.getElementById('produto-nome').value = "";
             document.getElementById('produto-valor').value = "";
             document.getElementById('produto-status').value = "ATIVO";
+            document.getElementById('produto-link').value = "";
             document.getElementById('produto-foto').value = "";
             
             atualizarContainerMiniaturas();
