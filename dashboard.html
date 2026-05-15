@@ -453,7 +453,7 @@
     
     <script src="menu.js"></script>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -473,7 +473,7 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
         
-        let uid = null;        
+        let uid = null;
         let dadosEquipe = null; 
         let configPlanosCache = null; 
         let nomeEquipeAtual = "";
@@ -517,7 +517,6 @@
 
         window.verificarAcesso = function(idRecurso) {
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
-            // 🔥 CORREÇÃO: Adicionado window.isSuperAdmin para liberar geral!
             if (isImpersonating || window.isSuperAdmin || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
                 return true; 
             }
@@ -616,7 +615,6 @@
                     if (avisoValido && aviso.data_expiracao) {
                         const dataHoje = new Date();
                         const dataExpiracao = new Date(aviso.data_expiracao + "T23:59:59"); 
-
                         if (dataHoje > dataExpiracao) {
                             avisoValido = false; 
                         }
@@ -782,7 +780,7 @@
                 }
                 
                 cancelarEdicaoMensagem();
-                switchMsgTab('lista'); 
+                switchMsgTab('lista');
                 
             } catch (error) {
                 console.error(error);
@@ -1004,32 +1002,44 @@
             } catch (e) { showToast("Erro ao remover.", "error"); }
         };
 
-        // --- AUTENTICAÇÃO E CARREGAMENTO DE PLANO (O CÉREBRO) ---
+        // ==========================================
+        // 🔐 AUTENTICAÇÃO OTIMIZADA E INJEÇÃO DE LOGO
+        // ==========================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                let isSuper = false;
-                try {
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (superSnap.exists()) {
-                        isSuper = true;
-                        window.isSuperAdmin = true; // 🔥 Cria a chave mestre global
+                const tentarLimpar = setInterval(() => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR'; el.classList.remove('animate-pulse'); el.style.opacity = "1";
+                            }
+                        });
+                        clearInterval(tentarLimpar);
                     }
-                } catch(e) { isSuper = false; }
+                }, 300);
+                setTimeout(() => clearInterval(tentarLimpar), 5000); 
 
                 try {
-                    let isImpersonating = false;
+                    let isSuper = false;
+                    try {
+                        const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                        if (superSnap.exists()) { isSuper = true; window.isSuperAdmin = true; }
+                    } catch(e) { isSuper = false; }
 
+                    let isImpersonating = false;
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
                         if (equipeImpersonada) {
                             uid = equipeImpersonada; 
                             isImpersonating = true;
-                            
                             setTimeout(() => {
                                 const aside = document.querySelector('aside');
                                 if (aside) {
                                     const btnSairSuporte = document.createElement('button');
-                                    btnSairSuporte.onclick = sairModoSuporte;
+                                    btnSairSuporte.onclick = window.sairModoSuporte;
                                     btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2";
                                     btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>";
                                     
@@ -1043,161 +1053,152 @@
                                     }
                                 }
                             }, 800);
-                        }
-                    }
-
-                    if (!isImpersonating) {
-                        uid = user.uid;
-                        const docMestre = await getDoc(doc(db, "equipes", uid));
-                        if (!docMestre.exists()) {
-                            const colabSnap2 = await getDoc(doc(db, "colaboradores", uid));
-                            if(colabSnap2.exists()) {
-                                uid = colabSnap2.data().equipe_id;
-                            }
-                        }
-                    }
-
-                    document.getElementById('body-content').classList.remove('hidden');
-                    
-                    const emailLogado = document.getElementById('email-logado');
-                    if (emailLogado) emailLogado.innerText = user.email;
-
-                    // 1. CARREGA OS NOMES DOS PLANOS DO SUPER ADMIN
-                    try {
-                        const planosSnap = await getDoc(doc(db, "sistema", "config_planos"));
-                        if(planosSnap.exists()) {
-                            configPlanosCache = planosSnap.data();
-                        }
-                    } catch(e) { console.error("Erro ao ler config de planos", e); }
-
-                    const docSnap = await getDoc(doc(db, "equipes", uid));
-                    
-                    if (docSnap.exists()) {
-                        const lblCargo = document.getElementById('lbl-cargo');
-                        if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
-                        document.getElementById('btn-config-equipe').classList.remove('hidden');
-                        dadosEquipe = docSnap.data();
+                        } else { window.location.href = "super_admin.html"; return; }
                     } else {
-                        const colabSnap2 = await getDoc(doc(db, "colaboradores", user.uid));
-                        if(colabSnap2.exists()) {
+                        uid = user.uid;
+                        const mestreDoc = await getDoc(doc(db, "equipes", uid));
+                        if (mestreDoc.exists()) {
+                            dadosEquipe = mestreDoc.data();
+                        } else {
+                            const colabDoc = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabDoc.exists()) uid = colabDoc.data().equipe_id;
+                        }
+                    }
+
+                    if (uid) {
+                        document.getElementById('body-content').classList.remove('hidden');
+                        
+                        const emailLogado = document.getElementById('email-logado');
+                        if (emailLogado) emailLogado.innerText = user.email;
+
+                        try {
+                            const planosSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                            if(planosSnap.exists()) configPlanosCache = planosSnap.data();
+                        } catch(e) { console.error("Erro ao ler config de planos", e); }
+
+                        if (!dadosEquipe) {
+                            const eqSnap = await getDoc(doc(db, "equipes", uid));
+                            if (eqSnap.exists()) dadosEquipe = eqSnap.data();
+                        }
+
+                        if (dadosEquipe) {
                             const lblCargo = document.getElementById('lbl-cargo');
-                            if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                            if(equipeMestreSnap.exists()) dadosEquipe = equipeMestreSnap.data();
-                        }
-                    }
+                            if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
+                            document.getElementById('btn-config-equipe').classList.remove('hidden');
 
-                    if (dadosEquipe) {
-                        
-                        // 🛑 BLOQUEIO GERAL (INADIMPLÊNCIA OU FIM DO TRIAL)
-                        const dataExpiracao = new Date(dadosEquipe.data_pagamento_plano || 0);
-                        const agora = new Date();
-                        const isTrialVencido = (dadosEquipe.status_plano === 'TESTE') && (agora > dataExpiracao);
-                        const isIsento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+                            const dataExpiracao = new Date(dadosEquipe.data_pagamento_plano || 0);
+                            const agora = new Date();
+                            const isTrialVencido = (dadosEquipe.status_plano === 'TESTE') && (agora > dataExpiracao);
+                            const isIsento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
 
-                        // 🔥 CORREÇÃO: Adicionado !window.isSuperAdmin para nunca bloquear o Mestre!
-                        if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento && !window.isSuperAdmin) {
-                            document.getElementById('interface-sistema').classList.add('hidden');
-                            
-                            const telaBloqueio = document.getElementById('tela-bloqueio');
-                            
-                            if (isTrialVencido) {
-                                telaBloqueio.querySelector('h2').innerText = "Período de Teste Terminou";
-                                telaBloqueio.querySelector('p').innerText = "O seu acesso gratuito expirou. Para continuar a utilizar a plataforma e não perder os dados da sua equipa, escolha um plano definitivo.";
+                            if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento && !window.isSuperAdmin) {
+                                document.getElementById('interface-sistema').classList.add('hidden');
+                                const telaBloqueio = document.getElementById('tela-bloqueio');
                                 
-                                const btnAcao = telaBloqueio.querySelector('a');
-                                btnAcao.href = "planos.html";
-                                btnAcao.innerHTML = "<span>⚡</span> Ver Planos e Assinar";
-                                btnAcao.className = "w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-cyan-500/30 mb-4";
+                                if (isTrialVencido) {
+                                    telaBloqueio.querySelector('h2').innerText = "Período de Teste Terminou";
+                                    telaBloqueio.querySelector('p').innerText = "O seu acesso gratuito expirou. Para continuar a utilizar a plataforma e não perder os dados da sua equipa, escolha um plano definitivo.";
+                                    const btnAcao = telaBloqueio.querySelector('a');
+                                    btnAcao.href = "planos.html";
+                                    btnAcao.innerHTML = "<span>⚡</span> Ver Planos e Assinar";
+                                    btnAcao.className = "w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-cyan-500/30 mb-4";
+                                }
+                                
+                                telaBloqueio.classList.remove('hidden');
+                                telaBloqueio.classList.add('flex');
+                                return; 
                             }
+
+                            const badgeStatus = document.getElementById('status-badge');
+                            const txtNomePlano = document.getElementById('nome-equipe');
                             
-                            telaBloqueio.classList.remove('hidden');
-                            telaBloqueio.classList.add('flex');
-                            return; 
-                        }
+                            nomeEquipeAtual = dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe";
+                            if (txtNomePlano) txtNomePlano.innerText = nomeEquipeAtual.toUpperCase();
 
-                        // --- TRATA O NOME DO PLANO E O STATUS DO CABEÇALHO ---
-                        const badgeStatus = document.getElementById('status-badge');
-                        const txtNomePlano = document.getElementById('nome-equipe');
-                        
-                        if (txtNomePlano) txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
+                            const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
+                            let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
 
-                        const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
-                        let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
+                            if (statusAt === 'BASICO' || statusAt === 'BÁSICO') idDoPlano = 'p1';
+                            else if (statusAt === 'INTERMEDIARIO' || statusAt === 'INTERMEDIÁRIO') idDoPlano = 'p2';
+                            else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
+                            else if (statusAt === 'ULTIMATE') idDoPlano = 'p4';
 
-                        if (statusAt === 'BASICO' || statusAt === 'BÁSICO') idDoPlano = 'p1';
-                        else if (statusAt === 'INTERMEDIARIO' || statusAt === 'INTERMEDIÁRIO') idDoPlano = 'p2';
-                        else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
-                        else if (statusAt === 'ULTIMATE') idDoPlano = 'p4';
-
-                        let nomeRealDoPlano = statusAt; 
-
-                        if (configPlanosCache && configPlanosCache[idDoPlano]) {
-                            nomeRealDoPlano = configPlanosCache[idDoPlano].nome || statusAt;
-                            window.funcionalidadesEquipe = configPlanosCache[idDoPlano].features ? configPlanosCache[idDoPlano].features.split('\n') : [];
-                        } else {
-                            window.funcionalidadesEquipe = [];
-                        }
-
-                        // PASSE LIVRE
-                        if (isImpersonating || window.isSuperAdmin || String(dadosEquipe.isento) === "true") {
-                            window.funcionalidadesEquipe = [
-                                "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
-                                "✓ Emissão de Certificados Profissionais", "✓ Gestão de Turmas e Frequência",
-                                "✓ Cadastro de Alunos Ilimitados", "✓ Portal do Aluno Completo (App)",
-                                "✓ Baixa Automática de Faturas"
-                            ];
-                        }
-
-                        if (badgeStatus) {
-                            if (statusAt === 'TESTE') {
-                                badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
-                                badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
+                            let nomeRealDoPlano = statusAt; 
+                            if (configPlanosCache && configPlanosCache[idDoPlano]) {
+                                nomeRealDoPlano = configPlanosCache[idDoPlano].nome || statusAt;
+                                window.funcionalidadesEquipe = configPlanosCache[idDoPlano].features ? configPlanosCache[idDoPlano].features.split('\n') : [];
                             } else {
-                                badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
-                                badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
+                                window.funcionalidadesEquipe = [];
+                            }
+
+                            if (isImpersonating || window.isSuperAdmin || isIsento) {
+                                window.funcionalidadesEquipe = [
+                                    "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
+                                    "✓ Emissão de Certificados Profissionais", "✓ Gestão de Turmas e Frequência",
+                                    "✓ Cadastro de Alunos Ilimitados", "✓ Portal do Aluno Completo (App)",
+                                    "✓ Baixa Automática de Faturas"
+                                ];
+                            }
+
+                            if (badgeStatus) {
+                                if (statusAt === 'TESTE') {
+                                    badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
+                                    badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
+                                } else {
+                                    badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
+                                    badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
+                                }
+                            }
+
+                            if (typeof window.atualizarMenuSeguro === "function") {
+                                window.atualizarMenuSeguro(window.funcionalidadesEquipe);
+                            }
+
+                            logoEquipeAnterior = dadosEquipe.url_logo || "";
+                            if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
+                            if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
+
+                            // 🔥 INJETOR TRATOR DE LOGO NO MENU
+                            if (logoEquipeAnterior) {
+                                const imgTopo = document.getElementById('img-topo-equipe');
+                                if (imgTopo) { imgTopo.src = logoEquipeAnterior; imgTopo.style.display = 'block'; }
+
+                                const injetarLogo = setInterval(() => {
+                                    const aside = document.querySelector('aside');
+                                    if (aside) {
+                                        let injetou = false;
+                                        const fallbackDivs = aside.querySelectorAll('div.rounded-full');
+                                        fallbackDivs.forEach(div => {
+                                            if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") {
+                                                div.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`;
+                                                div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50');
+                                                div.classList.add('bg-transparent');
+                                                injetou = true;
+                                            }
+                                        });
+                                        const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo');
+                                        if (elLogoMenu) {
+                                            elLogoMenu.style.background = 'transparent';
+                                            elLogoMenu.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`;
+                                            injetou = true;
+                                        }
+                                        if (injetou) clearInterval(injetarLogo);
+                                    }
+                                }, 300);
+                                setTimeout(() => clearInterval(injetarLogo), 5000); 
                             }
                         }
+                        
+                        verificarAvisoGlobal();
+                        carregarDashboard(); // INICIA A CARGA RÁPIDA DE DADOS
 
-                        if (typeof window.atualizarMenuSeguro === "function") {
-                            window.atualizarMenuSeguro(window.funcionalidadesEquipe);
-                        }
-
-                        // GUARDA AS VARIÁVEIS PARA O RESTO DA TELA
-                        nomeEquipeAtual = dadosEquipe.nome_equipe || "";
-                        if(dadosEquipe.url_logo) logoEquipeAnterior = dadosEquipe.url_logo;
-                        if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
-                        if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
-
-                        const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
-                        if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipeAtual.toUpperCase();
-
-                        const elLogo = document.getElementById('container-logo');
-                        const imgTopo = document.getElementById('img-topo-equipe');
-
-                        if (dadosEquipe.url_logo) {
-                            if (elLogo) {
-                                elLogo.style.background = 'transparent';
-                                elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
-                            }
-                            if (imgTopo) {
-                                imgTopo.src = dadosEquipe.url_logo;
-                                imgTopo.style.display = 'block';
-                            }
-                        } else {
-                            if (elLogo) {
-                                elLogo.style.background = ''; 
-                                elLogo.innerHTML = nomeEquipeAtual ? nomeEquipeAtual.charAt(0).toUpperCase() : 'E';
-                            }
-                        }
+                    } else {
+                        document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                     }
-                    
-                    // Dispara as buscas de dados
-                    verificarAvisoGlobal();
-                    carregarDashboard();
-
-                } catch (error) { console.log(error); }
-                
+                } catch(e) {
+                    console.error("Erro na autenticação:", e);
+                    document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro de conexão ao verificar usuário.</td></tr>';
+                }
             } else { window.location.href = "index.html"; }
         });
 
@@ -1283,17 +1284,17 @@
             };
             
             const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
-            
             return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
         async function carregarDashboard() {
             try {
+                // CARREGA TURMAS
                 const turmasQuery = query(collection(db, "turmas"), where("equipe_id", "==", uid));
                 const turmasSnap = await getDocs(turmasQuery);
                 
                 let turmasMap = {};
-                let alunoParaTurmas = {}; 
+                let alunoParaTurmas = {};
                 
                 turmasSnap.forEach((doc) => {
                     const t = doc.data();
@@ -1313,30 +1314,46 @@
                 const diaHoje = dataHoje.getDate();
                 const mesAnoFiltro = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
 
+                // ⚡ LÓGICA OTIMIZADA DO FINANCEIRO (Atenção Finanças)
+                // Busca TODAS as faturas pendentes ou atrasadas independente do mês
                 let caixaDoMes = 0;
                 let despesasDoMes = 0;
-                let faturasDoMes = {}; 
+                let faturasPendentes = {}; 
+                let valorTotalAtrasado = 0;
 
                 try {
-                    const financeiroQuery = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
-                    const financeiroSnap = await getDocs(financeiroQuery);
-                    financeiroSnap.forEach((doc) => {
+                    // Busca Receitas e Despesas APENAS do Mês Atual (para os cards verdes e vermelhos do topo)
+                    const financMesQuery = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
+                    const financMesSnap = await getDocs(financMesQuery);
+                    financMesSnap.forEach((doc) => {
                         const mov = doc.data();
-                        if (mov.tipo === 'MENSALIDADE') {
-                            faturasDoMes[mov.aluno_id] = { status: mov.status, id: doc.id, valor: mov.valor };
-                            if (mov.status === 'PAGO') caixaDoMes += parseFloat(mov.valor || 0);
-                        } else if (mov.tipo === 'RECEITA') {
+                        if (mov.tipo === 'RECEITA' || (mov.tipo === 'MENSALIDADE' && mov.status === 'PAGO')) {
                             caixaDoMes += parseFloat(mov.valor || 0);
                         } else if (mov.tipo === 'DESPESA') {
                             despesasDoMes += parseFloat(mov.valor || 0);
                         }
                     });
+
+                    // Busca TODAS as Faturas PENDENTES ou ATRASADAS (independente do mês) para cruzar com alunos ativos depois
+                    const fatPendentesQuery = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("tipo", "==", "MENSALIDADE"));
+                    const fatPendentesSnap = await getDocs(fatPendentesQuery);
+                    
+                    fatPendentesSnap.forEach((doc) => {
+                        const fat = doc.data();
+                        if (fat.status === 'PENDENTE' || fat.status === 'ATRASADO') {
+                            // Guarda todas as faturas em aberto. Se o aluno tiver mais de uma, guarda a mais antiga (ou cria um array, mas aqui simplificamos)
+                            if (!faturasPendentes[fat.aluno_id]) faturasPendentes[fat.aluno_id] = [];
+                            faturasPendentes[fat.aluno_id].push({ id: doc.id, ...fat });
+                        }
+                    });
+
                 } catch(err) { console.error("Erro ao buscar financeiro do dashboard", err); }
 
+                // CARREGA ALUNOS
                 const alunosQuery = query(collection(db, "alunos"), where("equipe_id", "==", uid));
                 const alunosSnap = await getDocs(alunosQuery);
                 
-                let ativos = 0, valorAtrasado = 0;
+                let ativos = 0;
                 let faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
 
                 alunosSnap.forEach((doc) => {
@@ -1349,6 +1366,7 @@
                         let faixa = aluno.faixa ? aluno.faixa.charAt(0).toUpperCase() + aluno.faixa.slice(1).toLowerCase().trim() : 'Branca';
                         faixasCount[faixa] = (faixasCount[faixa] || 0) + 1;
 
+                        // Aniversários
                         if (aluno.data_nascimento) {
                             let mesNiver = null, diaNiver = null;
                             if (typeof aluno.data_nascimento === 'string') {
@@ -1372,6 +1390,7 @@
                             }
                         }
 
+                        // Mapeamento de Turmas
                         let turmasDoAluno = alunoParaTurmas[alunoId] || [aluno.turma_id || "SEM TURMA DEFINIDA"];
                         if(turmasDoAluno.length === 0 || turmasDoAluno[0] === undefined) turmasDoAluno = ["SEM TURMA DEFINIDA"];
 
@@ -1380,44 +1399,42 @@
                             turmasMap[nomeTurma].push({ nome: aluno.nome || 'Aluno', faixa: faixa });
                         });
 
-                        // 🔥 CORREÇÃO: Exibe a fatura gerada SEMPRE, independentemente de faltar mais ou menos de 10 dias.
-                        const statusFaturaObj = faturasDoMes[alunoId]; 
-                        
-                        if (statusFaturaObj) {
-                            const statusFatura = statusFaturaObj.status;
-                            let msgAlerta = '', tema = 'amber'; 
+                        // ⚡ CRUZA AS FATURAS PENDENTES COM OS ALUNOS ATIVOS 
+                        if (faturasPendentes[alunoId]) {
+                            // Ordena as faturas desse aluno da mais antiga para a mais nova
+                            faturasPendentes[alunoId].sort((a,b) => new Date(a.data || 0).getTime() - new Date(b.data || 0).getTime());
                             
-                            // Só entra aqui se não estiver paga nem isenta
-                            if (statusFatura === 'PENDENTE' || statusFatura === 'ATRASADO') {
-                                const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
+                            // Lista todas as faturas abertas do aluno na tela inicial
+                            faturasPendentes[alunoId].forEach(fatura => {
+                                const statusFatura = fatura.status;
+                                let msgAlerta = '', tema = 'amber';
                                 
-                                // Define a mensagem e a cor (Atrasado ou Pendente)
-                                if (diaVenc < diaHoje) { 
-                                    msgAlerta = `Atrasado desde dia ${diaVenc}`; 
-                                    tema = 'rose'; 
-                                } else { 
-                                    msgAlerta = diaVenc === diaHoje ? `Vence HOJE` : `Vence dia ${diaVenc}`; 
-                                    tema = 'amber'; 
+                                // O Vencimento original é puxado do cadastro do aluno, ou da fatura se foi modificado
+                                const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
+                                const dataFaturaGerada = new Date(fatura.mes_ano + `-${String(diaVenc).padStart(2, '0')}T12:00:00`);
+                                
+                                if (dataFaturaGerada < dataHoje && dataFaturaGerada.getDate() !== dataHoje.getDate() || statusFatura === 'ATRASADO') {
+                                     msgAlerta = `Atrasado desde ${String(dataFaturaGerada.getDate()).padStart(2,'0')}/${String(dataFaturaGerada.getMonth()+1).padStart(2,'0')}`;
+                                     tema = 'rose';
+                                } else {
+                                     msgAlerta = `Vence dia ${diaVenc}`;
+                                     tema = 'amber';
                                 }
 
-                                const valorDaDivida = statusFaturaObj.valor || 0;
-                                
-                                // Só soma no "Caixa Atrasado" lá do topo se realmente estiver atrasado (tema rose)
-                                if (tema === 'rose') {
-                                    valorAtrasado += valorDaDivida; 
-                                }
+                                const valorDaDivida = parseFloat(fatura.valor || 0);
+                                if (tema === 'rose') valorTotalAtrasado += valorDaDivida; // Só soma inadimplência real!
 
                                 const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
                                 const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
                                 const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
                                 const cssTextDark = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
-                                const idSafe = `'${statusFaturaObj.id}'`;
+                                const idSafe = `'${fatura.id}'`;
 
                                 pendenciasHTML += `
                                     <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm">
                                         <div class="flex-1 overflow-hidden pr-2">
                                             <p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p>
-                                            <p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
+                                            <p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta} • REF: ${fatura.mes_ano.split('-')[1]}/${fatura.mes_ano.split('-')[0]}</p>
                                         </div>
                                         <div class="flex items-center gap-2 shrink-0">
                                             <span class="text-xs font-black ${cssTextDark}">${valorDaDivida > 0 ? 'R$ ' + valorDaDivida.toFixed(2).replace('.', ',') : '-'}</span>
@@ -1427,7 +1444,7 @@
                                         </div>
                                     </div>
                                 `;
-                            }
+                            });
                         }
                     }
                 });
@@ -1486,7 +1503,7 @@
 
                     document.getElementById('card-ativos').innerText = ativos;
                     document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
-                    document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-inadimplencia').innerText = `R$ ${valorTotalAtrasado.toFixed(2).replace('.', ',')}`;
                     document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
 
                     const gridFaixas = document.getElementById('grid-faixas');
@@ -1571,7 +1588,6 @@
 
             if (!novoNome) return showToast("O nome da equipe não pode ficar em branco.", "error");
             
-            // 🕵️ DETETIVE DE TAMANHO DE IMAGEM
             if (arquivoLogo) {
                 const tamanhoEmMB = arquivoLogo.size / (1024 * 1024);
                 if (tamanhoEmMB > 4) {
@@ -1599,7 +1615,6 @@
                 };
                 
                 if (arquivoLogo) {
-                    // Tenta apagar a logo antiga se existir
                     if (logoEquipeAnterior) {
                         try {
                             const refLogoAntiga = ref(storage, logoEquipeAnterior);
@@ -1610,7 +1625,6 @@
                     }
 
                     const timestamp = new Date().getTime();
-                    // Removemos caracteres estranhos do nome do arquivo para evitar bugs no link
                     const nomeLimpo = arquivoLogo.name.replace(/[^a-zA-Z0-9.]/g, "_");
                     const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${nomeLimpo}`);
                     
@@ -1633,7 +1647,6 @@
             } catch (error) {
                 console.error("ERRO COMPLETO:", error);
                 
-                // 🚨 MOSTRA O ERRO EXATO NA TELA
                 if (error.code === 'storage/unauthorized') {
                     showToast("Erro: Sem permissão no Storage (Firebase bloqueou).", "error");
                 } else if (error.code === 'permission-denied') {
@@ -1647,17 +1660,6 @@
         };
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
-    </script>
-    
-    <script>
-        const radarSuporte = setInterval(() => {
-            Array.from(document.body.children).forEach(el => {
-                if (el.tagName === 'DIV' && el.id !== 'interface-sistema' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE ATIVADO')) {
-                    el.style.display = 'none'; 
-                    clearInterval(radarSuporte);
-                }
-            });
-        }, 200);
     </script>
 </body>
 </html>
