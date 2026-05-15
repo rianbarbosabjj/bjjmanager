@@ -87,13 +87,18 @@
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Produto</label>
                                 <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                             </div>
+
+                            <!-- NOVO CAMPO: DESCRIÇÃO -->
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label>
+                                <textarea id="produto-descricao" rows="2" placeholder="Detalhes do produto, tamanhos disponíveis..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-xs font-medium text-slate-700 resize-none hide-scrollbar"></textarea>
+                            </div>
                             
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Preço de Venda (R$)</label>
                                 <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-emerald-700 font-black">
                             </div>
 
-                            <!-- NOVO CAMPO: LINK EXTERNO / PIX -->
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Link de Pagamento / Chave PIX <span class="font-medium normal-case text-slate-400">(Opcional)</span></label>
                                 <input type="text" id="produto-link" placeholder="Ex: mercadopago.com.br/... ou (11) 99999-9999" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs font-bold text-slate-700">
@@ -355,6 +360,8 @@
                     ? '<span class="absolute top-3 left-3 z-20 bg-emerald-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Na vitrine</span>'
                     : '<span class="absolute top-3 left-3 z-20 bg-slate-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Oculto</span>';
 
+                const descricaoHtml = p.descricao ? `<p class="text-[10px] text-slate-500 line-clamp-2 mb-2 leading-tight flex-1">${p.descricao}</p>` : `<div class="flex-1"></div>`;
+
                 let idUnicoCarrossel = `carousel-${p.id}`;
                 
                 let slidesHtml = '';
@@ -374,11 +381,11 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = `flex flex-col border border-slate-200 rounded-3xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${bgStatus} relative`;
+                card.className = `flex flex-col border border-slate-200 rounded-3xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${bgStatus} relative h-full`;
                 
                 card.innerHTML = `
                     ${badgeStatus}
-                    <div class="aspect-square bg-slate-50 relative border-b border-slate-100">
+                    <div class="aspect-square bg-slate-50 relative border-b border-slate-100 shrink-0">
                         ${setasHtml}
                         <div id="${idUnicoCarrossel}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
                             ${slidesHtml}
@@ -386,6 +393,7 @@
                     </div>
                     <div class="p-4 flex flex-col flex-1">
                         <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${p.nome}">${p.nome}</h4>
+                        ${descricaoHtml}
                         <p class="text-base font-black text-emerald-600 mb-2">R$ ${precoFormatado}</p>
                         
                         <!-- Prévia de Opções do Aluno -->
@@ -399,7 +407,7 @@
                             </span>` : ''}
                         </div>
 
-                        <div class="mt-auto grid grid-cols-2 gap-2">
+                        <div class="mt-auto grid grid-cols-2 gap-2 shrink-0">
                             <button onclick="editarProduto('${p.id}')" class="bg-slate-100 hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 border border-slate-200 hover:border-cyan-200 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Editar</button>
                             <button onclick="excluirProduto('${p.id}')" class="bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Excluir</button>
                         </div>
@@ -411,6 +419,7 @@
 
         window.salvarProduto = async function() {
             const nome = document.getElementById('produto-nome').value.trim();
+            const descricao = document.getElementById('produto-descricao').value.trim();
             const valor = parseFloat(document.getElementById('produto-valor').value);
             const linkPagamento = document.getElementById('produto-link').value.trim();
             const status = document.getElementById('produto-status').value;
@@ -424,6 +433,7 @@
             try {
                 let dados = { 
                     nome: nome, 
+                    descricao: descricao,
                     valor: valor, 
                     status: status,
                     link_pagamento: linkPagamento
@@ -491,6 +501,7 @@
             atualizarContainerMiniaturas();
 
             document.getElementById('produto-nome').value = p.nome || "";
+            document.getElementById('produto-descricao').value = p.descricao || "";
             document.getElementById('produto-valor').value = p.valor || "";
             document.getElementById('produto-status').value = p.status || "ATIVO";
             document.getElementById('produto-link').value = p.link_pagamento || "";
@@ -531,6 +542,7 @@
             novosArquivosImagem = [];
             
             document.getElementById('produto-nome').value = "";
+            document.getElementById('produto-descricao').value = "";
             document.getElementById('produto-valor').value = "";
             document.getElementById('produto-status').value = "ATIVO";
             document.getElementById('produto-link').value = "";
