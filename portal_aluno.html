@@ -1672,9 +1672,8 @@
                     
                     // Descrição com escape HTML
                     const descricaoHtml = p.descricao 
-                        ? `<p class="text-[10px] text-slate-400 line-clamp-2 mb-2 leading-tight flex-1">${escapeHtml(p.descricao)}</p>` 
+                        ? `<p class="text-[10px] text-slate-400 line-clamp-2 mb-2 leading-tight flex-1">${escapeHtml(p.descricao).replace(/\n/g, '<br>')}</p>` 
                         : `<div class="flex-1"></div>`;
-                    
                     // Valida e sanitiza links
                     let linkPagamento = '';
                     let tipoBotao = '';
