@@ -1470,7 +1470,136 @@
         }
 
         async function carregarLoja() {
-            window.registrarCheckin = async function(turmaId, nomeTurma) {
+            const container = document.getElementById('lista-produtos');
+            if (!container) return;
+            try {
+                const q = query(collection(db, "produtos"), where("equipe_id", "==", alunoLogado.equipe_id), where("status", "==", "ATIVO"));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    container.innerHTML = "<div class='col-span-full text-center p-6 text-slate-500 text-xs italic'>Nenhum produto disponível no momento.</div>";
+                    return;
+                }
+                
+                let msgs = [];
+                snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+                produtosCache = msgs; 
+
+                let html = '';
+                msgs.forEach(p => {
+                    const preco = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                    
+                    let arrayDeImagens = [];
+                    if (p.imagens_urls && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls;
+                    else if (p.imagem_url) arrayDeImagens = [p.imagem_url];
+                    else arrayDeImagens = ['https://via.placeholder.com/400x400?text=Sem+Foto'];
+
+                    let idUnicoCarrossel = `carousel-${p.id}`;
+                    
+                    let slidesHtml = '';
+                    arrayDeImagens.forEach(img => {
+                        slidesHtml += `<div class="w-full h-full shrink-0 flex items-center justify-center snap-center relative overflow-hidden"><img src="${img}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"></div>`;
+                    });
+
+                    let setasHtml = '';
+                    if (arrayDeImagens.length > 1) {
+                        setasHtml = `
+                            <button onclick="scrollCarrossel('${idUnicoCarrossel}', -1)" class="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">◀</button>
+                            <button onclick="scrollCarrossel('${idUnicoCarrossel}', 1)" class="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">▶</button>
+                            <div class="absolute bottom-2 left-0 w-full flex justify-center gap-1 z-10">
+                                ${arrayDeImagens.map((_, i) => `<div class="w-1 h-1 rounded-full bg-slate-400/50 ${i===0?'!bg-cyan-500 w-2':''}"></div>`).join('')}
+                            </div>
+                        `;
+                    }
+
+                    // Nova Descrição
+                    const descricaoHtml = p.descricao ? `<p class="text-[10px] text-slate-400 line-clamp-2 mb-2 leading-tight flex-1">${p.descricao}</p>` : `<div class="flex-1"></div>`;
+
+                    // Lógica dos Botões (WhatsApp sempre, Link/PIX se houver)
+                    let botoesHtml = '';
+                    
+                    // Ícone SVG do WhatsApp atualizado
+                    const btnZapHtml = `<button onclick="comprarViaWhatsApp('${p.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5 truncate px-1" title="Pedir via WhatsApp">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.124.553 4.195 1.604 6.014L.265 24l6.147-1.336c1.737.95 3.708 1.452 5.62 1.452 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm3.896 17.203c-.173.486-.983.92-1.428.986-.423.064-.967.143-3.136-.726-2.615-1.049-4.283-3.714-4.414-3.886-.13-.173-1.054-1.4-1.054-2.673 0-1.272.663-1.898.898-2.148.236-.25.509-.313.68-.313.171 0 .341-.005.49-.005.155 0 .363-.058.568.411.21.486.719 1.761.785 1.892.066.13.111.285.025.46-.086.173-.131.282-.26.435-.13.153-.273.327-.39.46-.126.144-.26.302-.113.557.146.253.649 1.071 1.396 1.71.961.821 1.762 1.066 2.015 1.196.252.13.399.111.55-.058.15-.17.65-1.194.821-1.604.17-.411.34-.344.571-.247.23.097 1.464.69 1.714.814.25.124.417.185.478.287.06.103.06.59-.113 1.076z"/></svg>
+                        Whats
+                    </button>`;
+
+                    if (p.link_pagamento) {
+                        if (p.link_pagamento.startsWith('http')) {
+                            // É um Link Externo
+                            botoesHtml = `
+                                <div class="flex gap-2 mt-auto shrink-0 pt-2">
+                                    ${btnZapHtml}
+                                    <button onclick="window.open('${p.link_pagamento}', '_blank')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5 truncate px-1" title="Link de Pagamento"><span>🔗</span> Link</button>
+                                </div>
+                            `;
+                        } else {
+                            // É uma Chave PIX
+                            botoesHtml = `
+                                <div class="flex gap-2 mt-auto shrink-0 pt-2">
+                                    ${btnZapHtml}
+                                    <button onclick="copiarPixProduto('${p.link_pagamento}')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5 truncate px-1" title="Copiar PIX"><span>📄</span> PIX</button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // Só WhatsApp
+                        botoesHtml = `
+                            <div class="flex mt-auto shrink-0 pt-2">
+                                ${btnZapHtml}
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                        <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col group h-full">
+                            <div class="aspect-square bg-white relative overflow-hidden p-2 flex items-center justify-center shrink-0">
+                                ${setasHtml}
+                                <div id="${idUnicoCarrossel}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                                    ${slidesHtml}
+                                </div>
+                            </div>
+                            <div class="p-3 flex flex-col flex-1">
+                                <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-1 truncate">${p.nome}</h4>
+                                ${descricaoHtml}
+                                <p class="text-xs font-black text-emerald-400 mb-1">R$ ${preco}</p>
+                                ${botoesHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = "<div class='col-span-full text-center text-rose-500 text-xs bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar produtos.</div>";
+            }
+        }
+
+        window.comprarViaWhatsApp = async function(produtoId) {
+            const p = produtosCache.find(x => x.id === produtoId);
+            if(!p) return showToast("Produto não encontrado.", "error");
+
+            const zapLoja = equipeDados.whatsapp_loja || equipeDados.telefone_whatsapp || equipeDados.celular || '';
+            
+            if(!zapLoja) {
+                return showToast("A academia não configurou o WhatsApp de atendimento da loja.", "error");
+            }
+            
+            const numeroLimpo = zapLoja.replace(/\D/g, '');
+            
+            const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.',',');
+            
+            const msg = encodeURIComponent(`Olá, Oss! Sou o aluno(a) *${alunoLogado.nome}*.\nGostaria de encomendar o produto: *${p.nome}* no valor de R$ ${precoFormatado}.\nComo podemos efetuar o pagamento e combinar a entrega?`);
+            
+            window.open(`https://wa.me/55${numeroLimpo}?text=${msg}`, '_blank');
+        };
+
+        window.copiarPixProduto = function(chave) {
+            navigator.clipboard.writeText(chave).then(() => {
+                showToast("Chave PIX copiada! Abra o app do seu banco.", "success");
+            }).catch(err => {
+                showToast("Erro ao copiar PIX. Tente novamente.", "error");
+            });
+        }
+        window.registrarCheckin = async function(turmaId, nomeTurma) {
             const btn = document.getElementById(`btn-checkin-${turmaId}`);
             if(btn) { btn.innerHTML = '⏳ Localizando...'; btn.disabled = true; }
 
