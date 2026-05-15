@@ -802,6 +802,9 @@
             }
         }
 
+// ==========================================
+        // 🔐 AUTENTICAÇÃO OTIMIZADA (Mais rápido e corrige a logo)
+        // ==========================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const limparAcessando = () => {
@@ -811,49 +814,73 @@
                         elementos.forEach(el => {
                             if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
                             if (el.innerText.includes('ACESSANDO')) {
-                                el.innerText = 'ADMINISTRADOR';
-                                el.classList.remove('animate-pulse');
-                                el.style.opacity = "1";
+                                el.innerText = 'ADMINISTRADOR'; el.classList.remove('animate-pulse'); el.style.opacity = "1";
                             }
                         });
                     }
                 };
                 limparAcessando(); setTimeout(limparAcessando, 600);
 
-                let isSuper = false;
                 try {
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (superSnap.exists()) {
-                        isSuper = true;
-                        window.isSuperAdmin = true;
-                    }
-                } catch(e) { isSuper = false; }
+                    // 1. Verifica se é Super Admin
+                    let isSuper = false;
+                    try {
+                        const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                        if (superSnap.exists()) { isSuper = true; window.isSuperAdmin = true; }
+                    } catch(e) { isSuper = false; }
 
-                try {
-                    let isImpersonating = false;
-                    
+                    // 2. Define o teamId com o mínimo de leituras no banco
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
                         if (equipeImpersonada) {
                             window.teamId = equipeImpersonada; 
                         } else {
-                            window.location.href = "super_admin.html";
-                            return;
+                            window.location.href = "super_admin.html"; return;
                         }
                     } else {
                         window.teamId = user.uid;
+                        // Otimização: Só busca colaborador se NÃO for mestre, poupando rede
                         const mestreDoc = await getDoc(doc(db, "equipes", window.teamId));
-                        if (!mestreDoc.exists()) {
+                        if (mestreDoc.exists()) {
+                            window.dadosEquipeCompleto = mestreDoc.data(); // Salva na memória p/ não precisar ler de novo!
+                        } else {
                             const colabDoc = await getDoc(doc(db, "colaboradores", window.teamId));
                             if(colabDoc.exists()) window.teamId = colabDoc.data().equipe_id;
                         }
                     }
 
                     if (window.teamId) {
-                        await carregarDadosEquipe();
-                        await buscarAlunosFirebase();
+                        // 3. Puxa os dados da equipe só se ainda não tiver puxado
+                        if (!window.dadosEquipeCompleto) {
+                            const eqSnap = await getDoc(doc(db, "equipes", window.teamId));
+                            if (eqSnap.exists()) window.dadosEquipeCompleto = eqSnap.data();
+                        }
+                        
+                        if (window.dadosEquipeCompleto) {
+                            window.equipeDados.nome = window.dadosEquipeCompleto.nome_equipe || window.dadosEquipeCompleto.nome || "Sua Equipe";
+                            window.equipeDados.logo = window.dadosEquipeCompleto.url_logo || "";
+
+                            // 🔥 Injetor Dinâmico de Logo (Corrige a ausência no Menu Lateral)
+                            setTimeout(() => {
+                                const aside = document.querySelector('aside');
+                                if (aside && window.equipeDados.logo) {
+                                    // Acha o circulo de placeholder (que tem a letra inicial) e injeta a imagem real
+                                    const fallbackDivs = aside.querySelectorAll('div.rounded-full');
+                                    fallbackDivs.forEach(div => {
+                                        if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") {
+                                            div.innerHTML = `<img src="${window.equipeDados.logo}" class="w-full h-full object-cover rounded-full shadow-sm">`;
+                                            div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50');
+                                            div.classList.add('bg-transparent');
+                                        }
+                                    });
+                                }
+                            }, 500); // 500ms para garantir que o menu.js terminou de desenhar o HTML
+                        }
+                        
+                        // 4. Busca alunos (Inicia imediatamente sem recarregar a equipe antes)
+                        buscarAlunosFirebase();
                     } else {
-                        document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada no sistema.</td></tr>';
+                        document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                     }
                 } catch(e) {
                     console.error("Erro na autenticação:", e);
