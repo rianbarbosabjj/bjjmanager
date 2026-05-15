@@ -1810,7 +1810,16 @@
                 showToast("Número de WhatsApp inválido. Contate o suporte.", "error");
                 return;
             }
+            let numeroLimpo = zapLoja.replace(/\D/g, '');
+            if (numeroLimpo.length < 10) {
+                showToast("Número de WhatsApp inválido. Contate o suporte.", "error");
+                return;
+            }
             
+            // Verifica se o número JÁ TEM o 55 do Brasil na frente
+            if (!numeroLimpo.startsWith('55') || numeroLimpo.length <= 11) {
+                numeroLimpo = '55' + numeroLimpo;
+            }
             const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.', ',');
             const nomeProduto = escapeHtml(p.nome);
             const nomeAluno = escapeHtml(alunoLogado.nome);
