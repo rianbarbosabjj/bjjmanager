@@ -624,88 +624,127 @@
         }
 
         // ===================== CÁLCULO DE TEMPO NA FAIXA =====================
-        function calcularTempoFaixa(dataUltimaGraduacaoStr) {
-            if (!dataUltimaGraduacaoStr) return "Desconhecido";
-            try {
-                let dt;
-                if(dataUltimaGraduacaoStr.includes('T')) dt = new Date(dataUltimaGraduacaoStr);
-                else if(dataUltimaGraduacaoStr.includes('-')) {
-                    const partes = dataUltimaGraduacaoStr.split('-');
-                    dt = new Date(partes[0], partes[1]-1, partes[2]);
-                } else return "Desconhecido";
-                if(isNaN(dt.getTime())) return "Desconhecido";
-                const hoje = new Date();
-                let anos = hoje.getFullYear() - dt.getFullYear();
-                let meses = hoje.getMonth() - dt.getMonth();
-                if (meses < 0) { anos -= 1; meses += 12; }
-                if (hoje.getDate() < dt.getDate()) { meses -= 1; if (meses < 0) { anos -= 1; meses += 12; } }
-                if (anos > 0 && meses > 0) return `${anos} anos e ${meses} meses`;
-                if (anos > 0) return `${anos} ano(s)`;
-                if (meses > 0) return `${meses} mes(es)`;
-                return "Menos de 1 mês";
-            } catch (e) { return "Erro no cálculo"; }
+function calcularTempoFaixa(dataUltimaMudancaFaixaStr) {
+    if (!dataUltimaMudancaFaixaStr) return "Desconhecido";
+    
+    try {
+        let dt;
+        if (dataUltimaMudancaFaixaStr.includes('T')) {
+            dt = new Date(dataUltimaMudancaFaixaStr);
+        } else if (dataUltimaMudancaFaixaStr.includes('-')) {
+            const partes = dataUltimaMudancaFaixaStr.split('-');
+            dt = new Date(partes[0], partes[1]-1, partes[2]);
+        } else {
+            return "Desconhecido";
         }
+        
+        if (isNaN(dt.getTime())) return "Desconhecido";
+        
+        const hoje = new Date();
+        let anos = hoje.getFullYear() - dt.getFullYear();
+        let meses = hoje.getMonth() - dt.getMonth();
+        
+        if (meses < 0) {
+            anos -= 1;
+            meses += 12;
+        }
+        
+        if (hoje.getDate() < dt.getDate()) {
+            meses -= 1;
+            if (meses < 0) {
+                anos -= 1;
+                meses += 12;
+            }
+        }
+        
+        if (anos > 0 && meses > 0) return `${anos} anos e ${meses} meses`;
+        if (anos > 0) return `${anos} ano(s)`;
+        if (meses > 0) return `${meses} mes(es)`;
+        return "Menos de 1 mês";
+        
+    } catch (e) {
+        console.error("Erro ao calcular tempo:", e);
+        return "Erro no cálculo";
+    }
+}
 
         // ===================== SELEÇÃO DE ALUNO =====================
-        window.selecionarAluno = async function(id) {
-            if (!id) {
-                showToast("ID do aluno inválido", "error");
-                return;
-            }
-            
-            alunoSelecionado = alunosCache.find(a => a.id === id);
-            
-            if (!alunoSelecionado) {
-                showToast("Aluno não encontrado", "error");
-                return;
-            }
-            
-            const nomeAluno = alunoSelecionado.nome || "Aluno sem nome";
-            
-            document.getElementById('painel-vazio').classList.add('hidden');
-            document.getElementById('painel-vazio').classList.remove('md:flex');
-            
-            const painelHistorico = document.getElementById('painel-historico');
-            painelHistorico.classList.remove('hidden');
-            painelHistorico.classList.add('flex');
+window.selecionarAluno = async function(id) {
+    // Verifica se o ID é válido
+    if (!id) {
+        showToast("ID do aluno inválido", "error");
+        return;
+    }
+    
+    alunoSelecionado = alunosCache.find(a => a.id === id);
+    
+    // Verifica se o aluno foi encontrado
+    if (!alunoSelecionado) {
+        showToast("Aluno não encontrado", "error");
+        return;
+    }
+    
+    // Garante que o nome existe
+    const nomeAluno = alunoSelecionado.nome || "Aluno sem nome";
+    
+    // Mostra o painel de histórico
+    document.getElementById('painel-vazio').classList.add('hidden');
+    document.getElementById('painel-vazio').classList.remove('md:flex');
+    
+    const painelHistorico = document.getElementById('painel-historico');
+    painelHistorico.classList.remove('hidden');
+    painelHistorico.classList.add('flex');
 
-            const painelLista = document.getElementById('painel-lista');
-            painelLista.classList.add('hidden', 'md:flex'); 
-            painelLista.classList.remove('flex');
+    const painelLista = document.getElementById('painel-lista');
+    painelLista.classList.add('hidden', 'md:flex'); 
+    painelLista.classList.remove('flex');
 
-            const nomeElemento = document.getElementById('aluno-nome-detalhe');
-            if (nomeElemento) nomeElemento.innerText = nomeAluno;
-            
-            const avatarElemento = document.getElementById('aluno-avatar');
-            if (avatarElemento) avatarElemento.innerText = nomeAluno.charAt(0).toUpperCase();
-            
-            const badge = document.getElementById('aluno-faixa-badge');
-            if (badge) {
-                const faixaAluno = alunoSelecionado.faixa || "BRANCA";
-                badge.innerText = faixaAluno;
-                badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(faixaAluno)}`;
-            }
-            
-            const grauElemento = document.getElementById('aluno-grau-detalhe');
-            if (grauElemento) grauElemento.innerText = `GRAU: ${alunoSelecionado.grau || 'Sem grau'}`;
+    // Atualiza o cabeçalho do aluno com segurança
+    const nomeElemento = document.getElementById('aluno-nome-detalhe');
+    if (nomeElemento) nomeElemento.innerText = nomeAluno;
+    
+    const avatarElemento = document.getElementById('aluno-avatar');
+    if (avatarElemento) avatarElemento.innerText = nomeAluno.charAt(0).toUpperCase();
+    
+    // Atualiza o badge da faixa
+    const badge = document.getElementById('aluno-faixa-badge');
+    if (badge) {
+        const faixaAluno = alunoSelecionado.faixa || "BRANCA";
+        badge.innerText = faixaAluno;
+        badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(faixaAluno)}`;
+    }
+    
+    // Atualiza o grau do aluno
+    const grauElemento = document.getElementById('aluno-grau-detalhe');
+    if (grauElemento) grauElemento.innerText = `GRAU: ${alunoSelecionado.grau || 'Sem grau'}`;
 
-            const selectFaixa = document.getElementById('grad-faixa');
-            const selectGrau = document.getElementById('grad-grau');
-            
-            if (selectFaixa) {
-                Array.from(selectFaixa.options).forEach(opt => {
-                    if(opt.value.toLowerCase() === (alunoSelecionado.faixa || '').toLowerCase()) opt.selected = true;
-                });
+    // Atualiza os selects do formulário com os valores atuais do aluno
+    const selectFaixa = document.getElementById('grad-faixa');
+    const selectGrau = document.getElementById('grad-grau');
+    
+    if (selectFaixa) {
+        Array.from(selectFaixa.options).forEach(opt => {
+            if(opt.value.toLowerCase() === (alunoSelecionado.faixa || '').toLowerCase()) {
+                opt.selected = true;
             }
-            
-            if (selectGrau) {
-                Array.from(selectGrau.options).forEach(opt => {
-                    if(opt.value === alunoSelecionado.grau) opt.selected = true;
-                });
+        });
+    }
+    
+    if (selectGrau) {
+        Array.from(selectGrau.options).forEach(opt => {
+            if(opt.value === alunoSelecionado.grau) {
+                opt.selected = true;
             }
+        });
+    }
 
-            await carregarTimeline(id);
-        }
+    // Carrega a timeline do aluno
+    await carregarTimeline(id);
+    
+    // 🔥 ATUALIZA O TEMPO NA FAIXA (calculado a partir da última troca de faixa)
+    await atualizarTempoNaFaixa();
+}
+
 
         window.voltarLista = function() {
             const painelLista = document.getElementById('painel-lista');
@@ -785,57 +824,69 @@ async function carregarTimeline(alunoId, forceRefresh = false) {
         container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados.<br><span class="text-xs">${errorMsg}</span></div>`;
     }
 }
-        function renderizarTimeline(historico, alunoId) {
-            const container = document.getElementById('timeline-container');
-            container.innerHTML = '';
+function renderizarTimeline(historico, alunoId) {
+    const container = document.getElementById('timeline-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (!historico || historico.length === 0) {
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-3xl mb-4">🥋</div>
+                <p class="text-sm text-slate-500 font-bold">Nenhuma graduação registrada</p>
+                <p class="text-xs text-slate-400 mt-2 max-w-xs">Registre a primeira graduação do atleta utilizando o formulário ao lado.</p>
+            </div>`;
+        return;
+    }
 
-            if (historico.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 text-center">
-                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-3xl mb-4">🥋</div>
-                        <p class="text-sm text-slate-500 font-bold">Nenhuma graduação registrada</p>
-                        <p class="text-xs text-slate-400 mt-2 max-w-xs">Registre a primeira graduação do atleta utilizando o formulário ao lado.</p>
-                    </div>`;
-                document.getElementById('aluno-tempo-faixa').innerText = "Primeira graduação pendente";
-                return;
-            }
+    // Atualiza o tempo na faixa
+    atualizarTempoNaFaixa();
 
-            const ultimaGrad = historico[0];
-            document.getElementById('aluno-tempo-faixa').innerText = calcularTempoFaixa(ultimaGrad.data);
-
-            historico.forEach(grad => {
-                let dataBR = grad.data || "--";
-                if(grad.data && grad.data.includes('-')) {
-                    const p = grad.data.split('-');
-                    dataBR = `${p[2]}/${p[1]}/${p[0]}`;
-                }
-
-                const btnCertificado = grad.certificado_url 
-                    ? `<a href="${grad.certificado_url}" target="_blank" class="mt-2 text-[9px] md:text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 px-3 py-1.5 rounded-xl transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"><span class="text-sm">🎓</span> Ver Diploma</a>` 
-                    : '';
-
-                const item = document.createElement('div');
-                item.className = "timeline-item relative pl-6 md:pl-8 pb-5 md:pb-6";
-                
-                item.innerHTML = `
-                    <div class="absolute left-0 top-1 w-4 h-4 md:w-5 md:h-5 rounded-full border-3 border-white shadow-sm flex items-center justify-center ${getCorFaixa(grad.faixa)} z-10"></div>
-                    <div class="bg-slate-50 p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 hover:border-cyan-200 transition-colors group">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-1">
-                            <div>
-                                <h4 class="font-black text-slate-800 text-xs md:text-sm uppercase">${grad.faixa}</h4>
-                                <p class="text-[8px] md:text-[9px] text-slate-400 font-bold uppercase">${grad.grau || 'Sem grau'}</p>
-                            </div>
-                            <span class="text-[8px] md:text-[9px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${dataBR}</span>
-                        </div>
-                        ${btnCertificado}
-                        <div class="mt-2 flex justify-end">
-                            <button onclick="excluirGraduacao('${grad.id}', '${alunoId}')" class="text-[8px] md:text-[9px] font-bold text-rose-400 hover:text-rose-600 uppercase transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">Excluir</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
+    const fragment = document.createDocumentFragment();
+    
+    historico.forEach(grad => {
+        let dataBR = grad.data || "--";
+        if(grad.data && grad.data.includes('-')) {
+            const p = grad.data.split('-');
+            dataBR = `${p[2]}/${p[1]}/${p[0]}`;
         }
+
+        // 🔥 INDICADOR DE MUDANÇA DE FAIXA
+        const mudouFaixaBadge = grad.mudou_faixa 
+            ? `<span class="ml-2 text-[8px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">🔄 Troca de Faixa</span>` 
+            : `<span class="ml-2 text-[8px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">📈 Apenas Grau</span>`;
+
+        const btnCertificado = grad.certificado_url 
+            ? `<a href="${grad.certificado_url}" target="_blank" class="mt-2 text-[9px] md:text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 px-3 py-1.5 rounded-xl transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"><span class="text-sm">🎓</span> Ver Diploma</a>` 
+            : '';
+
+        const item = document.createElement('div');
+        item.className = "timeline-item relative pl-6 md:pl-8 pb-5 md:pb-6";
+        item.innerHTML = `
+            <div class="absolute left-0 top-1 w-4 h-4 md:w-5 md:h-5 rounded-full border-3 border-white shadow-sm flex items-center justify-center ${getCorFaixa(grad.faixa)} z-10"></div>
+            <div class="bg-slate-50 p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 hover:border-cyan-200 transition-colors group">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-1">
+                    <div class="flex items-center flex-wrap gap-1">
+                        <h4 class="font-black text-slate-800 text-xs md:text-sm uppercase">${grad.faixa}</h4>
+                        ${mudouFaixaBadge}
+                    </div>
+                    <span class="text-[8px] md:text-[9px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${dataBR}</span>
+                </div>
+                <div>
+                    <p class="text-[9px] md:text-[10px] text-slate-500 font-medium">Grau: ${grad.grau || 'Sem grau'}</p>
+                </div>
+                ${btnCertificado}
+                <div class="mt-2 flex justify-end">
+                    <button onclick="excluirGraduacao('${grad.id}', '${alunoId}')" class="text-[8px] md:text-[9px] font-bold text-rose-400 hover:text-rose-600 uppercase transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">Excluir</button>
+                </div>
+            </div>
+        `;
+        fragment.appendChild(item);
+    });
+    
+    container.appendChild(fragment);
+}
 
         // ===================== MODAL DE AVISO =====================
         window.abrirModalAviso = function(faixaAtual, novaFaixa, dados) {
@@ -956,10 +1007,11 @@ window.salvarGraduacao = async function() {
     if (!data) return showToast("A data da graduação é obrigatória!", "error");
     if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
 
-    // 🔥 VERIFICA SE É GRADUAÇÃO REGRESSIVA (para transferências)
     const faixaAtual = alunoSelecionado.faixa || 'Branca';
-    let isRegressiva = false;
+    const grauAtual = alunoSelecionado.grau || 'Sem grau';
     
+    // 🔥 VERIFICA SE É GRADUAÇÃO REGRESSIVA (para transferências)
+    let isRegressiva = false;
     if (faixaAtual !== novaFaixa) {
         const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
         const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
@@ -988,6 +1040,9 @@ window.salvarGraduacao = async function() {
     showLoading();
 
     try {
+        // 🔥 VERIFICA SE HOUVE MUDANÇA DE FAIXA
+        const mudouFaixa = houveMudancaDeFaixa(faixaAtual, novaFaixa);
+        
         // 1. SALVA A NOVA GRADUAÇÃO NO HISTÓRICO
         await addDoc(collection(db, "graduacoes"), {
             equipe_id: uid,
@@ -996,13 +1051,16 @@ window.salvarGraduacao = async function() {
             faixa: novaFaixa,
             grau: novoGrau || "Sem grau",
             registado_em: new Date().toISOString(),
-            origem: "MANUAL"
+            origem: "MANUAL",
+            mudou_faixa: mudouFaixa  // 🔥 NOVO CAMPO: indica se houve mudança de faixa
         });
 
-        // 2. 🔥 ATUALIZA O CADASTRO DO ALUNO COM A NOVA GRADUAÇÃO
+        // 2. ATUALIZA O CADASTRO DO ALUNO
         await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
             faixa: novaFaixa,
-            grau: novoGrau || "Sem grau"
+            grau: novoGrau || "Sem grau",
+            // 🔥 SE HOUVE MUDANÇA DE FAIXA, ATUALIZA A DATA DA ÚLTIMA TROCA
+            ...(mudouFaixa && { ultima_troca_faixa: data })
         });
 
         showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
@@ -1010,6 +1068,9 @@ window.salvarGraduacao = async function() {
         // 3. ATUALIZA O ALUNO SELECIONADO NA MEMÓRIA
         alunoSelecionado.faixa = novaFaixa;
         alunoSelecionado.grau = novoGrau || "Sem grau";
+        if (mudouFaixa) {
+            alunoSelecionado.ultima_troca_faixa = data;
+        }
         
         // 4. ATUALIZA A INTERFACE
         const badge = document.getElementById('aluno-faixa-badge');
@@ -1021,11 +1082,12 @@ window.salvarGraduacao = async function() {
         const grauElemento = document.getElementById('aluno-grau-detalhe');
         if (grauElemento) grauElemento.innerText = `GRAU: ${novoGrau || 'Sem grau'}`;
         
-        // 5. LIMPA CACHE E RECARREGA
+        // 5. ATUALIZA O TEMPO NA FAIXA
+        atualizarTempoNaFaixa();
+        
+        // 6. LIMPA CACHE E RECARREGA
         clearCache();
         await carregarAlunos(true);
-        
-        // 6. 🔥 RECARREGA A TIMELINE (a nova graduação será a primeira da lista)
         await carregarTimeline(alunoSelecionado.id, true);
         
     } catch (error) {
@@ -1037,6 +1099,7 @@ window.salvarGraduacao = async function() {
         hideLoading();
     }
 }
+
         // ===================== EXCLUIR GRADUAÇÃO =====================
 window.excluirGraduacao = async function(gradId, alunoId) {
     // Verifica se o gradId é válido
@@ -1103,7 +1166,69 @@ window.excluirGraduacao = async function(gradId, alunoId) {
         hideLoading();
     }
 }
-
+function houveMudancaDeFaixa(faixaAntiga, faixaNova) {
+    // Se é a mesma faixa, não houve mudança (apenas grau)
+    if (faixaAntiga === faixaNova) return false;
+    
+    // Se são diferentes, houve mudança de faixa
+    return true;
+}
+async function atualizarTempoNaFaixa() {
+    if (!alunoSelecionado) return;
+    
+    let dataReferencia = null;
+    
+    // 🔥 PRIORIDADE 1: Usa a data da última troca de faixa (se existir)
+    if (alunoSelecionado.ultima_troca_faixa) {
+        dataReferencia = alunoSelecionado.ultima_troca_faixa;
+    }
+    
+    // 🔥 PRIORIDADE 2: Busca a última graduação que teve mudança de faixa
+    if (!dataReferencia) {
+        try {
+            const q = query(
+                collection(db, "graduacoes"),
+                where("equipe_id", "==", uid),
+                where("aluno_id", "==", alunoSelecionado.id),
+                where("mudou_faixa", "==", true)
+            );
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                let ultimaMudanca = null;
+                snap.forEach(doc => {
+                    const grad = doc.data();
+                    if (!ultimaMudanca || grad.data > ultimaMudanca.data) {
+                        ultimaMudanca = grad;
+                    }
+                });
+                if (ultimaMudanca && ultimaMudanca.data) {
+                    dataReferencia = ultimaMudanca.data;
+                }
+            }
+        } catch(e) {
+            console.error("Erro ao buscar última mudança de faixa:", e);
+        }
+    }
+    
+    // 🔥 PRIORIDADE 3: Usa a data de cadastro do aluno
+    if (!dataReferencia && alunoSelecionado.data_cadastro) {
+        dataReferencia = alunoSelecionado.data_cadastro;
+    }
+    
+    // Atualiza o elemento na tela
+    const tempoElemento = document.getElementById('aluno-tempo-faixa');
+    if (tempoElemento) {
+        const tempoTexto = calcularTempoFaixa(dataReferencia);
+        tempoElemento.innerText = tempoTexto;
+        
+        // Adiciona um tooltip explicativo
+        if (dataReferencia) {
+            const dataObj = new Date(dataReferencia);
+            const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+            tempoElemento.title = `Última troca de faixa em: ${dataFormatada}`;
+        }
+    }
+}
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>
 </body>
