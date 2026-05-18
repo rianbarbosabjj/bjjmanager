@@ -1174,7 +1174,16 @@
             }; 
             
             const campoSenha = document.getElementById('aluno-senha-portal'); 
-            if(campoSenha && campoSenha.value) dados.senha_portal = campoSenha.value; 
+            if (campoSenha && campoSenha.value && campoSenha.value.length >= 6) {
+                const salvarAluno = httpsCallable(functions, 'salvarAlunoComHash');
+                await salvarAluno({
+                alunoId: docRefId,
+                dados: dados,
+                senha: campoSenha.value
+            });
+    
+          return; // A Cloud Function já salvou
+          } 
             
             try { 
                 let docRefId = id; 
