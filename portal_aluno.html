@@ -1164,68 +1164,115 @@ window.toggleSenha = function(inputId, btnElement) {
     }
 };
 
+function salvarSessaoAluno(token, alunoData) {
+    localStorage.setItem('bjj_aluno_token', token);
+    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoData));
+}
+
+// Função para limpar sessão
+function limparSessaoAluno() {
+    localStorage.removeItem('bjj_aluno_token');
+    localStorage.removeItem('bjj_aluno_auth');
+}
+
+// Função para validar se o token ainda é válido (opcional)
+async function validarTokenAtual() {
+    const token = localStorage.getItem('bjj_aluno_token');
+    if (!token) return false;
+    
+    try {
+        const validarToken = httpsCallable(functions, 'validarTokenAluno');
+        const result = await validarToken({ token });
+        return result.data.success;
+    } catch (error) {
+        console.error('Erro ao validar token:', error);
+        return false;
+    }
+}
+
 window.fazerLoginAluno = async function() {
     const emailBruto = document.getElementById('login-email').value;
     const email = emailBruto.replace(/\s/g, '').toLowerCase(); 
     const senha = document.getElementById('login-senha').value.trim();
     const btn = document.getElementById('btn-login');
 
-    if(!email || !senha) return showToast("Preencha todos os campos.");
-    btn.disabled = true; btn.innerHTML = "<span class='animate-pulse'>⏳</span> BUSCANDO DADOS...";
+    if(!email || !senha) {
+        showToast("Preencha todos os campos.", "error");
+        return;
+    }
+    
+    btn.disabled = true; 
+    btn.innerHTML = "<span class='animate-pulse'>⏳</span> VALIDANDO ACESSO...";
 
     try {
-        const q = query(collection(db, "alunos"), where("email", "==", email), where("senha_portal", "==", senha));
-        const snap = await getDocs(q);
+        // 🔥 CHAMADA SEGURA VIA CLOUD FUNCTION
+        const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
+        const result = await validarLogin({ email, senha });
         
-        if (snap.empty) { 
-            showToast("E-mail ou senha incorretos.", "error"); 
-            btn.disabled = false; btn.innerHTML = "Entrar no Portal"; 
-            return;
-        } 
-
-        const alunoDoc = snap.docs[0].data();
-        const alunoId = snap.docs[0].id;
-        
-        try {
-            const equipeDoc = await getDoc(doc(db, "equipes", alunoDoc.equipe_id));
-            if (equipeDoc.exists()) {
-                const eqData = equipeDoc.data();
-                const isIsento = eqData.isento === true || String(eqData.isento) === "true";
-                const statusAtual = eqData.status_plano || 'TESTE';
-                const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
-
-                if (!isIsento && planosBasicos.includes(statusAtual.toUpperCase().trim())) {
-                    btn.disabled = false; 
-                    btn.innerHTML = "Entrar no Portal";
-                    return showToast("⚠️ Acesso Indisponível. A sua academia precisa fazer o upgrade do sistema para liberar o Portal do Aluno.");
-                }
-            }
-        } catch (erroEquipe) {
-            console.log("Aviso: Não foi possível validar o plano da equipe agora.", erroEquipe);
-        }
-
-        alunoLogado = { id: alunoId, ...alunoDoc };
-        localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
-        showToast("Acesso liberado! Oss!", "success");
-        iniciarPortal(); // Chame a função de inicialização do portal que existe no seu código
-        
-    } catch (error) { 
-        console.error("ERRO CRÍTICO LOGIN:", error);
-        if(error.code === 'permission-denied') {
-            showToast("Sem permissão para acessar o banco de dados.", "error");
-        } else if(error.message && error.message.includes('network')) {
-            showToast("Sem conexão com a internet.", "error");
+        if (result.data.success) {
+            // Salva token e dados do aluno
+            salvarSessaoAluno(result.data.token, result.data.aluno);
+            
+            // Atualiza a variável global
+            alunoLogado = result.data.aluno;
+            
+            showToast("Acesso liberado! Oss!", "success");
+            iniciarPortal();
         } else {
-            showToast("🚨 Erro de comunicação. Tente novamente.", "error"); 
+            showToast(result.data.error || "Erro ao acessar.", "error");
+            btn.disabled = false;
+            btn.innerHTML = "Entrar no Portal";
         }
-        btn.disabled = false; btn.innerHTML = "Entrar no Portal"; 
+        
+    } catch (error) {
+        console.error("ERRO CRÍTICO LOGIN:", error);
+        
+        // Extrai mensagem de erro da Cloud Function
+        let mensagemErro = "Erro de comunicação. Tente novamente.";
+        
+        if (error.message) {
+            if (error.message.includes('not-found')) {
+                mensagemErro = "Aluno não encontrado. Verifique seu e-mail.";
+            } else if (error.message.includes('unauthenticated')) {
+                mensagemErro = "Senha incorreta. Tente novamente.";
+            } else if (error.message.includes('permission-denied')) {
+                mensagemErro = "Sua conta está inativa. Contate o professor.";
+            } else if (error.message.includes('network')) {
+                mensagemErro = "Sem conexão com a internet.";
+            } else if (error.message.includes('internal')) {
+                mensagemErro = "Erro interno do servidor. Tente mais tarde.";
+            }
+        }
+        
+        showToast(mensagemErro, "error");
+        btn.disabled = false;
+        btn.innerHTML = "Entrar no Portal";
     }
 };
 
 window.sairDoPortal = function() { 
-    localStorage.removeItem('bjj_aluno_auth'); 
+    limparSessaoAluno();
     window.location.reload(); 
 };
+
+// Verificar se já existe sessão salva e validar token
+const sessaoToken = localStorage.getItem('bjj_aluno_token');
+const sessaoAluno = localStorage.getItem('bjj_aluno_auth');
+
+if (sessaoToken && sessaoAluno) {
+    // Verifica se o token ainda é válido antes de logar
+    validarTokenAtual().then(isValid => {
+        if (isValid) {
+            alunoLogado = JSON.parse(sessaoAluno);
+            iniciarPortal();
+        } else {
+            limparSessaoAluno();
+            console.log("Sessão expirada, faça login novamente.");
+        }
+    }).catch(() => {
+        limparSessaoAluno();
+    });
+}
 
 // ==========================================
 // 🧭 NAVEGAÇÃO ENTRE ABAS
@@ -1348,24 +1395,40 @@ window.salvarMeusDados = async function() {
     const inputFoto = document.getElementById('input-foto');
 
     if(!tel || !email) return showToast("Telefone e E-mail são obrigatórios.");
-    btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
+    
+    btn.disabled = true; 
+    btn.innerHTML = "⏳ Salvando...";
 
     const dadosAtualizados = {
-        telefone: tel, peso: document.getElementById('edit-peso').value.trim(), email: email,
-        cep: document.getElementById('edit-cep').value.trim(), endereco: document.getElementById('edit-end').value.trim(),
-        numero: document.getElementById('edit-num').value.trim(), complemento: document.getElementById('edit-comp').value.trim(),
-        bairro: document.getElementById('edit-bairro').value.trim(), cidade: document.getElementById('edit-cidade').value.trim(), uf: document.getElementById('edit-uf').value
+        telefone: tel, 
+        peso: document.getElementById('edit-peso').value.trim(), 
+        email: email,
+        cep: document.getElementById('edit-cep').value.trim(), 
+        endereco: document.getElementById('edit-end').value.trim(),
+        numero: document.getElementById('edit-num').value.trim(), 
+        complemento: document.getElementById('edit-comp').value.trim(),
+        bairro: document.getElementById('edit-bairro').value.trim(), 
+        cidade: document.getElementById('edit-cidade').value.trim(), 
+        uf: document.getElementById('edit-uf').value
     };
 
-    if(novaSenha.length > 0) {
-        if(novaSenha.length < 6) { btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; return showToast("Senha mínima: 6 caracteres."); }
-        dadosAtualizados.senha_portal = novaSenha;
+    // Só inclui a senha se foi preenchida (já que é opcional)
+    if(novaSenha && novaSenha.length > 0) {
+        if(novaSenha.length < 6) { 
+            btn.disabled = false; 
+            btn.innerHTML = "💾 Salvar Alterações"; 
+            return showToast("Senha mínima: 6 caracteres."); 
+        }
+        dadosAtualizados.senha_portal = novaSenha; // ⚠️ AINDA EM TEXTO PURO
+        // 🔥 TODO: Criar Cloud Function para atualizar senha com hash
     }
 
     try {
+        // Upload da foto se houver
         if (inputFoto.files && inputFoto.files[0]) {
             btn.innerHTML = "⏳ Enviando Foto...";
             
+            // Apaga foto antiga se existir
             if (alunoLogado.foto_url) {
                 try {
                     const refFotoAntiga = ref(storage, alunoLogado.foto_url);
@@ -1383,20 +1446,28 @@ window.salvarMeusDados = async function() {
             dadosAtualizados.foto_url = await getDownloadURL(fotoRef);
         }
         
+        // Atualiza os dados no Firestore
         await updateDoc(doc(db, "alunos", alunoLogado.id), dadosAtualizados);
-        alunoLogado = { ...alunoLogado, ...dadosAtualizados }; 
-        localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+        
+        // Atualiza a sessão local com os novos dados (sem expor a senha)
+        const alunoAtualizado = { ...alunoLogado, ...dadosAtualizados };
+        // Remove a senha da sessão por segurança
+        delete alunoAtualizado.senha_portal;
+        
+        salvarSessaoAluno(localStorage.getItem('bjj_aluno_token'), alunoAtualizado);
+        alunoLogado = alunoAtualizado;
+        
         showToast("Dados atualizados com sucesso!", "success"); 
         document.getElementById('edit-senha').value = ""; 
         preencherCarteirinha();
     } catch (error) { 
-        showToast("Falha ao salvar. Tente novamente."); 
-    } 
-    finally { 
-        btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; 
+        console.error(error);
+        showToast("Falha ao salvar. Tente novamente.", "error"); 
+    } finally { 
+        btn.disabled = false; 
+        btn.innerHTML = "💾 Salvar Alterações"; 
     }
 };
-
 // ==========================================
 // ⚕️ ANAMNESE E SAÚDE
 // ==========================================
@@ -1610,7 +1681,8 @@ window.compartilharCarteirinha = async function () {
 // 💳 FINANCEIRO E MENSALIDADES
 // ==========================================
 window.abrirPagamento = async function(faturaId) {
-    const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
+    const fat = faturasCache.find(f => f.id === faturaId); 
+    if (!fat) return showToast("Fatura não encontrada.", "error");
     
     let temAsaas = false;
     if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
@@ -1621,18 +1693,50 @@ window.abrirPagamento = async function(faturaId) {
     }
     
     if (temAsaas) {
-        if (fat.link_pagamento) { window.open(fat.link_pagamento, '_blank'); return; }
-        showToast("⏳ Gerando link de pagamento seguro...", "success"); const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`); let textoOriginal = "";
-        if(btnPagamento) { textoOriginal = btnPagamento.innerHTML; btnPagamento.innerHTML = "⏳ Aguarde..."; btnPagamento.disabled = true; }
+        if (fat.link_pagamento) { 
+            window.open(fat.link_pagamento, '_blank'); 
+            return; 
+        }
+        
+        showToast("⏳ Gerando link de pagamento seguro...", "success");
+        
         try {
             const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-            const resultado = await gerarCobranca({ alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}` });
-            if (resultado.data.success) { showToast("✅ Fatura gerada com sucesso!", "success"); window.open(resultado.data.url, '_blank'); buscarFaturasResiliente(); } else { showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); }
-        } catch (error) { showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); } finally { if(btnPagamento) { btnPagamento.innerHTML = textoOriginal; btnPagamento.disabled = false; } }
+            
+            // 🔥 Passa o token para autenticação (opcional - a função já usa o uid do contexto)
+            const token = localStorage.getItem('bjj_aluno_token');
+            
+            const resultado = await gerarCobranca({ 
+                alunoId: alunoLogado.id, 
+                valor: fat.valor, 
+                mesAno: fat.mes_ano, 
+                descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`,
+                _token: token // Opcional: para validação extra
+            });
+            
+            if (resultado.data.success) { 
+                showToast("✅ Fatura gerada com sucesso!", "success"); 
+                window.open(resultado.data.url, '_blank'); 
+                buscarFaturasResiliente(); 
+            } else { 
+                showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); 
+            }
+        } catch (error) { 
+            console.error(error);
+            showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); 
+        }
     } else {
-        let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = fat.mes_ano.split('-'); anoStr = partes[0]; mesStr = partes[1]; }
+        // Resto do código para PIX manual...
+        // (mantém igual ao original)
+        let mesStr = "", anoStr = ""; 
+        if(fat.mes_ano && String(fat.mes_ano).includes('-')) { 
+            const partes = fat.mes_ano.split('-'); 
+            anoStr = partes[0]; 
+            mesStr = partes[1]; 
+        }
         const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
-        document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+        document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; 
+        document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
         
         const inputPix = document.getElementById('pix-codigo');
         const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);
@@ -1644,7 +1748,8 @@ window.abrirPagamento = async function(faturaId) {
             inputPix.value = "Chave PIX não configurada pelo professor."; 
             document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor."; 
         }
-        document.getElementById('modal-pix').classList.remove('hidden'); document.getElementById('modal-pix').classList.add('flex');
+        document.getElementById('modal-pix').classList.remove('hidden'); 
+        document.getElementById('modal-pix').classList.add('flex');
     }
 };
 
