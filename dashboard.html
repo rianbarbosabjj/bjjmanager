@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dashboard | BJJ Manager</title>
+    
+    <meta property="og:title" content="Painel Administrativo | BJJ Manager">
+    <meta property="og:description" content="Gestão inteligente para sua equipe de Jiu-Jitsu.">
+    <meta property="og:image" content="https://manager.bjjdigital.com.br/logo_bjj_manager.png">
+    <meta property="og:type" content="website">
+    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,22 +18,9 @@
     
     <link rel="apple-touch-icon" href="logo_bjj_manager.png">
     <link rel="icon" type="image/png" href="logo_bjj_manager.png">
-    
     <link rel="manifest" href="manifest.json">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard | BJJ Manager</title>
-    
-    <meta property="og:title" content="Painel Administrativo | BJJ Manager">
-    <meta property="og:description" content="Gestão inteligente para sua equipe de Jiu-Jitsu.">
-    <meta property="og:image" content="https://manager.bjjdigital.com.br/logo_bjj_manager.png">
-    <meta property="og:type" content="website">
-    
-    <link rel="icon" type="image/png" href="logo_bjj_manager.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
@@ -49,9 +45,7 @@
         }
         .animate-spin { animation: spin 1s linear infinite; }
         
-        .card-hover {
-            transition: all 0.2s ease;
-        }
+        .card-hover { transition: all 0.2s ease; }
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
@@ -66,7 +60,7 @@
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center">
         <div class="bg-white rounded-2xl p-6 flex flex-col items-center shadow-2xl">
             <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p class="text-sm font-bold text-slate-700">Carregando dados...</p>
+            <p class="text-sm font-bold text-slate-700">A carregar dados...</p>
         </div>
     </div>
 
@@ -89,9 +83,12 @@
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col text-center border-t-4 border-amber-500 transform transition-all duration-300 scale-95 opacity-0" id="modal-paywall-content">
             <div class="p-8">
                 <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">🔒</div>
-                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso indisponível para seu plano</h3>
+                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso indisponível</h3>
                 <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6" id="paywall-texto">A função <span id="paywall-recurso-nome" class="font-black text-amber-600">--</span> é exclusiva para planos superiores.</p>
-                <div class="flex gap-3"><button onclick="fecharPaywall()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Voltar</button><a href="planos.html" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-1"><span>⚡</span> Upgrade</a></div>
+                <div class="flex gap-3">
+                    <button onclick="fecharPaywall()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Voltar</button>
+                    <a href="planos.html" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-1"><span>⚡</span> Upgrade</a>
+                </div>
             </div>
         </div>
     </div>
@@ -107,42 +104,127 @@
 
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6 md:mb-8">
                         <div>
-                            <div class="flex items-center gap-3 mb-1"><h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2><span id="status-badge" class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-slate-200 text-slate-500 border border-slate-300 shadow-sm mt-1">A CARREGAR</span></div>
-                            <div class="flex items-center gap-2 flex-wrap"><p class="text-xs md:text-sm text-slate-500 font-medium">Sua equipe na palma da mão</p><span class="text-slate-300">•</span><a href="planos.html" class="text-[10px] md:text-xs font-bold text-cyan-600 hover:text-cyan-700 underline decoration-cyan-200 underline-offset-2 transition-colors">Fazer Upgrade de Plano</a><span class="text-slate-300">•</span><button onclick="manualRefreshDashboard()" class="text-[10px] md:text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Atualizar</button></div>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2>
+                                <span id="status-badge" class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-slate-200 text-slate-500 border border-slate-300 shadow-sm mt-1">A CARREGAR</span>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="text-xs md:text-sm text-slate-500 font-medium">Sua equipe na palma da mão</p>
+                                <span class="text-slate-300">•</span>
+                                <a href="planos.html" class="text-[10px] md:text-xs font-bold text-cyan-600 hover:text-cyan-700 underline decoration-cyan-200 underline-offset-2 transition-colors">Fazer Upgrade de Plano</a>
+                                <span class="text-slate-300">•</span>
+                                <button onclick="manualRefreshDashboard()" class="text-[10px] md:text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Atualizar
+                                </button>
+                            </div>
                         </div>
                         <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
-                            <button onclick="if(window.verificarAcesso('mural_avisos')) abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm"><span class="mr-1 md:mr-2">📢</span> <span class="hidden sm:inline">Avisos</span></button>
-                            <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm"><span class="mr-1 md:mr-2">📋</span> <span class="hidden sm:inline">Dados da Equipe</span></button>
-                            <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm"><span class="mr-1 md:mr-2">➕</span> <span class="hidden sm:inline">Novo Aluno</span></a>
+                            <button onclick="if(window.verificarAcesso('mural_avisos')) abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">📢</span> <span class="hidden sm:inline">Avisos</span>
+                            </button>
+                            <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">📋</span> <span class="hidden sm:inline">Dados da Equipe</span>
+                            </button>
+                            <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">➕</span> <span class="hidden sm:inline">Novo Aluno</span>
+                            </a>
                         </div>
                     </div>
 
                     <div id="painel-onboarding" class="hidden">
                         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
-                            <div class="bg-gradient-to-r from-cyan-500 to-blue-600 p-8 md:p-12 text-center relative overflow-hidden"><div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div><span class="text-6xl mb-4 block relative z-10">🥋</span><h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2><p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipe ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p></div>
+                            <div class="bg-gradient-to-r from-cyan-500 to-blue-600 p-8 md:p-12 text-center relative overflow-hidden">
+                                <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+                                <span class="text-6xl mb-4 block relative z-10">🥋</span>
+                                <h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2>
+                                <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipe ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
+                            </div>
                             <div class="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform"><div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div><h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure sua Equipe</h3><p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Preencha os dados da equipe, adicione a sua logo oficial e convide os seus professores.</p><button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">📋 Dados da Equipe</button></div>
-                                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform"><div class="w-12 h-12 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">2</div><h3 class="font-black text-indigo-900 uppercase tracking-widest text-xs mb-2">Crie as Turmas</h3><p class="text-xs text-indigo-700/80 leading-relaxed mb-6 flex-1">Registe os horários de treinos (ex: "Adulto Noite", "Kids") para poder organizar e separar os seus alunos de forma inteligente.</p><a href="turmas.html" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">🗓️ Criar Turmas</a></div>
-                                <div class="bg-cyan-50 border border-cyan-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform"><div class="w-12 h-12 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">3</div><h3 class="font-black text-cyan-900 uppercase tracking-widest text-xs mb-2">Matricule Atletas</h3><p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o gerenciar sua equipe.</p><a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">➕ Novo Aluno</a></div>
+                                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure sua Equipe</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Preencha os dados da equipe, adicione a sua logo oficial e convide os seus professores.</p>
+                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">📋 Dados da Equipe</button>
+                                </div>
+                                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">2</div>
+                                    <h3 class="font-black text-indigo-900 uppercase tracking-widest text-xs mb-2">Crie as Turmas</h3>
+                                    <p class="text-xs text-indigo-700/80 leading-relaxed mb-6 flex-1">Registe os horários de treinos (ex: "Adulto Noite", "Kids") para poder organizar e separar os seus alunos de forma inteligente.</p>
+                                    <a href="turmas.html" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">🗓️ Criar Turmas</a>
+                                </div>
+                                <div class="bg-cyan-50 border border-cyan-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">3</div>
+                                    <h3 class="font-black text-cyan-900 uppercase tracking-widest text-xs mb-2">Matricule Atletas</h3>
+                                    <p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o gerenciar sua equipe.</p>
+                                    <a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">➕ Novo Aluno</a>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div id="painel-metricas" class="hidden">
                         <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center card-hover"><h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3><p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p></div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center card-hover"><h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3><p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p></div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center card-hover"><h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3><p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p></div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center card-hover"><h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3><p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p></div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center card-hover">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
+                                <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center card-hover">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
+                                <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center card-hover">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
+                                <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center card-hover">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
+                                <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p>
+                            </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6"><h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3><div class="flex flex-wrap gap-3" id="grid-faixas"><span class="text-slate-400 text-sm">Calculando faixas...</span></div></div>
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6">
+                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3>
+                            <div class="flex flex-wrap gap-3" id="grid-faixas">
+                                <span class="text-slate-400 text-sm">Calculando faixas...</span>
+                            </div>
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 card-hover"><div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0"><h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes</h3></div><div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver"><div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div></div></div>
-                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 card-hover"><div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0"><h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3></div><div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4" id="lista-turmas"><div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div></div></div>
-                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 card-hover"><div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0"><h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção (Finanças)</h3></div><div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias"><div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div></div></div>
-                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 border-t-4 border-t-emerald-500 card-hover"><div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0"><h3 class="font-black text-emerald-700 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">📍</span> Hoje no Tatame</h3></div><div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-checkins"><div class="text-center text-slate-400 text-sm mt-5">A procurar presenças...</div></div></div>
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 card-hover">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 card-hover">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4" id="lista-turmas">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 card-hover">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção (Finanças)</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 border-t-4 border-t-emerald-500 card-hover">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-emerald-700 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">📍</span> Hoje no Tatame</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-checkins">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A procurar presenças...</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -153,32 +235,216 @@
     <!-- MODAL DE MENSAGENS -->
     <div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh] animate-fade-in">
-            <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0"><span>📢 Mural de Avisos (Alunos)</span><button onclick="fecharModalMensagem()" class="text-indigo-200 hover:text-white text-xl leading-none">&times;</button></div>
-            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar"><button id="tab-btn-msg-nova" onclick="switchMsgTab('nova')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap">Novo Aviso</button><button id="tab-btn-msg-lista" onclick="switchMsgTab('lista')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Avisos Ativos</button></div>
-            <div id="tab-msg-nova" class="p-6 flex-1 overflow-y-auto space-y-4"><p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-2">Este aviso aparecerá no portal digital de todos os alunos ativos da sua equipe.</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Título do Aviso</label><input type="text" id="msg-titulo" placeholder="Ex: Feriado" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700"></div><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Exibir até (Opcional)</label><input type="date" id="msg-validade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-600 cursor-pointer"></div></div><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Urgência do Aviso</label><div class="flex gap-2"><label class="flex-1 cursor-pointer"><input type="radio" name="msg-urgencia" value="normal" checked class="peer sr-only"><div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 transition-all uppercase tracking-widest">Normal</div></label><label class="flex-1 cursor-pointer"><input type="radio" name="msg-urgencia" value="importante" class="peer sr-only"><div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 transition-all uppercase tracking-widest">Atenção</div></label><label class="flex-1 cursor-pointer"><input type="radio" name="msg-urgencia" value="urgente" class="peer sr-only"><div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500 transition-all uppercase tracking-widest">Urgente</div></label></div></div><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Mensagem</label><textarea id="msg-conteudo" rows="4" placeholder="Escreva o recado para os alunos..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 text-sm text-slate-700 resize-none"></textarea></div></div>
-            <div id="tab-msg-lista" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4 bg-slate-50/50"><div id="lista-mensagens-ativas" class="space-y-3"><div class="text-center text-slate-400 text-xs italic py-4">Buscando avisos...</div></div></div>
-            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0"><button onclick="fecharModalMensagem()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button><button id="btn-enviar-msg" onclick="enviarMensagemEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Publicar Aviso</button></div>
+            <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
+                <span>📢 Mural de Avisos (Alunos)</span>
+                <button onclick="fecharModalMensagem()" class="text-indigo-200 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
+                <button id="tab-btn-msg-nova" onclick="switchMsgTab('nova')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap">Novo Aviso</button>
+                <button id="tab-btn-msg-lista" onclick="switchMsgTab('lista')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Avisos Ativos</button>
+            </div>
+            <div id="tab-msg-nova" class="p-6 flex-1 overflow-y-auto space-y-4">
+                <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-2">Este aviso aparecerá no portal digital de todos os alunos ativos da sua equipe.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Título do Aviso</label>
+                        <input type="text" id="msg-titulo" placeholder="Ex: Feriado" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Exibir até (Opcional)</label>
+                        <input type="date" id="msg-validade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-600 cursor-pointer">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Urgência do Aviso</label>
+                    <div class="flex gap-2">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="msg-urgencia" value="normal" checked class="peer sr-only">
+                            <div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 transition-all uppercase tracking-widest">Normal</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="msg-urgencia" value="importante" class="peer sr-only">
+                            <div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 transition-all uppercase tracking-widest">Atenção</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="msg-urgencia" value="urgente" class="peer sr-only">
+                            <div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500 transition-all uppercase tracking-widest">Urgente</div>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Mensagem</label>
+                    <textarea id="msg-conteudo" rows="4" placeholder="Escreva o recado para os alunos..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 text-sm text-slate-700 resize-none"></textarea>
+                </div>
+            </div>
+            <div id="tab-msg-lista" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4 bg-slate-50/50">
+                <div id="lista-mensagens-ativas" class="space-y-3">
+                    <div class="text-center text-slate-400 text-xs italic py-4">Buscando avisos...</div>
+                </div>
+            </div>
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
+                <button onclick="fecharModalMensagem()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
+                <button id="btn-enviar-msg" onclick="enviarMensagemEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Publicar Aviso</button>
+            </div>
         </div>
     </div>
     
     <!-- MODAL CONFIG EQUIPE -->
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in">
-            <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0"><span>📋 Dados da Equipe</span><button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button></div>
-            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar bg-slate-50"><button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Configurações & Endereço</button><button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button><button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button></div>
-            <div id="tab-dados" class="p-6 flex-1 overflow-y-auto space-y-6"><!-- conteúdo mantido --></div>
-            <div id="tab-colabs" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4"><!-- conteúdo mantido --></div>
-            <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6"><!-- conteúdo mantido --></div>
-            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0"><button onclick="fecharModalConfig()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button><button id="btn-salvar-config" onclick="salvarConfigEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Salvar Dados</button></div>
+            <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
+                <span>📋 Dados da Equipe</span>
+                <button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar bg-slate-50">
+                <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Configurações & Endereço</button>
+                <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button>
+                <button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button>
+            </div>
+            
+            <div id="tab-dados" class="p-6 flex-1 overflow-y-auto space-y-6">
+                <div class="space-y-4">
+                    <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Identificação Visual</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Equipe</label>
+                            <input type="text" id="config-nome-equipe" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Alterar Logo (Opcional)</label>
+                            <input type="file" id="config-logo" accept="image/png, image/jpeg" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-600 hover:file:bg-cyan-100 transition-all cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Responsável Legal</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2 relative group">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo (Responsável) 🔒</label>
+                            <input type="text" id="config-resp-nome" disabled title="Para alterar, contate o suporte" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-bold text-slate-500 cursor-not-allowed">
+                            <p class="text-[9px] text-amber-500 font-bold mt-1">Para transferir a titularidade, contate o <a href="https://manager.bjjdigital.com.br/suporte.html" target="_blank" class="underline hover:text-amber-600 transition-colors">suporte</a>.</p>
+                        </div>
+                        <div class="relative group">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ 🔒</label>
+                            <input type="text" id="config-resp-doc" disabled title="Para alterar, contate o suporte" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-bold text-slate-500 cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">WhatsApp *</label>
+                            <input type="text" id="config-tel" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Sede / Endereço</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label>
+                            <input type="text" id="config-cep" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCEP(this.value)" placeholder="00000-000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Rua / Avenida</label>
+                            <input type="text" id="config-rua" placeholder="Logradouro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label>
+                            <input type="text" id="config-num" placeholder="Nº" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Complemento</label>
+                            <input type="text" id="config-comp" placeholder="Sala, Andar..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label>
+                            <input type="text" id="config-bairro" placeholder="Bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cidade</label>
+                            <input type="text" id="config-cidade" placeholder="Cidade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">UF</label>
+                            <input type="text" id="config-uf" placeholder="Ex: RJ" maxlength="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-colabs" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4">
+                <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Adicione o e-mail de co-administrador para que eles tenham acesso instantâneo ao sistema da sua equipe.</p>
+                <div class="flex gap-2">
+                    <input type="email" id="novo-colab-email" placeholder="E-mail do co-administrador..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium">
+                    <button onclick="adicionarColaborador()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest shrink-0 transition-colors shadow-sm">Adicionar</button>
+                </div>
+                <div class="border-t border-slate-100 pt-4 mt-2 flex-1">
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase mb-3">Colaboradores Ativos</h4>
+                    <div id="lista-colaboradores" class="space-y-2">
+                        <div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6">
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Adminsitrador(a) / Auxiliares</h4>
+                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Compartilhe este link. Ao se cadastrarem, eles entrarão automaticamente como Co-Administradores.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-convite-prof" readonly class="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
+                        <button onclick="copiarLink('link-convite-prof')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
+                    </div>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                    <h4 class="text-xs font-black text-emerald-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">🥋</span> Para Alunos</h4>
+                    <p class="text-[10px] text-emerald-500/80 font-medium mb-3 leading-relaxed">Envie no grupo do WhatsApp. Os alunos preenchem os próprios dados e caem direto na sua lista.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-convite-aluno" readonly class="w-full p-2.5 bg-white border border-emerald-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
+                        <button onclick="copiarLink('link-convite-aluno')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
+                <button onclick="fecharModalConfig()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
+                <button id="btn-salvar-config" onclick="salvarConfigEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Salvar Dados</button>
+            </div>
         </div>
     </div>
 
     <!-- MODAL PAGAMENTO RÁPIDO -->
     <div id="modal-pagamento-rapido" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col animate-fade-in">
-            <div class="bg-emerald-500 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between"><span>✅ Registro Rápido</span><button onclick="fecharModalPagamentoRapido()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button></div>
-            <div class="p-6 space-y-4"><div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center"><p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Atleta</p><h3 id="lbl-pag-rapido-nome" class="font-black text-slate-800 text-lg truncate">--</h3><p class="text-[10px] text-slate-400 mt-2 uppercase">Valor da Mensalidade</p><p id="lbl-pag-rapido-valor" class="font-black text-emerald-600 text-xl">R$ 0,00</p></div><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Como foi pago?</label><select id="select-pag-rapido-forma" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-emerald-500 outline-none transition-all cursor-pointer shadow-sm"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Cartão">Cartão</option><option value="Transferência">Transferência Bancária</option></select></div></div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3"><button onclick="fecharModalPagamentoRapido()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button><button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">Confirmar</button></div>
+            <div class="bg-emerald-500 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
+                <span>✅ Registro Rápido</span>
+                <button onclick="fecharModalPagamentoRapido()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Atleta</p>
+                    <h3 id="lbl-pag-rapido-nome" class="font-black text-slate-800 text-lg truncate">--</h3>
+                    <p class="text-[10px] text-slate-400 mt-2 uppercase">Valor da Mensalidade</p>
+                    <p id="lbl-pag-rapido-valor" class="font-black text-emerald-600 text-xl">R$ 0,00</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Como foi pago?</label>
+                    <select id="select-pag-rapido-forma" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-emerald-500 outline-none transition-all cursor-pointer shadow-sm">
+                        <option value="PIX">PIX</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão">Cartão</option>
+                        <option value="Transferência">Transferência Bancária</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalPagamentoRapido()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                    Confirmar
+                </button>
+            </div>
         </div>
     </div>
     
@@ -189,7 +455,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -204,7 +469,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
-        const functions = getFunctions(app);
         
         let uid = null;
         let dadosEquipe = null; 
@@ -217,9 +481,9 @@
         let mensagensCache = [];
         let mensagemEditandoId = null;
 
-        // ===================== CACHE =====================
+        // ===================== CACHE MANAGER =====================
         const CACHE_KEYS = { ALUNOS: 'bjj_dash_alunos', FINANCEIRO: 'bjj_dash_financeiro', TURMAS: 'bjj_dash_turmas', CHECKINS: 'bjj_dash_checkins' };
-        const CACHE_TTL = 3 * 60 * 1000;
+        const CACHE_TTL = 3 * 60 * 1000; // 3 minutos
 
         function saveToCache(key, data, ttl = CACHE_TTL) {
             try { localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: ttl })); } catch (e) { console.warn(e); }
@@ -235,7 +499,7 @@
         }
         function clearCache() { Object.values(CACHE_KEYS).forEach(key => localStorage.removeItem(key)); }
 
-        // ===================== TOAST =====================
+        // ===================== TOAST & LOADING =====================
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -247,11 +511,9 @@
             setTimeout(() => toast.remove(), 4500);
         };
 
-        // ===================== LOADING =====================
         function showLoading() { const overlay = document.getElementById('loading-overlay'); overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
         function hideLoading() { const overlay = document.getElementById('loading-overlay'); overlay.classList.add('hidden'); overlay.classList.remove('flex'); }
 
-        // ===================== MANUAL REFRESH =====================
         window.manualRefreshDashboard = async function() {
             showLoading();
             clearCache();
@@ -262,7 +524,7 @@
             finally { hideLoading(); }
         };
 
-        // ===================== MASCARAS =====================
+        // ===================== MÁSCARAS =====================
         window.mascaraTelefone = (i) => { 
             let v = i.value.replace(/\D/g, ""); 
             if (v.length <= 10) { v = v.replace(/^(\d{2})(\d{4})(\d{4})/, "($1) $2-$3"); }
@@ -286,7 +548,7 @@
             } catch (e) { console.error("Erro ao buscar CEP:", e); }
         };
 
-        // ===================== PAYWALL =====================
+        // ===================== PERMISSÕES E PAYWALL =====================
         const HIERARQUIA_PLANOS = { 'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'PREMIUM': 3, 'ULTIMATE': 4 };
         const REGRAS_DE_ACESSO = { 'mural_avisos': { nivel: 2, nome: 'Portal do Aluno (App)' } };
         
@@ -348,15 +610,15 @@
             setTimeout(() => banner.classList.add('hidden'), 300);
         }
 
-        // ===================== MENSAGENS =====================
+        // ===================== MENSAGENS (MURAL) =====================
         window.switchMsgTab = function(tab) {
             if(tab === 'nova' && !mensagemEditandoId) { document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso"; document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso"; }
-            if(tab === 'lista') cancelarEdicaoMensagem();
+            if(tab === 'lista') window.cancelarEdicaoMensagem();
             ['nova', 'lista'].forEach(t => { document.getElementById('tab-msg-' + t).classList.add('hidden'); document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block'); document.getElementById('tab-btn-msg-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap"; });
             const abaAtiva = document.getElementById('tab-msg-' + tab);
             abaAtiva.classList.remove('hidden');
             if (tab === 'nova') { abaAtiva.classList.add('block'); document.getElementById('btn-enviar-msg').style.display = 'block'; }
-            else { abaAtiva.classList.add('flex', 'flex-col'); document.getElementById('btn-enviar-msg').style.display = 'none'; carregarMensagensEquipe(); }
+            else { abaAtiva.classList.add('flex', 'flex-col'); document.getElementById('btn-enviar-msg').style.display = 'none'; window.carregarMensagensEquipe(); }
             const btnAtivo = document.getElementById('tab-btn-msg-' + tab);
             btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
         };
@@ -371,7 +633,7 @@
             document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso";
         };
         
-        window.abrirModalMensagem = function() { document.getElementById('modal-mensagem').classList.remove('hidden'); document.getElementById('modal-mensagem').classList.add('flex'); cancelarEdicaoMensagem(); switchMsgTab('nova'); };
+        window.abrirModalMensagem = function() { document.getElementById('modal-mensagem').classList.remove('hidden'); document.getElementById('modal-mensagem').classList.add('flex'); window.cancelarEdicaoMensagem(); window.switchMsgTab('nova'); };
         window.fecharModalMensagem = function() { document.getElementById('modal-mensagem').classList.add('hidden'); document.getElementById('modal-mensagem').classList.remove('flex'); };
         
         window.editarMensagemEquipe = function(msgId) {
@@ -386,7 +648,7 @@
             if (r) r.checked = true;
             document.getElementById('btn-enviar-msg').innerHTML = "Salvar Alterações";
             document.getElementById('tab-btn-msg-nova').innerText = "Editar Aviso";
-            switchMsgTab('nova');
+            window.switchMsgTab('nova');
         };
         
         window.enviarMensagemEquipe = async function() {
@@ -397,15 +659,18 @@
             if (!titulo || !conteudo) return showToast("Preencha o título e a mensagem!", "error");
             if (dataValidade && new Date(dataValidade) < new Date()) return showToast("A data de validade deve ser futura!", "error");
             if (!uid) return showToast("Erro: ID da equipe não encontrado.", "error");
+            
             let dataExpiracaoIso = null;
             if (dataValidade) dataExpiracaoIso = new Date(dataValidade + 'T23:59:59').toISOString();
+            
             const btn = document.getElementById('btn-enviar-msg');
             btn.disabled = true; btn.innerHTML = "A enviar...";
+            
             try {
                 if (mensagemEditandoId) await updateDoc(doc(db, "mensagens", mensagemEditandoId), { titulo: titulo, conteudo: conteudo, urgencia: urgenciaSelecionada, data_expiracao: dataExpiracaoIso });
                 else await addDoc(collection(db, "mensagens"), { equipe_id: uid, titulo: titulo, conteudo: conteudo, urgencia: urgenciaSelecionada, data_envio: new Date().toISOString(), data_expiracao: dataExpiracaoIso, status: 'ativo' });
                 showToast("Aviso publicado com sucesso!", "success");
-                cancelarEdicaoMensagem(); switchMsgTab('lista');
+                window.cancelarEdicaoMensagem(); window.switchMsgTab('lista');
             } catch (error) { showToast("Erro ao salvar aviso. Tente novamente.", "error"); }
             finally { btn.disabled = false; btn.innerHTML = "Publicar Aviso"; }
         };
@@ -437,11 +702,11 @@
         
         window.excluirMensagemEquipe = async function(msgId) {
             if (!confirm("Tem certeza que deseja excluir este aviso? Ele sumirá do portal dos alunos imediatamente.")) return;
-            try { await deleteDoc(doc(db, "mensagens", msgId)); showToast("Aviso excluído com sucesso!", "success"); carregarMensagensEquipe(); }
+            try { await deleteDoc(doc(db, "mensagens", msgId)); showToast("Aviso excluído com sucesso!", "success"); window.carregarMensagensEquipe(); }
             catch (error) { showToast("Erro ao excluir aviso.", "error"); }
         };
 
-        // ===================== CONFIGURAÇÕES =====================
+        // ===================== CONFIGURAÇÕES DA EQUIPE =====================
         window.switchConfigTab = function(tab) {
             if (tab === 'convites') {
                 const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
@@ -457,18 +722,37 @@
             abaAtiva.classList.remove('hidden');
             if(tab === 'dados') abaAtiva.classList.add('block');
             else abaAtiva.classList.add('flex', 'flex-col');
+            
             const btnAtivo = document.getElementById('tab-btn-' + tab);
             const btnSalvar = document.getElementById('btn-salvar-config');
+            
             if (tab === 'dados') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'block'; }
-            else if (tab === 'colabs') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'none'; carregarColaboradores(); }
-            else if (tab === 'convites') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-emerald-600 border-b-2 border-emerald-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'none'; gerarLinksConvite(); }
+            else if (tab === 'colabs') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'none'; window.carregarColaboradores(); }
+            else if (tab === 'convites') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-emerald-600 border-b-2 border-emerald-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'none'; window.gerarLinksConvite(); }
         };
         
         window.gerarLinksConvite = function() { if(!uid) return; let baseUrl = window.location.origin; document.getElementById('link-convite-prof').value = `${baseUrl}/cadastro_externo.html?tipo=prof&equipe=${uid}`; document.getElementById('link-convite-aluno').value = `${baseUrl}/cadastro_externo.html?tipo=aluno&equipe=${uid}`; };
         
         window.copiarLink = function(idInput) { const input = document.getElementById(idInput); input.select(); input.setSelectionRange(0, 99999); navigator.clipboard.writeText(input.value).then(() => showToast("Link copiado!", "success")); };
         
-        window.abrirModalConfig = function() { const modal = document.getElementById('modal-config-equipe'); modal.classList.remove('hidden'); modal.classList.add('flex'); document.getElementById('config-nome-equipe').value = dadosEquipe.nome_equipe || dadosEquipe.nome || ""; document.getElementById('config-logo').value = ""; document.getElementById('config-resp-nome').value = dadosEquipe.responsavel_nome || ""; document.getElementById('config-resp-doc').value = dadosEquipe.responsavel_documento || dadosEquipe.cpf_cnpj || dadosEquipe.cpf || ""; document.getElementById('config-tel').value = dadosEquipe.telefone || ""; document.getElementById('config-cep').value = dadosEquipe.endereco_cep || dadosEquipe.cep || ""; document.getElementById('config-rua').value = dadosEquipe.endereco_rua || dadosEquipe.endereco || ""; document.getElementById('config-num').value = dadosEquipe.endereco_num || dadosEquipe.numero || ""; document.getElementById('config-comp').value = dadosEquipe.endereco_comp || ""; document.getElementById('config-bairro').value = dadosEquipe.endereco_bairro || dadosEquipe.bairro || ""; document.getElementById('config-cidade').value = dadosEquipe.endereco_cidade || ""; document.getElementById('config-uf').value = dadosEquipe.endereco_uf || ""; switchConfigTab('dados'); };
+        window.abrirModalConfig = function() { 
+            const modal = document.getElementById('modal-config-equipe'); 
+            modal.classList.remove('hidden'); modal.classList.add('flex'); 
+            document.getElementById('config-nome-equipe').value = dadosEquipe.nome_equipe || dadosEquipe.nome || ""; 
+            document.getElementById('config-logo').value = ""; 
+            document.getElementById('config-resp-nome').value = dadosEquipe.responsavel_nome || ""; 
+            document.getElementById('config-resp-doc').value = dadosEquipe.responsavel_documento || dadosEquipe.cpf_cnpj || dadosEquipe.cpf || ""; 
+            document.getElementById('config-tel').value = dadosEquipe.telefone || ""; 
+            document.getElementById('config-cep').value = dadosEquipe.endereco_cep || dadosEquipe.cep || ""; 
+            document.getElementById('config-rua').value = dadosEquipe.endereco_rua || dadosEquipe.endereco || ""; 
+            document.getElementById('config-num').value = dadosEquipe.endereco_num || dadosEquipe.numero || ""; 
+            document.getElementById('config-comp').value = dadosEquipe.endereco_comp || ""; 
+            document.getElementById('config-bairro').value = dadosEquipe.endereco_bairro || dadosEquipe.bairro || ""; 
+            document.getElementById('config-cidade').value = dadosEquipe.endereco_cidade || ""; 
+            document.getElementById('config-uf').value = dadosEquipe.endereco_uf || ""; 
+            window.switchConfigTab('dados'); 
+        };
+        
         window.fecharModalConfig = function() { const modal = document.getElementById('modal-config-equipe'); modal.classList.add('hidden'); modal.classList.remove('flex'); };
         
         window.carregarColaboradores = async function() {
@@ -488,11 +772,11 @@
             const emailInput = document.getElementById('novo-colab-email');
             const email = emailInput.value.trim().toLowerCase();
             if(!email || !email.includes('@')) return showToast("Digite um e-mail válido!", "error");
-            try { await addDoc(collection(db, "colaboradores"), { email: email, equipe_id: uid, data_cadastro: new Date().toISOString() }); emailInput.value = ''; showToast("Co-Administrador adicionado!", "success"); carregarColaboradores(); }
+            try { await addDoc(collection(db, "colaboradores"), { email: email, equipe_id: uid, data_cadastro: new Date().toISOString() }); emailInput.value = ''; showToast("Co-Administrador adicionado!", "success"); window.carregarColaboradores(); }
             catch (e) { showToast("Erro ao adicionar.", "error"); }
         };
         
-        window.removerColaborador = async function(docId) { if(!confirm("Remover o acesso deste co-administrador?")) return; try { await deleteDoc(doc(db, "colaboradores", docId)); showToast("Acesso removido.", "success"); carregarColaboradores(); } catch (e) { showToast("Erro ao remover.", "error"); } };
+        window.removerColaborador = async function(docId) { if(!confirm("Remover o acesso deste co-administrador?")) return; try { await deleteDoc(doc(db, "colaboradores", docId)); showToast("Acesso removido.", "success"); window.carregarColaboradores(); } catch (e) { showToast("Erro ao remover.", "error"); } };
         
         window.salvarConfigEquipe = async function() {
             const btn = document.getElementById('btn-salvar-config');
@@ -527,7 +811,8 @@
             try {
                 if (faturaId) await updateDoc(doc(db, "financeiro", faturaId), { status: 'PAGO', data: dataHoje, forma_pagamento: formaEscolhida, valor: valor, data_pagamento: new Date().toISOString() });
                 else await addDoc(collection(db, "financeiro"), { equipe_id: uid, aluno_id: alunoId, tipo: 'MENSALIDADE', status: 'PAGO', valor: valor, mes_ano: mesAno, descricao: `Mensalidade - ${nomeAluno}`, data_criacao: new Date().toISOString(), data: dataHoje, forma_pagamento: formaEscolhida, data_pagamento: new Date().toISOString() });
-                fecharModalPagamentoRapido(); showToast("Pagamento registrado com sucesso!", "success"); await carregarDashboard(true);
+                window.fecharModalPagamentoRapido(); showToast("Pagamento registrado com sucesso!", "success"); 
+                clearCache(); await carregarDashboard(true);
             } catch (e) { showToast("Erro ao registrar pagamento.", "error"); } finally { btn.disabled = false; btn.innerHTML = "Confirmar"; hideLoading(); }
         };
 
@@ -562,14 +847,16 @@
                 const turmas = turmasSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 const financeiro = financSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 const checkins = checkinSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
                 saveToCache(CACHE_KEYS.ALUNOS, alunos);
                 saveToCache(CACHE_KEYS.FINANCEIRO, financeiro);
                 saveToCache(CACHE_KEYS.TURMAS, turmas);
                 saveToCache(CACHE_KEYS.CHECKINS, checkins);
+                
                 renderizarDashboardComCache(alunos, financeiro, turmas, checkins);
             } catch (error) {
                 console.error("Erro ao carregar dashboard:", error);
-                showToast("Erro ao carregar dados. Puxe para baixo para tentar novamente.", "error");
+                showToast("Erro ao carregar dados. Recarregue a página.", "error");
             } finally { hideLoading(); }
         }
 
@@ -595,8 +882,8 @@
             let faturasPendentes = {};
             financeiro.forEach(f => {
                 if (f.mes_ano === mesAnoFiltro) {
-                    if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) caixaDoMes += f.valor;
-                    else if (f.tipo === 'DESPESA') despesasDoMes += f.valor;
+                    if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) caixaDoMes += parseFloat(f.valor || 0);
+                    else if (f.tipo === 'DESPESA') despesasDoMes += parseFloat(f.valor || 0);
                 }
                 if (f.tipo === 'MENSALIDADE' && (f.status === 'PENDENTE' || f.status === 'ATRASADO')) {
                     if (!faturasPendentes[f.aluno_id]) faturasPendentes[f.aluno_id] = [];
@@ -660,7 +947,7 @@
                 const gridFaixas = document.getElementById('grid-faixas');
                 gridFaixas.innerHTML = '';
                 if (Object.keys(faixasCount).length === 0) gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
-                else for (const [faixa, qtd] of Object.entries(faixasCount)) { const estiloCss = obterEstiloFaixa(faixa); gridFaixas.innerHTML += `<div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm"><span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span><span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span></div>`; }
+                else for (const [faixa, qtd] of Object.entries(faixasCount)) { const estiloCss = obterEstiloFaixa(faixa); gridFaixas.innerHTML += `<div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm"><span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="background: ${estiloCss}"></span><span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span></div>`; }
                 
                 document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p></div>`;
                 document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência gerada ou faturas em dia!</p></div>`;
@@ -671,7 +958,7 @@
                     alunosDaTurma.sort((a, b) => a.nome.localeCompare(b.nome));
                     let listaAlunosHTML = '';
                     if (alunosDaTurma.length === 0) listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
-                    else for (const al of alunosDaTurma) { const estiloCss = obterEstiloFaixa(al.faixa); listaAlunosHTML += `<div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm"><span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span><span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0"><span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="${estiloCss}"></span>${al.faixa}</span></div>`; }
+                    else for (const al of alunosDaTurma) { const estiloCss = obterEstiloFaixa(al.faixa); listaAlunosHTML += `<div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm"><span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span><span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0"><span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="background: ${estiloCss}"></span>${al.faixa}</span></div>`; }
                     const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
                     const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
                     const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
@@ -681,16 +968,32 @@
             }
         }
 
-        // ===================== AUTENTICAÇÃO =====================
+        // ===================== AUTENTICAÇÃO E INICIALIZAÇÃO =====================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
                     let isSuper = false;
                     try { const superSnap = await getDoc(doc(db, "super_admins", user.uid)); if (superSnap.exists()) { isSuper = true; window.isSuperAdmin = true; } } catch(e) { isSuper = false; }
                     let isImpersonating = false;
+                    
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                        if (equipeImpersonada) { uid = equipeImpersonada; isImpersonating = true; setTimeout(() => { const aside = document.querySelector('aside'); if (aside) { const btnSairSuporte = document.createElement('button'); btnSairSuporte.onclick = window.sairModoSuporte; btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"; btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>"; const botoesNoMenu = Array.from(aside.querySelectorAll('button, a')); const btnSairOriginal = botoesNoMenu.find(el => el.textContent.toUpperCase().includes('SAIR')); if (btnSairOriginal && btnSairOriginal.parentNode) btnSairOriginal.parentNode.insertBefore(btnSairSuporte, btnSairOriginal); else aside.appendChild(btnSairSuporte); } }, 800); }
+                        if (equipeImpersonada) { 
+                            uid = equipeImpersonada; isImpersonating = true; 
+                            setTimeout(() => { 
+                                const aside = document.querySelector('aside'); 
+                                if (aside) { 
+                                    const btnSairSuporte = document.createElement('button'); 
+                                    btnSairSuporte.onclick = window.sairModoSuporte; 
+                                    btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"; 
+                                    btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>"; 
+                                    const botoesNoMenu = Array.from(aside.querySelectorAll('button, a')); 
+                                    const btnSairOriginal = botoesNoMenu.find(el => el.textContent.toUpperCase().includes('SAIR')); 
+                                    if (btnSairOriginal && btnSairOriginal.parentNode) btnSairOriginal.parentNode.insertBefore(btnSairSuporte, btnSairOriginal); 
+                                    else aside.appendChild(btnSairSuporte); 
+                                } 
+                            }, 800); 
+                        }
                         else { window.location.href = "super_admin.html"; return; }
                     } else {
                         uid = user.uid;
@@ -698,6 +1001,7 @@
                         if (mestreDoc.exists()) dadosEquipe = mestreDoc.data();
                         else { const colabDoc = await getDoc(doc(db, "colaboradores", uid)); if(colabDoc.exists()) uid = colabDoc.data().equipe_id; }
                     }
+                    
                     if (uid) {
                         document.getElementById('body-content').classList.remove('hidden');
                         try { const planosSnap = await getDoc(doc(db, "sistema", "config_planos")); if(planosSnap.exists()) configPlanosCache = planosSnap.data(); } catch(e) { console.error("Erro ao ler config de planos", e); }
@@ -708,30 +1012,63 @@
                             const agora = new Date();
                             const isTrialVencido = (dadosEquipe.status_plano === 'TESTE') && (agora > dataExpiracao);
                             const isIsento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-                            if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento && !window.isSuperAdmin) { document.getElementById('interface-sistema').classList.add('hidden'); const telaBloqueio = document.getElementById('tela-bloqueio'); telaBloqueio.classList.remove('hidden'); telaBloqueio.classList.add('flex'); return; }
+                            
+                            if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento && !window.isSuperAdmin) { 
+                                document.getElementById('interface-sistema').classList.add('hidden'); 
+                                const telaBloqueio = document.getElementById('tela-bloqueio'); 
+                                telaBloqueio.classList.remove('hidden'); telaBloqueio.classList.add('flex'); 
+                                return; 
+                            }
+                            
                             const badgeStatus = document.getElementById('status-badge');
                             const txtNomePlano = document.getElementById('nome-equipe');
                             nomeEquipeAtual = dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe";
                             if (txtNomePlano) txtNomePlano.innerText = nomeEquipeAtual.toUpperCase();
+                            
                             const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
                             let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
                             if (statusAt === 'BASICO' || statusAt === 'BÁSICO') idDoPlano = 'p1';
                             else if (statusAt === 'INTERMEDIARIO' || statusAt === 'INTERMEDIÁRIO') idDoPlano = 'p2';
                             else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
                             else if (statusAt === 'ULTIMATE') idDoPlano = 'p4';
+                            
                             let nomeRealDoPlano = statusAt;
                             if (configPlanosCache && configPlanosCache[idDoPlano]) { nomeRealDoPlano = configPlanosCache[idDoPlano].nome || statusAt; window.funcionalidadesEquipe = configPlanosCache[idDoPlano].features ? configPlanosCache[idDoPlano].features.split('\n') : []; }
                             else window.funcionalidadesEquipe = [];
+                            
                             if (isImpersonating || window.isSuperAdmin || isIsento) window.funcionalidadesEquipe = ["✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", "✓ Emissão de Certificados Profissionais", "✓ Gestão de Turmas e Frequência", "✓ Cadastro de Alunos Ilimitados", "✓ Portal do Aluno Completo (App)", "✓ Baixa Automática de Faturas"];
-                            if (badgeStatus) { if (statusAt === 'TESTE') { badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`; badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1"; } else { badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`; badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20"; } }
+                            
+                            if (badgeStatus) { 
+                                if (statusAt === 'TESTE') { badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`; badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1"; } 
+                                else { badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`; badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20"; } 
+                            }
+                            
                             if (typeof window.atualizarMenuSeguro === "function") window.atualizarMenuSeguro(window.funcionalidadesEquipe);
+                            
                             logoEquipeAnterior = dadosEquipe.url_logo || "";
                             if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
                             if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
-                            if (logoEquipeAnterior) { const imgTopo = document.getElementById('img-topo-equipe'); if (imgTopo) { imgTopo.src = logoEquipeAnterior; imgTopo.style.display = 'block'; } const injetarLogo = setInterval(() => { const aside = document.querySelector('aside'); if (aside) { let injetou = false; const fallbackDivs = aside.querySelectorAll('div.rounded-full'); fallbackDivs.forEach(div => { if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { div.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); div.classList.add('bg-transparent'); injetou = true; } }); const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo'); if (elLogoMenu) { elLogoMenu.style.background = 'transparent'; elLogoMenu.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`; injetou = true; } if (injetou) clearInterval(injetarLogo); } }, 300); setTimeout(() => clearInterval(injetarLogo), 5000); }
+                            
+                            if (logoEquipeAnterior) { 
+                                const imgTopo = document.getElementById('img-topo-equipe'); 
+                                if (imgTopo) { imgTopo.src = logoEquipeAnterior; imgTopo.style.display = 'block'; } 
+                                const injetarLogo = setInterval(() => { 
+                                    const aside = document.querySelector('aside'); 
+                                    if (aside) { 
+                                        let injetou = false; 
+                                        const fallbackDivs = aside.querySelectorAll('div.rounded-full'); 
+                                        fallbackDivs.forEach(div => { if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { div.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); div.classList.add('bg-transparent'); injetou = true; } }); 
+                                        const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo'); 
+                                        if (elLogoMenu) { elLogoMenu.style.background = 'transparent'; elLogoMenu.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`; injetou = true; } 
+                                        if (injetou) clearInterval(injetarLogo); 
+                                    } 
+                                }, 300); 
+                                setTimeout(() => clearInterval(injetarLogo), 5000); 
+                            }
                         }
+                        
                         verificarAvisoGlobal();
-                        await carregarDashboard(true);
+                        await carregarDashboard();
                     } else showToast("Equipe não encontrada", "error");
                 } catch(e) { console.error("Erro na autenticação:", e); showToast("Erro de conexão ao verificar usuário.", "error"); }
             } else { window.location.href = "index.html"; }
