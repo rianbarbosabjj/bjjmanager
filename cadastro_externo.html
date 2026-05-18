@@ -589,15 +589,19 @@ async function inicializarCadastro() {
     `;
 
     try {
-        // Tenta com timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos de timeout
+        // 🔍 LOG DE DIAGNÓSTICO
+        console.log("1. Iniciando carregamento da equipe:", equipeId);
+        console.log("2. Firebase config:", firebaseConfig);
+        console.log("3. Firestore disponível?", !!db);
         
         const docEquipe = await getDoc(doc(db, "equipes", equipeId));
+        console.log("4. Documento obtido com sucesso!");
+        
         clearTimeout(timeoutId);
         
         if (docEquipe.exists()) {
             const dadosEquipe = docEquipe.data();
+            console.log("5. Dados da equipe:", dadosEquipe);
             
             document.getElementById('cabecalho-form').innerHTML = `
                 <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">${tipoAcesso === 'prof' ? 'Acesso ao Sistema' : 'Ficha de Matrícula'}</h2>
@@ -609,6 +613,7 @@ async function inicializarCadastro() {
                 imgEl.src = dadosEquipe.url_logo;
                 imgEl.classList.remove('hidden');
                 imgEl.onerror = function() {
+                    console.warn("Logo não carregou:", dadosEquipe.url_logo);
                     this.classList.add('hidden');
                     const fallEl = document.getElementById('fallback-logo');
                     fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
@@ -620,6 +625,7 @@ async function inicializarCadastro() {
                 fallEl.classList.remove('hidden');
             }
         } else {
+            console.error("Documento da equipe não existe!");
             document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Equipe Não Encontrada</h2><p class="text-slate-500 mt-2">O link de convite pode estar expirado.</p>`;
             return;
         }
@@ -632,6 +638,7 @@ async function inicializarCadastro() {
                 const q = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
                 const snap = await getDocs(q);
                 quantidadeAlunosAtual = snap.size;
+                console.log("Total de alunos encontrados:", quantidadeAlunosAtual);
             } catch (e) {
                 console.warn("Erro ao contar alunos:", e);
                 quantidadeAlunosAtual = 0;
@@ -639,13 +646,23 @@ async function inicializarCadastro() {
         }
 
     } catch (e) {
-        console.error("Erro detalhado no carregamento:", e);
+        console.error("❌ ERRO DETALHADO:", e);
+        console.error("Código do erro:", e.code);
+        console.error("Mensagem:", e.message);
         
         let mensagemErro = "Erro de conexão com o servidor.";
-        if (e.message && e.message.includes("network")) {
-            mensagemErro = "Erro de rede. Verifique sua conexão com a internet.";
-        } else if (e.message && e.message.includes("permission")) {
-            mensagemErro = "Erro de permissão. O link pode estar inválido ou expirado.";
+        let detalhesErro = "";
+        
+        if (e.code === 'permission-denied') {
+            mensagemErro = "Permissão negada. O link pode estar inválido.";
+            detalhesErro = "Verifique as regras do Firestore para a coleção 'equipes'";
+        } else if (e.code === 'unavailable') {
+            mensagemErro = "Servidor indisponível. Tente novamente mais tarde.";
+        } else if (e.code === 'not-found') {
+            mensagemErro = "Equipe não encontrada.";
+        } else if (e.message && e.message.includes("network")) {
+            mensagemErro = "Erro de rede. Verifique sua conexão.";
+            detalhesErro = "Firebase não conseguiu se conectar - verifique domínios autorizados";
         } else if (e.message && e.message.includes("timeout")) {
             mensagemErro = "Tempo limite excedido. Tente novamente.";
         }
@@ -654,15 +671,45 @@ async function inicializarCadastro() {
             <div class="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
                 <span class="text-4xl block mb-3">🚨</span>
                 <h2 class="text-rose-500 font-black text-xl">${mensagemErro}</h2>
-                <p class="text-slate-600 mt-2 text-sm">Entre em contato com o administrador da equipe para um novo link de convite.</p>
+                <p class="text-slate-600 mt-2 text-sm">${detalhesErro}</p>
                 <button onclick="location.reload()" class="mt-4 bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">
                     Tentar novamente
+                </button>
+                <button onclick="testarConexaoFirebase()" class="mt-2 bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm ml-2">
+                    Testar Conexão
                 </button>
             </div>
         `;
         showToast(mensagemErro, "error");
     }
 }
+
+// Função de teste de conexão
+window.testarConexaoFirebase = async function() {
+    console.log("🔍 TESTANDO CONEXÃO COM FIREBASE...");
+    showToast("Testando conexão... Verifique o console (F12)", "info");
+    
+    try {
+        // Teste 1: Verificar se o Firebase está inicializado
+        console.log("Teste 1: Firebase inicializado?", !!db);
+        
+        // Teste 2: Tentar ler uma equipe específica (use um ID válido para teste)
+        const testEquipeId = equipeId || "ID_AQUI";
+        console.log("Teste 2: Tentando ler equipe:", testEquipeId);
+        const testDoc = await getDoc(doc(db, "equipes", testEquipeId));
+        console.log("Resultado:", testDoc.exists() ? "✅ Encontrada" : "❌ Não encontrada");
+        
+        if(testDoc.exists()) {
+            console.log("Dados:", testDoc.data());
+            showToast("✅ Conexão OK! Equipe encontrada.", "success");
+        } else {
+            showToast("⚠️ Conexão OK, mas equipe não encontrada.", "warning");
+        }
+    } catch(e) {
+        console.error("❌ Falha no teste:", e);
+        showToast("❌ Falha na conexão: " + e.message, "error");
+    }
+};
         window.salvarMatricula = async function() {
             const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
             const cpf = document.getElementById('cad-cpf').value.trim();
