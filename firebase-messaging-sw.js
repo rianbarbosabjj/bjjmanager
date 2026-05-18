@@ -12,46 +12,39 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const messaging = firebase.messaging();
 
-// Mensagem em primeiro plano
-messaging.onMessage((payload) => {
-    console.log('Mensagem recebida em primeiro plano:', payload);
-    const notificationTitle = payload.notification?.title || payload.data?.title || 'BJJ Manager';
-    const notificationOptions = {
-        body: payload.notification?.body || payload.data?.body || 'Nova notificação',
-        icon: '/logo_bjj_manager.png',
-        badge: '/logo_bjj_manager.png',
-        vibrate: [200, 100, 200],
-        data: payload.data || {},
-        requireInteraction: true
-    };
-    self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// Mensagem em segundo plano
+// Notificações em segundo plano
 messaging.onBackgroundMessage((payload) => {
-    console.log('Mensagem recebida em segundo plano:', payload);
+    console.log('[firebase-messaging-sw.js] Mensagem em background:', payload);
+    
     const notificationTitle = payload.notification?.title || payload.data?.title || 'BJJ Manager';
     const notificationOptions = {
-        body: payload.notification?.body || payload.data?.body || 'Nova notificação',
+        body: payload.notification?.body || payload.data?.body || 'Nova atualização',
         icon: '/logo_bjj_manager.png',
         badge: '/logo_bjj_manager.png',
         vibrate: [200, 100, 200],
-        data: payload.data || {},
-        requireInteraction: true
+        requireInteraction: true,
+        data: {
+            url: payload.data?.url || '/portal_aluno.html',
+            click_action: payload.fcmOptions?.link || payload.data?.click_action
+        }
     };
-    return self.registration.showNotification(notificationTitle, notificationOptions);
+    
+    self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Clique na notificação
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
+    
     const urlToOpen = event.notification.data?.url || '/portal_aluno.html';
+    
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })
             .then((windowClients) => {
-                for (const client of windowClients) {
+                for (let client of windowClients) {
                     if (client.url.includes(urlToOpen) && 'focus' in client) {
                         return client.focus();
                     }
