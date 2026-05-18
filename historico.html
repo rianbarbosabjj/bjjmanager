@@ -695,22 +695,38 @@ async function carregarTimeline(alunoId, forceRefresh = false) {
     }
 
     try {
-        const q = query(collection(db, "graduacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId), orderBy("data", "desc"));
+        // Query sem orderBy para não precisar de índice composto
+        const q = query(
+            collection(db, "graduacoes"), 
+            where("equipe_id", "==", uid), 
+            where("aluno_id", "==", alunoId)
+        );
         const snap = await getDocs(q);
         
         let historico = [];
         snap.forEach(doc => {
             historico.push({ id: doc.id, ...doc.data() });
         });
+        
+        // Ordena no frontend (mais recente primeiro)
+        historico.sort((a, b) => {
+            const dateA = a.data ? new Date(a.data) : new Date(0);
+            const dateB = b.data ? new Date(b.data) : new Date(0);
+            return dateB - dateA;
+        });
 
         saveToCache(cacheKey, historico);
         renderizarTimeline(historico, alunoId);
     } catch (error) {
         console.error("Erro Firebase:", error);
-        container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados: ${error.message || "Erro desconhecido"}</div>`;
+        let errorMsg = error.message || "Erro desconhecido";
+        // Mensagem mais amigável
+        if (errorMsg.includes("index")) {
+            errorMsg = "O sistema está configurando o banco de dados. Tente novamente em alguns instantes.";
+        }
+        container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados.<br><span class="text-xs">${errorMsg}</span></div>`;
     }
 }
-
         function renderizarTimeline(historico, alunoId) {
             const container = document.getElementById('timeline-container');
             container.innerHTML = '';
