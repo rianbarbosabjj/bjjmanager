@@ -211,7 +211,62 @@
 
         </main>
     </div>
-
+<div id="modal-aviso-graduacao" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[300] p-4 transition-opacity">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="modal-aviso-content">
+        <div class="bg-amber-500 p-5 text-white flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">⚠️</span>
+                <h3 class="font-black uppercase tracking-widest text-sm">Atenção! Graduação Regressiva</h3>
+            </div>
+            <button onclick="fecharModalAviso()" class="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
+        </div>
+        
+        <div class="p-6 space-y-4">
+            <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-lg">🥋</div>
+                    <div>
+                        <p class="text-xs font-bold text-amber-700 uppercase">Faixa Atual</p>
+                        <p class="text-xl font-black text-amber-800" id="aviso-faixa-atual">--</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center my-2">
+                    <svg class="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-lg">🎓</div>
+                    <div>
+                        <p class="text-xs font-bold text-emerald-700 uppercase">Nova Faixa</p>
+                        <p class="text-xl font-black text-emerald-800" id="aviso-faixa-nova">--</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                <p class="text-sm text-blue-800 font-medium leading-relaxed">
+                    📌 <span class="font-bold">Isso é comum para alunos transferidos</span> de outras academias ou quando se está corrigindo o histórico.
+                </p>
+            </div>
+            
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <p class="text-xs text-slate-600 font-medium">
+                    ℹ️ O sistema permitirá o registro, mas ficará registrado que esta foi uma graduação regressiva (transferência).
+                </p>
+            </div>
+        </div>
+        
+        <div class="p-5 bg-slate-50 border-t border-slate-200 flex gap-3">
+            <button onclick="fecharModalAviso()" class="flex-1 py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold rounded-xl text-sm transition-colors">
+                Cancelar
+            </button>
+            <button id="btn-confirmar-graduacao" onclick="confirmarGraduacaoRegressiva()" class="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                <span>✅</span> Continuar Mesmo Assim
+            </button>
+        </div>
+    </div>
+</div>
     <script src="menu.js"></script>
 
     <script type="module">
@@ -801,22 +856,83 @@ window.salvarGraduacao = async function() {
     if (!data) return showToast("A data da graduação é obrigatória!", "error");
     if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
 
-    // 🔥 APENAS AVISO, MAS PERMITE CONTINUAR
+    // 🔥 VERIFICA SE É GRADUAÇÃO REGRESSIVA
     const faixaAtual = alunoSelecionado.faixa || 'Branca';
-    let avisoHierarquia = false;
+    let isRegressiva = false;
     
     if (faixaAtual !== novaFaixa) {
         const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
         const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
         if (indexNova < indexAtual && indexAtual !== -1 && indexNova !== -1) {
-            avisoHierarquia = true;
-            // Apenas avisa, mas não bloqueia
-            if (!confirm(`⚠️ ATENÇÃO: Você está registrando uma GRADUAÇÃO REGRESSIVA!\n\nAtual: ${faixaAtual}\nNova: ${novaFaixa}\n\nIsso é comum para alunos transferidos de outras academias.\n\nDeseja continuar mesmo assim?`)) {
-                return;
-            }
+            isRegressiva = true;
         }
     }
+    
+    // Se for regressiva, mostra o modal bonito
+    if (isRegressiva) {
+        abrirModalAviso(faixaAtual, novaFaixa, {
+            alunoId: alunoSelecionado.id,
+            data: data,
+            novaFaixa: novaFaixa,
+            novoGrau: novoGrau
+        });
+        return;
+    }
+    
+    // Se não for regressiva, salva normalmente
+    const btn = document.getElementById('btn-salvar-grad');
+    if (!btn) return;
+    
+    const originalTxt = btn.innerHTML;
+    btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
+    btn.disabled = true;
+    showLoading();
 
+    try {
+        await addDoc(collection(db, "graduacoes"), {
+            equipe_id: uid,
+            aluno_id: alunoSelecionado.id,
+            data: data,
+            faixa: novaFaixa,
+            grau: novoGrau || "Sem grau",
+            registado_em: new Date().toISOString(),
+            origem: "MANUAL"
+        });
+
+        await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
+            faixa: novaFaixa,
+            grau: novoGrau || "Sem grau"
+        });
+
+        showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
+        
+        // Atualiza o aluno selecionado com os novos dados
+        alunoSelecionado.faixa = novaFaixa;
+        alunoSelecionado.grau = novoGrau || "Sem grau";
+        
+        // Atualiza o badge na interface
+        const badge = document.getElementById('aluno-faixa-badge');
+        if (badge) {
+            badge.innerText = novaFaixa;
+            badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(novaFaixa)}`;
+        }
+        
+        const grauElemento = document.getElementById('aluno-grau-detalhe');
+        if (grauElemento) grauElemento.innerText = `GRAU: ${novoGrau || 'Sem grau'}`;
+        
+        clearCache();
+        await carregarAlunos(true);
+        await carregarTimeline(alunoSelecionado.id, true);
+        
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
+    } finally {
+        btn.innerHTML = originalTxt;
+        btn.disabled = false;
+        hideLoading();
+    }
+}
     const btn = document.getElementById('btn-salvar-grad');
     if (!btn) return;
     
@@ -906,7 +1022,103 @@ window.salvarGraduacao = async function() {
         }
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+        // ===================== MODAL DE AVISO =====================
+let dadosGraduacaoPendente = null;
 
+window.abrirModalAviso = function(faixaAtual, novaFaixa, dados) {
+    dadosGraduacaoPendente = dados;
+    
+    document.getElementById('aviso-faixa-atual').innerText = faixaAtual;
+    document.getElementById('aviso-faixa-nova').innerText = novaFaixa;
+    
+    const modal = document.getElementById('modal-aviso-graduacao');
+    const content = document.getElementById('modal-aviso-content');
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 50);
+}
+
+window.fecharModalAviso = function() {
+    const modal = document.getElementById('modal-aviso-graduacao');
+    const content = document.getElementById('modal-aviso-content');
+    
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        dadosGraduacaoPendente = null;
+    }, 300);
+}
+
+window.confirmarGraduacaoRegressiva = async function() {
+    if (!dadosGraduacaoPendente) return;
+    
+    fecharModalAviso();
+    
+    // Continua com o salvamento
+    const btn = document.getElementById('btn-salvar-grad');
+    if (btn) {
+        btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
+        btn.disabled = true;
+    }
+    showLoading();
+
+    try {
+        await addDoc(collection(db, "graduacoes"), {
+            equipe_id: uid,
+            aluno_id: dadosGraduacaoPendente.alunoId,
+            data: dadosGraduacaoPendente.data,
+            faixa: dadosGraduacaoPendente.novaFaixa,
+            grau: dadosGraduacaoPendente.novoGrau || "Sem grau",
+            registado_em: new Date().toISOString(),
+            origem: "MANUAL",
+            observacao: "Graduação regressiva (transferência)"
+        });
+
+        await updateDoc(doc(db, "alunos", dadosGraduacaoPendente.alunoId), {
+            faixa: dadosGraduacaoPendente.novaFaixa,
+            grau: dadosGraduacaoPendente.novoGrau || "Sem grau"
+        });
+
+        showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
+        
+        // Atualiza o aluno selecionado
+        alunoSelecionado.faixa = dadosGraduacaoPendente.novaFaixa;
+        alunoSelecionado.grau = dadosGraduacaoPendente.novoGrau || "Sem grau";
+        
+        // Atualiza o badge na interface
+        const badge = document.getElementById('aluno-faixa-badge');
+        if (badge) {
+            badge.innerText = dadosGraduacaoPendente.novaFaixa;
+            badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(dadosGraduacaoPendente.novaFaixa)}`;
+        }
+        
+        const grauElemento = document.getElementById('aluno-grau-detalhe');
+        if (grauElemento) grauElemento.innerText = `GRAU: ${dadosGraduacaoPendente.novoGrau || 'Sem grau'}`;
+        
+        clearCache();
+        await carregarAlunos(true);
+        await carregarTimeline(alunoSelecionado.id, true);
+        
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
+    } finally {
+        if (btn) {
+            btn.innerHTML = "<span class='mr-2 text-base'>➕</span> Salvar Conquista";
+            btn.disabled = false;
+        }
+        hideLoading();
+        dadosGraduacaoPendente = null;
+    }
+}
     </script>
 </body>
 </html>
