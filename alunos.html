@@ -208,7 +208,7 @@
                                     <option value="Cinza e Preta">Cinza e Preta</option>
                                     <option value="Amarela e Branca">Amarela e Branca</option>
                                     <option value="Amarela">Amarela</option>
-                                    <option value="Amarela">Amarela e Preta</option>
+                                    <option value="Amarela e Preta">Amarela e Preta</option>
                                     <option value="Laranja e Branca">Laranja e Branca</option>
                                     <option value="Laranja">Laranja</option>
                                     <option value="Laranja e Preta">Laranja e Preta</option>
@@ -579,6 +579,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -593,6 +594,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
+        const functions = getFunctions(app);
 
         // ===================== VARIÁVEIS GLOBAIS =====================
         window.teamId = null;
@@ -744,7 +746,7 @@
         // ===================== BUSCAR ALUNOS =====================
         async function buscarAlunosFirebase(forceRefresh = false) { 
             const table = document.getElementById('tabela-alunos'); 
-            table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-slate-400 font-bold">Buscando alunos no banco de dados...</td></tr>'; 
+            table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-slate-400 font-bold">Buscando alunos no banco de dados...</td></tr>';
             
             if (!forceRefresh) { 
                 const cachedAlunos = carregarAlunosCache(); 
@@ -854,8 +856,9 @@
             document.getElementById('aluno-email').value = a.email || ''; 
             
             if(document.getElementById('aluno-senha-portal')) { 
-                document.getElementById('aluno-senha-portal').value = a.senha_portal || ''; 
+                document.getElementById('aluno-senha-portal').value = ''; 
                 document.getElementById('aluno-senha-portal').type = "password";
+                document.getElementById('aluno-senha-portal').placeholder = "Deixe em branco para não alterar";
             } 
             
             document.getElementById('aluno-endereco').value = a.endereco || ''; 
@@ -1016,6 +1019,7 @@
             document.getElementById('aluno-bolsa').value = "0"; 
             document.getElementById('aluno-vencimento').value = "10"; 
             document.getElementById('aluno-status').value = "ATIVO"; 
+            document.getElementById('aluno-senha-portal').value = "";
             
             document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
             document.getElementById('btn-imprimir-pvc').classList.add('hidden'); 
@@ -1115,7 +1119,7 @@
             container.innerHTML = html; 
         };
 
-        // ===================== SALVAR ALUNO =====================
+        // ===================== SALVAR ALUNO (CORRIGIDO) =====================
         window.salvarAluno = async function() { 
             const id = window.alunoEditandoId; 
             const nome = document.getElementById('aluno-nome').value.toUpperCase(); 
@@ -1174,54 +1178,71 @@
             }; 
             
             const campoSenha = document.getElementById('aluno-senha-portal'); 
-            if (campoSenha && campoSenha.value && campoSenha.value.length >= 6) {
-                const salvarAluno = httpsCallable(functions, 'salvarAlunoComHash');
-                await salvarAluno({
-                alunoId: docRefId,
-                dados: dados,
-                senha: campoSenha.value
-            });
-    
-          return; // A Cloud Function já salvou
-          } 
+            const novaSenha = (campoSenha && campoSenha.value && campoSenha.value.trim().length >= 6) ? campoSenha.value.trim() : null;
             
             try { 
                 let docRefId = id; 
+                
                 if (!id) { 
+                    // NOVO ALUNO - Usar Cloud Function criarAlunoComHash
                     dados.matricula = new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000).toString(); 
                     dados.data_cadastro = new Date().toISOString(); 
-                    const docRef = await addDoc(collection(db, "alunos"), dados); 
-                    docRefId = docRef.id; 
-                } 
+                    
+                    if (novaSenha) {
+                        const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
+                        const result = await criarAluno({ dados: dados, senha: novaSenha });
+                        if (result.data.success) {
+                            docRefId = result.data.alunoId;
+                        } else {
+                            throw new Error(result.data.error);
+                        }
+                    } else {
+                        // Se não tem senha, salva normalmente (mas aluno não terá acesso ao portal)
+                        const docRef = await addDoc(collection(db, "alunos"), dados); 
+                        docRefId = docRef.id;
+                    }
+                } else {
+                    // EDITANDO ALUNO EXISTENTE
+                    if (novaSenha) {
+                        // Se tem nova senha, usa Cloud Function com hash
+                        const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
+                        await atualizarAluno({ alunoId: id, dados: dados, novaSenha: novaSenha });
+                    } else {
+                        // Sem alteração de senha, atualiza normalmente
+                        await updateDoc(doc(db, "alunos", id), dados); 
+                    }
+                    docRefId = id;
+                }
                 
+                // Upload da foto (se houver)
                 let fotoUrlFinal = null; 
                 if (window.ficheiroFotoSelecionado) { 
                     btnSalvar.innerHTML = "📷 ENVIANDO FOTO..."; 
-                    if (id) { 
-                        const alunoAntigo = window.todosAlunosCache.find(a => a.id === id); 
-                        if (alunoAntigo && alunoAntigo.foto_url) { 
-                            try { 
-                                const refFotoAntiga = ref(storage, alunoAntigo.foto_url); 
-                                await deleteObject(refFotoAntiga); 
-                            } catch (err) { console.log("Aviso: Foto antiga não encontrada."); } 
-                        } 
+                    
+                    // Apaga foto antiga se existir
+                    const alunoAntigo = window.todosAlunosCache.find(a => a.id === docRefId); 
+                    if (alunoAntigo && alunoAntigo.foto_url) { 
+                        try { 
+                            const refFotoAntiga = ref(storage, alunoAntigo.foto_url); 
+                            await deleteObject(refFotoAntiga); 
+                        } catch (err) { console.log("Aviso: Foto antiga não encontrada."); } 
                     } 
+                    
                     const timestamp = new Date().getTime(); 
                     const fotoPath = `fotos_carteirinha/${window.teamId}/${docRefId}_${timestamp}.jpg`; 
                     const storageRef = ref(storage, fotoPath); 
                     await uploadBytes(storageRef, window.ficheiroFotoSelecionado); 
                     fotoUrlFinal = await getDownloadURL(storageRef); 
-                    dados.foto_url = fotoUrlFinal; 
+                    
+                    await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal }); 
                 } 
                 
                 let acaoLog = "", detalhesLog = "";
                 
                 if (id) { 
-                    await updateDoc(doc(db, "alunos", id), dados); 
                     showToast("Ficha atualizada com sucesso!", "success"); 
                     acaoLog = "EDITOU_ALUNO"; detalhesLog = `Atualizou a ficha do aluno: ${nome}`;
                 } else { 
-                    if (fotoUrlFinal) await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal }); 
                     showToast("Matrícula criada com sucesso!", "success"); 
                     acaoLog = "NOVA_MATRICULA"; detalhesLog = `Cadastrou o aluno: ${nome}`;
                 } 
@@ -1234,10 +1255,11 @@
                 } catch(e) {}
 
                 window.fecharModal(); 
-                clearCache(); // Limpa o cache para forçar a nova atualização da lista
+                clearCache();
                 await buscarAlunosFirebase(true); 
             } catch(e) { 
-                console.error(e); showToast("Erro ao salvar a ficha.", "error"); 
+                console.error(e); 
+                showToast("Erro ao salvar a ficha: " + (e.message || "Erro desconhecido"), "error"); 
             } finally { 
                 btnSalvar.innerHTML = textoOriginal; btnSalvar.disabled = false; 
             } 
@@ -1450,7 +1472,6 @@
         // ===================== AUTENTICAÇÃO E INICIALIZAÇÃO =====================
         onAuthStateChanged(auth, async (user) => { 
             if (user) { 
-                // 1. Limpa o texto "Acessando..." do menu (esperando o menu carregar)
                 const tentarLimpar = setInterval(() => {
                     const aside = document.querySelector('aside');
                     if (aside) {
@@ -1467,14 +1488,12 @@
                 setTimeout(() => clearInterval(tentarLimpar), 5000);
 
                 try {
-                    // 2. Verifica se é Super Admin
                     let isSuper = false;
                     try {
                         const superSnap = await getDoc(doc(db, "super_admins", user.uid));
                         if (superSnap.exists()) { isSuper = true; window.isSuperAdmin = true; }
                     } catch(e) { isSuper = false; }
 
-                    // 3. Define o teamId rapidamente
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
                         if (equipeImpersonada) {
@@ -1494,7 +1513,6 @@
                     }
 
                     if (window.teamId) {
-                        // 4. Carrega dados da equipe se faltar
                         if (!window.dadosEquipeCompleto) {
                             const eqSnap = await getDoc(doc(db, "equipes", window.teamId));
                             if (eqSnap.exists()) window.dadosEquipeCompleto = eqSnap.data();
@@ -1504,7 +1522,6 @@
                             window.equipeDados.nome = window.dadosEquipeCompleto.nome_equipe || window.dadosEquipeCompleto.nome || "Sua Equipe";
                             window.equipeDados.logo = window.dadosEquipeCompleto.url_logo || "";
 
-                            // INJETOR TRATOR: Fica tentando injetar a logo até o menu.js terminar de existir na tela
                             if (window.equipeDados.logo) {
                                 const injetarLogo = setInterval(() => {
                                     const aside = document.querySelector('aside');
@@ -1532,7 +1549,6 @@
                             }
                         }
                         
-                        // 5. Inicia a busca de alunos usando o cache nativo (passando false)
                         await buscarAlunosFirebase(false);
                         mudarAbaDashboard('lista');
                     } else {
