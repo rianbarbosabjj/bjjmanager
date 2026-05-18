@@ -1260,7 +1260,44 @@ async function validarTokenAtual() {
         return false;
     }
 }
-
+async function iniciarPortal() {
+    console.log("🚀 Iniciando portal do aluno...");
+    
+    // Esconder tela de login e mostrar portal
+    document.getElementById('tela-login').classList.add('hidden');
+    document.getElementById('tela-portal').classList.remove('hidden');
+    
+    // Atualizar saudação
+    document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0] || "Atleta";
+    
+    // Buscar dados da equipe
+    try {
+        const equipeDoc = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
+        if (equipeDoc.exists()) {
+            equipeDados = equipeDoc.data();
+            document.getElementById('logo-equipe-topo').src = equipeDados.url_logo || 'logo_bjj_manager.png';
+        }
+    } catch(e) {
+        console.error("Erro ao carregar equipe:", e);
+    }
+    
+    // Inicializar todas as abas
+    preencherCarteirinha();
+    buscarMuralEHorarios();
+    carregarLoja();
+    buscarCurriculoAluno();
+    buscarFaturasResiliente();
+    carregarFederacoesAluno();
+    verificarAnamnese();
+    
+    // Ajustar zoom da carteirinha
+    setTimeout(window.ajustarZoomCarteirinha, 100);
+    
+    // Inicializar notificações push
+    inicializarPushNotifications();
+    
+    console.log("✅ Portal iniciado com sucesso!");
+}
 window.fazerLoginAluno = async function() {
     const emailBruto = document.getElementById('login-email').value;
     const email = emailBruto.replace(/\s/g, '').toLowerCase(); 
