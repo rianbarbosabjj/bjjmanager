@@ -12,7 +12,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Turmas | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_manager.png">
@@ -29,21 +29,85 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin { animation: spin 1s linear infinite; }
+        
+        /* Transições suaves */
+        .card-turma {
+            transition: all 0.2s ease;
+        }
+        .card-turma:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Melhorias para mobile */
+        @media (max-width: 768px) {
+            .container-padding {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            .btn-mobile-full {
+                width: 100%;
+            }
+        }
+        
+        /* Estilo para os badges de dias da semana */
+        .day-badge {
+            transition: all 0.2s ease;
+        }
+        .day-badge.active {
+            background-color: #06b6d4;
+            color: white;
+            border-color: #06b6d4;
+        }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center">
+        <div class="bg-white rounded-2xl p-6 flex flex-col items-center shadow-2xl animate-fade-in">
+            <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-sm font-bold text-slate-700">Carregando dados...</p>
+        </div>
+    </div>
+
     <div id="interface-sistema" class="flex-1 flex w-full h-full relative overflow-hidden">
         
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
-            <div class="flex-1 overflow-hidden p-4 md:p-8 pb-20 md:pb-8 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
+            <!-- Cabeçalho -->
+            <div class="bg-white border-b border-slate-200 px-4 py-3 shrink-0 shadow-sm">
+                <div class="flex items-center justify-between max-w-7xl mx-auto">
+                    <div>
+                        <h2 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Gestão de Turmas</h2>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-medium">Organize seus alunos por horários e faixas etárias</p>
+                    </div>
+                    <button onclick="manualRefreshTurmas()" class="bg-slate-100 hover:bg-cyan-100 text-slate-600 hover:text-cyan-600 font-bold py-2 px-3 rounded-xl transition-all flex items-center gap-2 text-xs shadow-sm border border-slate-200">
+                        <span>🔄</span> <span class="hidden sm:inline">Atualizar</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-hidden p-3 md:p-6 pb-20 md:pb-6 flex flex-col md:flex-row gap-4 md:gap-6 max-w-7xl mx-auto w-full h-full">
                 
+                <!-- PAINEL ESQUERDO - FORMULÁRIO E LISTA -->
                 <div id="painel-lista" class="w-full md:w-[40%] lg:w-[35%] flex flex-col h-full gap-4 shrink-0 overflow-y-auto hide-scrollbar">
                     
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 shrink-0 relative overflow-hidden">
+                    <!-- FORMULÁRIO DE TURMA -->
+                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 shrink-0 relative overflow-hidden">
                         <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
                             <div class="flex items-center gap-2">
                                 <span class="text-xl drop-shadow-sm">🕒</span>
@@ -53,58 +117,58 @@
                         
                         <div class="space-y-3 relative z-10">
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome (Ex: Adulto Noite)</label>
-                                <input type="text" id="turma-nome" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Turma *</label>
+                                <input type="text" id="turma-nome" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Ex: ADULTO NOITE">
                             </div>
                             
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Min.</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Mín.</label>
                                     <input type="number" id="turma-idade-min" placeholder="Ex: 4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Max.</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Máx.</label>
                                     <input type="number" id="turma-idade-max" placeholder="Ex: 10" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dias de Treino</label>
-                                <div class="flex gap-1">
-                                    <label class="flex-1 text-center cursor-pointer">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dias de Treino *</label>
+                                <div class="grid grid-cols-7 gap-1">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="1" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all uppercase tracking-widest shadow-sm">S</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">SEG</div>
                                     </label>
-                                    <label class="flex-1 text-center cursor-pointer">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="2" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all uppercase tracking-widest shadow-sm">T</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">TER</div>
                                     </label>
-                                    <label class="flex-1 text-center cursor-pointer">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="3" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all uppercase tracking-widest shadow-sm">Q</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">QUA</div>
                                     </label>
-                                    <label class="flex-1 text-center cursor-pointer">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="4" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all uppercase tracking-widest shadow-sm">Q</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">QUI</div>
                                     </label>
-                                    <label class="flex-1 text-center cursor-pointer">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="5" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all uppercase tracking-widest shadow-sm">S</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">SEX</div>
                                     </label>
-                                    <label class="flex-1 text-center cursor-pointer">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="6" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 transition-all uppercase tracking-widest shadow-sm">S</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 transition-all">SÁB</div>
                                     </label>
-                                    <label class="flex-1 text-center cursor-pointer">
+                                    <label class="text-center cursor-pointer">
                                         <input type="checkbox" value="0" class="chk-dia peer sr-only">
-                                        <div class="py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500 transition-all uppercase tracking-widest shadow-sm">D</div>
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500 transition-all">DOM</div>
                                     </label>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-3 mt-2">
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Início</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Início *</label>
                                     <input type="time" id="turma-hora-inicio" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
                                 </div>
                                 <div>
@@ -120,59 +184,76 @@
                         </div>
                     </div>
 
+                    <!-- BOTÃO DISTRIBUIÇÃO AUTOMÁTICA -->
                     <button onclick="autoDistribuirAlunos()" class="bg-purple-600 hover:bg-purple-500 text-white font-black py-3 px-4 rounded-2xl shadow-[0_4px_14px_-4px_rgba(147,51,234,0.5)] transition-all flex items-center justify-center text-sm shrink-0 group">
                         <span class="mr-2 text-lg group-hover:animate-pulse">🤖</span> Distribuição Automática
                     </button>
 
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-[250px] overflow-hidden">
+                    <!-- LISTA DE TURMAS -->
+                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-[250px] overflow-hidden">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 shrink-0">
                             <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">Turmas Cadastradas</h3>
+                            <p class="text-[9px] text-slate-400 mt-0.5">Clique em uma turma para gerenciar os alunos</p>
                         </div>
                         <div class="flex-1 overflow-y-auto hide-scrollbar p-3" id="lista-turmas">
-                            <div class="text-center text-slate-400 text-sm mt-5">Carregando turmas...</div>
+                            <div class="text-center text-slate-400 text-sm mt-5 animate-pulse">Carregando turmas...</div>
                         </div>
                     </div>
                 </div>
 
+                <!-- PAINEL DIREITO - DETALHES DA TURMA -->
                 <div id="painel-detalhe" class="w-full md:w-[60%] lg:w-[65%] hidden md:flex flex-col h-full gap-4 md:gap-6 overflow-hidden">
                     
-                    <div id="detalhe-vazio" class="flex-1 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center p-10 h-full hidden">
-                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm border border-slate-100 mb-4">🗓️</div>
-                        <h3 class="text-xl font-black text-slate-700 mb-2">Nenhuma Turma Cadastrada</h3>
-                        <p class="text-slate-400 text-sm max-w-sm">Use o formulário ao lado para criar sua primeira turma e começar a organizar seus alunos.</p>
+                    <!-- MENSAGEM VAZIA -->
+                    <div id="detalhe-vazio" class="flex-1 flex flex-col items-center justify-center bg-white border-2 border-dashed border-slate-200 rounded-3xl text-center p-6 md:p-10 h-full hidden animate-fade-in">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center text-3xl md:text-4xl shadow-sm border border-slate-200 mb-4">🗓️</div>
+                        <h3 class="text-base md:text-xl font-black text-slate-700 mb-2">Nenhuma Turma Selecionada</h3>
+                        <p class="text-xs md:text-sm text-slate-400 max-w-sm">Clique em uma turma ao lado para ver os detalhes e gerenciar os alunos matriculados.</p>
                     </div>
 
+                    <!-- CONTEÚDO DA TURMA SELECIONADA -->
                     <div id="detalhe-conteudo" class="flex flex-col h-full gap-4 md:gap-6 overflow-hidden hidden">
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 blur-[40px] rounded-full pointer-events-none"></div>
+                        
+                        <!-- CABEÇALHO DA TURMA -->
+                        <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 md:w-40 md:h-40 bg-cyan-500/10 blur-[40px] rounded-full pointer-events-none"></div>
                             
-                            <div class="flex items-center gap-3 sm:gap-4 mb-2 relative z-10">
-                                <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 shrink-0 shadow-sm">🔙</button>
-                                <div class="flex-1 overflow-hidden">
-                                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 truncate uppercase" id="turma-nome-detalhe">Nome da Turma</h2>
+                            <!-- Botão Voltar (Mobile) -->
+                            <button onclick="voltarLista()" class="md:hidden flex items-center gap-2 text-slate-500 mb-3 w-fit">
+                                <span class="text-lg">←</span> Voltar para turmas
+                            </button>
+                            
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-2 relative z-10">
+                                <div class="flex-1">
+                                    <h2 class="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 truncate uppercase" id="turma-nome-detalhe">Nome da Turma</h2>
                                 </div>
-                                <div class="text-right shrink-0">
+                                <div class="flex flex-wrap gap-2">
                                     <div id="turma-horario-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 inline-block shadow-sm">--</div>
-                                    <div id="turma-idade-badge" class="block text-[9px] font-bold text-slate-400 uppercase mt-1">--</div>
+                                    <div id="turma-idade-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-slate-100 text-slate-600 border border-slate-200 inline-block shadow-sm">--</div>
                                 </div>
                             </div>
-                            <p class="text-xs font-bold text-slate-500 md:ml-1 mt-1 relative z-10 flex items-center gap-1.5">
-                                <span class="text-cyan-500 text-lg">👥</span> <span id="turma-contagem">Matriculados: 0</span>
+                            <p class="text-xs font-bold text-slate-500 relative z-10 flex items-center gap-1.5 mt-1">
+                                <span class="text-cyan-500 text-lg">👥</span> 
+                                <span id="turma-contagem">Matriculados: 0</span>
                             </p>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
-                            <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 items-center shrink-0">
+                        <!-- LISTA DE ALUNOS MATRICULADOS -->
+                        <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
+                            <div class="p-3 md:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 items-center shrink-0">
                                 <div class="flex-1 w-full">
-                                    <select id="combo-add-aluno" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer shadow-sm">
-                                        <option value="">Selecionar atleta para matricular...</option>
+                                    <label class="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Matricular novo aluno</label>
+                                    <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer shadow-sm">
+                                        <option value="">Selecionar atleta...</option>
                                     </select>
                                 </div>
-                                <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3.5 px-6 rounded-xl shadow-[0_4px_14px_-4px_rgba(16,185,129,0.5)] transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                                <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-5 rounded-xl shadow-[0_4px_14px_-4px_rgba(16,185,129,0.5)] transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-2 mt-1 sm:mt-6">
                                     <span>➕</span> Matricular
                                 </button>
                             </div>
-                            <div class="flex-1 overflow-y-auto p-3 md:p-4 hide-scrollbar bg-slate-50/30" id="lista-matriculados"></div>
+                            <div class="flex-1 overflow-y-auto p-3 md:p-4 hide-scrollbar bg-slate-50/30" id="lista-matriculados">
+                                <div class="text-center text-slate-400 text-sm py-10 italic">Selecione uma turma para ver os alunos</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,10 +262,11 @@
         </main>
     </div>
 
+    <!-- MODAL TRANSFERIR ALUNO -->
     <div id="modal-trocar" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col animate-fade-in">
             <div class="bg-slate-900 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center gap-2">
-                <span>🔄</span> Trocar de Turma
+                <span>🔄</span> Transferir Aluno
             </div>
             <div class="p-6 space-y-4">
                 <p class="text-sm text-slate-500 font-medium">Transferir o(a) atleta <span id="lbl-atleta-troca" class="font-black text-cyan-600"></span> para qual turma?</p>
@@ -198,6 +280,7 @@
     </div>
 
     <script src="menu.js"></script>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -216,6 +299,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // ===================== VARIÁVEIS GLOBAIS =====================
         let uid = null;
         let teamId = null; 
         let alunosCache = [];
@@ -224,88 +308,92 @@
         let turmaEditandoId = null;
         let alunoParaTrocaId = null;
         let equipeDados = { nome: "Sua Equipe", logo: "" };
+        let isLoading = false;
 
+        // ===================== CACHE =====================
+        const CACHE_KEYS = { TURMAS: 'bjj_turmas_cache', ALUNOS: 'bjj_alunos_turmas_cache' };
+        const CACHE_TTL = 5 * 60 * 1000;
+
+        function saveToCache(key, data) {
+            try { 
+                localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: CACHE_TTL })); 
+            } catch(e) { console.warn("Cache error:", e); }
+        }
+
+        function getFromCache(key) {
+            try {
+                const cached = localStorage.getItem(key);
+                if (!cached) return null;
+                const { data, timestamp, ttl } = JSON.parse(cached);
+                if (Date.now() - timestamp > ttl) { 
+                    localStorage.removeItem(key); 
+                    return null; 
+                }
+                return data;
+            } catch(e) { return null; }
+        }
+
+        function clearCache() { 
+            localStorage.removeItem(CACHE_KEYS.TURMAS); 
+            localStorage.removeItem(CACHE_KEYS.ALUNOS); 
+        }
+
+        // ===================== LOADING =====================
+        function showLoading() { 
+            const overlay = document.getElementById('loading-overlay'); 
+            overlay.classList.remove('hidden'); 
+            overlay.classList.add('flex'); 
+        }
+        function hideLoading() { 
+            const overlay = document.getElementById('loading-overlay'); 
+            overlay.classList.add('hidden'); 
+            overlay.classList.remove('flex'); 
+        }
+
+        // ===================== TOAST =====================
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto`;
-            toast.innerText = message;
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-amber-500');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : '⚠️');
+            toast.className = `${bgColor} text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-sm pointer-events-auto animate-fade-in`;
+            toast.innerHTML = `<span class="text-lg">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4500);
-        }
+        };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const limparAcessando = () => {
-                    const aside = document.querySelector('aside');
-                    if (aside) {
-                        const elementos = aside.querySelectorAll('p, span, h4');
-                        elementos.forEach(el => {
-                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
-                            if (el.innerText.includes('ACESSANDO')) {
-                                el.innerText = 'ADMINISTRADOR';
-                                el.classList.remove('animate-pulse');
-                                el.style.opacity = "1";
-                            }
-                        });
-                    }
-                };
-                limparAcessando(); setTimeout(limparAcessando, 600);
-
-                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) { teamId = user.uid; } 
-                else {
-                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
-                }
-
-                if (teamId) {
-                    uid = teamId;
-                    await carregarDadosEquipe();
-                    await carregarAlunos(); 
-                    await carregarTurmas();
-                }
-            } else { window.location.href = "index.html"; }
-        });
-
-        async function carregarDadosEquipe() {
-            const eqSnap = await getDoc(doc(db, "equipes", teamId));
-            if (eqSnap.exists()) {
-                const d = eqSnap.data();
-                equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
-                equipeDados.logo = d.url_logo || "";
-                
-                const elNomeEquipeMenu = document.querySelector('aside h2') || document.getElementById('nome-equipe');
-                if(elNomeEquipeMenu) elNomeEquipeMenu.innerText = equipeDados.nome.toUpperCase();
-
-                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
-                if (elLogoMenu) {
-                    if (equipeDados.logo) {
-                        elLogoMenu.style.background = 'transparent';
-                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
-                    } else {
-                        elLogoMenu.style.background = '';
-                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
-                    }
-                }
+        // ===================== MANUAL REFRESH =====================
+        window.manualRefreshTurmas = async function() {
+            if (isLoading) return;
+            isLoading = true;
+            showLoading();
+            clearCache();
+            try {
+                await Promise.all([carregarAlunos(true), carregarTurmas(true)]);
+                showToast("Dados atualizados!", "success");
+            } catch (error) {
+                showToast("Erro ao atualizar dados", "error");
+            } finally {
+                hideLoading();
+                isLoading = false;
             }
-        }
+        };
 
+        // ===================== FUNÇÕES AUXILIARES =====================
         function formatarDiasSemanas(diasData) {
             if (!diasData) return "--";
             if (typeof diasData === 'string') return diasData;
             if (Array.isArray(diasData)) {
                 if (diasData.length === 0) return "--";
-                const mapaDias = {0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb'};
+                const mapaDias = {0: 'DOM', 1: 'SEG', 2: 'TER', 3: 'QUA', 4: 'QUI', 5: 'SEX', 6: 'SÁB'};
                 return diasData.sort().map(d => mapaDias[d]).join('/');
             }
             return "--";
         }
 
-        function formatarHorarioBox(h_inicio, h_fim, legado) {
-            if (h_inicio) return `${h_inicio}${h_fim ? `-${h_fim}` : ''}`;
-            return legado || '--:--';
+        function formatarHorarioBox(h_inicio, h_fim) {
+            if (h_inicio) return `${h_inicio}${h_fim ? ` às ${h_fim}` : ''}`;
+            return '--:--';
         }
 
         function getEstiloFaixa(faixa) {
@@ -345,69 +433,79 @@
         }
 
         function formatarRegraIdade(min, max) {
-            if(!min && (!max || max === 999)) return "Idade: Livre";
-            if(min && (!max || max === 999)) return `Idade: ${min}+ anos`;
-            if(!min && max) return `Idade: Até ${max} anos`;
-            return `Idade: ${min} a ${max} anos`;
+            if((!min || min === 0) && (!max || max === 999 || max === 0)) return "📊 Todas as idades";
+            if(min && (!max || max === 999)) return `📊 ${min}+ anos`;
+            if(!min && max) return `📊 Até ${max} anos`;
+            return `📊 ${min} a ${max} anos`;
         }
 
-        async function limparInativosDasTurmas() {
-            const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "INATIVO"));
-            const snap = await getDocs(q);
-            const idsInativos = snap.docs.map(d => d.id);
-            if (idsInativos.length === 0) return;
-            for (let t of turmasCache) {
-                const novosIds = (t.alunos_ids || []).filter(id => !idsInativos.includes(id));
-                if (novosIds.length !== (t.alunos_ids || []).length) {
-                    await updateDoc(doc(db, "turmas", t.id), { alunos_ids: novosIds });
-                    t.alunos_ids = novosIds;
+        // ===================== CARREGAR DADOS =====================
+        async function carregarAlunos(forceRefresh = false) {
+            if (!forceRefresh) {
+                const cached = getFromCache(CACHE_KEYS.ALUNOS);
+                if (cached) {
+                    alunosCache = cached;
+                    return;
                 }
             }
-            renderizarTurmas();
-        }
-
-        async function carregarAlunos() {
             const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
             const snap = await getDocs(q);
             alunosCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
+            saveToCache(CACHE_KEYS.ALUNOS, alunosCache);
         }
 
-        async function carregarTurmas() {
+        async function carregarTurmas(forceRefresh = false) {
+            if (!forceRefresh) {
+                const cached = getFromCache(CACHE_KEYS.TURMAS);
+                if (cached) {
+                    turmasCache = cached;
+                    renderizarTurmas();
+                    return;
+                }
+            }
             const q = query(collection(db, "turmas"), where("equipe_id", "==", uid));
             const snap = await getDocs(q);
             turmasCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
+            saveToCache(CACHE_KEYS.TURMAS, turmasCache);
             renderizarTurmas();
         }
 
+        // ===================== RENDERIZAR TURMAS =====================
         function renderizarTurmas() {
             const container = document.getElementById('lista-turmas');
-            container.innerHTML = turmasCache.length === 0 ? "<p class='text-center p-5 text-slate-400 text-xs'>Nenhuma turma criada.</p>" : "";
+            if (!container) return;
             
-            turmasCache.forEach(t => {
-                const div = document.createElement('div');
-                div.id = `card-turma-${t.id}`;
-                div.className = "card-turma p-3 mb-3 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 cursor-pointer transition-all flex flex-col gap-2 group shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]";
-                
-                let strDias = formatarDiasSemanas(t.dias_semana || t.dias);
-                let strHorario = formatarHorarioBox(t.hora_inicio, t.hora_fim, t.horario);
+            if (turmasCache.length === 0) {
+                container.innerHTML = "<div class='text-center p-8 text-slate-400 text-sm'>Nenhuma turma criada ainda.<br>Use o formulário ao lado para começar.</div>";
+            } else {
+                container.innerHTML = '';
+                turmasCache.forEach(t => {
+                    const div = document.createElement('div');
+                    div.id = `card-turma-${t.id}`;
+                    const isActive = turmaSelecionada && turmaSelecionada.id === t.id;
+                    div.className = `card-turma p-3 mb-3 bg-white border rounded-xl cursor-pointer transition-all flex flex-col gap-2 shadow-sm ${isActive ? 'border-cyan-500 bg-cyan-50/30' : 'border-slate-200 hover:border-cyan-400'}`;
+                    
+                    let strDias = formatarDiasSemanas(t.dias_semana);
+                    let strHorario = formatarHorarioBox(t.hora_inicio, t.hora_fim);
 
-                div.innerHTML = `
-                    <div class="flex items-center justify-between" onclick="selecionarTurma('${t.id}')">
-                        <div>
-                            <h4 class='font-black text-xs uppercase text-slate-800 group-hover:text-cyan-600 transition-colors'>${t.nome}</h4>
-                            <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${strDias} | ${strHorario}</p>
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between" onclick="selecionarTurma('${t.id}')">
+                            <div class="flex-1">
+                                <h4 class='font-black text-xs uppercase text-slate-800 group-hover:text-cyan-600 transition-colors'>${t.nome}</h4>
+                                <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${strDias} | ${strHorario}</p>
+                            </div>
+                            <div class='bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-1 rounded-lg border border-slate-200 shadow-sm flex items-center gap-1'>
+                                👥 ${(t.alunos_ids || []).length}
+                            </div>
                         </div>
-                        <div class='bg-slate-100 text-slate-600 group-hover:bg-cyan-50 group-hover:text-cyan-600 text-[10px] font-black px-2 py-1 rounded-lg border border-slate-200 group-hover:border-cyan-200 transition-colors shadow-sm'>
-                            👥 ${(t.alunos_ids||[]).length}
+                        <div class="flex items-center gap-2 pt-2 border-t border-slate-100 mt-1">
+                            <button onclick="event.stopPropagation(); editarTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1">✏️ Editar</button>
+                            <button onclick="event.stopPropagation(); excluirTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1">🗑️ Excluir</button>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100 mt-1">
-                        <button onclick="editarTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-transparent hover:border-amber-200">✏️ Editar</button>
-                        <button onclick="excluirTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-transparent hover:border-rose-200">🗑️ Excluir</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
+                    `;
+                    container.appendChild(div);
+                });
+            }
 
             if (turmasCache.length > 0) {
                 if (!turmaSelecionada || !turmasCache.find(t => t.id === turmaSelecionada.id)) {
@@ -418,10 +516,10 @@
             } else {
                 document.getElementById('detalhe-vazio').classList.remove('hidden');
                 document.getElementById('detalhe-conteudo').classList.add('hidden');
-                document.getElementById('detalhe-conteudo').classList.remove('flex');
             }
         }
 
+        // ===================== CRUD TURMAS =====================
         window.salvarTurma = async function() {
             const nome = document.getElementById('turma-nome').value.toUpperCase().trim();
             const min = parseInt(document.getElementById('turma-idade-min').value) || 0;
@@ -436,8 +534,15 @@
             if (dias_semana.length === 0) return showToast("Selecione os dias de treino", "error");
             if (!hora_inicio) return showToast("Hora de início é obrigatória", "error");
             
+            // Validação de horário
+            if (hora_inicio && hora_fim && hora_inicio >= hora_fim) {
+                return showToast("A hora de início deve ser menor que a hora de fim", "error");
+            }
+            
             const btn = document.getElementById('btn-salvar-turma');
-            btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
+            btn.disabled = true; 
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Salvando...";
 
             try {
                 const dados = { 
@@ -458,12 +563,15 @@
                 }
                 
                 cancelarEdicaoTurma(); 
-                carregarTurmas();
+                clearCache();
+                await carregarTurmas(true);
                 
             } catch (e) { 
-                showToast("Erro ao salvar", "error"); 
+                console.error(e);
+                showToast("Erro ao salvar turma", "error"); 
             } finally {
-                btn.disabled = false; btn.innerHTML = "➕ Criar Turma";
+                btn.disabled = false; 
+                btn.innerHTML = originalText;
             }
         }
 
@@ -486,34 +594,51 @@
             }
 
             document.getElementById('titulo-form').innerText = "✏️ Editar Turma";
-            document.getElementById('btn-salvar-turma').innerText = "💾 Salvar";
+            document.getElementById('btn-salvar-turma').innerHTML = "💾 Salvar Alterações";
             document.getElementById('btn-cancelar-turma').classList.remove('hidden');
+            
+            // Scroll suave para o topo do formulário
+            document.querySelector('#painel-lista').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         window.excluirTurma = async function(id) {
-            if(!confirm("Tem certeza que deseja excluir esta turma? Os alunos não serão excluídos, apenas ficarão sem turma associada.")) return;
+            if(!confirm("⚠️ Tem certeza que deseja excluir esta turma?\n\nOs alunos não serão excluídos, apenas ficarão sem turma associada.")) return;
+            
+            showLoading();
             try {
                 await deleteDoc(doc(db, "turmas", id));
                 showToast("Turma excluída com sucesso!", "success");
-                if (turmaSelecionada && turmaSelecionada.id === id) voltarLista();
-                carregarTurmas();
+                if (turmaSelecionada && turmaSelecionada.id === id) {
+                    voltarLista();
+                }
+                clearCache();
+                await carregarTurmas(true);
             } catch(e) {
-                showToast("Erro ao excluir.", "error");
+                console.error(e);
+                showToast("Erro ao excluir turma.", "error");
+            } finally {
+                hideLoading();
             }
         }
 
         window.cancelarEdicaoTurma = () => {
             turmaEditandoId = null;
-            document.querySelectorAll('#painel-lista input[type="text"], #painel-lista input[type="number"], #painel-lista input[type="time"]').forEach(i => i.value = "");
+            document.getElementById('turma-nome').value = "";
+            document.getElementById('turma-idade-min').value = "";
+            document.getElementById('turma-idade-max').value = "";
+            document.getElementById('turma-hora-inicio').value = "";
+            document.getElementById('turma-hora-fim').value = "";
             document.querySelectorAll('.chk-dia').forEach(cb => cb.checked = false);
             
             document.getElementById('titulo-form').innerHTML = "Nova Turma";
-            document.getElementById('btn-salvar-turma').innerText = "➕ Criar Turma";
+            document.getElementById('btn-salvar-turma').innerHTML = "➕ Criar Turma";
             document.getElementById('btn-cancelar-turma').classList.add('hidden');
         }
 
+        // ===================== SELEÇÃO DE TURMA =====================
         window.selecionarTurma = (id) => {
             turmaSelecionada = turmasCache.find(t => t.id === id);
+            if (!turmaSelecionada) return;
             
             if (window.innerWidth < 768) {
                 document.getElementById('painel-lista').classList.add('hidden');
@@ -525,14 +650,16 @@
             document.getElementById('detalhe-conteudo').classList.remove('hidden');
             document.getElementById('detalhe-conteudo').classList.add('flex');
             
-            let strDias = formatarDiasSemanas(turmaSelecionada.dias_semana || turmaSelecionada.dias);
-            let strHorario = formatarHorarioBox(turmaSelecionada.hora_inicio, turmaSelecionada.hora_fim, turmaSelecionada.horario);
+            let strDias = formatarDiasSemanas(turmaSelecionada.dias_semana);
+            let strHorario = formatarHorarioBox(turmaSelecionada.hora_inicio, turmaSelecionada.hora_fim);
 
             document.getElementById('turma-nome-detalhe').innerText = turmaSelecionada.nome;
-            document.getElementById('turma-horario-badge').innerText = `${strDias} | ${strHorario}`;
-            document.getElementById('turma-idade-badge').innerText = formatarRegraIdade(turmaSelecionada.idade_min, turmaSelecionada.idade_max);
+            document.getElementById('turma-horario-badge').innerHTML = `${strDias}<span class="hidden md:inline"> | ${strHorario}</span>`;
+            document.getElementById('turma-idade-badge').innerHTML = formatarRegraIdade(turmaSelecionada.idade_min, turmaSelecionada.idade_max);
             
-            document.querySelectorAll('.card-turma').forEach(el => el.classList.remove('border-cyan-500', 'bg-cyan-50/30'));
+            document.querySelectorAll('.card-turma').forEach(el => {
+                el.classList.remove('border-cyan-500', 'bg-cyan-50/30');
+            });
             const cardAtivo = document.getElementById('card-turma-' + id);
             if (cardAtivo) cardAtivo.classList.add('border-cyan-500', 'bg-cyan-50/30');
 
@@ -545,34 +672,47 @@
                 document.getElementById('painel-detalhe').classList.add('hidden');
                 document.getElementById('painel-detalhe').classList.remove('flex');
             }
+            turmaSelecionada = null;
         }
 
+        // ===================== GESTÃO DE ALUNOS NA TURMA =====================
         function atualizarUIAlunosDaTurma() {
             if(!turmaSelecionada) return;
             const ids = turmaSelecionada.alunos_ids || [];
-            document.getElementById('turma-contagem').innerText = `Matriculados: ${ids.length}`;
+            document.getElementById('turma-contagem').innerHTML = `👥 Matriculados: ${ids.length}`;
             
             const combo = document.getElementById('combo-add-aluno');
             combo.innerHTML = '<option value="">Selecionar atleta para matricular...</option>';
-            alunosCache.filter(a => !ids.includes(a.id)).forEach(a => combo.add(new Option(a.nome, a.id)));
+            alunosCache.filter(a => !ids.includes(a.id)).forEach(a => {
+                const option = document.createElement('option');
+                option.value = a.id;
+                const idade = calcularIdadeNum(a.data_nascimento);
+                option.textContent = `${a.nome} • ${a.faixa || 'Branca'} ${idade > 0 ? `(${idade} anos)` : ''}`;
+                combo.appendChild(option);
+            });
             
             const container = document.getElementById('lista-matriculados');
-            container.innerHTML = ids.length === 0 ? "<p class='text-center mt-10 text-slate-400 text-sm italic'>Nenhum atleta nesta turma.</p>" : "";
+            if (ids.length === 0) {
+                container.innerHTML = "<div class='flex flex-col items-center justify-center h-full text-slate-400 py-10'><span class='text-4xl mb-3'>👥</span><p class='text-sm font-medium'>Nenhum aluno matriculado nesta turma.</p><p class='text-[10px] mt-1'>Use o campo acima para adicionar alunos.</p></div>";
+                return;
+            }
             
+            container.innerHTML = '';
             alunosCache.filter(a => ids.includes(a.id)).forEach(al => {
+                const idade = calcularIdadeNum(al.data_nascimento);
                 const item = document.createElement('div');
-                item.className = "p-3 mb-2 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow";
+                item.className = "p-3 mb-2 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow animate-fade-in";
                 item.innerHTML = `
-                    <div class='flex items-center gap-3'>
+                    <div class='flex items-center gap-3 flex-1 min-w-0'>
                         <div class='w-8 h-8 rounded-full border border-slate-300 shadow-inner shrink-0' style='${getEstiloFaixa(al.faixa)}'></div>
-                        <div class='overflow-hidden pr-2'>
+                        <div class='overflow-hidden flex-1'>
                             <h4 class='font-black text-xs text-slate-800 truncate'>${al.nome}</h4>
-                            <p class='text-[9px] text-slate-400 uppercase font-medium mt-0.5 truncate'>${al.faixa} • ${calcularIdadeNum(al.data_nascimento)} anos</p>
+                            <p class='text-[9px] text-slate-400 uppercase font-medium mt-0.5 truncate'>${al.faixa || 'Branca'} • ${idade > 0 ? idade + ' anos' : 'Idade não informada'}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button onclick="abrirModalTrocar('${al.id}', '${al.nome.replace(/'/g, "\\'")}')" class='text-[10px] bg-cyan-50 hover:bg-cyan-100 text-cyan-600 border border-cyan-200 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Mover para outra turma">🔄</button>
-                        <button onclick="removerAlunoDaTurma('${al.id}')" class='text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Remover da turma">❌</button>
+                    <div class="flex items-center gap-2 shrink-0 ml-2">
+                        <button onclick="abrirModalTrocar('${al.id}', '${al.nome.replace(/'/g, "\\'")}')" class='text-[10px] bg-cyan-50 hover:bg-cyan-100 text-cyan-600 border border-cyan-200 px-2 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Mover para outra turma">🔄</button>
+                        <button onclick="removerAlunoDaTurma('${al.id}')" class='text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 px-2 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Remover da turma">❌</button>
                     </div>
                 `;
                 container.appendChild(item);
@@ -581,67 +721,200 @@
 
         window.adicionarAlunoNaTurma = async () => {
             const id = document.getElementById('combo-add-aluno').value;
-            if(!id) return;
-            await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayUnion(id) });
-            turmaSelecionada.alunos_ids.push(id);
-            showToast("Atleta matriculado com sucesso!", "success"); 
-            atualizarUIAlunosDaTurma(); 
-            carregarTurmas();
+            if(!id) return showToast("Selecione um aluno para matricular", "warning");
+            
+            showLoading();
+            try {
+                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayUnion(id) });
+                turmaSelecionada.alunos_ids = [...(turmaSelecionada.alunos_ids || []), id];
+                showToast("Atleta matriculado com sucesso!", "success"); 
+                atualizarUIAlunosDaTurma(); 
+                await carregarTurmas(true);
+            } catch(e) {
+                showToast("Erro ao matricular aluno", "error");
+            } finally {
+                hideLoading();
+            }
         }
 
         window.removerAlunoDaTurma = async function(alunoId) {
             if(!confirm("Remover este atleta da turma?")) return;
+            
+            showLoading();
             try {
                 await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoId) });
-                turmaSelecionada.alunos_ids = turmaSelecionada.alunos_ids.filter(id => id !== alunoId);
+                turmaSelecionada.alunos_ids = (turmaSelecionada.alunos_ids || []).filter(id => id !== alunoId);
                 showToast("Atleta removido da turma!", "success");
                 atualizarUIAlunosDaTurma();
-                carregarTurmas();
+                await carregarTurmas(true);
             } catch(e) {
-                showToast("Erro ao remover.", "error");
+                showToast("Erro ao remover aluno", "error");
+            } finally {
+                hideLoading();
             }
         }
 
+        // ===================== TRANSFERIR ALUNO =====================
         window.abrirModalTrocar = (id, nome) => {
             alunoParaTrocaId = id;
-            document.getElementById('lbl-atleta-troca').innerText = nome;
+            document.getElementById('lbl-atleta-troca').innerHTML = nome;
             const s = document.getElementById('select-nova-turma');
-            s.innerHTML = '';
-            turmasCache.filter(t => t.id !== turmaSelecionada.id).forEach(t => s.add(new Option(t.nome, t.id)));
+            s.innerHTML = '<option value="">Selecione uma turma...</option>';
+            turmasCache.filter(t => t.id !== turmaSelecionada.id).forEach(t => {
+                const option = document.createElement('option');
+                option.value = t.id;
+                option.textContent = `${t.nome} (${(t.alunos_ids || []).length} alunos)`;
+                s.appendChild(option);
+            });
             document.getElementById('modal-trocar').classList.remove('hidden');
             document.getElementById('modal-trocar').classList.add('flex');
         }
 
-        window.fecharModalTrocar = () => document.getElementById('modal-trocar').classList.add('hidden');
+        window.fecharModalTrocar = () => {
+            document.getElementById('modal-trocar').classList.add('hidden');
+            document.getElementById('modal-trocar').classList.remove('flex');
+            alunoParaTrocaId = null;
+        }
 
         window.confirmarTroca = async () => {
             const novaId = document.getElementById('select-nova-turma').value;
-            await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoParaTrocaId) });
-            await updateDoc(doc(db, "turmas", novaId), { alunos_ids: arrayUnion(alunoParaTrocaId) });
-            showToast("Transferido com sucesso!", "success"); 
-            fecharModalTrocar(); 
-            carregarTurmas(); 
-            voltarLista();
+            if (!novaId) return showToast("Selecione uma turma de destino", "warning");
+            
+            showLoading();
+            try {
+                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoParaTrocaId) });
+                await updateDoc(doc(db, "turmas", novaId), { alunos_ids: arrayUnion(alunoParaTrocaId) });
+                
+                // Atualiza cache local
+                turmaSelecionada.alunos_ids = (turmaSelecionada.alunos_ids || []).filter(id => id !== alunoParaTrocaId);
+                const turmaDestino = turmasCache.find(t => t.id === novaId);
+                if (turmaDestino) {
+                    turmaDestino.alunos_ids = [...(turmaDestino.alunos_ids || []), alunoParaTrocaId];
+                }
+                
+                showToast("Aluno transferido com sucesso!", "success"); 
+                fecharModalTrocar(); 
+                await carregarTurmas(true);
+                atualizarUIAlunosDaTurma();
+            } catch(e) {
+                showToast("Erro ao transferir aluno", "error");
+            } finally {
+                hideLoading();
+            }
         }
 
+        // ===================== DISTRIBUIÇÃO AUTOMÁTICA =====================
         window.autoDistribuirAlunos = async () => {
-            if(!confirm("O robô vai distribuir os alunos pelas regras de idade de cada turma. Continuar?")) return;
+            if(turmasCache.length === 0) return showToast("Crie pelo menos uma turma primeiro!", "warning");
+            if(!confirm("🤖 O robô vai distribuir os alunos automaticamente baseado na idade de cada turma.\n\nAlunos sem idade cadastrada serão ignorados.\nContinuar?")) return;
+            
+            showLoading();
             let count = 0;
-            for(let al of alunosCache) {
-                let idade = calcularIdadeNum(al.data_nascimento);
-                if(idade === -1) continue;
-                for(let t of turmasCache) {
-                    if(idade >= (t.idade_min||0) && idade <= (t.idade_max||999)) {
-                        if (!(t.alunos_ids && t.alunos_ids.includes(al.id))) {
-                            await updateDoc(doc(db, "turmas", t.id), { alunos_ids: arrayUnion(al.id) });
-                            count++;
+            try {
+                for(let al of alunosCache) {
+                    let idade = calcularIdadeNum(al.data_nascimento);
+                    if(idade === -1) continue;
+                    for(let t of turmasCache) {
+                        const idadeMin = t.idade_min || 0;
+                        const idadeMax = t.idade_max || 999;
+                        if(idade >= idadeMin && idade <= idadeMax) {
+                            if (!(t.alunos_ids && t.alunos_ids.includes(al.id))) {
+                                await updateDoc(doc(db, "turmas", t.id), { alunos_ids: arrayUnion(al.id) });
+                                t.alunos_ids = [...(t.alunos_ids || []), al.id];
+                                count++;
+                                break; // Aluno vai para a primeira turma compatível
+                            }
                         }
                     }
                 }
+                showToast(`${count} aluno(s) foram matriculados automaticamente!`, "success"); 
+                clearCache();
+                await carregarTurmas(true);
+                if (turmaSelecionada) atualizarUIAlunosDaTurma();
+            } catch(e) {
+                console.error(e);
+                showToast("Erro durante a distribuição automática", "error");
+            } finally {
+                hideLoading();
             }
-            showToast(`${count} matrículas realizadas!`, "success"); 
-            carregarTurmas();
         }
+
+        // ===================== CARREGAR DADOS DA EQUIPE =====================
+        async function carregarDadosEquipe() {
+            try {
+                const eqSnap = await getDoc(doc(db, "equipes", teamId));
+                if (eqSnap.exists()) {
+                    const d = eqSnap.data();
+                    equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
+                    equipeDados.logo = d.url_logo || "";
+                    
+                    const elNomeEquipe = document.querySelector('aside h2') || document.getElementById('nome-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = equipeDados.nome.toUpperCase();
+
+                    const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                    if (elLogoMenu) {
+                        if (equipeDados.logo) {
+                            elLogoMenu.style.background = 'transparent';
+                            elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`;
+                        } else {
+                            elLogoMenu.style.background = '';
+                            elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                        }
+                    }
+                }
+            } catch(e) { console.error("Erro ao carregar dados da equipe:", e); }
+        }
+
+        // ===================== AUTENTICAÇÃO =====================
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Limpa o texto "Acessando..." do menu
+                const tentarLimpar = setInterval(() => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse');
+                                el.style.opacity = "1";
+                            }
+                        });
+                        clearInterval(tentarLimpar);
+                    }
+                }, 300);
+                setTimeout(() => clearInterval(tentarLimpar), 5000);
+
+                try {
+                    const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                    if (mestreDoc.exists()) { 
+                        teamId = user.uid; 
+                    } else {
+                        const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                        if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                    }
+
+                    if (teamId) {
+                        uid = teamId;
+                        await carregarDadosEquipe();
+                        await carregarAlunos();
+                        await carregarTurmas();
+                    } else {
+                        document.getElementById('lista-turmas').innerHTML = '<div class="text-center p-6 text-rose-500 font-bold">Equipe não encontrada</div>';
+                    }
+                } catch(e) {
+                    console.error("Erro na autenticação:", e);
+                    document.getElementById('lista-turmas').innerHTML = '<div class="text-center p-6 text-rose-500 font-bold">Erro de conexão</div>';
+                }
+            } else { 
+                window.location.href = "index.html"; 
+            }
+        });
+
+        window.limparBusca = () => {
+
+        };
     </script>
 </body>
 </html>
