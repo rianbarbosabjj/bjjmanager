@@ -801,14 +801,19 @@ window.salvarGraduacao = async function() {
     if (!data) return showToast("A data da graduação é obrigatória!", "error");
     if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
 
-    // Validação de hierarquia de faixas
+    // 🔥 APENAS AVISO, MAS PERMITE CONTINUAR
     const faixaAtual = alunoSelecionado.faixa || 'Branca';
+    let avisoHierarquia = false;
+    
     if (faixaAtual !== novaFaixa) {
         const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
         const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
-        if (indexNova <= indexAtual && indexAtual !== -1 && indexNova !== -1) {
-            showToast(`⚠️ A nova faixa (${novaFaixa}) deve ser superior à faixa atual (${faixaAtual})!`, "warning");
-            return;
+        if (indexNova < indexAtual && indexAtual !== -1 && indexNova !== -1) {
+            avisoHierarquia = true;
+            // Apenas avisa, mas não bloqueia
+            if (!confirm(`⚠️ ATENÇÃO: Você está registrando uma GRADUAÇÃO REGRESSIVA!\n\nAtual: ${faixaAtual}\nNova: ${novaFaixa}\n\nIsso é comum para alunos transferidos de outras academias.\n\nDeseja continuar mesmo assim?`)) {
+                return;
+            }
         }
     }
 
@@ -828,7 +833,8 @@ window.salvarGraduacao = async function() {
             faixa: novaFaixa,
             grau: novoGrau || "Sem grau",
             registado_em: new Date().toISOString(),
-            origem: "MANUAL"
+            origem: "MANUAL",
+            observacao: avisoHierarquia ? "Graduação regressiva (transferência)" : null
         });
 
         await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
@@ -852,7 +858,6 @@ window.salvarGraduacao = async function() {
         const grauElemento = document.getElementById('aluno-grau-detalhe');
         if (grauElemento) grauElemento.innerText = `GRAU: ${novoGrau || 'Sem grau'}`;
         
-        // Limpa cache específico do aluno e recarrega
         clearCache();
         await carregarAlunos(true);
         await carregarTimeline(alunoSelecionado.id, true);
@@ -866,7 +871,6 @@ window.salvarGraduacao = async function() {
         hideLoading();
     }
 }
-
 
         window.excluirGraduacao = async function(gradId, alunoId) {
             // Busca os dados da graduação para mostrar mensagem mais informativa
