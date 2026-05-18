@@ -574,7 +574,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // Importações necessárias para os logins de teste
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -588,6 +588,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const functions = getFunctions(app);
         const auth = getAuth(app);
 
         // Função para entrar na conta de Professor (Sistema Principal)
@@ -608,19 +609,37 @@
             }
         };
 
-        // 🔥 NOVA FUNÇÃO: Entrar na conta de Aluno (Portal do Atleta) com Credenciais Reais
+        // 🔥 FUNÇÃO ATUALIZADA: Entrar na conta de Aluno (Portal do Atleta) com suporte a Cloud Function
         window.entrarDemoPortal = async function() {
             const btn = event.currentTarget;
             const txtOriginal = btn.innerHTML;
             btn.innerHTML = "<span>⏳ Entrando...</span>";
             btn.disabled = true;
 
+            const emailAluno = "alunoteste1@gmail.com";
+            const senhaAluno = "aluno01";
+
             try {
-                // Como o login do aluno não usa o Auth oficial, buscamos no banco igual ao login real
-                const emailAluno = "alunoteste1@gmail.com";
-                const senhaAluno = "aluno01";
-                
-                const q = query(collection(db, "alunos"), where("email", "==", emailAluno), where("senha_portal", "==", senhaAluno));
+                // Tentativa 1: Usar Cloud Function segura (recomendado)
+                try {
+                    const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
+                    const result = await validarLogin({ email: emailAluno, senha: senhaAluno });
+                    
+                    if (result.data && result.data.success) {
+                        // Salva sessão com token
+                        localStorage.setItem('bjj_aluno_token', result.data.token);
+                        localStorage.setItem('bjj_aluno_auth', JSON.stringify(result.data.aluno));
+                        window.location.href = "portal_aluno.html";
+                        return;
+                    }
+                } catch (cloudFnError) {
+                    console.log("Cloud Function não disponível, usando método direto:", cloudFnError.message);
+                }
+
+                // Tentativa 2: Método direto (fallback para demonstração)
+                const q = query(collection(db, "alunos"), 
+                    where("email", "==", emailAluno), 
+                    where("senha_portal", "==", senhaAluno));
                 const snap = await getDocs(q);
                 
                 if (!snap.empty) { 
@@ -628,17 +647,16 @@
                     const alunoId = snap.docs[0].id;
                     const alunoLogado = { id: alunoId, ...alunoDoc };
                     
-                    // Salva a sessão e manda pra tela
                     localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
                     window.location.href = "portal_aluno.html";
                 } else {
-                    alert("A conta do Aluno de Teste não foi encontrada no banco de dados. Cadastre o email alunoteste1@gmail.com com a senha aluno01.");
+                    alert("❌ Conta de demonstração não encontrada.\n\nPara testar, crie um aluno com:\n- E-mail: alunoteste1@gmail.com\n- Senha: aluno01\n\nEntre em contato com o suporte se precisar de ajuda.");
                     btn.innerHTML = txtOriginal;
                     btn.disabled = false;
                 }
             } catch (error) {
                 console.error("Erro ao entrar na demo do portal:", error);
-                alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.");
+                alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\n\nTente novamente mais tarde.");
                 btn.innerHTML = txtOriginal;
                 btn.disabled = false;
             }
