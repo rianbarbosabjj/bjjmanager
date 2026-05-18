@@ -444,6 +444,7 @@
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -458,6 +459,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
+        const functions = getFunctions(app);
 
         const paramsUrl = new URLSearchParams(window.location.search);
         const tipoAcesso = paramsUrl.get('tipo'); 
@@ -466,7 +468,7 @@
         let ficheiroFotoSelecionado = null;
         let quantidadeAlunosAtual = 0;
         let uid = null;
-        let idadeAtual = 0; // Guardar a idade para validação na hora de salvar
+        let idadeAtual = 0;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -481,43 +483,6 @@
                 toast.classList.add('translate-x-full', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 4500);
-        }
-
-        // 🔥 NOVA FUNÇÃO: Verificar Idade ao preencher a data de nascimento
-        window.verificarIdade = function() {
-            const nasc = document.getElementById('cad-nasc').value;
-            const alertaIdade = document.getElementById('alerta-idade');
-            const blocoResp = document.getElementById('bloco-responsavel');
-            const blocoEmerg = document.getElementById('bloco-emergencia');
-            
-            if (!nasc) {
-                alertaIdade.classList.remove('hidden');
-                blocoResp.classList.add('hidden');
-                blocoEmerg.classList.add('hidden');
-                return;
-            }
-
-            // Esconder o alerta inicial
-            alertaIdade.classList.add('hidden');
-
-            const hoje = new Date();
-            const dataNascimento = new Date(nasc);
-            idadeAtual = hoje.getFullYear() - dataNascimento.getFullYear();
-            const mes = hoje.getMonth() - dataNascimento.getMonth();
-            
-            if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
-                idadeAtual--;
-            }
-
-            if (idadeAtual < 18) {
-                // Menor de Idade -> Responsável Legal
-                blocoResp.classList.remove('hidden');
-                blocoEmerg.classList.add('hidden');
-            } else {
-                // Maior de Idade -> Contato de Emergência
-                blocoResp.classList.add('hidden');
-                blocoEmerg.classList.remove('hidden');
-            }
         }
 
         window.toggleSenha = function(inputId, btnElement) {
@@ -550,6 +515,39 @@
             i.value = v;
         };
         
+        window.verificarIdade = function() {
+            const nasc = document.getElementById('cad-nasc').value;
+            const alertaIdade = document.getElementById('alerta-idade');
+            const blocoResp = document.getElementById('bloco-responsavel');
+            const blocoEmerg = document.getElementById('bloco-emergencia');
+            
+            if (!nasc) {
+                alertaIdade.classList.remove('hidden');
+                blocoResp.classList.add('hidden');
+                blocoEmerg.classList.add('hidden');
+                return;
+            }
+
+            alertaIdade.classList.add('hidden');
+
+            const hoje = new Date();
+            const dataNascimento = new Date(nasc);
+            idadeAtual = hoje.getFullYear() - dataNascimento.getFullYear();
+            const mes = hoje.getMonth() - dataNascimento.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
+                idadeAtual--;
+            }
+
+            if (idadeAtual < 18) {
+                blocoResp.classList.remove('hidden');
+                blocoEmerg.classList.add('hidden');
+            } else {
+                blocoResp.classList.add('hidden');
+                blocoEmerg.classList.remove('hidden');
+            }
+        }
+
         window.buscarCEP = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
@@ -610,7 +608,6 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
-                    // Busca a quantidade atual de alunos da equipe para gerar a matrícula correta
                     const q = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
                     const snap = await getDocs(q);
                     quantidadeAlunosAtual = snap.size;
@@ -627,11 +624,9 @@
         window.mostrarPreviewFoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                // VERIFICAÇÃO DE TAMANHO (MAX 5MB)
                 const tamanhoEmMB = file.size / (1024 * 1024);
                 if (tamanhoEmMB > 3) {
                     showToast(`⚠️ A foto é muito pesada (${tamanhoEmMB.toFixed(1)}MB). O limite é 3MB. Por favor, escolha uma imagem menor.`, "error");
-                    // Limpa o campo para o aluno não achar que a foto vai ser enviada
                     document.getElementById('cad-foto').value = ''; 
                     ficheiroFotoSelecionado = null;
                     return; 
@@ -684,7 +679,6 @@
                 }
             }
 
-            // Lógica do Contato de Emergência ou Responsável Legal
             let nomeResponsavel = '';
             let cpfResponsavel = '';
             let telResponsavel = '';
@@ -718,30 +712,7 @@
             btn.disabled = true;
 
             try {
-                // 1. Gera a ref (ID) do documento ANTES de o criar no banco
-                const novoAlunoRef = doc(collection(db, "alunos"));
-                const novoAlunoId = novoAlunoRef.id;
-
-                // 2. Faz o upload da foto se existir, usando o ID gerado
-                let urlDaFoto = "";
-                let fotoErro = false;
-
-                if (ficheiroFotoSelecionado) {
-                    try {
-                        const fotoPath = `fotos_carteirinha/${equipeId}/${novoAlunoId}.jpg`;
-                        const storageRef = ref(storage, fotoPath);
-                        
-                        const metadata = { contentType: ficheiroFotoSelecionado.type || 'image/jpeg' };
-                        
-                        await uploadBytes(storageRef, ficheiroFotoSelecionado, metadata);
-                        urlDaFoto = await getDownloadURL(storageRef);
-                    } catch (imgError) {
-                        console.error("Erro no upload da imagem:", imgError);
-                        fotoErro = true;
-                    }
-                }
-
-                // 3. Prepara TODOS os dados do aluno num único bloco (CREATE)
+                // 🔥 PREPARA OS DADOS DO ALUNO (sem senha em texto puro)
                 const dadosAluno = {
                     equipe_id: equipeId,
                     matricula: novaMatriculaStr,
@@ -753,7 +724,6 @@
                     peso: document.getElementById('cad-peso').value.trim(),
                     telefone: tel,
                     email: email,
-                    senha_portal: senhaPortal,
                     cep: document.getElementById('cad-cep').value.trim(),
                     endereco: document.getElementById('cad-end').value.trim(),
                     numero: document.getElementById('cad-num').value.trim(),
@@ -762,7 +732,6 @@
                     cidade: document.getElementById('cad-cidade').value.trim(),
                     uf: document.getElementById('cad-uf').value,
                     
-                    // Salvando Responsável ou Contato Emergência
                     nome_responsavel: nomeResponsavel,
                     cpf_responsavel: cpfResponsavel,
                     telefone_responsavel: telResponsavel,
@@ -778,12 +747,40 @@
                     lgpd_site: document.getElementById('cad-lgpd-site').checked,
                     lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
                     lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
-                    foto_url: urlDaFoto, 
+                    foto_url: "", 
                     data_cadastro: new Date().toISOString()
                 };
 
-                // 4. Salva a ficha completa de uma só vez
-                await setDoc(novoAlunoRef, dadosAluno);
+                // 🔥 CRIA O ALUNO USANDO CLOUD FUNCTION COM HASH
+                const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
+                const result = await criarAluno({ dados: dadosAluno, senha: senhaPortal });
+                
+                if (!result.data.success) {
+                    throw new Error(result.data.error);
+                }
+                
+                const novoAlunoId = result.data.alunoId;
+                let fotoErro = false;
+
+                // 2. Se o atleta selecionou uma fotografia, envia para a Nuvem
+                if (ficheiroFotoSelecionado) {
+                    btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
+                    
+                    try {
+                        const fotoPath = `fotos_carteirinha/${equipeId}/${novoAlunoId}.jpg`;
+                        const storageRef = ref(storage, fotoPath);
+                        
+                        const metadata = { contentType: ficheiroFotoSelecionado.type || 'image/jpeg' };
+                        
+                        await uploadBytes(storageRef, ficheiroFotoSelecionado, metadata);
+                        const downloadUrl = await getDownloadURL(storageRef);
+                        
+                        await updateDoc(doc(db, "alunos", novoAlunoId), { foto_url: downloadUrl });
+                    } catch (imgError) {
+                        console.error("Erro no upload da imagem:", imgError);
+                        fotoErro = true;
+                    }
+                }
 
                 document.getElementById('container-principal').innerHTML = `
                     <div class="bg-emerald-50 border border-emerald-200 p-8 md:p-10 rounded-[2rem] text-center shadow-xl mt-8 flex flex-col items-center animate-in fade-in zoom-in duration-500">
@@ -804,7 +801,7 @@
 
             } catch (error) {
                 console.error("Erro geral:", error);
-                showToast("Erro ao salvar cadastro. Tente de novo.", "error");
+                showToast("Erro ao salvar cadastro: " + (error.message || "Tente novamente."), "error");
                 btn.innerHTML = "<span class='mr-2'>✅</span> FINALIZAR MATRÍCULA";
                 btn.disabled = false;
             }
@@ -837,14 +834,11 @@
             btn.disabled = true;
 
             try {
-                // Tenta criar o usuário. O Firebase Auth loga automaticamente se der certo.
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const uidProfessor = userCredential.user.uid;
 
-                // Envia e-mail de verificação para o novo professor
                 await sendEmailVerification(userCredential.user);
 
-                // Grava no Firestore
                 await setDoc(doc(db, "colaboradores", uidProfessor), {
                     nome: nome,
                     cpf: cpf,
@@ -862,10 +856,8 @@
                     data_cadastro: new Date().toISOString()
                 });
                 
-                // Desloga o recém-criado para evitar acesso indevido no mesmo browser
                 await auth.signOut();
 
-                // Exibe a tela de sucesso para o Professor
                 document.getElementById('form-prof').innerHTML = `
                     <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8 flex flex-col items-center">
                         <span class="text-6xl mb-4 block">🤝</span>
