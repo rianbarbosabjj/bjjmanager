@@ -1191,35 +1191,69 @@ async function validarTokenAtual() {
 }
 
 window.fazerLoginAluno = async function() {
-    // ... código de validação inicial ...
+    // Pega os valores dos campos
+    const emailBruto = document.getElementById('login-email').value;
+    const email = emailBruto.replace(/\s/g, '').toLowerCase(); 
+    const senha = document.getElementById('login-senha').value.trim();
+    const btn = document.getElementById('btn-login');
+
+    // Validação básica
+    if(!email || !senha) {
+        showToast("Preencha todos os campos.", "error");
+        return;
+    }
+    
+    // Desabilita o botão e mostra loading
+    btn.disabled = true; 
+    btn.innerHTML = "<span class='animate-pulse'>⏳</span> VALIDANDO ACESSO...";
 
     try {
-        // Tenta a Cloud Function
+        // 🔥 TENTA A CLOUD FUNCTION PRIMEIRO
         const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
         const result = await validarLogin({ email, senha });
-        // ... processa sucesso ...
+        
+        if (result.data && result.data.success) {
+            // Salva sessão com token
+            salvarSessaoAluno(result.data.token, result.data.aluno);
+            alunoLogado = result.data.aluno;
+            showToast("Acesso liberado! Oss!", "success");
+            iniciarPortal();
+            return;
+        }
+        
+        // Se chegou aqui, algo deu errado na Cloud Function
+        throw new Error("Cloud Function retornou erro");
+        
     } catch (error) {
         console.log("Cloud Function falhou, usando fallback:", error);
         
         // 🔥 FALLBACK - Consulta direta no Firestore
-        const q = query(collection(db, "alunos"), 
-            where("email", "==", email), 
-            where("senha_portal", "==", senha));
-        const snap = await getDocs(q);
-        
-        if (!snap.empty) {
-            const alunoDoc = snap.docs[0].data();
-            const alunoId = snap.docs[0].id;
-            alunoLogado = { id: alunoId, ...alunoDoc };
-            localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
-            showToast("Acesso liberado! Oss!", "success");
-            iniciarPortal();
-        } else {
-            showToast("E-mail ou senha incorretos.", "error");
+        try {
+            const q = query(collection(db, "alunos"), 
+                where("email", "==", email), 
+                where("senha_portal", "==", senha));
+            const snap = await getDocs(q);
+            
+            if (!snap.empty) {
+                const alunoDoc = snap.docs[0].data();
+                const alunoId = snap.docs[0].id;
+                alunoLogado = { id: alunoId, ...alunoDoc };
+                localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                showToast("Acesso liberado! Oss!", "success");
+                iniciarPortal();
+            } else {
+                showToast("E-mail ou senha incorretos.", "error");
+                btn.disabled = false;
+                btn.innerHTML = "Entrar no Portal";
+            }
+        } catch (fallbackError) {
+            console.error("Fallback também falhou:", fallbackError);
+            showToast("Erro de comunicação. Tente novamente.", "error");
+            btn.disabled = false;
+            btn.innerHTML = "Entrar no Portal";
         }
     }
 };
-
 window.sairDoPortal = function() { 
     limparSessaoAluno();
     window.location.reload(); 
