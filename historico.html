@@ -718,59 +718,73 @@
         }
 
         // ===================== CARREGAR TIMELINE =====================
-        async function carregarTimeline(alunoId, forceRefresh = false) {
-            if (!alunoId) {
-                console.error("carregarTimeline: alunoId é undefined");
-                const container = document.getElementById('timeline-container');
-                if (container) container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro: ID do aluno não informado</div>`;
-                return;
-            }
-            
-            const container = document.getElementById('timeline-container');
-            if (!container) return;
-            
-            container.innerHTML = `<div class="text-center text-slate-400 mt-5 text-sm animate-pulse">Carregando histórico...</div>`;
+async function carregarTimeline(alunoId, forceRefresh = false) {
+    if (!alunoId) {
+        console.error("carregarTimeline: alunoId é undefined");
+        const container = document.getElementById('timeline-container');
+        if (container) container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro: ID do aluno não informado</div>`;
+        return;
+    }
+    
+    const container = document.getElementById('timeline-container');
+    if (!container) return;
+    
+    // Mostra skeleton loading
+    container.innerHTML = `
+        <div class="space-y-4 animate-pulse">
+            <div class="bg-slate-100 h-20 rounded-xl"></div>
+            <div class="bg-slate-100 h-20 rounded-xl"></div>
+        </div>
+    `;
 
-            const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
-            if (!forceRefresh) {
-                const cached = getFromCache(cacheKey);
-                if (cached) {
-                    renderizarTimeline(historico, alunoSelecionado.id);
-                    return;
-                }
-            }
-
-            try {
-                const q = query(
-                    collection(db, "graduacoes"), 
-                    where("equipe_id", "==", uid), 
-                    where("aluno_id", "==", alunoId)
-                );
-                const snap = await getDocs(q);
-                
-                let historico = [];
-                snap.forEach(doc => {
-                    historico.push({ id: doc.id, ...doc.data() });
-                });
-                
-                historico.sort((a, b) => {
-                    const dateA = a.data ? new Date(a.data) : new Date(0);
-                    const dateB = b.data ? new Date(b.data) : new Date(0);
-                    return dateB - dateA;
-                });
-
-                saveToCache(cacheKey, historico);
-                renderizarTimeline(historico, alunoId);
-            } catch (error) {
-                console.error("Erro Firebase:", error);
-                let errorMsg = error.message || "Erro desconhecido";
-                if (errorMsg.includes("index")) {
-                    errorMsg = "O sistema está configurando o banco de dados. Tente novamente em alguns instantes.";
-                }
-                container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados.<br><span class="text-xs">${errorMsg}</span></div>`;
-            }
+    const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
+    
+    if (!forceRefresh) {
+        const cached = getFromCache(cacheKey);
+        if (cached && cached.length > 0) {
+            renderizarTimeline(cached, alunoId);
+            return;
         }
+    }
+    
+    try {
+        const q = query(
+            collection(db, "graduacoes"), 
+            where("equipe_id", "==", uid), 
+            where("aluno_id", "==", alunoId)
+        );
+        const snap = await getDocs(q);
+        
+        let historico = [];
+        snap.forEach(doc => {
+            historico.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // 🔥 ORDENA CORRETAMENTE (MAIS RECENTE PRIMEIRO)
+        historico.sort((a, b) => {
+            const dateA = a.data ? new Date(a.data) : new Date(0);
+            const dateB = b.data ? new Date(b.data) : new Date(0);
+            return dateB - dateA;
+        });
 
+        saveToCache(cacheKey, historico);
+        renderizarTimeline(historico, alunoId);
+        
+        // 🔥 ATUALIZA O TEMPO NA FAIXA (USA A PRIMEIRA GRADUAÇÃO DA LISTA = MAIS RECENTE)
+        if (historico.length > 0) {
+            const ultimaGrad = historico[0];
+            document.getElementById('aluno-tempo-faixa').innerText = calcularTempoFaixa(ultimaGrad.data);
+        }
+        
+    } catch (error) {
+        console.error("Erro Firebase:", error);
+        let errorMsg = error.message || "Erro desconhecido";
+        if (errorMsg.includes("index")) {
+            errorMsg = "Configurando banco de dados...";
+        }
+        container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados.<br><span class="text-xs">${errorMsg}</span></div>`;
+    }
+}
         function renderizarTimeline(historico, alunoId) {
             const container = document.getElementById('timeline-container');
             container.innerHTML = '';
@@ -856,158 +870,173 @@
             }, 300);
         }
 
-        window.confirmarGraduacaoRegressiva = async function() {
-            if (!dadosGraduacaoPendente) return;
+window.confirmarGraduacaoRegressiva = async function() {
+    if (!dadosGraduacaoPendente) return;
+    
+    fecharModalAviso();
+    
+    const btn = document.getElementById('btn-salvar-grad');
+    if (btn) {
+        btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
+        btn.disabled = true;
+    }
+    showLoading();
+
+    try {
+        // 1. SALVA A GRADUAÇÃO REGRESSIVA NO HISTÓRICO
+        await addDoc(collection(db, "graduacoes"), {
+            equipe_id: uid,
+            aluno_id: dadosGraduacaoPendente.alunoId,
+            data: dadosGraduacaoPendente.data,
+            faixa: dadosGraduacaoPendente.novaFaixa,
+            grau: dadosGraduacaoPendente.novoGrau || "Sem grau",
+            registado_em: new Date().toISOString(),
+            origem: "MANUAL",
+            observacao: "Graduação regressiva (transferência)"
+        });
+
+        // 2. 🔥 ATUALIZA O CADASTRO DO ALUNO COM A NOVA GRADUAÇÃO
+        await updateDoc(doc(db, "alunos", dadosGraduacaoPendente.alunoId), {
+            faixa: dadosGraduacaoPendente.novaFaixa,
+            grau: dadosGraduacaoPendente.novoGrau || "Sem grau"
+        });
+
+        showToast("🎉 Graduação transferida registrada com sucesso! Oss!", "success");
+        
+        // 3. ATUALIZA O ALUNO SELECIONADO NA MEMÓRIA
+        if (alunoSelecionado && alunoSelecionado.id === dadosGraduacaoPendente.alunoId) {
+            alunoSelecionado.faixa = dadosGraduacaoPendente.novaFaixa;
+            alunoSelecionado.grau = dadosGraduacaoPendente.novoGrau || "Sem grau";
             
-            fecharModalAviso();
+            // Atualiza a interface
+            const badge = document.getElementById('aluno-faixa-badge');
+            if (badge) {
+                badge.innerText = dadosGraduacaoPendente.novaFaixa;
+                badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(dadosGraduacaoPendente.novaFaixa)}`;
+            }
             
-            const btn = document.getElementById('btn-salvar-grad');
-            if (btn) {
-                btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
-                btn.disabled = true;
-            }
-            showLoading();
-
-            try {
-                await addDoc(collection(db, "graduacoes"), {
-                    equipe_id: uid,
-                    aluno_id: dadosGraduacaoPendente.alunoId,
-                    data: dadosGraduacaoPendente.data,
-                    faixa: dadosGraduacaoPendente.novaFaixa,
-                    grau: dadosGraduacaoPendente.novoGrau || "Sem grau",
-                    registado_em: new Date().toISOString(),
-                    origem: "MANUAL",
-                    observacao: "Graduação regressiva (transferência)"
-                });
-
-                await updateDoc(doc(db, "alunos", dadosGraduacaoPendente.alunoId), {
-                    faixa: dadosGraduacaoPendente.novaFaixa,
-                    grau: dadosGraduacaoPendente.novoGrau || "Sem grau"
-                });
-
-                showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
-                
-                alunoSelecionado.faixa = dadosGraduacaoPendente.novaFaixa;
-                alunoSelecionado.grau = dadosGraduacaoPendente.novoGrau || "Sem grau";
-                
-                const badge = document.getElementById('aluno-faixa-badge');
-                if (badge) {
-                    badge.innerText = dadosGraduacaoPendente.novaFaixa;
-                    badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(dadosGraduacaoPendente.novaFaixa)}`;
-                }
-                
-                const grauElemento = document.getElementById('aluno-grau-detalhe');
-                if (grauElemento) grauElemento.innerText = `GRAU: ${dadosGraduacaoPendente.novoGrau || 'Sem grau'}`;
-                
-                clearCache();
-                await carregarAlunos(true);
-                await carregarTimeline(alunoSelecionado.id, true);
-                
-            } catch (error) {
-                console.error("Erro ao salvar:", error);
-                showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
-            } finally {
-                if (btn) {
-                    btn.innerHTML = "<span class='mr-2 text-base'>➕</span> Salvar Conquista";
-                    btn.disabled = false;
-                }
-                hideLoading();
-                dadosGraduacaoPendente = null;
-            }
+            const grauElemento = document.getElementById('aluno-grau-detalhe');
+            if (grauElemento) grauElemento.innerText = `GRAU: ${dadosGraduacaoPendente.novoGrau || 'Sem grau'}`;
         }
+        
+        // 4. LIMPA CACHE E RECARREGA
+        clearCache();
+        await carregarAlunos(true);
+        await carregarTimeline(dadosGraduacaoPendente.alunoId, true);
+        
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
+    } finally {
+        if (btn) {
+            btn.innerHTML = "<span class='mr-2 text-base'>➕</span> Salvar Conquista";
+            btn.disabled = false;
+        }
+        hideLoading();
+        dadosGraduacaoPendente = null;
+    }
+}
 
         // ===================== SALVAR GRADUAÇÃO =====================
-        window.salvarGraduacao = async function() {
-            if (!alunoSelecionado) {
-                showToast("Selecione um aluno primeiro!", "warning");
-                return;
-            }
-            
-            if (!alunoSelecionado.id) {
-                showToast("Erro: ID do aluno não encontrado", "error");
-                return;
-            }
+window.salvarGraduacao = async function() {
+    if (!alunoSelecionado) {
+        showToast("Selecione um aluno primeiro!", "warning");
+        return;
+    }
+    
+    if (!alunoSelecionado.id) {
+        showToast("Erro: ID do aluno não encontrado", "error");
+        return;
+    }
 
-            const data = document.getElementById('grad-data')?.value;
-            const novaFaixa = document.getElementById('grad-faixa')?.value;
-            const novoGrau = document.getElementById('grad-grau')?.value;
+    const data = document.getElementById('grad-data')?.value;
+    const novaFaixa = document.getElementById('grad-faixa')?.value;
+    const novoGrau = document.getElementById('grad-grau')?.value;
 
-            if (!data) return showToast("A data da graduação é obrigatória!", "error");
-            if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
+    if (!data) return showToast("A data da graduação é obrigatória!", "error");
+    if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
 
-            const faixaAtual = alunoSelecionado.faixa || 'Branca';
-            let isRegressiva = false;
-            
-            if (faixaAtual !== novaFaixa) {
-                const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
-                const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
-                if (indexNova < indexAtual && indexAtual !== -1 && indexNova !== -1) {
-                    isRegressiva = true;
-                }
-            }
-            
-            if (isRegressiva) {
-                abrirModalAviso(faixaAtual, novaFaixa, {
-                    alunoId: alunoSelecionado.id,
-                    data: data,
-                    novaFaixa: novaFaixa,
-                    novoGrau: novoGrau
-                });
-                return;
-            }
-            
-            const btn = document.getElementById('btn-salvar-grad');
-            if (!btn) return;
-            
-            const originalTxt = btn.innerHTML;
-            btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
-            btn.disabled = true;
-            showLoading();
-
-            try {
-                await addDoc(collection(db, "graduacoes"), {
-                    equipe_id: uid,
-                    aluno_id: alunoSelecionado.id,
-                    data: data,
-                    faixa: novaFaixa,
-                    grau: novoGrau || "Sem grau",
-                    registado_em: new Date().toISOString(),
-                    origem: "MANUAL"
-                });
-
-                await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
-                    faixa: novaFaixa,
-                    grau: novoGrau || "Sem grau"
-                });
-
-                showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
-                
-                alunoSelecionado.faixa = novaFaixa;
-                alunoSelecionado.grau = novoGrau || "Sem grau";
-                
-                const badge = document.getElementById('aluno-faixa-badge');
-                if (badge) {
-                    badge.innerText = novaFaixa;
-                    badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(novaFaixa)}`;
-                }
-                
-                const grauElemento = document.getElementById('aluno-grau-detalhe');
-                if (grauElemento) grauElemento.innerText = `GRAU: ${novoGrau || 'Sem grau'}`;
-                
-                clearCache();
-                await carregarAlunos(true);
-                await carregarTimeline(alunoSelecionado.id, true);
-                
-            } catch (error) {
-                console.error("Erro ao salvar:", error);
-                showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
-            } finally {
-                btn.innerHTML = originalTxt;
-                btn.disabled = false;
-                hideLoading();
-            }
+    // 🔥 VERIFICA SE É GRADUAÇÃO REGRESSIVA (para transferências)
+    const faixaAtual = alunoSelecionado.faixa || 'Branca';
+    let isRegressiva = false;
+    
+    if (faixaAtual !== novaFaixa) {
+        const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
+        const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
+        if (indexNova < indexAtual && indexAtual !== -1 && indexNova !== -1) {
+            isRegressiva = true;
         }
+    }
+    
+    // Se for regressiva, mostra o modal de aviso
+    if (isRegressiva) {
+        abrirModalAviso(faixaAtual, novaFaixa, {
+            alunoId: alunoSelecionado.id,
+            data: data,
+            novaFaixa: novaFaixa,
+            novoGrau: novoGrau
+        });
+        return;
+    }
+    
+    const btn = document.getElementById('btn-salvar-grad');
+    if (!btn) return;
+    
+    const originalTxt = btn.innerHTML;
+    btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
+    btn.disabled = true;
+    showLoading();
 
+    try {
+        // 1. SALVA A NOVA GRADUAÇÃO NO HISTÓRICO
+        await addDoc(collection(db, "graduacoes"), {
+            equipe_id: uid,
+            aluno_id: alunoSelecionado.id,
+            data: data,
+            faixa: novaFaixa,
+            grau: novoGrau || "Sem grau",
+            registado_em: new Date().toISOString(),
+            origem: "MANUAL"
+        });
+
+        // 2. 🔥 ATUALIZA O CADASTRO DO ALUNO COM A NOVA GRADUAÇÃO
+        await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
+            faixa: novaFaixa,
+            grau: novoGrau || "Sem grau"
+        });
+
+        showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
+        
+        // 3. ATUALIZA O ALUNO SELECIONADO NA MEMÓRIA
+        alunoSelecionado.faixa = novaFaixa;
+        alunoSelecionado.grau = novoGrau || "Sem grau";
+        
+        // 4. ATUALIZA A INTERFACE
+        const badge = document.getElementById('aluno-faixa-badge');
+        if (badge) {
+            badge.innerText = novaFaixa;
+            badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(novaFaixa)}`;
+        }
+        
+        const grauElemento = document.getElementById('aluno-grau-detalhe');
+        if (grauElemento) grauElemento.innerText = `GRAU: ${novoGrau || 'Sem grau'}`;
+        
+        // 5. LIMPA CACHE E RECARREGA
+        clearCache();
+        await carregarAlunos(true);
+        
+        // 6. 🔥 RECARREGA A TIMELINE (a nova graduação será a primeira da lista)
+        await carregarTimeline(alunoSelecionado.id, true);
+        
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
+    } finally {
+        btn.innerHTML = originalTxt;
+        btn.disabled = false;
+        hideLoading();
+    }
+}
         // ===================== EXCLUIR GRADUAÇÃO =====================
 window.excluirGraduacao = async function(gradId, alunoId) {
     // Verifica se o gradId é válido
