@@ -1163,41 +1163,59 @@ function renderizarFaturas(faturas) {
 async function solicitarPermissaoNotificacoes() {
     if (!('Notification' in window)) {
         console.log('Este navegador não suporta notificações');
-        return;
+        return false;
     }
 
     if (Notification.permission === 'granted') {
         await registrarTokenPush();
+        return true;
     } else if (Notification.permission !== 'denied') {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             await registrarTokenPush();
+            return true;
         }
     }
+    return false;
 }
 
 async function registrarTokenPush() {
     try {
+        // Verificar se o messaging está disponível
+        if (!messaging) {
+            console.error('Messaging não inicializado');
+            return;
+        }
+        
         const token = await getToken(messaging, {
             vapidKey: 'BNNOcNTB12xeXw8cUh0E7aSssJBUmeUQkFIAwgJkd7ZZ2D-hM9xLefqZ_t3Q3q6GMHfDJGbM-ZE7uW-RnYtQmc'
         });
         
-        if (token && token !== fcmTokenAtual) {
+        if (token) {
+            console.log('✅ Token FCM:', token);
             fcmTokenAtual = token;
             
+            // Salvar token no Firestore
             const tokenRef = doc(db, 'push_tokens', token);
             await setDoc(tokenRef, {
                 token: token,
                 aluno_id: alunoLogado.id,
                 equipe_id: alunoLogado.equipe_id,
+                aluno_nome: alunoLogado.nome,
+                data_registro: new Date().toISOString(),
                 ultimo_acesso: new Date().toISOString(),
                 ativo: true
             }, { merge: true });
             
-            console.log('✅ Token FCM registrado com sucesso');
+            showToast("Notificações ativadas! 📱", "success");
+        } else {
+            console.warn('Não foi possível obter o token FCM');
         }
     } catch (error) {
         console.error('Erro ao registrar token FCM:', error);
+        if (error.code === 'messaging/permission-blocked') {
+            showToast("Permissão de notificações bloqueada. Verifique as configurações do navegador.", "warning");
+        }
     }
 }
 
@@ -1211,19 +1229,23 @@ async function removerTokenPush() {
             ultimo_acesso: new Date().toISOString()
         }, { merge: true });
         
-        fcmTokenAtual = null;
-        console.log('✅ Token FCM removido');
+        console.log('✅ Token FCM desativado');
     } catch (error) {
-        console.error('Erro ao remover token:', error);
+        console.error('Erro ao desativar token:', error);
     }
 }
 
 async function inicializarPushNotifications() {
-    if (!('Notification' in window)) return;
+    if (!('Notification' in window)) {
+        console.log('Notificações não suportadas');
+        return;
+    }
     
+    // Verificar permissão existente
     if (Notification.permission === 'granted') {
         await registrarTokenPush();
     } else if (Notification.permission === 'default') {
+        // Aguardar 3 segundos e perguntar
         setTimeout(async () => {
             const ativar = confirm('📱 Gostaria de ativar notificações para receber avisos de treinos e faturas?');
             if (ativar) {
@@ -1232,6 +1254,34 @@ async function inicializarPushNotifications() {
         }, 3000);
     }
 }
+
+// Receber mensagens em primeiro plano
+onMessage(messaging, (payload) => {
+    console.log('📨 Mensagem recebida em primeiro plano:', payload);
+    
+    const notificationTitle = payload.notification?.title || payload.data?.title || 'BJJ Manager';
+    const notificationBody = payload.notification?.body || payload.data?.body || 'Nova notificação';
+    
+    // Mostrar toast
+    showToast(notificationBody, 'info');
+    
+    // Mostrar notificação nativa
+    if (Notification.permission === 'granted') {
+        new Notification(notificationTitle, {
+            body: notificationBody,
+            icon: '/logo_bjj_manager.png',
+            badge: '/logo_bjj_manager.png',
+            vibrate: [200, 100, 200]
+        });
+    }
+    
+    // Atualizar dados se necessário
+    if (payload.data?.type === 'fatura') {
+        buscarFaturasResiliente(true);
+    } else if (payload.data?.type === 'aviso') {
+        buscarMuralEHorarios(true);
+    }
+});
 
 // ==========================================
 // 🔐 AUTENTICAÇÃO E LOGIN
