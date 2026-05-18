@@ -735,7 +735,7 @@
             if (!forceRefresh) {
                 const cached = getFromCache(cacheKey);
                 if (cached) {
-                    renderizarTimeline(cached, alunoId);
+                    renderizarTimeline(historico, alunoSelecionado.id);
                     return;
                 }
             }
@@ -1009,36 +1009,71 @@
         }
 
         // ===================== EXCLUIR GRADUAÇÃO =====================
-        window.excluirGraduacao = async function(gradId, alunoId) {
-            let faixaInfo = "";
-            try {
-                const gradDoc = await getDoc(doc(db, "graduacoes", gradId));
-                if (gradDoc.exists()) {
-                    const grad = gradDoc.data();
-                    faixaInfo = ` (${grad.faixa}${grad.grau && grad.grau !== 'Sem grau' ? ' - ' + grad.grau : ''})`;
-                }
-            } catch(e) {}
-            
-            if(!confirm(`⚠️ Tem certeza que deseja apagar esta graduação${faixaInfo}?\n\nEsta ação não pode ser desfeita e removerá o registro da linha do tempo.`)) return;
+window.excluirGraduacao = async function(gradId, alunoId) {
+    // Verifica se o gradId é válido
+    if (!gradId) {
+        showToast("ID da graduação inválido", "error");
+        return;
+    }
+    
+    let faixaInfo = "";
+    try {
+        const gradDoc = await getDoc(doc(db, "graduacoes", gradId));
+        if (gradDoc.exists()) {
+            const grad = gradDoc.data();
+            faixaInfo = ` (${grad.faixa || '?'}${grad.grau && grad.grau !== 'Sem grau' ? ' - ' + grad.grau : ''})`;
+        } else {
+            showToast("Graduação não encontrada no banco de dados", "error");
+            return;
+        }
+    } catch(e) {
+        console.error("Erro ao buscar graduação:", e);
+        showToast("Erro ao verificar a graduação", "error");
+        return;
+    }
+    
+    if(!confirm(`⚠️ Tem certeza que deseja apagar esta graduação${faixaInfo}?\n\nEsta ação não pode ser desfeita e removerá o registro da linha do tempo.`)) return;
 
-            showLoading();
-            try {
-                await deleteDoc(doc(db, "graduacoes", gradId));
-                showToast("Registro apagado com sucesso.", "success");
-                clearCache();
-                await carregarTimeline(alunoId, true);
-                await carregarAlunos(true);
-                if (alunoSelecionado && alunoSelecionado.id === alunoId) {
-                    const alunoAtualizado = alunosCache.find(a => a.id === alunoId);
-                    if (alunoAtualizado) alunoSelecionado = alunoAtualizado;
+    showLoading();
+    try {
+        await deleteDoc(doc(db, "graduacoes", gradId));
+        showToast("Registro apagado com sucesso.", "success");
+        
+        // Limpa cache específico do aluno
+        const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
+        localStorage.removeItem(cacheKey);
+        
+        // Recarrega a timeline
+        if (alunoId) {
+            await carregarTimeline(alunoId, true);
+            await carregarAlunos(true);
+            
+            // Atualiza o aluno selecionado se for o mesmo
+            if (alunoSelecionado && alunoSelecionado.id === alunoId) {
+                const alunoAtualizado = alunosCache.find(a => a.id === alunoId);
+                if (alunoAtualizado) {
+                    alunoSelecionado = alunoAtualizado;
+                    
+                    // Atualiza a interface
+                    const badge = document.getElementById('aluno-faixa-badge');
+                    if (badge) {
+                        badge.innerText = alunoSelecionado.faixa || "BRANCA";
+                        badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(alunoSelecionado.faixa || "BRANCA")}`;
+                    }
+                    
+                    const grauElemento = document.getElementById('aluno-grau-detalhe');
+                    if (grauElemento) grauElemento.innerText = `GRAU: ${alunoSelecionado.grau || 'Sem grau'}`;
                 }
-            } catch (error) {
-                console.error(error);
-                showToast("Erro ao excluir registro.", "error");
-            } finally {
-                hideLoading();
             }
         }
+        
+    } catch (error) {
+        console.error("Erro ao excluir:", error);
+        showToast("Erro ao excluir registro: " + (error.message || "Erro desconhecido"), "error");
+    } finally {
+        hideLoading();
+    }
+}
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>
