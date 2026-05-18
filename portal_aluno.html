@@ -1274,46 +1274,42 @@ window.fazerLoginAluno = async function() {
     btn.innerHTML = "<span class='animate-pulse'>⏳</span> VALIDANDO ACESSO...";
 
     try {
-        const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
-        const result = await validarLogin({ email, senha });
+        // 🔧 CORREÇÃO: Usar Firebase Auth diretamente
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         
-        if (result.data && result.data.success) {
-            salvarSessaoAluno(result.data.token, result.data.aluno);
-            alunoLogado = result.data.aluno;
+        const auth = getAuth();
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const uid = userCredential.user.uid;
+        
+        // Buscar dados do aluno pelo UID
+        const alunoDoc = await getDoc(doc(db, "alunos", uid));
+        
+        if (alunoDoc.exists()) {
+            alunoLogado = { id: uid, ...alunoDoc.data() };
+            salvarSessaoAluno(userCredential.user.accessToken, alunoLogado);
             showToast("Acesso liberado! Oss!", "success");
             iniciarPortal();
-            return;
-        }
-        
-        throw new Error("Cloud Function retornou erro");
-        
-    } catch (error) {
-        console.log("Cloud Function falhou, usando fallback:", error);
-        
-        try {
-            const q = query(collection(db, "alunos"), 
-                where("email", "==", email), 
-                where("senha_portal", "==", senha));
-            const snap = await getDocs(q);
-            
-            if (!snap.empty) {
-                const alunoDoc = snap.docs[0].data();
-                const alunoId = snap.docs[0].id;
-                alunoLogado = { id: alunoId, ...alunoDoc };
-                localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
-                showToast("Acesso liberado! Oss!", "success");
-                iniciarPortal();
-            } else {
-                showToast("E-mail ou senha incorretos.", "error");
-                btn.disabled = false;
-                btn.innerHTML = "Entrar no Portal";
-            }
-        } catch (fallbackError) {
-            console.error("Fallback também falhou:", fallbackError);
-            showToast("Erro de comunicação. Tente novamente.", "error");
+        } else {
+            showToast("Aluno não encontrado. Contate o professor.", "error");
             btn.disabled = false;
             btn.innerHTML = "Entrar no Portal";
         }
+        
+    } catch (error) {
+        console.error("Erro no login:", error);
+        
+        let mensagemErro = "E-mail ou senha incorretos.";
+        if (error.code === 'auth/user-not-found') {
+            mensagemErro = "E-mail não cadastrado.";
+        } else if (error.code === 'auth/wrong-password') {
+            mensagemErro = "Senha incorreta.";
+        } else if (error.code === 'auth/too-many-requests') {
+            mensagemErro = "Muitas tentativas. Tente mais tarde.";
+        }
+        
+        showToast(mensagemErro, "error");
+        btn.disabled = false;
+        btn.innerHTML = "Entrar no Portal";
     }
 };
 
