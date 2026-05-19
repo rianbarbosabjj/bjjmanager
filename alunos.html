@@ -457,7 +457,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div><label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label><select id="aluno-bolsa" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl font-bold outline-none text-cyan-700 focus:ring-2 focus:ring-cyan-200"><option value="0">0% (Integral)</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100% (Isento)</option></select></div>
                         <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label><select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"></select></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label><select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                                <option value="1">Dia 1</option>
+                                <option value="5">Dia 5</option>
+                                <option value="10" selected>Dia 10</option>
+                                <option value="15">Dia 15</option>
+                                <option value="20">Dia 20</option>
+                                <option value="25">Dia 25</option>
+                            </select></div>
                     </div>
                 </div>
 
@@ -743,7 +750,6 @@
                 window.idadeAtual--; 
             }
             
-            // Atualizar display da idade
             if (idadeDisplay) {
                 idadeDisplay.innerText = `${window.idadeAtual} anos`;
                 idadeDisplay.style.backgroundColor = window.idadeAtual < 18 ? '#fef3c7' : '#dcfce7';
@@ -807,6 +813,11 @@
             const table = document.getElementById('tabela-alunos'); 
             table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-slate-400 font-bold">Buscando alunos no banco de dados...</td></tr>';
             
+            if (!window.teamId) {
+                table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro: Equipe não identificada. Faça login novamente.</td></tr>';
+                return;
+            }
+            
             if (!forceRefresh) { 
                 const cachedAlunos = carregarAlunosCache(); 
                 if (cachedAlunos) { 
@@ -826,11 +837,11 @@
                 if (document.getElementById('aba-evolucao') && !document.getElementById('aba-evolucao').classList.contains('hidden')) atualizarGraficos(); 
             } catch (err) { 
                 console.error(err); 
-                table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Falha ao acessar os dados. <br><span class="text-xs text-slate-400">' + err.message + '</span></td></tr>'; 
+                table.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Falha ao acessar os dados. <br><span class="text-xs text-slate-400">${err.message}</span></td></tr>`; 
             } 
         }
 
-        // ===================== RENDERIZAR TABELA (CORRIGIDA) =====================
+        // ===================== RENDERIZAR TABELA =====================
         window.renderizarTabela = function() { 
             const tab = document.getElementById('tabela-alunos'); 
             const busca = document.getElementById('input-busca').value.toLowerCase(); 
@@ -887,15 +898,29 @@
             window.abaIndexAtual = window.ordemDasAbas.indexOf(idAba); 
             document.querySelectorAll('.aba-content').forEach(x => x.classList.add('hidden')); 
             document.getElementById(idAba).classList.remove('hidden'); 
-            document.querySelectorAll('.aba-item').forEach(x => { x.classList.remove('tab-active'); x.classList.add('text-slate-400'); }); 
-            document.getElementById('btn-'+idAba).classList.add('tab-active'); document.getElementById('btn-'+idAba).classList.remove('text-slate-400'); 
+            
+            document.querySelectorAll('.aba-item').forEach(x => { 
+                x.classList.remove('tab-active'); 
+                x.classList.add('text-slate-400'); 
+            }); 
+            
+            document.getElementById('btn-'+idAba).classList.add('tab-active'); 
+            document.getElementById('btn-'+idAba).classList.remove('text-slate-400'); 
+
             const btnProximo = document.getElementById('btn-proximo'); 
             const btnSalvar = document.getElementById('btn-salvar-aluno'); 
-            if (window.abaIndexAtual === window.ordemDasAbas.length - 1) { btnProximo.classList.add('hidden'); btnSalvar.classList.remove('hidden'); } else { btnProximo.classList.remove('hidden'); btnSalvar.classList.add('hidden'); } 
+            
+            if (window.abaIndexAtual === window.ordemDasAbas.length - 1) { 
+                btnProximo.classList.add('hidden'); 
+                btnSalvar.classList.remove('hidden'); 
+            } else { 
+                btnProximo.classList.remove('hidden'); 
+                btnSalvar.classList.add('hidden'); 
+            } 
         };
         window.proximaAba = () => { if (window.abaIndexAtual < window.ordemDasAbas.length - 1) window.mudarAba(window.ordemDasAbas[window.abaIndexAtual + 1]); };
 
-        // ===================== MODAL ALUNO (FICHA) =====================
+        // ===================== ABRIR FICHA DO ALUNO =====================
         window.abrirFichaAluno = async (id) => { 
             const a = window.todosAlunosCache.find(x => x.id === id); 
             if(!a) return; 
@@ -956,7 +981,6 @@
             
             if (a.anamnese_preenchida && a.anamnese) { 
                 divVazia.classList.add('hidden'); divPreenchida.classList.remove('hidden'); 
-                // ... código da anamnese (manter o original) ...
             } else { 
                 divVazia.classList.remove('hidden'); divPreenchida.classList.add('hidden'); 
             } 
@@ -1014,9 +1038,14 @@
             window.mudarAba('aba-pessoal'); 
             document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
         };
-        window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
 
-        // ===================== FREQUÊNCIA E CHECK-INS =====================
+        window.fecharModal = () => {
+            document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
+            window.alunoEditandoId = null;
+            window.ficheiroFotoSelecionado = null;
+        };
+
+        // ===================== BUSCAR CHECK-INS DO ALUNO (FREQUÊNCIA ADMIN) =====================
         async function carregarFrequenciaDoAluno(idAluno) { 
             const listaEl = document.getElementById('admin-lista-checkins'); 
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
@@ -1025,7 +1054,7 @@
                 const snap = await getDocs(q); 
                 window.checkinsDoAlunoAtualCache = []; 
                 snap.forEach(doc => window.checkinsDoAlunoAtualCache.push(doc.data())); 
-                window.checkinsDoAlunoAtualCache.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()); 
+                window.checkinsDoAlunoAtualCache.sort((a,b) => new Date(b.timestamp || b.data).getTime() - new Date(a.timestamp || a.data).getTime()); 
                 const hojeData = new Date(); const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
                 document.getElementById('filtro-mes-freq-admin').value = `${hojeData.getFullYear()}-${mesFormatado}`; 
                 window.filtrarFrequenciaAdmin(); 
@@ -1041,7 +1070,7 @@
             const anoSelecionado = parseInt(partes[0]); const mesSelecionado = parseInt(partes[1]); 
             
             let checkinsFiltrados = window.checkinsDoAlunoAtualCache.filter(ck => { 
-                const d = new Date(ck.timestamp); 
+                const d = new Date(ck.timestamp || ck.data); 
                 return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado; 
             }); 
             
@@ -1056,7 +1085,7 @@
             container.innerHTML = '<p class="text-center text-xs text-slate-400 py-4 italic">A descodificar localizações... 📍</p>'; 
             let html = ''; 
             for (let ck of checkinsFiltrados) { 
-                const dataObj = new Date(ck.timestamp); 
+                const dataObj = new Date(ck.timestamp || ck.data); 
                 const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); 
                 const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'}); 
                 
@@ -1100,7 +1129,7 @@
             container.innerHTML = html; 
         };
 
-        // ===================== SALVAR ALUNO (CORRIGIDO) =====================
+        // ===================== SALVAR ALUNO =====================
         window.salvarAluno = async function() { 
             const id = window.alunoEditandoId; 
             const nome = document.getElementById('aluno-nome').value.toUpperCase(); 
@@ -1178,18 +1207,16 @@
                             throw new Error(result.data.error);
                         }
                     } else {
-                        // Se não tem senha, salva normalmente (mas aluno não terá acesso ao portal)
+                        // Se não tem senha, salva normalmente
                         const docRef = await addDoc(collection(db, "alunos"), dados); 
                         docRefId = docRef.id;
                     }
                 } else {
                     // EDITANDO ALUNO EXISTENTE
                     if (novaSenha) {
-                        // Se tem nova senha, usa Cloud Function com hash
                         const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
                         await atualizarAluno({ alunoId: id, dados: dados, novaSenha: novaSenha });
                     } else {
-                        // Sem alteração de senha, atualiza normalmente
                         await updateDoc(doc(db, "alunos", id), dados); 
                     }
                     docRefId = id;
@@ -1200,7 +1227,6 @@
                 if (window.ficheiroFotoSelecionado) { 
                     btnSalvar.innerHTML = "📷 ENVIANDO FOTO..."; 
                     
-                    // Apaga foto antiga se existir
                     const alunoAntigo = window.todosAlunosCache.find(a => a.id === docRefId); 
                     if (alunoAntigo && alunoAntigo.foto_url) { 
                         try { 
@@ -1507,8 +1533,7 @@
                         await buscarAlunosFirebase(false);
                         mudarAbaDashboard('lista');
                     } else {
-                        document.getElementById('tabela-alunos').innerHTML = '</table><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.
-                                                    document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
+                        document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                     }
                 } catch(e) {
                     console.error("Erro na autenticação:", e);
