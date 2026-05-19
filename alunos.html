@@ -467,7 +467,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div><label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label><select id="aluno-bolsa" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl font-bold outline-none text-cyan-700 focus:ring-2 focus:ring-cyan-200"><option value="0">0% (Integral)</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100% (Isento)</option></select></div>
                         <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label><select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"></select></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label>
+                        <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                            <option value="1">Dia 1</option>
+                            <option value="5">Dia 5</option>
+                            <option value="10" selected>Dia 10</option>
+                            <option value="15">Dia 15</option>
+                            <option value="20">Dia 20</option>
+                            <option value="25">Dia 25</option>
+                        </select>
                     </div>
                 </div>
 
@@ -506,57 +514,102 @@
                 <!-- ABA ANAMNESE -->
                 <div id="aba-anamnese" class="aba-content hidden space-y-5">
                     <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200"><span class="text-4xl block mb-3">⏳</span><h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4><p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p></div>
-                    <div id="anamnese-preenchida" class="hidden space-y-4 animate-fade-in bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                            <h4 class="text-sm font-black text-slate-700 uppercase tracking-widest">Ficha Médica & Respostas</h4>
-                            <span class="text-xs font-bold text-slate-500">Preenchido em: <span id="anamnese-data">---</span></span>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                            <div><p class="text-[10px] text-slate-400 font-bold uppercase">Altura</p><p id="anamnese-altura" class="text-sm font-bold text-slate-700">---</p></div>
-                            <div><p class="text-[10px] text-slate-400 font-bold uppercase">Peso</p><p id="anamnese-peso" class="text-sm font-bold text-slate-700">---</p></div>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                            <h5 class="text-xs font-black text-slate-500 uppercase tracking-wider border-b pb-1">Condições Crônicas</h5>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                <div class="flex items-center gap-2"><div id="anamnese-asma" class="w-3 h-3 rounded-full bg-slate-300"></div><span class="text-xs font-semibold">Asma/Bronquite</span></div>
-                                <div class="flex items-center gap-2"><div id="anamnese-hipertensao" class="w-3 h-3 rounded-full bg-slate-300"></div><span class="text-xs font-semibold">Hipertensão</span></div>
-                                <div class="flex items-center gap-2"><div id="anamnese-cardiopatia" class="w-3 h-3 rounded-full bg-slate-300"></div><span class="text-xs font-semibold">Cardiopatia</span></div>
-                                <div class="flex items-center gap-2"><div id="anamnese-diabetes" class="w-3 h-3 rounded-full bg-slate-300"></div><span class="text-xs font-semibold">Diabetes</span></div>
-                                <div class="flex items-center gap-2"><div id="anamnese-epilepsia" class="w-3 h-3 rounded-full bg-slate-300"></div><span class="text-xs font-semibold">Epilepsia</span></div>
-                                <div class="flex items-center gap-2"><div id="anamnese-desmaios" class="w-3 h-3 rounded-full bg-slate-300"></div><span class="text-xs font-semibold">Desmaios</span></div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-white p-3 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Dores Articulares</p><p id="anamnese-dores" class="text-xs text-slate-700 mt-1">---</p></div>
-                            <div class="bg-white p-3 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Problemas de Coluna</p><p id="anamnese-coluna" class="text-xs text-slate-700 mt-1">---</p></div>
-                            <div class="bg-white p-3 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Cirurgias/Lesões Prévias</p><p id="anamnese-cirurgias" class="text-xs text-slate-700 mt-1">---</p></div>
-                            <div class="bg-white p-3 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Uso de Medicamentos</p><p id="anamnese-medicamentos" class="text-xs text-slate-700 mt-1">---</p></div>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                            <h5 class="text-xs font-black text-slate-500 uppercase tracking-wider border-b pb-1 mb-2">Inclusão & Neurodivergência</h5>
-                            <div id="anamnese-neuro-container">---</div>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-2">
-                            <h5 class="text-xs font-black text-slate-500 uppercase tracking-wider border-b pb-1 mb-2">Desenvolvimento & Comportamento</h5>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                                <div><strong>Dificuldade de Equilíbrio:</strong> <span id="anamnese-equilibrio">---</span></div>
-                                <div><strong>Entende Comandos Complexos:</strong> <span id="anamnese-comandos">---</span></div>
-                                <div class="sm:col-span-2"><strong>Comunicação Alternativa:</strong> <span id="anamnese-comunicacao">---</span></div>
-                                <div><strong>Tendência a Fuga/Isolamento:</strong> <span id="anamnese-fuga">---</span></div>
-                                <div><strong>Precisa de Apoio para Interagir:</strong> <span id="anamnese-apoio">---</span></div>
-                                <div><strong>Sensibilidade a Sons Altos:</strong> <span id="anamnese-sons">---</span></div>
-                                <div><strong>Sensibilidade a Toques/Contato:</strong> <span id="anamnese-toques">---</span></div>
-                                <div class="sm:col-span-2"><strong>Gatilhos de Crises/Autolesão:</strong> <span id="anamnese-crises">---</span></div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-white p-3 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Alergias / Restrições</p><p id="anamnese-alergias" class="text-xs text-slate-700 mt-1">---</p></div>
-                            <div class="bg-white p-3 rounded-xl border border-slate-100"><p class="text-[10px] font-black text-slate-400 uppercase">Expectativas dos Treinos</p><p id="anamnese-expectativas" class="text-xs text-slate-700 mt-1">---</p></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <<div id="anamnese-preenchida" class="hidden space-y-4">
+    <!-- Botão de gerar PDF -->
+    <div class="flex justify-end">
+        <button onclick="window.gerarPDF_Anamnese()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-sm flex items-center gap-2">
+            <span>📄</span> Baixar Ficha de Saúde (PDF)
+        </button>
+    </div>
+    
+    <!-- Dados Pessoais -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 class="text-sm font-black text-cyan-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+            <span>👤</span> Dados Pessoais
+        </h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div><p class="text-[10px] text-slate-400">Altura</p><p id="anamnese-altura" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Peso</p><p id="anamnese-peso" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Data Preenchimento</p><p id="anamnese-data" class="font-bold text-slate-700 text-xs">---</p></div>
+        </div>
+    </div>
 
+    <!-- Condições Clínicas -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 class="text-sm font-black text-cyan-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+            <span>🩺</span> Condições Clínicas
+        </h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="flex items-center gap-2"><span id="anamnese-asma" class="w-3 h-3 rounded-full"></span><span class="text-sm">Asma/Bronquite</span></div>
+            <div class="flex items-center gap-2"><span id="anamnese-hipertensao" class="w-3 h-3 rounded-full"></span><span class="text-sm">Hipertensão</span></div>
+            <div class="flex items-center gap-2"><span id="anamnese-cardiopatia" class="w-3 h-3 rounded-full"></span><span class="text-sm">Cardiopatia</span></div>
+            <div class="flex items-center gap-2"><span id="anamnese-diabetes" class="w-3 h-3 rounded-full"></span><span class="text-sm">Diabetes</span></div>
+            <div class="flex items-center gap-2"><span id="anamnese-epilepsia" class="w-3 h-3 rounded-full"></span><span class="text-sm">Epilepsia</span></div>
+            <div class="flex items-center gap-2"><span id="anamnese-desmaios" class="w-3 h-3 rounded-full"></span><span class="text-sm">Desmaios</span></div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100">
+            <p class="text-[10px] text-slate-400">Dores Articulares</p>
+            <p id="anamnese-dores" class="text-sm text-slate-700">---</p>
+        </div>
+        <div class="mt-2">
+            <p class="text-[10px] text-slate-400">Problemas de Coluna</p>
+            <p id="anamnese-coluna" class="text-sm text-slate-700">---</p>
+        </div>
+        <div class="mt-2">
+            <p class="text-[10px] text-slate-400">Cirurgias/Lesões Prévias</p>
+            <p id="anamnese-cirurgias" class="text-sm text-slate-700">---</p>
+        </div>
+        <div class="mt-2">
+            <p class="text-[10px] text-slate-400">Uso de Medicamentos</p>
+            <p id="anamnese-medicamentos" class="text-sm text-slate-700">---</p>
+        </div>
+    </div>
+
+    <!-- Inclusão e Neurodivergência -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 class="text-sm font-black text-purple-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+            <span>🧠</span> Inclusão e Neurodivergência
+        </h3>
+        <div id="anamnese-neuro-container">
+            <p class="text-slate-500 text-sm">Nenhuma informação registrada</p>
+        </div>
+    </div>
+
+    <!-- Comportamento e Interação -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 class="text-sm font-black text-orange-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+            <span>🎯</span> Comportamento e Interação
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><p class="text-[10px] text-slate-400">Dificuldade de Equilíbrio</p><p id="anamnese-equilibrio" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Entende Comandos</p><p id="anamnese-comandos" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Comunicação Alternativa</p><p id="anamnese-comunicacao" class="text-sm text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Fuga/Isolamento</p><p id="anamnese-fuga" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Precisa de Apoio para Interagir</p><p id="anamnese-apoio" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Sensibilidade a Sons</p><p id="anamnese-sons" class="font-bold text-slate-700">---</p></div>
+            <div><p class="text-[10px] text-slate-400">Sensibilidade a Toques</p><p id="anamnese-toques" class="font-bold text-slate-700">---</p></div>
+        </div>
+        <div class="mt-3">
+            <p class="text-[10px] text-slate-400">Crises/Autolesão (Gatilhos)</p>
+            <p id="anamnese-crises" class="text-sm text-slate-700">---</p>
+        </div>
+    </div>
+
+    <!-- Avaliação Geral -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 class="text-sm font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+            <span>📋</span> Avaliação Geral
+        </h3>
+        <div class="mb-3">
+            <p class="text-[10px] text-slate-400">Alergias/Restrições</p>
+            <p id="anamnese-alergias" class="text-sm text-slate-700">---</p>
+        </div>
+        <div>
+            <p class="text-[10px] text-slate-400">Expectativas com os treinos</p>
+            <p id="anamnese-expectativas" class="text-sm text-slate-700">---</p>
+        </div>
+    </div>
+</div>
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
                 <button onclick="window.fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
                 <button onclick="window.proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
