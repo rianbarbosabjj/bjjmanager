@@ -630,7 +630,7 @@
     </div>
 
 <script type="module">
-// ===================== IMPORTS =====================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc, deleteDoc, enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; // 🔧 ADICIONE ESTA LINHA
@@ -639,7 +639,6 @@ import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "http
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";    
 
-// ===================== CONFIG =====================
 const firebaseConfig = {
     apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
     authDomain: "bjj-maneger.firebaseapp.com",
@@ -1350,12 +1349,111 @@ async function iniciarPortal() {
     
     console.log("✅ Portal iniciado com sucesso!");
 }
+    
 window.fazerLoginAluno = async function() {
-
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const senha = document.getElementById('login-senha').value;
+    const btn = document.getElementById('btn-login');
+    
+    if (!email || !senha) {
+        showToast("Preencha e-mail e senha.", "error");
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Entrando...";
+    
+    try {
+        // 1. Autenticar no Firebase Auth
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const firebaseUser = userCredential.user;
+        
+        // 2. Buscar dados do aluno no Firestore
+        const qAluno = query(
+            collection(db, "alunos"), 
+            where("email", "==", email),
+            where("status", "in", ["ATIVO", "ativo"])
+        );
+        const querySnapshot = await getDocs(qAluno);
+        
+        if (querySnapshot.empty) {
+            showToast("Aluno não encontrado ou conta inativa.", "error");
+            await auth.signOut();
+            return;
+        }
+        
+        const alunoDoc = querySnapshot.docs[0];
+        const alunoData = alunoDoc.data();
+        
+        // 3. Verificar se a senha do portal bate (se o campo senha_portal existir)
+        if (alunoData.senha_portal && alunoData.senha_portal !== senha) {
+            showToast("Senha incorreta.", "error");
+            await auth.signOut();
+            return;
+        }
+        
+        // 4. Gerar token de sessão
+        const token = await firebaseUser.getIdToken();
+        
+        // 5. Preparar objeto do aluno
+        alunoLogado = {
+            id: alunoDoc.id,
+            equipe_id: alunoData.equipe_id,
+            nome: alunoData.nome,
+            email: alunoData.email,
+            cpf: alunoData.cpf,
+            telefone: alunoData.telefone || '',
+            faixa: alunoData.faixa || 'BRANCA',
+            grau: alunoData.grau || '',
+            matricula: alunoData.matricula,
+            data_nascimento: alunoData.data_nascimento,
+            foto_url: alunoData.foto_url || '',
+            peso: alunoData.peso || '',
+            dia_vencimento: alunoData.dia_vencimento || 10,
+            cep: alunoData.cep || '',
+            endereco: alunoData.endereco || '',
+            numero: alunoData.numero || '',
+            complemento: alunoData.complemento || '',
+            bairro: alunoData.bairro || '',
+            cidade: alunoData.cidade || '',
+            uf: alunoData.uf || '',
+            anamnese_preenchida: alunoData.anamnese_preenchida || false,
+            anamnese: alunoData.anamnese || null,
+            status: alunoData.status
+        };
+        
+        // 6. Salvar sessão
+        salvarSessaoAluno(token, alunoLogado);
+        
+        // 7. Iniciar portal
+        await iniciarPortal();
+        
+    } catch (error) {
+        console.error("Erro no login:", error);
+        
+        let mensagem = "Erro ao fazer login.";
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+            mensagem = "E-mail ou senha incorretos.";
+        } else if (error.code === 'auth/wrong-password') {
+            mensagem = "Senha incorreta.";
+        } else if (error.code === 'auth/too-many-requests') {
+            mensagem = "Muitas tentativas. Aguarde um momento.";
+        } else if (error.code === 'auth/invalid-email') {
+            mensagem = "E-mail inválido.";
+        }
+        
+        showToast(mensagem, "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Entrar no Portal";
+    }
+};
 
 window.sairDoPortal = function() { 
     if (typeof removerTokenPush === 'function') removerTokenPush();
     limparSessaoAluno();
+    // Limpar também a autenticação do Firebase
+    auth.signOut().catch(console.error);
     window.location.reload(); 
 };
 
@@ -1364,17 +1462,26 @@ const sessaoToken = localStorage.getItem('bjj_aluno_token');
 const sessaoAluno = localStorage.getItem('bjj_aluno_auth');
 
 if (sessaoToken && sessaoAluno) {
-    validarTokenAtual().then(isValid => {
-        if (isValid) {
-            alunoLogado = JSON.parse(sessaoAluno);
-            iniciarPortal();
+    // Verificar se o token ainda é válido
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            try {
+                await user.getIdToken(true);
+                alunoLogado = JSON.parse(sessaoAluno);
+                iniciarPortal();
+            } catch (error) {
+                limparSessaoAluno();
+                auth.signOut();
+                console.log("Sessão expirada, faça login novamente.");
+            }
         } else {
             limparSessaoAluno();
-            console.log("Sessão expirada, faça login novamente.");
         }
-    }).catch(() => {
-        limparSessaoAluno();
     });
+} else {
+    // Mostrar tela de login, esconder portal
+    document.getElementById('tela-login').classList.remove('hidden');
+    document.getElementById('tela-portal').classList.add('hidden');
 }
 
 // ==========================================
