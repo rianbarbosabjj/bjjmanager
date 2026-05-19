@@ -1364,22 +1364,40 @@ window.fazerLoginAluno = async function() {
     btn.innerHTML = "<span class='animate-pulse'>⏳</span> VALIDANDO ACESSO...";
 
     try {
+        console.log("🔍 Buscando aluno com e-mail:", email);
+        
         // 🔐 Buscar no Firestore (não no Auth)
         const q = query(collection(db, "alunos"), where("email", "==", email));
         const querySnapshot = await getDocs(q);
         
+        console.log("📋 Resultados encontrados:", querySnapshot.size);
+        
         if (querySnapshot.empty) {
-            showToast("E-mail não encontrado.", "error");
-            btn.disabled = false;
-            btn.innerHTML = "Entrar no Portal";
-            return;
+            // Tentar buscar por e-mail em outro campo (fallback)
+            console.log("❌ E-mail não encontrado, tentando busca alternativa...");
+            const q2 = query(collection(db, "alunos"), where("email_acesso", "==", email));
+            const snap2 = await getDocs(q2);
+            
+            if (snap2.empty) {
+                showToast("E-mail não encontrado no sistema.", "error");
+                btn.disabled = false;
+                btn.innerHTML = "Entrar no Portal";
+                return;
+            }
+            
+            var alunoDoc = snap2.docs[0];
+        } else {
+            var alunoDoc = querySnapshot.docs[0];
         }
         
-        const alunoDoc = querySnapshot.docs[0];
         const aluno = { id: alunoDoc.id, ...alunoDoc.data() };
+        console.log("✅ Aluno encontrado:", aluno.nome);
+        console.log("🔑 Senha no banco:", aluno.senha_portal || aluno.senha || "NÃO ENCONTRADA");
         
-        // Comparar senha (texto simples - apenas para teste)
-        if (senha === aluno.senha_portal) {
+        // Comparar senha (tenta diferentes nomes de campo)
+        const senhaSalva = aluno.senha_portal || aluno.senha || '';
+        
+        if (senha === senhaSalva) {
             alunoLogado = aluno;
             localStorage.setItem('bjj_aluno_token', 'temp_' + Date.now());
             localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
@@ -1392,8 +1410,8 @@ window.fazerLoginAluno = async function() {
         }
         
     } catch (error) {
-        console.error("Erro no login:", error);
-        showToast("Erro ao conectar. Tente novamente.", "error");
+        console.error("❌ Erro detalhado no login:", error);
+        showToast("Erro ao conectar. Verifique o console (F12) para mais detalhes.", "error");
         btn.disabled = false;
         btn.innerHTML = "Entrar no Portal";
     }
