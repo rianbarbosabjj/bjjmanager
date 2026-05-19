@@ -370,8 +370,13 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento *</label>
-                            <input type="date" id="aluno-nasc" onchange="calcularIdade()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <div class="flex gap-2">
+                            <input type="date" id="aluno-nasc" onchange="calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <div id="aluno-idade-exibir" class="w-24 p-3 bg-slate-100 border border-slate-200 rounded-xl text-center font-bold text-slate-600 flex items-center justify-center">
+                            </div>
                         </div>
+                    </div>
+                        
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
                             <select id="aluno-faixa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
@@ -712,19 +717,47 @@
         window.mascaraCEP = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/^(\d{5})(\d)/, "$1-$2"); i.value = v; };
         window.buscarCEP = async (cep) => { const cleanCep = cep.replace(/\D/g, ""); if (cleanCep.length !== 8) return; const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json()); if (!r.erro) { document.getElementById('aluno-endereco').value = r.logradouro || ""; document.getElementById('aluno-bairro').value = r.bairro || ""; document.getElementById('aluno-numero').focus(); } };
         
-        window.calcularIdade = function() { 
-            const dataNascStr = document.getElementById('aluno-nasc').value; 
-            const alertaIdade = document.getElementById('alerta-idade'); 
-            const blocoResp = document.getElementById('bloco-responsavel'); 
-            const blocoEmerg = document.getElementById('bloco-emergencia'); 
-            if (!dataNascStr) { alertaIdade.classList.remove('hidden'); blocoResp.classList.add('hidden'); blocoEmerg.classList.add('hidden'); window.idadeAtual = 0; return; } 
-            alertaIdade.classList.add('hidden'); 
-            const hoje = new Date(); const nasc = new Date(dataNascStr); 
-            window.idadeAtual = hoje.getFullYear() - nasc.getFullYear(); 
-            const mes = hoje.getMonth() - nasc.getMonth(); 
-            if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) window.idadeAtual--; 
-            if (window.idadeAtual < 18) { blocoResp.classList.remove('hidden'); blocoEmerg.classList.add('hidden'); } else { blocoResp.classList.add('hidden'); blocoEmerg.classList.remove('hidden'); } 
-        };
+window.calcularIdade = function() { 
+    const dataNascStr = document.getElementById('aluno-nasc').value; 
+    const alertaIdade = document.getElementById('alerta-idade'); 
+    const blocoResp = document.getElementById('bloco-responsavel'); 
+    const blocoEmerg = document.getElementById('bloco-emergencia');
+    const idadeDisplay = document.getElementById('aluno-idade-exibir');
+    
+    if (!dataNascStr) { 
+        alertaIdade.classList.remove('hidden'); 
+        blocoResp.classList.add('hidden'); 
+        blocoEmerg.classList.add('hidden'); 
+        window.idadeAtual = 0;
+        if (idadeDisplay) idadeDisplay.innerText = '-- anos';
+        return; 
+    } 
+    alertaIdade.classList.add('hidden'); 
+    
+    const hoje = new Date(); 
+    const nasc = new Date(dataNascStr); 
+    window.idadeAtual = hoje.getFullYear() - nasc.getFullYear(); 
+    const mes = hoje.getMonth() - nasc.getMonth(); 
+    
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+        window.idadeAtual--; 
+    }
+    
+    // Atualizar display da idade
+    if (idadeDisplay) {
+        idadeDisplay.innerText = `${window.idadeAtual} anos`;
+        idadeDisplay.style.backgroundColor = window.idadeAtual < 18 ? '#fef3c7' : '#dcfce7';
+        idadeDisplay.style.color = window.idadeAtual < 18 ? '#b45309' : '#166534';
+    }
+    
+    if (window.idadeAtual < 18) { 
+        blocoResp.classList.remove('hidden'); 
+        blocoEmerg.classList.add('hidden'); 
+    } else { 
+        blocoResp.classList.add('hidden'); 
+        blocoEmerg.classList.remove('hidden'); 
+    } 
+};
 
         window.mostrarPreviewFoto = function(event) { 
             const file = event.target.files[0]; 
@@ -771,18 +804,48 @@
             } 
         }
 
-        window.renderizarTabela = function() { 
-            const tab = document.getElementById('tabela-alunos'); 
-            const busca = document.getElementById('input-busca').value.toLowerCase(); 
-            const status = document.getElementById('filtro-status').value; 
-            const faixaFiltro = document.getElementById('filtro-faixa')?.value || 'TODAS'; 
-            
-            const filtrados = window.todosAlunosCache.filter(a => { 
-                const matchBusca = (a.nome || '').toLowerCase().includes(busca) || (a.cpf && a.cpf.includes(busca)); 
-                const matchStatus = status === "TODOS" || a.status === status; 
-                const matchFaixa = faixaFiltro === "TODAS" || (a.faixa || 'Branca') === faixaFiltro; 
-                return matchBusca && matchStatus && matchFaixa; 
-            }); 
+function calcularIdadeExibir(dataNascStr) {
+    if (!dataNascStr) return '?';
+    try {
+        let nascimento;
+        if (dataNascStr.includes('-')) {
+            const partes = dataNascStr.split('-');
+            nascimento = new Date(partes[0], partes[1] - 1, partes[2]);
+        } else {
+            nascimento = new Date(dataNascStr);
+        }
+        
+        if (isNaN(nascimento.getTime())) return '?';
+        
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mes = hoje.getMonth() - nascimento.getMonth();
+        if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        return idade;
+    } catch(e) {
+        return '?';
+    }
+}
+
+window.renderizarTabela = function() { 
+    const tab = document.getElementById('tabela-alunos'); 
+    const busca = document.getElementById('input-busca').value.toLowerCase(); 
+    const status = document.getElementById('filtro-status').value; 
+    const faixaFiltro = document.getElementById('filtro-faixa')?.value || 'TODAS'; 
+    
+    const filtrados = window.todosAlunosCache.filter(a => { 
+        const matchBusca = (a.nome || '').toLowerCase().includes(busca) || (a.cpf && a.cpf.includes(busca)); 
+        const matchStatus = status === "TODOS" || a.status === status; 
+        const matchFaixa = faixaFiltro === "TODAS" || (a.faixa || 'Branca') === faixaFiltro; 
+        return matchBusca && matchStatus && matchFaixa; 
+    }); 
+    
+    document.getElementById('lbl-total-ativos').innerText = "Total Ativos: " + window.todosAlunosCache.filter(x => x.status === "ATIVO").length; 
+    
+    if (filtrados.length === 0) { 
+        tab.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.
             
             document.getElementById('lbl-total-ativos').innerText = "Total Ativos: " + window.todosAlunosCache.filter(x => x.status === "ATIVO").length; 
             
@@ -809,7 +872,7 @@
                             ${avatarHtml}
                             <div>
                                 <div class="font-bold text-slate-700 text-sm group-hover:text-cyan-600 transition-colors">${a.nome || 'Sem Nome'}</div>
-                                <div class="text-[10px] text-slate-400 uppercase tracking-wider">${a.matricula || 'SEM MAT.'} | ${a.telefone || 'Sem contato'}</div>
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wider">${a.matricula || 'SEM MAT.'} | ${a.telefone || 'Sem contato'} ${a.data_nascimento ? `| ${calcularIdadeExibir(a.data_nascimento)} anos` : ''}</div>
                             </div>
                         </div>
                     </td>
