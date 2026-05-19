@@ -18,8 +18,7 @@ const injetarEstilosGlobais = () => {
             
             html.dark .bg-slate-50:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .bg-slate-100:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .bg-slate-200:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .bg-slate-300:not(.ignorar-dark):not(.ignorar-dark *) { 
+            html.dark .bg-slate-200:not(.ignorar-dark):not(.ignorar-dark *) { 
                 background-color: #1e293b !important; 
                 border-color: #334155 !important; 
             }
@@ -91,22 +90,43 @@ const injetarEstilosGlobais = () => {
 };
 
 // ==========================================
-// 🌓 TOGGLE DARK MODE
+// 🌓 TOGGLE DARK MODE COM SVG
 // ==========================================
 window.toggleDarkMode = function() {
     const htmlTag = document.documentElement;
+    const btn = window.event?.currentTarget;
     
     if (htmlTag.classList.contains('dark')) {
         htmlTag.classList.remove('dark');
         localStorage.setItem('bjj-theme', 'light');
+        
+        // Atualizar SVG para Sol (modo claro)
+        if (btn) {
+            const svg = btn.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                `;
+            }
+        }
     } else {
         htmlTag.classList.add('dark');
         localStorage.setItem('bjj-theme', 'dark');
+        
+        // Atualizar SVG para Lua (modo escuro)
+        if (btn) {
+            const svg = btn.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                `;
+            }
+        }
     }
 };
 
 // ==========================================
-// 📋 MENU GAVETA UNIVERSAL (SIMPLIFICADO)
+// 📋 MENU GAVETA UNIVERSAL
 // ==========================================
 function carregarMenu() {
     try {
@@ -128,6 +148,17 @@ function carregarMenu() {
             cacheLogoHTML = `<img src="${cacheLogoUrl}" class="w-full h-full object-cover" alt="Logo" crossorigin="anonymous">`;
             cacheLogoBg = "background: transparent;";
         }
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const svgTema = isDark ? `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+        ` : `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+        `;
 
         const classItem = (pagina, isBloqueado = false) => {
             if (isBloqueado) return "w-full text-left flex items-center justify-between px-6 py-3.5 text-[13px] font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
@@ -151,7 +182,6 @@ function carregarMenu() {
         const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade();`; };
 
         const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
-        const svgTema = `<span class="mr-2 text-base">${document.documentElement.classList.contains('dark') ? '🌙' : '☀️'}</span>`;
 
         // --- HTML DO MENU LATERAL ---
         const menuSidebar = `
