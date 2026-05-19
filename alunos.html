@@ -1446,45 +1446,46 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
         };
 
         // ===================== BUSCAR CHECK-INS =====================
-        async function carregarFrequenciaDoAluno(idAluno) { 
-            const listaEl = document.getElementById('admin-lista-checkins'); 
-            if (!listaEl) return;
-            
-            listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
-            
-            try { 
-                const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno)); 
-                const snap = await getDocs(q); 
-                window.checkinsDoAlunoAtualCache = []; 
-                
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    window.checkinsDoAlunoAtualCache.push({
-                        id: doc.id,
-                        ...data,
-                        data: data.timestamp || data.data
-                    }); 
-                });
-                
-                window.checkinsDoAlunoAtualCache.sort((a,b) => {
-                    const dateA = a.data?.toDate ? a.data.toDate() : new Date(a.data);
-                    const dateB = b.data?.toDate ? b.data.toDate() : new Date(b.data);
-                    return dateB - dateA;
-                }); 
-                
-                const hojeData = new Date(); 
-                const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
-                const filtroMes = document.getElementById('filtro-mes-freq-admin');
-                if (filtroMes) {
-                    filtroMes.value = `${hojeData.getFullYear()}-${mesFormatado}`; 
-                }
-                
-                window.filtrarFrequenciaAdmin(); 
-            } catch(e) { 
-                console.error(e);
-                if(listaEl) listaEl.innerHTML = '<p class="text-center text-xs text-rose-500 py-6 font-bold">Erro ao carregar frequência.</p>'; 
-            } 
+async function carregarFrequenciaDoAluno(idAluno) { 
+    const listaEl = document.getElementById('admin-lista-checkins'); 
+    if (!listaEl) return;
+    
+    listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
+    
+    try { 
+        const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno)); 
+        const snap = await getDocs(q); 
+        window.checkinsDoAlunoAtualCache = []; 
+        
+        snap.forEach(doc => {
+            const data = doc.data();
+            window.checkinsDoAlunoAtualCache.push({
+                id: doc.id,
+                ...data,
+                data: data.timestamp || data.data
+            }); 
+        });
+        
+        window.checkinsDoAlunoAtualCache.sort((a,b) => {
+            const dateA = a.data?.toDate ? a.data.toDate() : new Date(a.data);
+            const dateB = b.data?.toDate ? b.data.toDate() : new Date(b.data);
+            return dateB - dateA;
+        }); 
+        
+        const hojeData = new Date(); 
+        const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
+        const filtroMes = document.getElementById('filtro-mes-freq-admin');
+        if (filtroMes) {
+            filtroMes.value = `${hojeData.getFullYear()}-${mesFormatado}`; 
         }
+        
+        window.filtrarFrequenciaAdmin(); 
+    } catch(e) { 
+        console.error("Erro ao carregar check-ins:", e);
+        // ✅ MENSAGEM AMIGÁVEL EM VEZ DE "ERRO"
+        if(listaEl) listaEl.innerHTML = '<p class="text-center text-xs text-amber-500 py-6 italic">Nenhum check-in registrado ainda. Os registros aparecerão aqui quando o aluno fizer check-in.</p>'; 
+    } 
+}
         
         window.filtrarFrequenciaAdmin = function() { 
             const valFiltro = document.getElementById('filtro-mes-freq-admin')?.value; 
