@@ -637,6 +637,7 @@ import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/fir
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";    
 
 // ===================== CONFIG =====================
 const firebaseConfig = {
@@ -2607,41 +2608,41 @@ window.fecharModalEsqueciSenha = function() {
 
 window.recuperarSenha = async function() {
     const email = document.getElementById('recuperar-email').value.trim().toLowerCase();
-    if(!email) return showToast("Digite seu e-mail de acesso.", "error");
+    if(!email) {
+        showToast("Digite seu e-mail de acesso.", "error");
+        return;
+    }
     
     const btn = document.getElementById('btn-recuperar');
-    btn.disabled = true; btn.innerHTML = "⏳ Enviando...";
+    btn.disabled = true; 
+    btn.innerHTML = "⏳ Enviando...";
     
     try {
-        const q = query(collection(db, "alunos"), where("email", "==", email));
-        const snap = await getDocs(q);
-        
-        if (snap.empty) {
-            showToast("E-mail não encontrado no sistema.", "error");
-            btn.disabled = false; btn.innerHTML = "Pedir Recuperação";
-            return;
-        }
-
-        const dadosAluno = snap.docs[0].data();
-        
-        await addDoc(collection(db, "mensagens"), {
-            equipe_id: dadosAluno.equipe_id,
-            aluno_id: snap.docs[0].id,
-            aluno_nome: dadosAluno.nome,
-            titulo: `🔑 Recuperação de Senha: ${dadosAluno.nome}`,
-            conteudo: `O aluno(a) ${dadosAluno.nome} (${dadosAluno.email}) solicitou a recuperação da senha de acesso ao portal.\nPor favor, acesse o painel de alunos, edite o cadastro dele(a) e redefina a senha na aba Contato.`,
-            tipo: "notificacao_sistema",
-            data_envio: new Date().toISOString(),
-            status: "ativo",
-            urgencia: "urgente"
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth, email, {
+            url: window.location.origin + '/portal_aluno.html',
+            handleCodeInApp: false
         });
-
-        showToast("Pedido enviado ao seu professor! Ele(a) irá redefinir sua senha.", "success");
+        
+        showToast("✅ E-mail de redefinição enviado! Verifique sua caixa de entrada (incluindo SPAM).", "success");
         fecharModalEsqueciSenha();
-    } catch(e) {
-        showToast("Erro ao processar pedido. Tente novamente.", "error");
+        
+    } catch (error) {
+        console.error("Erro ao enviar redefinição:", error);
+        
+        let mensagemErro = "Erro ao enviar e-mail de recuperação.";
+        if (error.code === 'auth/user-not-found') {
+            mensagemErro = "Este e-mail não está cadastrado no sistema.";
+        } else if (error.code === 'auth/invalid-email') {
+            mensagemErro = "Digite um e-mail válido.";
+        } else if (error.code === 'auth/too-many-requests') {
+            mensagemErro = "Muitas tentativas. Aguarde alguns minutos.";
+        }
+        
+        showToast(mensagemErro, "error");
     } finally {
-        btn.disabled = false; btn.innerHTML = "Pedir Recuperação";
+        btn.disabled = false;
+        btn.innerHTML = "Pedir Recuperação";
     }
 };
 
