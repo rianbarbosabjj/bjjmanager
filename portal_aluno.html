@@ -561,82 +561,78 @@
             </div>
         </div>
     </div>
-    
-    <!-- MODAL DE DETALHES DO PRODUTO -->
-    <div id="modal-produto" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md hidden items-center justify-center z-[300] p-4 transition-all duration-300">
-        <div class="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in duration-300">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-4 text-white flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <h3 class="font-black uppercase tracking-widest text-sm" id="modal-produto-titulo">Detalhes do Produto</h3>
+<!-- MODAL DE DETALHES DO PRODUTO -->
+<div id="modal-produto" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md hidden items-center justify-center z-[300] p-4 transition-all duration-300">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in duration-300">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-4 text-white flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <h3 class="font-black uppercase tracking-widest text-sm" id="modal-produto-titulo">Detalhes do Produto</h3>
+            </div>
+            <button onclick="fecharModalProduto()" class="text-white/70 hover:text-white text-2xl leading-none transition-colors">&times;</button>
+        </div>
+        
+        <!-- Conteúdo rolável -->
+        <div class="overflow-y-auto hide-scrollbar flex-1">
+            <!-- Carrossel de imagens -->
+            <div class="relative bg-slate-800">
+                <div id="modal-carrossel-container" class="relative aspect-square">
+                    <div id="modal-carrossel" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                        <!-- Imagens serão inseridas aqui -->
+                    </div>
+                    <button onclick="scrollModalCarrossel(-1)" id="modal-prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden">
+                        ◀
+                    </button>
+                    <button onclick="scrollModalCarrossel(1)" id="modal-next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden">
+                        ▶
+                    </button>
+                    <div id="modal-dots" class="absolute bottom-3 left-0 w-full flex justify-center gap-2 z-10">
+                        <!-- Dots serão inseridos aqui -->
+                    </div>
                 </div>
-                <button onclick="fecharModalProduto()" class="text-white/70 hover:text-white text-2xl leading-none transition-colors">&times;</button>
             </div>
             
-            <!-- Conteúdo rolável -->
-            <div class="overflow-y-auto hide-scrollbar flex-1">
-                <!-- Carrossel de imagens -->
-                <div class="relative bg-slate-800">
-                    <div id="modal-carrossel-container" class="relative aspect-square">
-                        <div id="modal-carrossel" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
-                            <!-- Imagens serão inseridas aqui -->
-                        </div>
-                        <button onclick="scrollModalCarrossel(-1)" id="modal-prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden">
-                            ◀
-                        </button>
-                        <button onclick="scrollModalCarrossel(1)" id="modal-next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden">
-                            ▶
-                        </button>
-                        <div id="modal-dots" class="absolute bottom-3 left-0 w-full flex justify-center gap-2 z-10">
-                            <!-- Dots serão inseridos aqui -->
-                        </div>
-                    </div>
+            <!-- Informações do produto -->
+            <div class="p-5 space-y-4">
+                <div>
+                    <h4 class="text-xl font-black text-white" id="modal-produto-nome"></h4>
+                    <p class="text-3xl font-black text-emerald-400 mt-2" id="modal-produto-preco"></p>
                 </div>
                 
-                <!-- Informações do produto -->
-                <div class="p-5 space-y-4">
-                    <div>
-                        <h4 class="text-xl font-black text-white" id="modal-produto-nome"></h4>
-                        <p class="text-3xl font-black text-emerald-400 mt-2" id="modal-produto-preco"></p>
-                    </div>
-                    
-                    <div class="bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">📝 Descrição</p>
-                        <p id="modal-produto-descricao" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></p>
-                    </div>
-                    
-                    <div class="bg-slate-800/50 rounded-xl p-4" id="modal-dados-adicionais" style="display: none;">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">ℹ️ Informações Adicionais</p>
-                        <div id="modal-info-adicional" class="text-sm text-slate-300 space-y-1"></div>
-                    </div>
-                    
-                    <!-- Botões de ação -->
-                    <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700">
-                        <button id="modal-btn-whats" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.124.553 4.195 1.604 6.014L.265 24l6.147-1.336c1.737.95 3.708 1.452 5.62 1.452 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm3.896 17.203c-.173.486-.983.92-1.428.986-.423.064-.967.143-3.136-.726-2.615-1.049-4.283-3.714-4.414-3.886-.13-.173-1.054-1.4-1.054-2.673 0-1.272.663-1.898.898-2.148.236-.25.509-.313.68-.313.171 0 .341-.005.49-.005.155 0 .363-.058.568.411.21.486.719 1.761.785 1.892.066.13.111.285.025.46-.086.173-.131.282-.26.435-.13.153-.273.327-.39.46-.126.144-.26.302-.113.557.146.253.649 1.071 1.396 1.71.961.821 1.762 1.066 2.015 1.196.252.13.399.111.55-.058.15-.17.65-1.194.821-1.604.17-.411.34-.344.571-.247.23.097 1.464.69 1.714.814.25.124.417.185.478.287.06.103.06.59-.113 1.076z"/></svg>
-                            Comprar via WhatsApp
-                        </button>
-                        <div id="modal-botoes-extras" class="flex-1"></div>
-                        <button onclick="fecharModalProduto()" class="px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all">
-                            Fechar
-                        </button>
-                    </div>
+                <div class="bg-slate-800/50 rounded-xl p-4">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">📝 Descrição</p>
+                    <p id="modal-produto-descricao" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></p>
+                </div>
+                
+                <div class="bg-slate-800/50 rounded-xl p-4" id="modal-dados-adicionais" style="display: none;">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">ℹ️ Informações Adicionais</p>
+                    <div id="modal-info-adicional" class="text-sm text-slate-300 space-y-1"></div>
+                </div>
+                
+                <!-- Botões de ação -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700">
+                    <button id="modal-btn-whats" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.124.553 4.195 1.604 6.014L.265 24l6.147-1.336c1.737.95 3.708 1.452 5.62 1.452 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm3.896 17.203c-.173.486-.983.92-1.428.986-.423.064-.967.143-3.136-.726-2.615-1.049-4.283-3.714-4.414-3.886-.13-.173-1.054-1.4-1.054-2.673 0-1.272.663-1.898.898-2.148.236-.25.509-.313.68-.313.171 0 .341-.005.49-.005.155 0 .363-.058.568.411.21.486.719 1.761.785 1.892.066.13.111.285.025.46-.086.173-.131.282-.26.435-.13.153-.273.327-.39.46-.126.144-.26.302-.113.557.146.253.649 1.071 1.396 1.71.961.821 1.762 1.066 2.015 1.196.252.13.399.111.55-.058.15-.17.65-1.194.821-1.604.17-.411.34-.344.571-.247.23.097 1.464.69 1.714.814.25.124.417.185.478.287.06.103.06.59-.113 1.076z"/></svg>
+                        Comprar via WhatsApp
+                    </button>
+                    <div id="modal-botoes-extras" class="flex-1"></div>
+                    <button onclick="fecharModalProduto()" class="px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all">
+                        Fechar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
 <script type="module">
 // ===================== IMPORTS =====================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc, deleteDoc, enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; 
+import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc, deleteDoc, enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
 // ===================== CONFIG =====================
 const firebaseConfig = {
@@ -650,10 +646,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);    
 const functions = getFunctions(app);
 const storage = getStorage(app);
-const messaging = getMessaging(app);
 
 // ===================== OFFLINE PERSISTENCE =====================
 enableIndexedDbPersistence(db, { cacheSizeBytes: CACHE_SIZE_UNLIMITED })
@@ -673,7 +667,6 @@ let federacaoAlunoEditandoId = null;
 let carrosseisAtivos = [];
 let isOnline = navigator.onLine;
 let refreshInProgress = false;
-let fcmTokenAtual = null;
 
 // ===================== OFFLINE DETECTION =====================
 window.addEventListener('online', () => {
@@ -735,7 +728,6 @@ async function triggerRefresh() {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Error:', err));
-        navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(err => console.log('SW Error:', err));
     });
 }
 
@@ -1019,6 +1011,7 @@ function renderizarProdutos(produtos) {
             botoesHtml = `<div class="flex mt-auto shrink-0 pt-2">${btnZapHtml}</div>`;
         }
         
+        // ✅ CARD COMPLETO E CORRETO
         html += `<div onclick="abrirModalProduto('${p.id}')" class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col group h-full transition-all hover:scale-[1.02] duration-200 cursor-pointer active:scale-95">
             <div class="aspect-square bg-white relative overflow-hidden p-2 flex items-center justify-center shrink-0">
                 ${setasHtml}
@@ -1158,287 +1151,81 @@ function renderizarFaturas(faturas) {
 }
 
 // ==========================================
-// 📱 NOTIFICAÇÕES PUSH (FCM) - NOVAS FUNÇÕES
-// ==========================================
-
-async function solicitarPermissaoNotificacoes() {
-    if (!('Notification' in window)) {
-        console.log('Este navegador não suporta notificações');
-        return false;
-    }
-
-    if (Notification.permission === 'granted') {
-        await registrarTokenPush();
-        return true;
-    } else if (Notification.permission !== 'denied') {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            await registrarTokenPush();
-            return true;
-        }
-    }
-    return false;
-}
-
-async function registrarTokenPush() {
-    try {
-        // Verificar se o messaging está disponível
-        if (!messaging) {
-            console.error('Messaging não inicializado');
-            return;
-        }
-        
-        const token = await getToken(messaging, {
-            vapidKey: 'BNNOcNTB12xeXw8cUh0E7aSssJBUmeUQkFIAwgJkd7ZZ2D-hM9xLefqZ_t3Q3q6GMHfDJGbM-ZE7uW-RnYtQmc'
-        });
-        
-        if (token) {
-            console.log('✅ Token FCM:', token);
-            fcmTokenAtual = token;
-            
-            // Salvar token no Firestore
-            const tokenRef = doc(db, 'push_tokens', token);
-            await setDoc(tokenRef, {
-                token: token,
-                aluno_id: alunoLogado.id,
-                equipe_id: alunoLogado.equipe_id,
-                aluno_nome: alunoLogado.nome,
-                data_registro: new Date().toISOString(),
-                ultimo_acesso: new Date().toISOString(),
-                ativo: true
-            }, { merge: true });
-            
-            showToast("Notificações ativadas! 📱", "success");
-        } else {
-            console.warn('Não foi possível obter o token FCM');
-        }
-    } catch (error) {
-        console.error('Erro ao registrar token FCM:', error);
-        if (error.code === 'messaging/permission-blocked') {
-            showToast("Permissão de notificações bloqueada. Verifique as configurações do navegador.", "warning");
-        }
-    }
-}
-
-async function removerTokenPush() {
-    if (!fcmTokenAtual) return;
-    
-    try {
-        const tokenRef = doc(db, 'push_tokens', fcmTokenAtual);
-        await setDoc(tokenRef, {
-            ativo: false,
-            ultimo_acesso: new Date().toISOString()
-        }, { merge: true });
-        
-        console.log('✅ Token FCM desativado');
-    } catch (error) {
-        console.error('Erro ao desativar token:', error);
-    }
-}
-
-async function inicializarPushNotifications() {
-    if (!('Notification' in window)) {
-        console.log('Notificações não suportadas');
-        return;
-    }
-    
-    // Verificar permissão existente
-    if (Notification.permission === 'granted') {
-        await registrarTokenPush();
-    } else if (Notification.permission === 'default') {
-        // Aguardar 3 segundos e perguntar
-        setTimeout(async () => {
-            const ativar = confirm('📱 Gostaria de ativar notificações para receber avisos de treinos e faturas?');
-            if (ativar) {
-                await solicitarPermissaoNotificacoes();
-            }
-        }, 3000);
-    }
-}
-
-// Receber mensagens em primeiro plano
-onMessage(messaging, (payload) => {
-    console.log('📨 Mensagem recebida em primeiro plano:', payload);
-    
-    const notificationTitle = payload.notification?.title || payload.data?.title || 'BJJ Manager';
-    const notificationBody = payload.notification?.body || payload.data?.body || 'Nova notificação';
-    
-    // Mostrar toast
-    showToast(notificationBody, 'info');
-    
-    // Mostrar notificação nativa
-    if (Notification.permission === 'granted') {
-        new Notification(notificationTitle, {
-            body: notificationBody,
-            icon: '/logo_bjj_manager.png',
-            badge: '/logo_bjj_manager.png',
-            vibrate: [200, 100, 200]
-        });
-    }
-    
-    // Atualizar dados se necessário
-    if (payload.data?.type === 'fatura') {
-        buscarFaturasResiliente(true);
-    } else if (payload.data?.type === 'aviso') {
-        buscarMuralEHorarios(true);
-    }
-});
-
-// ==========================================
 // 🔐 AUTENTICAÇÃO E LOGIN
 // ==========================================
-
-function salvarSessaoAluno(token, alunoData) {
-    localStorage.setItem('bjj_aluno_token', token);
-    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoData));
-}
-
-function limparSessaoAluno() {
-    localStorage.removeItem('bjj_aluno_token');
-    localStorage.removeItem('bjj_aluno_auth');
-}
-
-async function validarTokenAtual() {
-    const token = localStorage.getItem('bjj_aluno_token');
-    if (!token) return false;
-    
-    try {
-        const validarToken = httpsCallable(functions, 'validarTokenAluno');
-        const result = await validarToken({ token });
-        return result.data.success;
-    } catch (error) {
-        console.error('Erro ao validar token:', error);
-        return false;
+window.toggleSenha = function(inputId, btnElement) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+    } else {
+        input.type = "password";
+        btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
     }
-}
-async function iniciarPortal() {
-    console.log("🚀 Iniciando portal do aluno...");
-    
-    // Esconder tela de login e mostrar portal
-    document.getElementById('tela-login').classList.add('hidden');
-    document.getElementById('tela-portal').classList.remove('hidden');
-    
-    // Atualizar saudação
-    document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0] || "Atleta";
-    
-    // Buscar dados da equipe
-    try {
-        const equipeDoc = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
-        if (equipeDoc.exists()) {
-            equipeDados = equipeDoc.data();
-            document.getElementById('logo-equipe-topo').src = equipeDados.url_logo || 'logo_bjj_manager.png';
-        }
-    } catch(e) {
-        console.error("Erro ao carregar equipe:", e);
-    }
-    
-    // Inicializar todas as abas
-    preencherCarteirinha();
-    buscarMuralEHorarios();
-    carregarLoja();
-    buscarCurriculoAluno();
-    buscarFaturasResiliente();
-    carregarFederacoesAluno();
-    verificarAnamnese();
-    
-    // Ajustar zoom da carteirinha
-    setTimeout(window.ajustarZoomCarteirinha, 100);
-    
-    // Inicializar notificações push
-    inicializarPushNotifications();
-    
-    console.log("✅ Portal iniciado com sucesso!");
-}
+};
+
 window.fazerLoginAluno = async function() {
     const emailBruto = document.getElementById('login-email').value;
     const email = emailBruto.replace(/\s/g, '').toLowerCase(); 
     const senha = document.getElementById('login-senha').value.trim();
     const btn = document.getElementById('btn-login');
 
-    if(!email || !senha) {
-        showToast("Preencha todos os campos.", "error");
-        return;
-    }
-    
-    btn.disabled = true; 
-    btn.innerHTML = "<span class='animate-pulse'>⏳</span> VALIDANDO ACESSO...";
+    if(!email || !senha) return showToast("Preencha todos os campos.");
+    btn.disabled = true; btn.innerHTML = "<span class='animate-pulse'>⏳</span> BUSCANDO DADOS...";
 
     try {
-        console.log("🔍 Buscando aluno com e-mail:", email);
+        const q = query(collection(db, "alunos"), where("email", "==", email), where("senha_portal", "==", senha));
+        const snap = await getDocs(q);
         
-        // 🔐 Buscar no Firestore (não no Auth)
-        const q = query(collection(db, "alunos"), where("email", "==", email));
-        const querySnapshot = await getDocs(q);
+        if (snap.empty) { 
+            showToast("E-mail ou senha incorretos.", "error"); 
+            btn.disabled = false; btn.innerHTML = "Entrar no Portal"; 
+            return;
+        } 
+
+        const alunoDoc = snap.docs[0].data();
+        const alunoId = snap.docs[0].id;
         
-        console.log("📋 Resultados encontrados:", querySnapshot.size);
-        
-        if (querySnapshot.empty) {
-            // Tentar buscar por e-mail em outro campo (fallback)
-            console.log("❌ E-mail não encontrado, tentando busca alternativa...");
-            const q2 = query(collection(db, "alunos"), where("email_acesso", "==", email));
-            const snap2 = await getDocs(q2);
-            
-            if (snap2.empty) {
-                showToast("E-mail não encontrado no sistema.", "error");
-                btn.disabled = false;
-                btn.innerHTML = "Entrar no Portal";
-                return;
+        try {
+            const equipeDoc = await getDoc(doc(db, "equipes", alunoDoc.equipe_id));
+            if (equipeDoc.exists()) {
+                const eqData = equipeDoc.data();
+                const isIsento = eqData.isento === true || String(eqData.isento) === "true";
+                const statusAtual = eqData.status_plano || 'TESTE';
+                const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
+
+                if (!isIsento && planosBasicos.includes(statusAtual.toUpperCase().trim())) {
+                    btn.disabled = false; 
+                    btn.innerHTML = "Entrar no Portal";
+                    return showToast("⚠️ Acesso Indisponível. A sua academia precisa fazer o upgrade do sistema para liberar o Portal do Aluno.");
+                }
             }
-            
-            var alunoDoc = snap2.docs[0];
-        } else {
-            var alunoDoc = querySnapshot.docs[0];
+        } catch (erroEquipe) {
+            console.log("Aviso: Não foi possível validar o plano da equipe agora.", erroEquipe);
         }
+
+        alunoLogado = { id: alunoId, ...alunoDoc };
+        localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+        showToast("Acesso liberado! Oss!", "success");
+        iniciarPortal(); // Chame a função de inicialização do portal que existe no seu código
         
-        const aluno = { id: alunoDoc.id, ...alunoDoc.data() };
-        console.log("✅ Aluno encontrado:", aluno.nome);
-        console.log("🔑 Senha no banco:", aluno.senha_portal || aluno.senha || "NÃO ENCONTRADA");
-        
-        // Comparar senha (tenta diferentes nomes de campo)
-        const senhaSalva = aluno.senha_portal || aluno.senha || '';
-        
-        if (senha === senhaSalva) {
-            alunoLogado = aluno;
-            localStorage.setItem('bjj_aluno_token', 'temp_' + Date.now());
-            localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
-            showToast("Acesso liberado! Oss!", "success");
-            iniciarPortal();
+    } catch (error) { 
+        console.error("ERRO CRÍTICO LOGIN:", error);
+        if(error.code === 'permission-denied') {
+            showToast("Sem permissão para acessar o banco de dados.", "error");
+        } else if(error.message && error.message.includes('network')) {
+            showToast("Sem conexão com a internet.", "error");
         } else {
-            showToast("Senha incorreta.", "error");
-            btn.disabled = false;
-            btn.innerHTML = "Entrar no Portal";
+            showToast("🚨 Erro de comunicação. Tente novamente.", "error"); 
         }
-        
-    } catch (error) {
-        console.error("❌ Erro detalhado no login:", error);
-        showToast("Erro ao conectar. Verifique o console (F12) para mais detalhes.", "error");
-        btn.disabled = false;
-        btn.innerHTML = "Entrar no Portal";
+        btn.disabled = false; btn.innerHTML = "Entrar no Portal"; 
     }
 };
+
 window.sairDoPortal = function() { 
-    if (typeof removerTokenPush === 'function') removerTokenPush();
-    limparSessaoAluno();
+    localStorage.removeItem('bjj_aluno_auth'); 
     window.location.reload(); 
 };
-
-// Verificar se já existe sessão salva e validar token
-const sessaoToken = localStorage.getItem('bjj_aluno_token');
-const sessaoAluno = localStorage.getItem('bjj_aluno_auth');
-
-if (sessaoToken && sessaoAluno) {
-    validarTokenAtual().then(isValid => {
-        if (isValid) {
-            alunoLogado = JSON.parse(sessaoAluno);
-            iniciarPortal();
-        } else {
-            limparSessaoAluno();
-            console.log("Sessão expirada, faça login novamente.");
-        }
-    }).catch(() => {
-        limparSessaoAluno();
-    });
-}
 
 // ==========================================
 // 🧭 NAVEGAÇÃO ENTRE ABAS
@@ -1561,30 +1348,18 @@ window.salvarMeusDados = async function() {
     const inputFoto = document.getElementById('input-foto');
 
     if(!tel || !email) return showToast("Telefone e E-mail são obrigatórios.");
-    
-    btn.disabled = true; 
-    btn.innerHTML = "⏳ Salvando...";
+    btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
 
     const dadosAtualizados = {
-        telefone: tel, 
-        peso: document.getElementById('edit-peso').value.trim(), 
-        email: email,
-        cep: document.getElementById('edit-cep').value.trim(), 
-        endereco: document.getElementById('edit-end').value.trim(),
-        numero: document.getElementById('edit-num').value.trim(), 
-        complemento: document.getElementById('edit-comp').value.trim(),
-        bairro: document.getElementById('edit-bairro').value.trim(), 
-        cidade: document.getElementById('edit-cidade').value.trim(), 
-        uf: document.getElementById('edit-uf').value
+        telefone: tel, peso: document.getElementById('edit-peso').value.trim(), email: email,
+        cep: document.getElementById('edit-cep').value.trim(), endereco: document.getElementById('edit-end').value.trim(),
+        numero: document.getElementById('edit-num').value.trim(), complemento: document.getElementById('edit-comp').value.trim(),
+        bairro: document.getElementById('edit-bairro').value.trim(), cidade: document.getElementById('edit-cidade').value.trim(), uf: document.getElementById('edit-uf').value
     };
 
-    if(novaSenha && novaSenha.length > 0) {
-        if(novaSenha.length < 6) { 
-            btn.disabled = false; 
-            btn.innerHTML = "💾 Salvar Alterações"; 
-            return showToast("Senha mínima: 6 caracteres."); 
-        }
-        dadosAtualizados.senha_portal = novaSenha; 
+    if(novaSenha.length > 0) {
+        if(novaSenha.length < 6) { btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; return showToast("Senha mínima: 6 caracteres."); }
+        dadosAtualizados.senha_portal = novaSenha;
     }
 
     try {
@@ -1609,22 +1384,16 @@ window.salvarMeusDados = async function() {
         }
         
         await updateDoc(doc(db, "alunos", alunoLogado.id), dadosAtualizados);
-        
-        const alunoAtualizado = { ...alunoLogado, ...dadosAtualizados };
-        delete alunoAtualizado.senha_portal;
-        
-        salvarSessaoAluno(localStorage.getItem('bjj_aluno_token'), alunoAtualizado);
-        alunoLogado = alunoAtualizado;
-        
+        alunoLogado = { ...alunoLogado, ...dadosAtualizados }; 
+        localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
         showToast("Dados atualizados com sucesso!", "success"); 
         document.getElementById('edit-senha').value = ""; 
         preencherCarteirinha();
     } catch (error) { 
-        console.error(error);
-        showToast("Falha ao salvar. Tente novamente.", "error"); 
-    } finally { 
-        btn.disabled = false; 
-        btn.innerHTML = "💾 Salvar Alterações"; 
+        showToast("Falha ao salvar. Tente novamente."); 
+    } 
+    finally { 
+        btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; 
     }
 };
 
@@ -1841,8 +1610,7 @@ window.compartilharCarteirinha = async function () {
 // 💳 FINANCEIRO E MENSALIDADES
 // ==========================================
 window.abrirPagamento = async function(faturaId) {
-    const fat = faturasCache.find(f => f.id === faturaId); 
-    if (!fat) return showToast("Fatura não encontrada.", "error");
+    const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
     
     let temAsaas = false;
     if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
@@ -1853,46 +1621,18 @@ window.abrirPagamento = async function(faturaId) {
     }
     
     if (temAsaas) {
-        if (fat.link_pagamento) { 
-            window.open(fat.link_pagamento, '_blank'); 
-            return; 
-        }
-        
-        showToast("⏳ Gerando link de pagamento seguro...", "success");
-        
+        if (fat.link_pagamento) { window.open(fat.link_pagamento, '_blank'); return; }
+        showToast("⏳ Gerando link de pagamento seguro...", "success"); const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`); let textoOriginal = "";
+        if(btnPagamento) { textoOriginal = btnPagamento.innerHTML; btnPagamento.innerHTML = "⏳ Aguarde..."; btnPagamento.disabled = true; }
         try {
             const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-            const token = localStorage.getItem('bjj_aluno_token');
-            
-            const resultado = await gerarCobranca({ 
-                alunoId: alunoLogado.id, 
-                valor: fat.valor, 
-                mesAno: fat.mes_ano, 
-                descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`,
-                _token: token
-            });
-            
-            if (resultado.data.success) { 
-                showToast("✅ Fatura gerada com sucesso!", "success"); 
-                window.open(resultado.data.url, '_blank'); 
-                buscarFaturasResiliente(); 
-            } else { 
-                showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); 
-            }
-        } catch (error) { 
-            console.error(error);
-            showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); 
-        }
+            const resultado = await gerarCobranca({ alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}` });
+            if (resultado.data.success) { showToast("✅ Fatura gerada com sucesso!", "success"); window.open(resultado.data.url, '_blank'); buscarFaturasResiliente(); } else { showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); }
+        } catch (error) { showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); } finally { if(btnPagamento) { btnPagamento.innerHTML = textoOriginal; btnPagamento.disabled = false; } }
     } else {
-        let mesStr = "", anoStr = ""; 
-        if(fat.mes_ano && String(fat.mes_ano).includes('-')) { 
-            const partes = fat.mes_ano.split('-'); 
-            anoStr = partes[0]; 
-            mesStr = partes[1]; 
-        }
+        let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = fat.mes_ano.split('-'); anoStr = partes[0]; mesStr = partes[1]; }
         const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
-        document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; 
-        document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+        document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
         
         const inputPix = document.getElementById('pix-codigo');
         const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);
@@ -1904,8 +1644,7 @@ window.abrirPagamento = async function(faturaId) {
             inputPix.value = "Chave PIX não configurada pelo professor."; 
             document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor."; 
         }
-        document.getElementById('modal-pix').classList.remove('hidden'); 
-        document.getElementById('modal-pix').classList.add('flex');
+        document.getElementById('modal-pix').classList.remove('hidden'); document.getElementById('modal-pix').classList.add('flex');
     }
 };
 
@@ -2581,83 +2320,269 @@ window.excluirFederacaoAluno = async function(id) {
         carregarFederacoesAluno();
     } catch(e) { showToast("Erro ao excluir.", "error"); }
 };
-
-// ==========================================
-// FUNÇÕES DE MENSAGEM EM PRIMEIRO PLANO
-// ==========================================
-
-onMessage(messaging, (payload) => {
-    console.log('Mensagem recebida em primeiro plano:', payload);
-    
-    const notificationTitle = payload.notification?.title || payload.data?.title || 'BJJ Manager';
-    const notificationOptions = {
-        body: payload.notification?.body || payload.data?.body || 'Nova notificação',
-        icon: '/logo_bjj_manager.png',
-        badge: '/logo_bjj_manager.png',
-        vibrate: [200, 100, 200],
-        requireInteraction: true
-    };
-    
-    if (Notification.permission === 'granted') {
-        new Notification(notificationTitle, notificationOptions);
-    }
-    
-    showToast(notificationOptions.body, 'info');
-});
-
-// Modal de Senha
-window.abrirModalEsqueciSenha = function() {
-    document.getElementById('modal-esqueci-senha').classList.remove('hidden');
-    document.getElementById('modal-esqueci-senha').classList.add('flex');
-    const emailLogin = document.getElementById('login-email').value;
-    if(emailLogin) document.getElementById('recuperar-email').value = emailLogin;
-};
-
-window.fecharModalEsqueciSenha = function() {
-    document.getElementById('modal-esqueci-senha').classList.add('hidden');
-    document.getElementById('modal-esqueci-senha').classList.remove('flex');
-};
-
-window.recuperarSenha = async function() {
-    const email = document.getElementById('recuperar-email').value.trim().toLowerCase();
-    if(!email) return showToast("Digite seu e-mail de acesso.", "error");
-    
-    const btn = document.getElementById('btn-recuperar');
-    btn.disabled = true; btn.innerHTML = "⏳ Enviando...";
+// ===================== INICIALIZAÇÃO =====================
+async function iniciarPortal() {
+    document.getElementById('tela-login').classList.add('hidden');
+    document.getElementById('tela-portal').classList.remove('hidden');
+    document.getElementById('tela-portal').classList.add('flex');
+    document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
     
     try {
-        const q = query(collection(db, "alunos"), where("email", "==", email));
-        const snap = await getDocs(q);
+        const [alunoSnap, eqSnap] = await Promise.all([getDoc(doc(db, "alunos", alunoLogado.id)), getDoc(doc(db, "equipes", alunoLogado.equipe_id))]);
+        if (alunoSnap.exists()) { alunoLogado = { id: alunoSnap.id, ...alunoSnap.data() }; localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado)); }
+        if (eqSnap.exists()) equipeDados = eqSnap.data();
+    } catch(e) { console.log("Erro ao buscar dados:", e); }
+    
+    preencherCarteirinha();
+    verificarAnamnese();
+    
+    const hojeData = new Date();
+    document.getElementById('filtro-mes-checkin').value = `${hojeData.getFullYear()}-${String(hojeData.getMonth() + 1).padStart(2, '0')}`;
+    
+    await Promise.all([buscarFaturasResiliente(), carregarLoja(), carregarFederacoesAluno(), buscarMuralEHorarios(), buscarCurriculoAluno()]);
+    atualizarWidgetMensalidade();
+    mudarAbaAluno('aba-inicio');
+}
+
+const sessaoSalva = localStorage.getItem('bjj_aluno_auth');
+if (sessaoSalva) { alunoLogado = JSON.parse(sessaoSalva); iniciarPortal(); }
+
+// ===================== PWA INSTALL =====================
+let deferredPrompt;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isIosInstalled = window.navigator.standalone === true;
+const pwaDispensado = localStorage.getItem('pwa_dispensado') === 'true';
+
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if (!pwaDispensado) mostrarBannerPwa(); });
+
+function mostrarBannerPwa() { if (!pwaDispensado) setTimeout(() => document.getElementById('pwa-install-banner')?.classList.remove('translate-y-full'), 3000); }
+window.fecharPwaBanner = () => document.getElementById('pwa-install-banner')?.classList.add('translate-y-full');
+window.dispensarPwaParaSempre = () => { localStorage.setItem('pwa_dispensado', 'true'); fecharPwaBanner(); };
+window.instalarPwa = async () => { fecharPwaBanner(); if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; } else if (isIOS && !isIosInstalled) alert("📲 Para instalar: Toque em Compartilhar → Adicionar ao Ecrã Principal"); };
+// ===================== MODAL DO PRODUTO =====================
+let produtoModalAtual = null;
+let modalCarrosselAtivo = null;
+
+window.abrirModalProduto = function(produtoId) {
+    const produto = produtosCache.find(p => p.id === produtoId);
+    if (!produto) {
+        showToast("Produto não encontrado.", "error");
+        return;
+    }
+    
+    produtoModalAtual = produto;
+    
+    // Preenche dados básicos
+    document.getElementById('modal-produto-titulo').innerText = produto.nome;
+    document.getElementById('modal-produto-nome').innerText = produto.nome;
+    const preco = produto.valor ? parseFloat(produto.valor).toFixed(2).replace('.', ',') : "0,00";
+    document.getElementById('modal-produto-preco').innerHTML = `R$ ${preco}`;
+    document.getElementById('modal-produto-descricao').innerHTML = produto.descricao ? escapeHtml(produto.descricao).replace(/\n/g, '<br>') : 'Nenhuma descrição disponível.';
+    
+    // Informações adicionais
+    const infoAdicionalDiv = document.getElementById('dados-adicionais');
+    const infoContainer = document.getElementById('modal-info-adicional');
+    
+    let temInfoAdicional = false;
+    let infoHtml = '';
+    
+    if (produto.categoria) {
+        temInfoAdicional = true;
+        infoHtml += `<div class="flex items-center gap-2"><span class="text-slate-500 w-24">Categoria:</span><span class="font-bold text-white">${escapeHtml(produto.categoria)}</span></div>`;
+    }
+    if (produto.marca) {
+        temInfoAdicional = true;
+        infoHtml += `<div class="flex items-center gap-2"><span class="text-slate-500 w-24">Marca:</span><span class="font-bold text-white">${escapeHtml(produto.marca)}</span></div>`;
+    }
+    if (produto.tamanhos && produto.tamanhos.length) {
+        temInfoAdicional = true;
+        infoHtml += `<div class="flex items-center gap-2"><span class="text-slate-500 w-24">Tamanhos:</span><span class="font-bold text-white">${produto.tamanhos.join(', ')}</span></div>`;
+    }
+    if (produto.estoque !== undefined) {
+        temInfoAdicional = true;
+        const estoqueStatus = produto.estoque > 0 ? `<span class="text-emerald-400">${produto.estoque} unidades</span>` : '<span class="text-rose-400">Esgotado</span>';
+        infoHtml += `<div class="flex items-center gap-2"><span class="text-slate-500 w-24">Estoque:</span><span class="font-bold">${estoqueStatus}</span></div>`;
+    }
+    if (produto.codigo) {
+        temInfoAdicional = true;
+        infoHtml += `<div class="flex items-center gap-2"><span class="text-slate-500 w-24">Código:</span><span class="font-mono text-white">${escapeHtml(produto.codigo)}</span></div>`;
+    }
+    
+    if (temInfoAdicional) {
+        infoContainer.innerHTML = infoHtml;
+        document.getElementById('modal-dados-adicionais').style.display = 'block';
+    } else {
+        document.getElementById('modal-dados-adicionais').style.display = 'none';
+    }
+    
+    // Configura carrossel do modal
+    let arrayDeImagens = [];
+    if (produto.imagens_urls && Array.isArray(produto.imagens_urls) && produto.imagens_urls.length > 0) {
+        arrayDeImagens = produto.imagens_urls.filter(img => img && img.trim() !== '');
+    } else if (produto.imagem_url && produto.imagem_url.trim() !== '') {
+        arrayDeImagens = [produto.imagem_url];
+    } else {
+        arrayDeImagens = ['https://via.placeholder.com/600x600?text=Sem+Imagem'];
+    }
+    
+    const modalCarrossel = document.getElementById('modal-carrossel');
+    const modalDots = document.getElementById('modal-dots');
+    const modalPrevBtn = document.getElementById('modal-prev-btn');
+    const modalNextBtn = document.getElementById('modal-next-btn');
+    
+    modalCarrossel.innerHTML = '';
+    modalDots.innerHTML = '';
+    
+    arrayDeImagens.forEach((img, idx) => {
+        modalCarrossel.innerHTML += `
+            <div class="w-full h-full shrink-0 flex items-center justify-center snap-center bg-slate-800">
+                <img src="${img}" alt="${escapeHtml(produto.nome)} - imagem ${idx + 1}" 
+                     class="max-w-full max-h-full object-contain"
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/600x600?text=Erro+ao+Carregar'">
+            </div>
+        `;
+        modalDots.innerHTML += `<div class="w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-emerald-400 w-4' : 'bg-slate-600'} cursor-pointer" onclick="irParaImagemModal(${idx})"></div>`;
+    });
+    
+    // Controles do carrossel
+    if (arrayDeImagens.length > 1) {
+        modalPrevBtn.classList.remove('hidden');
+        modalNextBtn.classList.remove('hidden');
         
-        if (snap.empty) {
-            showToast("E-mail não encontrado no sistema.", "error");
-            btn.disabled = false; btn.innerHTML = "Pedir Recuperação";
-            return;
+        // Adiciona evento de scroll para atualizar dots
+        modalCarrossel.removeEventListener('scroll', atualizarDotsModal);
+        modalCarrossel.addEventListener('scroll', atualizarDotsModal);
+    } else {
+        modalPrevBtn.classList.add('hidden');
+        modalNextBtn.classList.add('hidden');
+    }
+    
+    // Configura botões de ação
+    const btnWhats = document.getElementById('modal-btn-whats');
+    btnWhats.onclick = () => comprarViaWhatsApp(produto.id);
+    
+    const botoesExtras = document.getElementById('modal-botoes-extras');
+    
+    if (produto.link_pagamento && typeof produto.link_pagamento === 'string') {
+        const linkSanitizado = produto.link_pagamento.trim();
+        if (linkSanitizado.startsWith('http://') || linkSanitizado.startsWith('https://')) {
+            botoesExtras.innerHTML = `
+                <button onclick="window.open('${sanitizarUrl(linkSanitizado)}', '_blank', 'noopener,noreferrer')" 
+                        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2">
+                    <span>🔗</span> Link de Pagamento
+                </button>
+            `;
+        } else if (linkSanitizado.length > 0) {
+            botoesExtras.innerHTML = `
+                <button onclick="copiarPixProduto('${escapeHtml(linkSanitizado)}')" 
+                        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2">
+                    <span>📄</span> Pagar via PiX
+                </button>
+            `;
+        } else {
+            botoesExtras.innerHTML = '';
         }
+    } else {
+        botoesExtras.innerHTML = '';
+    }
+    
+    // Abre o modal
+    const modal = document.getElementById('modal-produto');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Impede scroll do fundo
+    document.body.style.overflow = 'hidden';
+    
+    // Suporte a swipe para fechar (mobile)
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const modalContent = modal.querySelector('.bg-slate-900');
+    
+    const handleTouchStart = (e) => {
+        touchStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchMove = (e) => {
+        touchEndY = e.touches[0].clientY;
+        const diff = touchEndY - touchStartY;
+        if (diff > 50 && modalContent.scrollTop === 0) {
+            e.preventDefault();
+            modalContent.style.transform = `translateY(${diff}px)`;
+        }
+    };
+    
+    const handleTouchEnd = (e) => {
+        const diff = touchEndY - touchStartY;
+        if (diff > 100 && modalContent.scrollTop === 0) {
+            fecharModalProduto();
+        }
+        modalContent.style.transform = '';
+    };
+    
+    modalContent.addEventListener('touchstart', handleTouchStart);
+    modalContent.addEventListener('touchmove', handleTouchMove);
+    modalContent.addEventListener('touchend', handleTouchEnd);
+    
+    // Guarda referência para remover depois
+    modal._swipeHandlers = { handleTouchStart, handleTouchMove, handleTouchEnd };
+};
 
-        const dadosAluno = snap.docs[0].data();
-        
-        await addDoc(collection(db, "mensagens"), {
-            equipe_id: dadosAluno.equipe_id,
-            aluno_id: snap.docs[0].id,
-            aluno_nome: dadosAluno.nome,
-            titulo: `🔑 Recuperação de Senha: ${dadosAluno.nome}`,
-            conteudo: `O aluno(a) ${dadosAluno.nome} (${dadosAluno.email}) solicitou a recuperação da senha de acesso ao portal.\nPor favor, acesse o painel de alunos, edite o cadastro dele(a) e redefina a senha na aba Contato.`,
-            tipo: "notificacao_sistema",
-            data_envio: new Date().toISOString(),
-            status: "ativo",
-            urgencia: "urgente"
-        });
+function atualizarDotsModal() {
+    const carrossel = document.getElementById('modal-carrossel');
+    const dots = document.querySelectorAll('#modal-dots div');
+    if (!carrossel || dots.length === 0) return;
+    
+    const scrollPos = carrossel.scrollLeft;
+    const itemWidth = carrossel.clientWidth;
+    const currentIndex = Math.round(scrollPos / itemWidth);
+    
+    dots.forEach((dot, idx) => {
+        if (idx === currentIndex) {
+            dot.classList.remove('bg-slate-600', 'w-2');
+            dot.classList.add('bg-emerald-400', 'w-4');
+        } else {
+            dot.classList.remove('bg-emerald-400', 'w-4');
+            dot.classList.add('bg-slate-600', 'w-2');
+        }
+    });
+}
 
-        showToast("Pedido enviado ao seu professor! Ele(a) irá redefinir sua senha.", "success");
-        fecharModalEsqueciSenha();
-    } catch(e) {
-        showToast("Erro ao processar pedido. Tente novamente.", "error");
-    } finally {
-        btn.disabled = false; btn.innerHTML = "Pedir Recuperação";
+window.scrollModalCarrossel = function(direcao) {
+    const carrossel = document.getElementById('modal-carrossel');
+    if (carrossel) {
+        const scrollAmount = carrossel.clientWidth;
+        carrossel.scrollBy({ left: scrollAmount * direcao, behavior: 'smooth' });
     }
 };
 
+window.irParaImagemModal = function(index) {
+    const carrossel = document.getElementById('modal-carrossel');
+    if (carrossel) {
+        const scrollAmount = carrossel.clientWidth * index;
+        carrossel.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+    }
+};
+
+window.fecharModalProduto = function() {
+    const modal = document.getElementById('modal-produto');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    
+    // Remove swipe handlers
+    const modalContent = modal.querySelector('.bg-slate-900');
+    if (modal._swipeHandlers) {
+        modalContent.removeEventListener('touchstart', modal._swipeHandlers.handleTouchStart);
+        modalContent.removeEventListener('touchmove', modal._swipeHandlers.handleTouchMove);
+        modalContent.removeEventListener('touchend', modal._swipeHandlers.handleTouchEnd);
+        delete modal._swipeHandlers;
+    }
+    
+    // Restaura scroll
+    document.body.style.overflow = '';
+    produtoModalAtual = null;
+};
 </script>
 </body>
 </html>
