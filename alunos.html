@@ -161,20 +161,20 @@
                                 <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
                             </div>
                             <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                                <button id="btn-relatorio-freq" onclick="gerarRelatorioGeralFrequencia()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
+                                <button id="btn-relatorio-freq" onclick="window.gerarRelatorioGeralFrequencia()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
                                     <span class="mr-2 text-base">📊</span> Relatório
                                 </button>
-                                <button onclick="abrirModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
+                                <button onclick="window.abrirModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                     <span class="mr-2 text-base">➕</span> Nova Matrícula
                                 </button>
                             </div>
                         </div>
                         
                         <div class="flex border-b border-slate-200 bg-white rounded-t-xl overflow-x-auto hide-scrollbar">
-                            <button onclick="mudarAbaDashboard('lista')" id="tab-btn-lista" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">
+                            <button onclick="window.mudarAbaDashboard('lista')" id="tab-btn-lista" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">
                                 👥 Lista de Alunos
                             </button>
-                            <button onclick="mudarAbaDashboard('evolucao')" id="tab-btn-evolucao" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">
+                            <button onclick="window.mudarAbaDashboard('evolucao')" id="tab-btn-evolucao" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">
                                 📈 Evolução
                             </button>
                         </div>
@@ -300,13 +300,373 @@
         </main>
     </div>
 
-    <!-- MODAL ALUNO COMPLETO (HTML OMITIDO POR TAMANHO - CONTINUA IGUAL) -->
-    <!-- O modal é extenso, mantive a estrutura mas por brevidade não repliquei todo o HTML aqui -->
-    <!-- Você usará o mesmo HTML do seu arquivo original -->
+    <!-- MODAL ALUNO COMPLETO -->
+    <div id="modal-aluno" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] transform transition-transform">
+            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 md:w-10 md:h-10 bg-cyan-500 rounded-full flex items-center justify-center text-lg md:text-xl font-black shadow-inner">🥋</div>
+                    <h3 class="font-black text-base md:text-lg tracking-tight uppercase" id="modal-titulo">Ficha Cadastral</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="bg-indigo-500/20 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/50 font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all">🪪 Ver Carteirinha</button>
+                    <button onclick="window.abrirEImprimirPVC()" id="btn-imprimir-pvc" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all shadow-sm" title="Imprimir em Cartão Plástico (CR80)">🖨️ Imprimir Cartão PVC</button>
+                    <button onclick="window.fecharModal()" class="text-slate-400 hover:text-white text-3xl leading-none ml-2">&times;</button>
+                </div>
+            </div>
+
+            <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
+                <button onclick="window.mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
+                <button onclick="window.mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
+                <button onclick="window.mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
+                <button onclick="window.mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
+                <button onclick="window.mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+                <button onclick="window.mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
+            </div>
+
+            <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
+                <!-- ABA PESSOAL -->
+                <div id="aba-pessoal" class="aba-content space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div class="flex flex-col items-center justify-center mb-2 pb-4 border-b border-slate-100 md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">Foto do Atleta (Carteirinha)</label>
+                            <div class="relative w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition-all shadow-sm" onclick="document.getElementById('cad-foto').click()">
+                                <img id="preview-foto" src="" class="w-full h-full object-cover hidden">
+                                <div id="placeholder-foto" class="text-center text-slate-400 flex flex-col items-center">
+                                    <span class="text-2xl md:text-3xl">📷</span>
+                                    <p class="text-[8px] md:text-[9px] font-bold mt-1 uppercase text-center leading-tight">Enviar<br>Foto</p>
+                                </div>
+                            </div>
+                            <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="window.mostrarPreviewFoto(event)">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Matrícula</label>
+                            <input type="text" id="aluno-matricula" disabled class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-mono text-slate-500 font-bold" placeholder="Gerada Auto">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo *</label>
+                            <input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 outline-none uppercase font-bold text-slate-700 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF *</label>
+                            <input type="text" id="aluno-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento *</label>
+                            <div class="flex gap-2">
+                                <input type="date" id="aluno-nasc" onchange="window.calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                                <div id="aluno-idade-exibir" class="w-24 p-3 bg-slate-100 border border-slate-200 rounded-xl text-center font-bold text-slate-600 flex items-center justify-center"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">RG</label>
+                            <input type="text" id="aluno-rg" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Naturalidade</label>
+                            <input type="text" id="aluno-naturalidade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
+                            <select id="aluno-faixa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option>
+                                <option>Amarela e Branca</option><option>Amarela</option><option>Amarela e Preta</option>
+                                <option>Laranja e Branca</option><option>Laranja</option><option>Laranja e Preta</option>
+                                <option>Verde e Branca</option><option>Verde</option><option>Verde e Preta</option>
+                                <option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Grau</label>
+                            <select id="aluno-grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option>Sem grau</option><option>1º</option><option>2º</option><option>3º</option><option>4º</option><option>5º</option><option>6º</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="aluno-id-oculto">
+
+                        <div class="md:col-span-2">
+                            <div id="alerta-idade" class="bg-cyan-50 border border-cyan-200 rounded-2xl p-6 text-center shadow-sm mt-4">
+                                <span class="text-2xl mb-2 block">📅</span>
+                                <p class="text-sm font-black text-cyan-800 uppercase tracking-widest">Atenção</p>
+                                <p class="text-xs text-cyan-700 mt-1 font-medium">Preencha a Data de Nascimento do atleta para liberar os contatos de segurança.</p>
+                            </div>
+
+                            <div id="bloco-responsavel" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4 hidden">
+                                <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <span class="text-base">👨‍👩‍👦</span> Responsável Legal <span class="text-[9px] text-rose-500 font-bold ml-2 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Atleta Menor de Idade</span>
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="bloco-emergencia" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4 hidden">
+                                <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3"><span class="text-base">🚨</span><h4 class="text-xs font-black text-slate-700 uppercase tracking-widest">Contato de Emergência</h4></div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Contato *</label><input type="text" id="aluno-emerg-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Quem avisar?"></div>
+                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone *</label><input type="text" id="aluno-emerg-tel" maxlength="15" oninput="window.mascaraTelefone(this)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000"></div>
+                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Grau de Parentesco *</label><input type="text" id="aluno-emerg-parentesco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Ex: Mãe, Irmão..."></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA CONTATO -->
+                <div id="aba-contato" class="aba-content hidden space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Telefone do Atleta (WhatsApp) *</label><input type="text" id="aluno-tel" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Peso (Kg)</label><input type="text" id="aluno-peso" placeholder="Ex: 80" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label><input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        
+                        <div class="md:col-span-1 relative">
+                            <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
+                            <div class="relative w-full">
+                                <input type="password" id="aluno-senha-portal" placeholder="Defina uma senha..." class="w-full p-3 pr-12 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold">
+                                <button type="button" onclick="window.toggleSenha('aluno-senha-portal', this)" class="absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-600 hover:text-cyan-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 mt-[-10px] mb-2"><p class="text-[9px] text-slate-400 font-medium">* Por segurança, a senha atual é invisível. Deixe em branco se não quiser alterá-la.</p></div>
+                        <div class="md:col-span-2 mt-[-10px] mb-2"><p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p></div>
+                        
+                        <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2"><h4 class="text-xs font-black text-slate-700 mb-4 uppercase tracking-widest">Endereço</h4></div>
+                        <div class="col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label><input type="text" id="aluno-cep" maxlength="9" oninput="window.mascaraCEP(this)" onblur="window.buscarCEP(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div class="col-span-1 md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logradouro (Rua, Av.)</label><input type="text" id="aluno-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div class="grid grid-cols-2 gap-3 md:col-span-2">
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        </div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cidade</label><input type="text" id="aluno-cidade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">UF</label><input type="text" id="aluno-uf" maxlength="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none uppercase"></div>
+                    </div>
+                </div>
+
+                <!-- ABA FINANCEIRO -->
+                <div id="aba-financeiro" class="aba-content hidden space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div><label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label><select id="aluno-bolsa" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl font-bold outline-none text-cyan-700 focus:ring-2 focus:ring-cyan-200"><option value="0">0% (Integral)</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100% (Isento)</option></select></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label><select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                                <option value="1">Dia 1</option>
+                                <option value="5">Dia 5</option>
+                                <option value="10" selected>Dia 10</option>
+                                <option value="15">Dia 15</option>
+                                <option value="20">Dia 20</option>
+                                <option value="25">Dia 25</option>
+                            </select></div>
+                    </div>
+                </div>
+
+                <!-- ABA FREQUÊNCIA -->
+                <div id="aba-frequencia" class="aba-content hidden space-y-5">
+                    <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="flex items-center gap-3"><div class="w-10 h-10 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-xl">📍</div><div><h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Assiduidade do Atleta</h4><p class="text-[10px] text-slate-500">Histórico de treinos (Check-ins do Portal)</p></div></div>
+                        <div><input type="month" id="filtro-mes-freq-admin" onchange="window.filtrarFrequenciaAdmin()" class="bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg p-2 outline-none focus:border-cyan-500 cursor-pointer shadow-sm"></div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="bg-slate-50 border-b border-slate-100 p-3 flex justify-between items-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Treinos Computados:</span><span id="admin-contador-treinos" class="bg-cyan-500 text-white px-2 py-0.5 rounded text-xs font-black">0</span></div>
+                            <div id="admin-lista-checkins" class="p-3 space-y-3 max-h-64 overflow-y-auto hide-scrollbar"><p class="text-center text-xs text-slate-400 py-6 italic">Selecione um aluno...</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA LGPD -->
+                <div id="aba-lgpd" class="aba-content hidden space-y-5">
+                    <div class="bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-6 space-y-6">
+                        <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4"><span class="text-xl">⚖️</span><h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização do uso da imagem</h3></div>
+                        <div class="space-y-4"><p class="text-sm text-amber-900">De acordo com a Lei de Garantia e Proteção de dados <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13853.htm" target="_blank" class="text-cyan-600 underline font-bold hover:text-cyan-700">(Lei nº 13.853, de 2019)</a>. Assinale as opções a seguir.</p>
+                        <p class="text-sm font-bold text-amber-900">Autorizo a utilização de imagens deste aluno(a) com a finalidade de:</p>
+                        <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Publicações em redes sociais oficiais da Equipe / Projeto</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Divulgação em site institucional</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Materiais informativos e promocionais</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Relatórios e prestação de contas</span></label>
+                        </div></div>
+                        <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6"><h4 class="font-bold text-slate-800 text-lg">Declaração de proteção de dados</h4><p class="text-sm text-slate-700">A equipe declara que:</p><ul class="list-disc pl-5 text-sm text-slate-700 space-y-2"><li>Não divulgará dados pessoais do(a) aluno(a) (como CPF, endereço, telefone ou informações sensíveis).</li><li>Utilizará apenas nome e imagem, quando necessário.</li><li>Não comercializará as imagens.</li><li>Adotará medidas de segurança para proteção das informações coletadas.</li></ul><p class="text-sm text-slate-500 pt-4 font-bold italic">Ass: Diretoria da Equipe</p></div>
+                        <div class="bg-white p-6 rounded-xl border border-emerald-200 shadow-sm space-y-4 mt-6"><p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p><label class="flex items-center gap-3 cursor-pointer mt-2"><input type="checkbox" id="lgpd-concordo" class="w-6 h-6 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"><span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo com os Termos</span></label></div>
+                        <button onclick="window.gerarPDF_LGPD()" id="btn-gerar-pdf" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm hidden">📥 Baixar Assinatura Digital (PDF)</button>
+                    </div>
+                </div>
+
+                <!-- ABA ANAMNESE -->
+                <div id="aba-anamnese" class="aba-content hidden space-y-5">
+                    <div id="anamnese-vazia" class="bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
+                        <span class="text-4xl block mb-3">⏳</span>
+                        <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
+                        <p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p>
+                    </div>
+                    <div id="anamnese-preenchida" class="hidden space-y-4">
+                        <div class="flex justify-end">
+                            <button onclick="window.gerarPDF_Anamnese()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-sm flex items-center gap-2">
+                                <span>📄</span> Baixar Ficha de Saúde (PDF)
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-cyan-600 uppercase tracking-widest flex items-center gap-2 mb-4"><span>👤</span> Dados Pessoais</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div><p class="text-[10px] text-slate-400">Altura</p><p id="anamnese-altura" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Peso</p><p id="anamnese-peso" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Data Preenchimento</p><p id="anamnese-data" class="font-bold text-slate-700 text-xs">---</p></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-cyan-600 uppercase tracking-widest flex items-center gap-2 mb-4"><span>🩺</span> Condições Clínicas</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <div class="flex items-center gap-2"><span id="anamnese-asma" class="w-3 h-3 rounded-full"></span><span class="text-sm">Asma/Bronquite</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-hipertensao" class="w-3 h-3 rounded-full"></span><span class="text-sm">Hipertensão</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-cardiopatia" class="w-3 h-3 rounded-full"></span><span class="text-sm">Cardiopatia</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-diabetes" class="w-3 h-3 rounded-full"></span><span class="text-sm">Diabetes</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-epilepsia" class="w-3 h-3 rounded-full"></span><span class="text-sm">Epilepsia</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-desmaios" class="w-3 h-3 rounded-full"></span><span class="text-sm">Desmaios</span></div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <p class="text-[10px] text-slate-400">Dores Articulares</p>
+                                <p id="anamnese-dores" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-slate-400">Problemas de Coluna</p>
+                                <p id="anamnese-coluna" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-slate-400">Cirurgias/Lesões Prévias</p>
+                                <p id="anamnese-cirurgias" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-slate-400">Uso de Medicamentos</p>
+                                <p id="anamnese-medicamentos" class="text-sm text-slate-700">---</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-purple-600 uppercase tracking-widest flex items-center gap-2 mb-4"><span>🧠</span> Inclusão e Neurodivergência</h3>
+                            <div id="anamnese-neuro-container"><p class="text-slate-500 text-sm">Nenhuma informação registrada</p></div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-orange-600 uppercase tracking-widest flex items-center gap-2 mb-4"><span>🎯</span> Comportamento e Interação</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div><p class="text-[10px] text-slate-400">Dificuldade de Equilíbrio</p><p id="anamnese-equilibrio" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Entende Comandos</p><p id="anamnese-comandos" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Comunicação Alternativa</p><p id="anamnese-comunicacao" class="text-sm text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Fuga/Isolamento</p><p id="anamnese-fuga" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Precisa de Apoio para Interagir</p><p id="anamnese-apoio" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Sensibilidade a Sons</p><p id="anamnese-sons" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Sensibilidade a Toques</p><p id="anamnese-toques" class="font-bold text-slate-700">---</p></div>
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-[10px] text-slate-400">Crises/Autolesão (Gatilhos)</p>
+                                <p id="anamnese-crises" class="text-sm text-slate-700">---</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2 mb-4"><span>📋</span> Avaliação Geral</h3>
+                            <div class="mb-3"><p class="text-[10px] text-slate-400">Alergias/Restrições</p><p id="anamnese-alergias" class="text-sm text-slate-700">---</p></div>
+                            <div><p class="text-[10px] text-slate-400">Expectativas com os treinos</p><p id="anamnese-expectativas" class="text-sm text-slate-700">---</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
+                <button onclick="window.fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
+                <button onclick="window.proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
+                <button onclick="window.salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CARTEIRINHA -->
+    <div id="modal-carteirinha" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md hidden items-center justify-center z-[60] p-4 overflow-y-auto">
+        <div class="flex flex-col items-center w-full max-w-2xl mx-auto my-auto">
+            <div class="flex justify-between items-center w-full max-w-[600px] mb-6 shrink-0 no-print">
+                <div class="text-white text-sm font-bold uppercase tracking-widest">Carteirinha Digital</div>
+                <div class="flex gap-2">
+                    <button onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-cyan-600 transition-colors">🖨️ Imprimir</button>
+                    <button onclick="window.fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-slate-600 transition-colors">Voltar</button>
+                </div>
+            </div>
+            <div id="cart-preview-container" class="relative bg-white shadow-2xl border border-slate-200 flex text-slate-800 font-sans shrink-0 overflow-hidden" style="border-radius: 16px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+                    <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.15] grayscale hidden" style="transform: scale(1.1);" crossorigin="anonymous">
+                    <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                </div>
+                <div class="flex-1 p-6 flex flex-col z-10 w-[65%]">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="h-16 w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
+                            <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <h2 id="cart-equipe-nome" class="text-xl font-black uppercase tracking-tight text-slate-800 leading-tight break-words max-w-[280px] line-clamp-2">NOME DA EQUIPE</h2>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-4">
+                        <div class="col-span-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm"><p class="text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p><p id="cart-aluno-nome-txt" class="text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p></div>
+                        <div class="relative overflow-hidden col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200"><div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50"></div><p class="text-[9px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p><p id="cart-aluno-faixa-texto" class="text-xs font-black uppercase text-slate-800 truncate relative z-10">BRANCA</p></div>
+                        <div class="col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm"><p class="text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p><p id="cart-aluno-nascimento-txt" class="text-xs font-bold text-slate-800">00/00/0000</p></div>
+                        <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm"><p class="text-[9px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p><p id="cart-aluno-matricula-txt" class="text-xs font-mono font-bold text-slate-800 tracking-wider">00000</p></div>
+                        <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm"><p class="text-[9px] text-slate-400 uppercase font-bold mb-0.5">Validade</p><p id="cart-aluno-validade-txt" class="text-xs font-black text-slate-800 tracking-wider">2026</p></div>
+                    </div>
+                </div>
+                <div class="w-[35%] max-w-[200px] p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
+                    <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
+                        <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
+                        <span id="cart-aluno-foto-fallback-modal" class="text-6xl font-black text-slate-300">?</span>
+                    </div>
+                    <div class="w-24 h-24 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                        <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
+                    </div>
+                </div>
+                <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-70 bg-white/50 px-2 py-0.5 rounded backdrop-blur-sm">
+                    <img src="logo_bjj_manager.png" class="h-4 w-auto grayscale" crossorigin="anonymous">
+                    <span class="text-[8px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | manager.bjjdigital.com.br</span>
+                </div>
+            </div>
+            <div class="text-center mt-4 text-white/50 text-[10px] no-print">👆 Toque na imagem para ver detalhes | Deslize lateralmente para ajustar</div>
+        </div>
+    </div>
+
+    <!-- MODAL PAYWALL -->
+    <div id="modal-paywall" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[300] p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col text-center border-t-4 border-amber-500 transform transition-all duration-300 scale-95 opacity-0" id="modal-paywall-content">
+            <div class="p-8">
+                <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">🔒</div>
+                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Limite Atingido</h3>
+                <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6" id="paywall-texto">O seu plano atual permite o cadastro de até 10 alunos ativos. Faça o upgrade da sua licença para desbloquear matrículas ilimitadas e libertar todo o potencial da sua equipa!</p>
+                <div class="flex gap-3">
+                    <button onclick="window.fecharPaywall()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Voltar</button>
+                    <a href="planos.html" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-1"><span>⚡</span> Upgrade</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="menu.js"></script>
 
-    <script type="module">
+      <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1706,6 +2066,7 @@
             if(buscaInput) buscaInput.value = ''; 
             window.renderizarTabela(); 
         };
+        console.log("Sistema carregado!");
     </script>
 </body>
 </html>
