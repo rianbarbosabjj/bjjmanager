@@ -371,11 +371,19 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento *</label>
                             <div class="flex gap-2">
-                            <input type="date" id="aluno-nasc" onchange="calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
-                            <div id="aluno-idade-exibir" class="w-24 p-3 bg-slate-100 border border-slate-200 rounded-xl text-center font-bold text-slate-600 flex items-center justify-center">
+                                <input type="date" id="aluno-nasc" onchange="calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                                <div id="aluno-idade-exibir" class="w-24 p-3 bg-slate-100 border border-slate-200 rounded-xl text-center font-bold text-slate-600 flex items-center justify-center">
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">RG</label>
+                            <input type="text" id="aluno-rg" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Naturalidade</label>
+                            <input type="text" id="aluno-naturalidade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
                         
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
@@ -407,9 +415,18 @@
                                     <span class="text-base">👨‍👩‍👦</span> Responsável Legal <span class="text-[9px] text-rose-500 font-bold ml-2 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Atleta Menor de Idade</span>
                                 </h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="md:col-span-2"><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label><input type="text" id="aluno-resp-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR..."></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label><input type="text" id="aluno-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all"></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label><input type="text" id="aluno-resp-tel" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all"></div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
+                                    </div>
                                 </div>
                             </div>
 
@@ -448,7 +465,18 @@
                         <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2"><h4 class="text-xs font-black text-slate-700 mb-4 uppercase tracking-widest">Endereço</h4></div>
                         <div class="col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label><input type="text" id="aluno-cep" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCEP(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
                         <div class="col-span-1 md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logradouro (Rua, Av.)</label><input type="text" id="aluno-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
-                        <div class="grid grid-cols-2 gap-3 md:col-span-2"><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div></div>
+                        <div class="grid grid-cols-2 gap-3 md:col-span-2">
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cidade</label>
+                            <input type="text" id="aluno-cidade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">UF</label>
+                            <input type="text" id="aluno-uf" maxlength="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none uppercase">
+                        </div>
                     </div>
                 </div>
 
@@ -921,85 +949,125 @@
         window.proximaAba = () => { if (window.abaIndexAtual < window.ordemDasAbas.length - 1) window.mudarAba(window.ordemDasAbas[window.abaIndexAtual + 1]); };
 
         // ===================== ABRIR FICHA DO ALUNO =====================
-        window.abrirFichaAluno = async (id) => { 
-            const a = window.todosAlunosCache.find(x => x.id === id); 
-            if(!a) return; 
-            window.alunoEditandoId = id; 
-            window.ficheiroFotoSelecionado = null; 
-            document.getElementById('cad-foto').value = ""; 
+        window.abrirFichaAluno = async (alunoId) => {
+            showLoading();
+            window.alunoEditandoId = alunoId;
             
-            document.getElementById('modal-titulo').innerText = "Editar Ficha"; 
-            document.getElementById('aluno-id-oculto').value = id; 
-            document.getElementById('aluno-nome').value = a.nome || ''; 
-            document.getElementById('aluno-matricula').value = a.matricula || 'S/N'; 
-            document.getElementById('aluno-nasc').value = a.data_nascimento || ''; 
-            document.getElementById('aluno-cpf').value = a.cpf || ''; 
-            document.getElementById('aluno-faixa').value = a.faixa || 'Branca'; 
-            document.getElementById('aluno-grau').value = a.grau || 'Sem grau'; 
-            document.getElementById('aluno-tel').value = a.telefone || ''; 
-            document.getElementById('aluno-peso').value = a.peso || ''; 
-            document.getElementById('aluno-email').value = a.email || ''; 
-            
-            if(document.getElementById('aluno-senha-portal')) { 
-                document.getElementById('aluno-senha-portal').value = ''; 
-                document.getElementById('aluno-senha-portal').type = "password";
-                document.getElementById('aluno-senha-portal').placeholder = "Deixe em branco para não alterar";
-            } 
-            
-            document.getElementById('aluno-endereco').value = a.endereco || ''; 
-            document.getElementById('aluno-bairro').value = a.bairro || ''; 
-            document.getElementById('aluno-numero').value = a.numero || ''; 
-            document.getElementById('aluno-cep').value = a.cep || ''; 
-            document.getElementById('aluno-resp-nome').value = a.nome_responsavel || ''; 
-            document.getElementById('aluno-resp-cpf').value = a.cpf_responsavel || ''; 
-            document.getElementById('aluno-resp-tel').value = a.telefone_responsavel || ''; 
-            document.getElementById('aluno-emerg-nome').value = a.emergencia_nome || ''; 
-            document.getElementById('aluno-emerg-tel').value = a.emergencia_telefone || ''; 
-            document.getElementById('aluno-emerg-parentesco').value = a.emergencia_parentesco || ''; 
-            document.getElementById('aluno-bolsa').value = a.bolsa_perc || '0'; 
-            document.getElementById('aluno-vencimento').value = a.dia_vencimento || '10'; 
-            document.getElementById('aluno-status').value = a.status || 'ATIVO'; 
-            
-            document.getElementById('lgpd-concordo').checked = a.lgpd_concordo || false; 
-            document.getElementById('lgpd-redes').checked = a.lgpd_redes || false; 
-            document.getElementById('lgpd-site').checked = a.lgpd_site || false; 
-            document.getElementById('lgpd-promo').checked = a.lgpd_promo || false; 
-            document.getElementById('lgpd-relatorio').checked = a.lgpd_relatorios || false; 
-            
-            const imgPreview = document.getElementById('preview-foto'); 
-            const placeholder = document.getElementById('placeholder-foto'); 
-            if (a.foto_url) { 
-                imgPreview.src = a.foto_url; imgPreview.classList.remove('hidden'); placeholder.classList.add('hidden'); 
-            } else { 
-                imgPreview.src = ""; imgPreview.classList.add('hidden'); placeholder.classList.remove('hidden'); 
-            } 
-            
-            await carregarFrequenciaDoAluno(id); 
-            
-            const divVazia = document.getElementById('anamnese-vazia'); 
-            const divPreenchida = document.getElementById('anamnese-preenchida'); 
-            
-            if (a.anamnese_preenchida && a.anamnese) { 
-                divVazia.classList.add('hidden'); divPreenchida.classList.remove('hidden'); 
-            } else { 
-                divVazia.classList.remove('hidden'); divPreenchida.classList.add('hidden'); 
-            } 
-            
-            atualizarAbasPorPlano();
-            
-            const btnCartInfo = document.getElementById('btn-abrir-carteirinha'); 
-            const btnCartPvc = document.getElementById('btn-imprimir-pvc'); 
-            
-            if (window.verificarAcesso('carteirinha')) {
-                btnCartInfo.classList.remove('hidden'); btnCartPvc.classList.remove('hidden'); 
-            } else {
-                btnCartInfo.classList.add('hidden'); btnCartPvc.classList.add('hidden'); 
+            try {
+                const docRef = doc(db, "alunos", alunoId);
+                const docSnap = await getDoc(docRef);
+                
+                if (!docSnap.exists()) {
+                    hideLoading();
+                    showToast("Aluno não encontrado!", "error");
+                    return;
+                }
+                
+                const aluno = { id: docSnap.id, ...docSnap.data() };
+                
+                // Preencher dados pessoais
+                document.getElementById('aluno-nome').value = aluno.nome || '';
+                document.getElementById('aluno-cpf').value = aluno.cpf || '';
+                document.getElementById('aluno-rg').value = aluno.rg || '';
+                document.getElementById('aluno-nasc').value = aluno.data_nascimento || '';
+                document.getElementById('aluno-naturalidade').value = aluno.naturalidade || '';
+                document.getElementById('aluno-faixa').value = aluno.faixa || 'Branca';
+                document.getElementById('aluno-grau').value = aluno.grau || 'Sem grau';
+                document.getElementById('aluno-matricula').value = aluno.matricula || 'S/N';
+                window.calcularIdade();
+                
+                // Preencher contato
+                document.getElementById('aluno-tel').value = aluno.telefone || '';
+                document.getElementById('aluno-email').value = aluno.email || '';
+                document.getElementById('aluno-endereco').value = aluno.endereco || '';
+                document.getElementById('aluno-numero').value = aluno.numero || '';
+                document.getElementById('aluno-bairro').value = aluno.bairro || '';
+                document.getElementById('aluno-cidade').value = aluno.cidade || '';
+                document.getElementById('aluno-uf').value = aluno.uf || '';
+                document.getElementById('aluno-cep').value = aluno.cep || '';
+                document.getElementById('aluno-peso').value = aluno.peso || '';
+                
+                if(document.getElementById('aluno-senha-portal')) { 
+                    document.getElementById('aluno-senha-portal').value = ''; 
+                    document.getElementById('aluno-senha-portal').type = "password";
+                    document.getElementById('aluno-senha-portal').placeholder = "Deixe em branco para não alterar";
+                }
+                
+                // Preencher dados financeiros
+                document.getElementById('aluno-bolsa').value = aluno.bolsa_perc || '0';
+                document.getElementById('aluno-vencimento').value = aluno.dia_vencimento || '10';
+                document.getElementById('aluno-status').value = aluno.status || 'ATIVO';
+                
+                // Preencher responsável (se menor de idade)
+                if (window.idadeAtual < 18) {
+                    document.getElementById('aluno-responsavel-nome').value = aluno.nome_responsavel || '';
+                    document.getElementById('aluno-responsavel-cpf').value = aluno.cpf_responsavel || '';
+                    document.getElementById('aluno-responsavel-telefone').value = aluno.telefone_responsavel || '';
+                } else {
+                    document.getElementById('aluno-emerg-nome').value = aluno.emergencia_nome || '';
+                    document.getElementById('aluno-emerg-tel').value = aluno.emergencia_telefone || '';
+                    document.getElementById('aluno-emerg-parentesco').value = aluno.emergencia_parentesco || '';
+                }
+                
+                // Preencher LGPD
+                document.getElementById('lgpd-concordo').checked = aluno.lgpd_concordo || false;
+                document.getElementById('lgpd-redes').checked = aluno.lgpd_redes || false;
+                document.getElementById('lgpd-site').checked = aluno.lgpd_site || false;
+                document.getElementById('lgpd-promo').checked = aluno.lgpd_promo || false;
+                document.getElementById('lgpd-relatorio').checked = aluno.lgpd_relatorios || false;
+                
+                // Foto
+                const imgPreview = document.getElementById('preview-foto');
+                const placeholder = document.getElementById('placeholder-foto');
+                if (aluno.foto_url) {
+                    imgPreview.src = aluno.foto_url;
+                    imgPreview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                } else {
+                    imgPreview.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+                
+                // Buscar check-ins para frequência
+                await carregarFrequenciaDoAluno(alunoId);
+                
+                // Anamnese
+                const divVazia = document.getElementById('anamnese-vazia'); 
+                const divPreenchida = document.getElementById('anamnese-preenchida'); 
+                
+                if (aluno.anamnese_preenchida && aluno.anamnese) { 
+                    divVazia.classList.add('hidden'); divPreenchida.classList.remove('hidden'); 
+                } else { 
+                    divVazia.classList.remove('hidden'); divPreenchida.classList.add('hidden'); 
+                } 
+                
+                atualizarAbasPorPlano();
+
+                // Configurar botões da carteirinha
+                const btnCartInfo = document.getElementById('btn-abrir-carteirinha');
+                const btnCartPvc = document.getElementById('btn-imprimir-pvc');
+                
+                if (window.verificarAcesso('carteirinha')) {
+                    btnCartInfo.classList.remove('hidden');
+                    btnCartPvc.classList.remove('hidden');
+                } else {
+                    btnCartInfo.classList.add('hidden');
+                    btnCartPvc.classList.add('hidden');
+                }
+                
+                document.getElementById('btn-gerar-pdf').classList.remove('hidden');
+                
+                // Abrir modal e resetar para primeira aba
+                document.getElementById('modal-aluno').classList.remove('hidden');
+                document.getElementById('modal-aluno').classList.add('flex');
+                window.mudarAba('aba-pessoal');
+                
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao carregar dados do aluno", "error");
+            } finally {
+                hideLoading();
             }
-            
-            document.getElementById('btn-gerar-pdf').classList.remove('hidden'); 
-            window.calcularIdade(); 
-            window.mudarAba('aba-pessoal'); 
-            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
         };
 
         window.abrirModal = () => { 
@@ -1024,7 +1092,7 @@
             document.getElementById('aluno-bolsa').value = "0"; 
             document.getElementById('aluno-vencimento').value = "10"; 
             document.getElementById('aluno-status').value = "ATIVO"; 
-            document.getElementById('aluno-senha-portal').value = "";
+            if (document.getElementById('aluno-senha-portal')) document.getElementById('aluno-senha-portal').value = "";
             
             document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
             document.getElementById('btn-imprimir-pvc').classList.add('hidden'); 
@@ -1048,84 +1116,111 @@
         // ===================== BUSCAR CHECK-INS DO ALUNO (FREQUÊNCIA ADMIN) =====================
         async function carregarFrequenciaDoAluno(idAluno) { 
             const listaEl = document.getElementById('admin-lista-checkins'); 
+            if (!listaEl) return;
+            
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
+            
             try { 
                 const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno)); 
                 const snap = await getDocs(q); 
                 window.checkinsDoAlunoAtualCache = []; 
-                snap.forEach(doc => window.checkinsDoAlunoAtualCache.push(doc.data())); 
-                window.checkinsDoAlunoAtualCache.sort((a,b) => new Date(b.timestamp || b.data).getTime() - new Date(a.timestamp || a.data).getTime()); 
-                const hojeData = new Date(); const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
-                document.getElementById('filtro-mes-freq-admin').value = `${hojeData.getFullYear()}-${mesFormatado}`; 
+                
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    window.checkinsDoAlunoAtualCache.push({
+                        id: doc.id,
+                        ...data,
+                        data: data.timestamp || data.data
+                    }); 
+                });
+                
+                window.checkinsDoAlunoAtualCache.sort((a,b) => {
+                    const dateA = a.data?.toDate ? a.data.toDate() : new Date(a.data);
+                    const dateB = b.data?.toDate ? b.data.toDate() : new Date(b.data);
+                    return dateB - dateA;
+                }); 
+                
+                const hojeData = new Date(); 
+                const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
+                const filtroMes = document.getElementById('filtro-mes-freq-admin');
+                if (filtroMes) {
+                    filtroMes.value = `${hojeData.getFullYear()}-${mesFormatado}`; 
+                }
+                
                 window.filtrarFrequenciaAdmin(); 
             } catch(e) { 
-                listaEl.innerHTML = '<p class="text-center text-xs text-rose-500 py-6 font-bold">Erro ao puxar dados.</p>'; 
+                console.error(e);
+                if(listaEl) listaEl.innerHTML = '<p class="text-center text-xs text-rose-500 py-6 font-bold">Erro ao carregar frequência.</p>'; 
             } 
         }
         
-        window.filtrarFrequenciaAdmin = async function() { 
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
+        window.filtrarFrequenciaAdmin = function() { 
+            const valFiltro = document.getElementById('filtro-mes-freq-admin')?.value; 
             if (!valFiltro) return; 
-            const partes = valFiltro.split('-'); 
-            const anoSelecionado = parseInt(partes[0]); const mesSelecionado = parseInt(partes[1]); 
             
-            let checkinsFiltrados = window.checkinsDoAlunoAtualCache.filter(ck => { 
-                const d = new Date(ck.timestamp || ck.data); 
-                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado; 
+            const partes = valFiltro.split('-'); 
+            const anoSelecionado = parseInt(partes[0]); 
+            const mesSelecionado = parseInt(partes[1]); 
+            
+            const checkinsFiltrados = window.checkinsDoAlunoAtualCache.filter(ck => { 
+                let dataObj;
+                if (ck.data && ck.data.toDate) {
+                    dataObj = ck.data.toDate();
+                } else if (ck.data) {
+                    dataObj = new Date(ck.data);
+                } else if (ck.timestamp && ck.timestamp.toDate) {
+                    dataObj = ck.timestamp.toDate();
+                } else if (ck.timestamp) {
+                    dataObj = new Date(ck.timestamp);
+                } else {
+                    return false;
+                }
+                
+                return dataObj.getFullYear() === anoSelecionado && (dataObj.getMonth() + 1) === mesSelecionado; 
             }); 
             
-            document.getElementById('admin-contador-treinos').innerText = checkinsFiltrados.length; 
+            const contadorEl = document.getElementById('admin-contador-treinos');
+            if (contadorEl) contadorEl.innerText = checkinsFiltrados.length; 
+            
             const container = document.getElementById('admin-lista-checkins'); 
+            if (!container) return;
             
             if (checkinsFiltrados.length === 0) { 
-                container.innerHTML = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registados neste mês.</p>"; 
+                container.innerHTML = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registrados neste mês.</p>"; 
                 return; 
             } 
             
-            container.innerHTML = '<p class="text-center text-xs text-slate-400 py-4 italic">A descodificar localizações... 📍</p>'; 
             let html = ''; 
-            for (let ck of checkinsFiltrados) { 
-                const dataObj = new Date(ck.timestamp || ck.data); 
+            checkinsFiltrados.forEach(ck => { 
+                let dataObj;
+                if (ck.data && ck.data.toDate) {
+                    dataObj = ck.data.toDate();
+                } else if (ck.data) {
+                    dataObj = new Date(ck.data);
+                } else if (ck.timestamp && ck.timestamp.toDate) {
+                    dataObj = ck.timestamp.toDate();
+                } else {
+                    dataObj = new Date(ck.timestamp || ck.data);
+                }
+                
                 const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); 
                 const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'}); 
                 
-                let enderecoHtml = ''; 
-                if (ck.localizacao && ck.localizacao.lat && ck.localizacao.lng) { 
-                    if(!ck.endereco_texto) { 
-                        try { 
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${ck.localizacao.lat}&lon=${ck.localizacao.lng}`, { headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' } }); 
-                            const data = await res.json(); 
-                            if(data && data.address) { 
-                                const rua = data.address.road || data.address.pedestrian || data.address.suburb || "Rua Desconhecida"; 
-                                const num = data.address.house_number ? `, ${data.address.house_number}` : ''; 
-                                const cidade = data.address.city || data.address.town || data.address.village || ""; 
-                                ck.endereco_texto = `${rua}${num} - ${cidade}`.trim(); 
-                            } 
-                        } catch(e) { ck.endereco_texto = "Localização obtida"; } 
-                    } 
-                    enderecoHtml = `
-                        <div class="mt-2 pt-2 border-t border-slate-100 flex items-start gap-1">
-                            <span class="text-[10px] text-slate-400">📍</span>
-                            <span class="text-[9px] text-slate-500 italic mt-0.5 leading-tight">${ck.endereco_texto || "Localização obtida"}</span>
-                        </div>
-                    `; 
-                } 
                 html += `
-                    <div class="p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all hover:border-cyan-200">
+                    <div class="p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs shrink-0">🥋</div>
+                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs">🥋</div>
                                 <div>
                                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${dataBonita}</p>
-                                    <p class="text-[11px] font-bold text-slate-800 truncate">${ck.turma_nome || 'Treino'}</p>
+                                    <p class="text-[11px] font-bold text-slate-800">Treino Registrado</p>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
+                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md">${hora}</span>
                         </div>
-                        ${enderecoHtml}
                     </div>
                 `; 
-            } 
+            }); 
             container.innerHTML = html; 
         };
 
@@ -1137,31 +1232,46 @@
             const nasc = document.getElementById('aluno-nasc').value; 
             const tel = document.getElementById('aluno-tel').value; 
             
-            if(!nome || !cpf || !nasc || !tel) return showToast("Preencha os campos obrigatórios (*)", "error"); 
-            if(!document.getElementById('lgpd-concordo').checked) return showToast("É necessário aceitar os Termos da LGPD.", "error"); 
+            if(!nome || !cpf || !nasc || !tel) {
+                showToast("Preencha os campos obrigatórios (Nome, CPF, Nascimento, Telefone)", "error"); 
+                return;
+            }
             
-            let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '', nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
-            if (nasc) { 
-                if (window.idadeAtual < 18) { 
-                    nomeResponsavel = document.getElementById('aluno-resp-nome').value.toUpperCase().trim(); 
-                    cpfResponsavel = document.getElementById('aluno-resp-cpf').value.trim(); 
-                    telResponsavel = document.getElementById('aluno-resp-tel').value.trim(); 
-                } else { 
-                    nomeEmergencia = document.getElementById('aluno-emerg-nome').value.toUpperCase().trim(); 
-                    telEmergencia = document.getElementById('aluno-emerg-tel').value.trim(); 
-                    parentescoEmergencia = document.getElementById('aluno-emerg-parentesco').value.toUpperCase().trim(); 
-                } 
+            if(!document.getElementById('lgpd-concordo').checked) {
+                showToast("É necessário aceitar os Termos da LGPD.", "error"); 
+                return;
+            }
+            
+            let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '';
+            let nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
+            
+            if (window.idadeAtual < 18) { 
+                nomeResponsavel = document.getElementById('aluno-responsavel-nome').value.toUpperCase().trim(); 
+                cpfResponsavel = document.getElementById('aluno-responsavel-cpf').value.trim(); 
+                telResponsavel = document.getElementById('aluno-responsavel-telefone').value.trim(); 
+                
+                if(!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
+                    showToast("Preencha todos os dados do responsável legal", "error");
+                    return;
+                }
+            } else { 
+                nomeEmergencia = document.getElementById('aluno-emerg-nome').value.toUpperCase().trim(); 
+                telEmergencia = document.getElementById('aluno-emerg-tel').value.trim(); 
+                parentescoEmergencia = document.getElementById('aluno-emerg-parentesco').value.toUpperCase().trim(); 
             } 
             
             const btnSalvar = document.getElementById('btn-salvar-aluno'); 
             const textoOriginal = btnSalvar.innerHTML; 
-            btnSalvar.innerHTML = "⏳ SALVANDO..."; btnSalvar.disabled = true; 
+            btnSalvar.innerHTML = "⏳ SALVANDO..."; 
+            btnSalvar.disabled = true; 
             
             const dados = { 
                 equipe_id: window.teamId, 
                 nome: nome, 
                 cpf: cpf, 
+                rg: document.getElementById('aluno-rg')?.value || '',
                 data_nascimento: nasc, 
+                naturalidade: document.getElementById('aluno-naturalidade')?.value || '',
                 faixa: document.getElementById('aluno-faixa').value, 
                 grau: document.getElementById('aluno-grau').value, 
                 telefone: tel, 
@@ -1170,6 +1280,8 @@
                 endereco: document.getElementById('aluno-endereco').value, 
                 bairro: document.getElementById('aluno-bairro').value, 
                 numero: document.getElementById('aluno-numero').value, 
+                cidade: document.getElementById('aluno-cidade')?.value || '',
+                uf: document.getElementById('aluno-uf')?.value || '',
                 cep: document.getElementById('aluno-cep').value, 
                 nome_responsavel: nomeResponsavel, 
                 cpf_responsavel: cpfResponsavel, 
@@ -1184,7 +1296,8 @@
                 lgpd_redes: document.getElementById('lgpd-redes').checked, 
                 lgpd_site: document.getElementById('lgpd-site').checked, 
                 lgpd_promo: document.getElementById('lgpd-promo').checked, 
-                lgpd_relatorios: document.getElementById('lgpd-relatorio').checked 
+                lgpd_relatorios: document.getElementById('lgpd-relatorio').checked,
+                updated_at: new Date().toISOString()
             }; 
             
             const campoSenha = document.getElementById('aluno-senha-portal'); 
@@ -1194,81 +1307,85 @@
                 let docRefId = id; 
                 
                 if (!id) { 
-                    // NOVO ALUNO - Usar Cloud Function criarAlunoComHash
-                    dados.matricula = new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000).toString(); 
+                    // NOVO ALUNO
+                    dados.matricula = `${new Date().getFullYear()}${Math.floor(1000 + Math.random() * 9000)}`; 
                     dados.data_cadastro = new Date().toISOString(); 
+                    dados.created_at = new Date().toISOString();
+                    
+                    const docRef = await addDoc(collection(db, "alunos"), dados); 
+                    docRefId = docRef.id;
+                    
+                    // Se tiver senha, atualizar depois (ou usar cloud function)
+                    if (novaSenha) {
+                        try {
+                            const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
+                            await criarAluno({ alunoId: docRefId, senha: novaSenha });
+                        } catch(e) {
+                            console.warn("Cloud function não disponível, senha não foi salva:", e);
+                        }
+                    }
+                } else { 
+                    // EDITANDO ALUNO EXISTENTE
+                    await updateDoc(doc(db, "alunos", id), dados); 
+                    docRefId = id;
                     
                     if (novaSenha) {
-                        const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
-                        const result = await criarAluno({ dados: dados, senha: novaSenha });
-                        if (result.data.success) {
-                            docRefId = result.data.alunoId;
-                        } else {
-                            throw new Error(result.data.error);
+                        try {
+                            const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
+                            await atualizarAluno({ alunoId: id, senha: novaSenha });
+                        } catch(e) {
+                            console.warn("Cloud function não disponível, senha não foi atualizada:", e);
                         }
-                    } else {
-                        // Se não tem senha, salva normalmente
-                        const docRef = await addDoc(collection(db, "alunos"), dados); 
-                        docRefId = docRef.id;
                     }
-                } else {
-                    // EDITANDO ALUNO EXISTENTE
-                    if (novaSenha) {
-                        const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
-                        await atualizarAluno({ alunoId: id, dados: dados, novaSenha: novaSenha });
-                    } else {
-                        await updateDoc(doc(db, "alunos", id), dados); 
-                    }
-                    docRefId = id;
                 }
                 
                 // Upload da foto (se houver)
-                let fotoUrlFinal = null; 
                 if (window.ficheiroFotoSelecionado) { 
                     btnSalvar.innerHTML = "📷 ENVIANDO FOTO..."; 
                     
+                    // Remover foto antiga se existir
                     const alunoAntigo = window.todosAlunosCache.find(a => a.id === docRefId); 
                     if (alunoAntigo && alunoAntigo.foto_url) { 
                         try { 
-                            const refFotoAntiga = ref(storage, alunoAntigo.foto_url); 
-                            await deleteObject(refFotoAntiga); 
-                        } catch (err) { console.log("Aviso: Foto antiga não encontrada."); } 
+                            const fotoRef = ref(storage, alunoAntigo.foto_url); 
+                            await deleteObject(fotoRef); 
+                        } catch (err) { 
+                            console.log("Aviso: Foto antiga não encontrada."); 
+                        } 
                     } 
                     
                     const timestamp = new Date().getTime(); 
                     const fotoPath = `fotos_carteirinha/${window.teamId}/${docRefId}_${timestamp}.jpg`; 
                     const storageRef = ref(storage, fotoPath); 
                     await uploadBytes(storageRef, window.ficheiroFotoSelecionado); 
-                    fotoUrlFinal = await getDownloadURL(storageRef); 
+                    const fotoUrlFinal = await getDownloadURL(storageRef); 
                     
                     await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal }); 
                 } 
                 
-                let acaoLog = "", detalhesLog = "";
-                
-                if (id) { 
-                    showToast("Ficha atualizada com sucesso!", "success"); 
-                    acaoLog = "EDITOU_ALUNO"; detalhesLog = `Atualizou a ficha do aluno: ${nome}`;
-                } else { 
-                    showToast("Matrícula criada com sucesso!", "success"); 
-                    acaoLog = "NOVA_MATRICULA"; detalhesLog = `Cadastrou o aluno: ${nome}`;
-                } 
-                
+                // Log de auditoria
                 try {
                     await addDoc(collection(db, "auditoria"), {
-                        equipe_id: window.teamId, equipe_nome: window.equipeDados.nome,
-                        usuario_email: auth.currentUser.email, acao: acaoLog, detalhes: detalhesLog, timestamp: new Date().toISOString()
+                        equipe_id: window.teamId, 
+                        equipe_nome: window.equipeDados.nome,
+                        usuario_email: auth.currentUser.email, 
+                        acao: id ? "EDITOU_ALUNO" : "NOVA_MATRICULA",
+                        detalhes: `${id ? "Atualizou" : "Cadastrou"} o aluno: ${nome}`,
+                        timestamp: new Date().toISOString()
                     });
                 } catch(e) {}
 
+                showToast(id ? "Ficha atualizada com sucesso!" : "Matrícula criada com sucesso!", "success"); 
                 window.fecharModal(); 
                 clearCache();
                 await buscarAlunosFirebase(true); 
+                
             } catch(e) { 
                 console.error(e); 
                 showToast("Erro ao salvar a ficha: " + (e.message || "Erro desconhecido"), "error"); 
             } finally { 
-                btnSalvar.innerHTML = textoOriginal; btnSalvar.disabled = false; 
+                btnSalvar.innerHTML = textoOriginal; 
+                btnSalvar.disabled = false; 
             } 
         };
 
@@ -1418,7 +1535,7 @@
         window.gerarPDF_LGPD = function() { 
             if(!document.getElementById('lgpd-concordo').checked) return showToast("Atenção: A caixa de 'Li e Concordo' precisa estar marcada.", "error"); 
             const nome = document.getElementById('aluno-nome').value || '[NOME DO ALUNO]'; 
-            const resp = document.getElementById('aluno-resp-nome').value; 
+            const resp = document.getElementById('aluno-responsavel-nome').value; 
             const repTexto = resp ? " neste ato representado(a) por seu responsável legal " + resp + ", " : " "; 
             let usos = []; 
             if(document.getElementById('lgpd-redes').checked) usos.push("Publicações em redes sociais oficiais da Equipe."); 
