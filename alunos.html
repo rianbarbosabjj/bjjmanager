@@ -45,9 +45,6 @@
         }
         .animate-spin { animation: spin 1s linear infinite; }
 
-        /* ==========================================
-           📱 ESCALA PERFEITA PARA O ECRÃ (MOBILE E PC)
-           ========================================== */
         #cart-preview-container {
             width: 600px;
             height: 380px;
@@ -71,9 +68,6 @@
             }
         }
 
-        /* ==========================================
-           🖨️ ESCALA MILIMÉTRICA PARA IMPRESSORA (PVC CR80)
-           ========================================== */
         @media print {
             @page { 
                 size: 85.6mm 54mm landscape; 
@@ -119,7 +113,6 @@
             }
         }
         
-        /* Gráficos responsivos */
         .chart-container {
             position: relative;
             width: 100%;
@@ -149,7 +142,6 @@
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-auto"></div>
 
-    <!-- Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center">
         <div class="bg-white rounded-2xl p-6 flex flex-col items-center shadow-2xl">
             <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -162,7 +154,6 @@
             <div class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
                     
-                    <!-- Cabeçalho com abas -->
                     <div class="mb-6 md:mb-8">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                             <div>
@@ -170,37 +161,35 @@
                                 <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
                             </div>
                             <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                                <button id="btn-relatorio-freq" onclick="gerarRelatorioGeralFrequencia()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
+                                <button id="btn-relatorio-freq" onclick="window.gerarRelatorioGeralFrequencia()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
                                     <span class="mr-2 text-base">📊</span> Relatório
                                 </button>
-                                <button onclick="abrirModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
+                                <button onclick="window.abrirModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                     <span class="mr-2 text-base">➕</span> Nova Matrícula
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- Abas de navegação -->
                         <div class="flex border-b border-slate-200 bg-white rounded-t-xl overflow-x-auto hide-scrollbar">
-                            <button onclick="mudarAbaDashboard('lista')" id="tab-btn-lista" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">
+                            <button onclick="window.mudarAbaDashboard('lista')" id="tab-btn-lista" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">
                                 👥 Lista de Alunos
                             </button>
-                            <button onclick="mudarAbaDashboard('evolucao')" id="tab-btn-evolucao" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">
+                            <button onclick="window.mudarAbaDashboard('evolucao')" id="tab-btn-evolucao" class="tab-dashboard-item py-3 px-5 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">
                                 📈 Evolução
                             </button>
                         </div>
                     </div>
 
-                    <!-- ABA: LISTA DE ALUNOS -->
                     <div id="aba-lista" class="aba-dashboard-content">
                         <div class="bg-white p-4 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:flex-1">
-                                <select id="filtro-status" onchange="renderizarTabela()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 md:p-2.5 outline-none cursor-pointer">
+                                <select id="filtro-status" onchange="window.renderizarTabela()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 md:p-2.5 outline-none cursor-pointer">
                                     <option value="ATIVO">Ativos</option>
                                     <option value="INATIVO">Inativos</option>
                                     <option value="TODOS">Todos</option>
                                 </select>
                                 
-                                <select id="filtro-faixa" onchange="renderizarTabela()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 md:p-2.5 outline-none cursor-pointer">
+                                <select id="filtro-faixa" onchange="window.renderizarTabela()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 md:p-2.5 outline-none cursor-pointer">
                                     <option value="TODAS">Todas as Faixas</option>
                                     <option value="Branca">Branca</option>
                                     <option value="Cinza e Branca">Cinza e Branca</option>
@@ -222,7 +211,7 @@
                                 </select>
                                 
                                 <div class="relative w-full">
-                                    <input type="text" id="input-busca" onkeyup="renderizarTabela()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-4 pr-10 p-3 md:p-2.5 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar por nome ou CPF...">
+                                    <input type="text" id="input-busca" onkeyup="window.renderizarTabela()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-4 pr-10 p-3 md:p-2.5 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar por nome ou CPF...">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -230,11 +219,11 @@
                                     </div>
                                 </div>
                                 
-                                <button onclick="limparBusca()" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 md:py-2.5 px-4 rounded-xl text-sm transition-colors">Limpar</button>
+                                <button onclick="window.limparBusca()" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 md:py-2.5 px-4 rounded-xl text-sm transition-colors">Limpar</button>
                             </div>
                             <div class="flex items-center justify-between w-full md:w-auto gap-4">
                                 <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                                <button onclick="manualRefreshAlunos()" class="text-slate-400 hover:text-cyan-500 transition-colors p-2" title="Atualizar lista">
+                                <button onclick="window.manualRefreshAlunos()" class="text-slate-400 hover:text-cyan-500 transition-colors p-2" title="Atualizar lista">
                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                                 </button>
                             </div>
@@ -260,7 +249,6 @@
                         </div>
                     </div>
 
-                    <!-- ABA: EVOLUÇÃO DE ALUNOS -->
                     <div id="aba-evolucao" class="aba-dashboard-content hidden space-y-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div class="chart-wrapper">
@@ -268,11 +256,7 @@
                                     <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                                         <span class="text-base">📊</span> Evolução Mensal
                                     </h3>
-                                    <select id="ano-grafico" onchange="atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold">
-                                        <option value="2023">2023</option>
-                                        <option value="2024">2024</option>
-                                        <option value="2025" selected>2025</option>
-                                        <option value="2026">2026</option>
+                                    <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold">
                                     </select>
                                 </div>
                                 <div class="chart-container">
@@ -325,19 +309,19 @@
                     <h3 class="font-black text-base md:text-lg tracking-tight uppercase" id="modal-titulo">Ficha Cadastral</h3>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="bg-indigo-500/20 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/50 font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all">🪪 Ver Carteirinha</button>
-                    <button onclick="abrirEImprimirPVC()" id="btn-imprimir-pvc" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all shadow-sm" title="Imprimir em Cartão Plástico (CR80)">🖨️ Imprimir Cartão PVC</button>
-                    <button onclick="fecharModal()" class="text-slate-400 hover:text-white text-3xl leading-none ml-2">&times;</button>
+                    <button onclick="window.abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="bg-indigo-500/20 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/50 font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all">🪪 Ver Carteirinha</button>
+                    <button onclick="window.abrirEImprimirPVC()" id="btn-imprimir-pvc" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all shadow-sm" title="Imprimir em Cartão Plástico (CR80)">🖨️ Imprimir Cartão PVC</button>
+                    <button onclick="window.fecharModal()" class="text-slate-400 hover:text-white text-3xl leading-none ml-2">&times;</button>
                 </div>
             </div>
 
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
-                <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
-                <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
-                <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
-                <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
-                <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
+                <button onclick="window.mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
+                <button onclick="window.mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
+                <button onclick="window.mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
+                <button onclick="window.mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
+                <button onclick="window.mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+                <button onclick="window.mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
@@ -353,7 +337,7 @@
                                     <p class="text-[8px] md:text-[9px] font-bold mt-1 uppercase text-center leading-tight">Enviar<br>Foto</p>
                                 </div>
                             </div>
-                            <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="mostrarPreviewFoto(event)">
+                            <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="window.mostrarPreviewFoto(event)">
                         </div>
 
                         <div class="md:col-span-2">
@@ -366,11 +350,22 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF *</label>
-                            <input type="text" id="aluno-cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <input type="text" id="aluno-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento *</label>
-                            <input type="date" id="aluno-nasc" onchange="calcularIdade()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <div class="flex gap-2">
+                                <input type="date" id="aluno-nasc" onchange="window.calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                                <div id="aluno-idade-exibir" class="w-24 p-3 bg-slate-100 border border-slate-200 rounded-xl text-center font-bold text-slate-600 flex items-center justify-center"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">RG</label>
+                            <input type="text" id="aluno-rg" placeholder="Apenas números..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Naturalidade</label>
+                            <input type="text" id="aluno-naturalidade" placeholder="Ex: Rio de Janeiro - RJ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
@@ -402,9 +397,18 @@
                                     <span class="text-base">👨‍👩‍👦</span> Responsável Legal <span class="text-[9px] text-rose-500 font-bold ml-2 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Atleta Menor de Idade</span>
                                 </h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="md:col-span-2"><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label><input type="text" id="aluno-resp-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR..."></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label><input type="text" id="aluno-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all"></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label><input type="text" id="aluno-resp-tel" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all"></div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label>
+                                        <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
+                                    </div>
                                 </div>
                             </div>
 
@@ -412,7 +416,7 @@
                                 <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3"><span class="text-base">🚨</span><h4 class="text-xs font-black text-slate-700 uppercase tracking-widest">Contato de Emergência</h4></div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Contato *</label><input type="text" id="aluno-emerg-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Quem avisar?"></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone *</label><input type="text" id="aluno-emerg-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000"></div>
+                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone *</label><input type="text" id="aluno-emerg-tel" maxlength="15" oninput="window.mascaraTelefone(this)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000"></div>
                                     <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Grau de Parentesco *</label><input type="text" id="aluno-emerg-parentesco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Ex: Mãe, Irmão..."></div>
                                 </div>
                             </div>
@@ -423,7 +427,7 @@
                 <!-- ABA CONTATO -->
                 <div id="aba-contato" class="aba-content hidden space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Telefone do Atleta (WhatsApp) *</label><input type="text" id="aluno-tel" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Telefone do Atleta (WhatsApp) *</label><input type="text" id="aluno-tel" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
                         <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Peso (Kg)</label><input type="text" id="aluno-peso" placeholder="Ex: 80" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
                         <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label><input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
                         
@@ -431,7 +435,7 @@
                             <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
                             <div class="relative w-full">
                                 <input type="password" id="aluno-senha-portal" placeholder="Defina uma senha..." class="w-full p-3 pr-12 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold">
-                                <button type="button" onclick="toggleSenha('aluno-senha-portal', this)" class="absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-600 hover:text-cyan-800">
+                                <button type="button" onclick="window.toggleSenha('aluno-senha-portal', this)" class="absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-600 hover:text-cyan-800">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
                                 </button>
                             </div>
@@ -441,9 +445,20 @@
                         <div class="md:col-span-2 mt-[-10px] mb-2"><p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p></div>
                         
                         <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2"><h4 class="text-xs font-black text-slate-700 mb-4 uppercase tracking-widest">Endereço</h4></div>
-                        <div class="col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label><input type="text" id="aluno-cep" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCEP(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div class="col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label><input type="text" id="aluno-cep" maxlength="9" oninput="window.mascaraCEP(this)" onblur="window.buscarCEP(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
                         <div class="col-span-1 md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logradouro (Rua, Av.)</label><input type="text" id="aluno-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
-                        <div class="grid grid-cols-2 gap-3 md:col-span-2"><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div><div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div></div>
+                        <div class="grid grid-cols-2 gap-3 md:col-span-2">
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cidade</label>
+                            <input type="text" id="aluno-cidade" placeholder="Ex: Rio de Janeiro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">UF</label>
+                            <input type="text" id="aluno-uf" maxlength="2" placeholder="Ex: RJ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none uppercase">
+                        </div>
                     </div>
                 </div>
 
@@ -452,7 +467,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div><label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label><select id="aluno-bolsa" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl font-bold outline-none text-cyan-700 focus:ring-2 focus:ring-cyan-200"><option value="0">0% (Integral)</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100% (Isento)</option></select></div>
                         <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label><select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"></select></div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label>
+                            <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                                <option value="1">Dia 1</option>
+                                <option value="5">Dia 5</option>
+                                <option value="10" selected>Dia 10</option>
+                                <option value="15">Dia 15</option>
+                                <option value="20">Dia 20</option>
+                                <option value="25">Dia 25</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -460,7 +485,7 @@
                 <div id="aba-frequencia" class="aba-content hidden space-y-5">
                     <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <div class="flex items-center gap-3"><div class="w-10 h-10 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-xl">📍</div><div><h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Assiduidade do Atleta</h4><p class="text-[10px] text-slate-500">Histórico de treinos (Check-ins do Portal)</p></div></div>
-                        <div><input type="month" id="filtro-mes-freq-admin" onchange="filtrarFrequenciaAdmin()" class="bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg p-2 outline-none focus:border-cyan-500 cursor-pointer shadow-sm"></div>
+                        <div><input type="month" id="filtro-mes-freq-admin" onchange="window.filtrarFrequenciaAdmin()" class="bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg p-2 outline-none focus:border-cyan-500 cursor-pointer shadow-sm"></div>
                     </div>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -474,24 +499,119 @@
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
                     <div class="bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-6 space-y-6">
                         <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4"><span class="text-xl">⚖️</span><h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização do uso da imagem</h3></div>
-                        <div class="space-y-4"><p class="text-sm text-amber-900">De acordo com a Lei de Garantia e Proteção de dados <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13853.htm" target="_blank" class="text-cyan-600 underline font-bold hover:text-cyan-700">(Lei nº 13.853, de 2019)</a>. Assinale as opções a seguir.</p>
+                        <div class="space-y-4"><p class="text-sm text-amber-900">De acordo com a Lei de Garantia e Protection de dados <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13853.htm" target="_blank" class="text-cyan-600 underline font-bold hover:text-cyan-700">(Lei nº 13.853, de 2019)</a>. Assinale as opções a seguir.</p>
                         <p class="text-sm font-bold text-amber-900">Autorizo a utilização de imagens deste aluno(a) com a finalidade de:</p>
                         <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Publicações em redes sociais oficiais da Equipe / Projeto</span></label>
-                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Divulgação em site institucional</span></label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Divulgação em site institutional</span></label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Materiais informativos e promocionais</span></label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Relatórios e prestação de contas</span></label>
                         </div></div>
                         <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6"><h4 class="font-bold text-slate-800 text-lg">Declaração de proteção de dados</h4><p class="text-sm text-slate-700">A equipe declara que:</p><ul class="list-disc pl-5 text-sm text-slate-700 space-y-2"><li>Não divulgará dados pessoais do(a) aluno(a) (como CPF, endereço, telefone ou informações sensíveis).</li><li>Utilizará apenas nome e imagem, quando necessário.</li><li>Não comercializará as imagens.</li><li>Adotará medidas de segurança para proteção das informações coletadas.</li></ul><p class="text-sm text-slate-500 pt-4 font-bold italic">Ass: Diretoria da Equipe</p></div>
                         <div class="bg-white p-6 rounded-xl border border-emerald-200 shadow-sm space-y-4 mt-6"><p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p><label class="flex items-center gap-3 cursor-pointer mt-2"><input type="checkbox" id="lgpd-concordo" class="w-6 h-6 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"><span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo com os Termos</span></label></div>
-                        <button onclick="window.gerarPDF_LGPD()" id="btn-gerar-pdf" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm hidden">📥 Baixar Assinatura Digital (PDF)</button>
+                        <button onclick="window.gerarPDF_LGPD()" id="btn-generar-pdf" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm hidden">📥 Baixar Assinatura Digital (PDF)</button>
                     </div>
                 </div>
 
                 <!-- ABA ANAMNESE -->
                 <div id="aba-anamnese" class="aba-content hidden space-y-5">
                     <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200"><span class="text-4xl block mb-3">⏳</span><h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4><p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p></div>
-                    <div id="anamnese-preenchida" class="hidden space-y-4"></div>
+                    <div id="anamnese-preenchida" class="hidden space-y-4">
+                        <!-- Botão de gerar PDF -->
+                        <div class="flex justify-end">
+                            <button onclick="window.gerarPDF_Anamnese()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-sm flex items-center gap-2">
+                                <span>📄</span> Baixar Ficha de Saúde (PDF)
+                            </button>
+                        </div>
+                        
+                        <!-- Dados Pessoais Anamnese -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-cyan-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+                                <span>👤</span> Dados Pessoais
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div><p class="text-[10px] text-slate-400">Altura</p><p id="anamnese-altura" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Peso</p><p id="anamnese-peso" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Data Preenchimento</p><p id="anamnese-data" class="font-bold text-slate-700 text-xs">---</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Condições Clínicas Anamnese -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-cyan-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+                                <span>🩺</span> Condições Clínicas
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <div class="flex items-center gap-2"><span id="anamnese-asma" class="w-3 h-3 rounded-full"></span><span class="text-sm">Asma/Bronquite</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-hipertensao" class="w-3 h-3 rounded-full"></span><span class="text-sm">Hipertensão</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-cardiopatia" class="w-3 h-3 rounded-full"></span><span class="text-sm">Cardiopatia</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-diabetes" class="w-3 h-3 rounded-full"></span><span class="text-sm">Diabetes</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-epilepsia" class="w-3 h-3 rounded-full"></span><span class="text-sm">Epilepsia</span></div>
+                                <div class="flex items-center gap-2"><span id="anamnese-desmaios" class="w-3 h-3 rounded-full"></span><span class="text-sm">Desmaios</span></div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100">
+                                <p class="text-[10px] text-slate-400">Dores Articulares</p>
+                                <p id="anamnese-dores" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-slate-400">Problemas de Coluna</p>
+                                <p id="anamnese-coluna" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-slate-400">Cirurgias/Lesões Prévias</p>
+                                <p id="anamnese-cirurgias" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-slate-400">Uso de Medicamentos</p>
+                                <p id="anamnese-medicamentos" class="text-sm text-slate-700">---</p>
+                            </div>
+                        </div>
+
+                        <!-- Inclusão e Neurodivergência Anamnese -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-purple-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+                                <span>🧠</span> Inclusão e Neurodivergência
+                            </h3>
+                            <div id="anamnese-neuro-container">
+                                <p class="text-slate-500 text-sm">Nenhuma informação registrada</p>
+                            </div>
+                        </div>
+
+                        <!-- Comportamento e Interação Anamnese -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-orange-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+                                <span>🎯</span> Comportamento e Interação
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div><p class="text-[10px] text-slate-400">Dificuldade de Equilíbrio</p><p id="anamnese-equilibrio" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Entende Comandos</p><p id="anamnese-comandos" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Comunicação Alternativa</p><p id="anamnese-comunicacao" class="text-sm text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Fuga/Isolamento</p><p id="anamnese-fuga" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Precisa de Apoio para Interagir</p><p id="anamnese-apoio" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Sensibilidade a Sons</p><p id="anamnese-sons" class="font-bold text-slate-700">---</p></div>
+                                <div><p class="text-[10px] text-slate-400">Sensibilidade a Toques</p><p id="anamnese-toques" class="font-bold text-slate-700">---</p></div>
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-[10px] text-slate-400">Crises/Autolesão (Gatilhos)</p>
+                                <p id="anamnese-crises" class="text-sm text-slate-700">---</p>
+                            </div>
+                        </div>
+
+                        <!-- Avaliação Geral Anamnese -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                            <h3 class="text-sm font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2 mb-4">
+                                <span>📋</span> Avaliação Geral
+                            </h3>
+                            <div class="mb-3">
+                                <p class="text-[10px] text-slate-400">Alergias/Restrições</p>
+                                <p id="anamnese-alergias" class="text-sm text-slate-700">---</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400">Expectativas com os treinos</p>
+                                <p id="anamnese-expectativas" class="text-sm text-slate-700">---</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -671,10 +791,12 @@
             const btnSaude = document.getElementById('btn-aba-anamnese');
 
             if (temAcessoPremium) {
-                btnFreq.classList.remove('hidden'); btnSaude.classList.remove('hidden');
+                if(btnFreq) btnFreq.classList.remove('hidden');
+                if(btnSaude) btnSaude.classList.remove('hidden');
                 window.ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
             } else {
-                btnFreq.classList.add('hidden'); btnSaude.classList.add('hidden');
+                if(btnFreq) btnFreq.classList.add('hidden');
+                if(btnSaude) btnSaude.classList.add('hidden');
                 window.ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-lgpd'];
             }
         }
@@ -692,38 +814,126 @@
 
         window.mudarAbaDashboard = function(aba) { 
             document.querySelectorAll('.aba-dashboard-content').forEach(el => el.classList.add('hidden')); 
-            document.getElementById(`aba-${aba}`).classList.remove('hidden'); 
+            const abaEl = document.getElementById(`aba-${aba}`);
+            if(abaEl) abaEl.classList.remove('hidden');
             document.querySelectorAll('.tab-dashboard-item').forEach(el => { 
                 el.classList.remove('tab-active'); el.classList.add('text-slate-400'); 
             }); 
-            document.getElementById(`tab-btn-${aba}`).classList.add('tab-active'); 
-            document.getElementById(`tab-btn-${aba}`).classList.remove('text-slate-400'); 
-            if (aba === 'evolucao') atualizarGraficos(); 
+            const tabBtn = document.getElementById(`tab-btn-${aba}`);
+            if(tabBtn) {
+                tabBtn.classList.add('tab-active'); 
+                tabBtn.classList.remove('text-slate-400');
+            }
+            if (aba === 'evolucao') window.atualizarGraficos(); 
         };
 
         // ===================== GRÁFICOS =====================
         function processarDadosEvolucao() { const alunos = window.todosAlunosCache; const evolucaoMensal = {}; const evolucaoAnual = {}; let primeiroAno = new Date().getFullYear(); let temData = false; alunos.forEach(aluno => { let dataCadastro = aluno.data_cadastro || aluno.data_matricula; if (!dataCadastro) return; let data; if (typeof dataCadastro === 'string') data = new Date(dataCadastro); else if (dataCadastro.toDate) data = dataCadastro.toDate(); else return; if (isNaN(data.getTime())) return; temData = true; const ano = data.getFullYear(); const mes = data.getMonth() + 1; const chaveMensal = `${ano}-${String(mes).padStart(2, '0')}`; evolucaoMensal[chaveMensal] = (evolucaoMensal[chaveMensal] || 0) + 1; evolucaoAnual[ano] = (evolucaoAnual[ano] || 0) + 1; if (ano < primeiroAno) primeiroAno = ano; }); if (!temData) { const hoje = new Date(); evolucaoMensal[`${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`] = alunos.length; evolucaoAnual[hoje.getFullYear()] = alunos.length; primeiroAno = hoje.getFullYear(); } return { evolucaoMensal, evolucaoAnual, primeiroAno }; }
 
-        window.atualizarGraficos = function() { const anoSelecionado = parseInt(document.getElementById('ano-grafico').value); const { evolucaoMensal, evolucaoAnual, primeiroAno } = processarDadosEvolucao(); const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']; const dadosMensais = []; for (let i = 1; i <= 12; i++) { const chave = `${anoSelecionado}-${String(i).padStart(2, '0')}`; let acumulado = 0; for (let j = 1; j <= i; j++) { const chaveAcum = `${anoSelecionado}-${String(j).padStart(2, '0')}`; acumulado += evolucaoMensal[chaveAcum] || 0; } dadosMensais.push(acumulado); } const anos = Object.keys(evolucaoAnual).sort(); const dadosAnuais = []; let acumuladoAnual = 0; anos.forEach(ano => { acumuladoAnual += evolucaoAnual[ano]; dadosAnuais.push(acumuladoAnual); }); const totalAlunos = window.todosAlunosCache.length; const mediaMensal = (dadosMensais[dadosMensais.length-1] / 12).toFixed(1); let maiorCrescimento = 0; for (let i = 1; i < dadosAnuais.length; i++) { const crescimento = dadosAnuais[i] - dadosAnuais[i-1]; if (crescimento > maiorCrescimento) maiorCrescimento = crescimento; } document.getElementById('total-alunos-card').innerText = totalAlunos; document.getElementById('media-mensal-card').innerText = mediaMensal; document.getElementById('maior-crescimento-card').innerText = `+${maiorCrescimento}`; document.getElementById('ano-fundacao-card').innerText = primeiroAno; const ctxMensal = document.getElementById('chartEvolucaoMensal').getContext('2d'); if (chartMensal) chartMensal.destroy(); const gradMensal = ctxMensal.createLinearGradient(0, 0, 0, 300); gradMensal.addColorStop(0, 'rgba(6, 182, 212, 0.8)'); gradMensal.addColorStop(1, 'rgba(6, 182, 212, 0.1)'); chartMensal = new Chart(ctxMensal, { type: 'line', data: { labels: meses, datasets: [{ label: 'Alunos Ativos', data: dadosMensais, borderColor: '#06b6d4', backgroundColor: gradMensal, borderWidth: 3, fill: true, tension: 0.4, pointBackgroundColor: '#06b6d4', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} alunos` } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } }); const ctxAnual = document.getElementById('chartEvolucaoAnual').getContext('2d'); if (chartAnual) chartAnual.destroy(); const gradAnual = ctxAnual.createLinearGradient(0, 0, 0, 300); gradAnual.addColorStop(0, 'rgba(16, 185, 129, 0.8)'); gradAnual.addColorStop(1, 'rgba(16, 185, 129, 0.1)'); chartAnual = new Chart(ctxAnual, { type: 'bar', data: { labels: anos, datasets: [{ label: 'Total Acumulado', data: dadosAnuais, backgroundColor: gradAnual, borderRadius: 8, borderColor: '#10b981', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} alunos` } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } }); };
+        window.atualizarGraficos = function() { 
+            const anoSelect = document.getElementById('ano-grafico');
+            if(!anoSelect) return;
+            const anoSelecionado = parseInt(anoSelect.value); 
+            const { evolucaoMensal, evolucaoAnual, primeiroAno } = processarDadosEvolucao(); 
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']; 
+            const dadosMensais = []; 
+            for (let i = 1; i <= 12; i++) { 
+                const chave = `${anoSelecionado}-${String(i).padStart(2, '0')}`; 
+                let acumulado = 0; 
+                for (let j = 1; j <= i; j++) { 
+                    const chaveAcum = `${anoSelecionado}-${String(j).padStart(2, '0')}`; 
+                    acumulado += evolucaoMensal[chaveAcum] || 0; 
+                } 
+                dadosMensais.push(acumulado); 
+            } 
+            const anos = Object.keys(evolucaoAnual).sort(); 
+            const dadosAnuais = []; 
+            let acumuladoAnual = 0; 
+            anos.forEach(ano => { 
+                acumuladoAnual += evolucaoAnual[ano]; 
+                dadosAnuais.push(acumuladoAnual); 
+            }); 
+            const totalAlunos = window.todosAlunosCache.length; 
+            const mediaMensal = (dadosMensais[dadosMensais.length-1] / 12).toFixed(1); 
+            let maiorCrescimento = 0; 
+            for (let i = 1; i < dadosAnuais.length; i++) { 
+                const crescimento = dadosAnuais[i] - dadosAnuais[i-1]; 
+                if (crescimento > maiorCrescimento) maiorCrescimento = crescimento; 
+            } 
+            const totalCard = document.getElementById('total-alunos-card');
+            const mediaCard = document.getElementById('media-mensal-card');
+            const crescimentoCard = document.getElementById('maior-crescimento-card');
+            const anoCard = document.getElementById('ano-fundacao-card');
+            if(totalCard) totalCard.innerText = totalAlunos;
+            if(mediaCard) mediaCard.innerText = mediaMensal;
+            if(crescimentoCard) crescimentoCard.innerText = `+${maiorCrescimento}`;
+            if(anoCard) anoCard.innerText = primeiroAno;
+            
+            const ctxMensal = document.getElementById('chartEvolucaoMensal')?.getContext('2d');
+            if (ctxMensal) {
+                if (chartMensal) chartMensal.destroy();
+                const gradMensal = ctxMensal.createLinearGradient(0, 0, 0, 300);
+                gradMensal.addColorStop(0, 'rgba(6, 182, 212, 0.8)');
+                gradMensal.addColorStop(1, 'rgba(6, 182, 212, 0.1)');
+                chartMensal = new Chart(ctxMensal, { type: 'line', data: { labels: meses, datasets: [{ label: 'Alunos Ativos', data: dadosMensais, borderColor: '#06b6d4', backgroundColor: gradMensal, borderWidth: 3, fill: true, tension: 0.4, pointBackgroundColor: '#06b6d4', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} alunos` } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+            }
+            
+            const ctxAnual = document.getElementById('chartEvolucaoAnual')?.getContext('2d');
+            if (ctxAnual) {
+                if (chartAnual) chartAnual.destroy();
+                const gradAnual = ctxAnual.createLinearGradient(0, 0, 0, 300);
+                gradAnual.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+                gradAnual.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
+                chartAnual = new Chart(ctxAnual, { type: 'bar', data: { labels: anos, datasets: [{ label: 'Total Acumulado', data: dadosAnuais, backgroundColor: gradAnual, borderRadius: 8, borderColor: '#10b981', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} alunos` } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+            }
+        };
 
         // ===================== MÁSCARAS =====================
         window.mascaraCPF = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/(\d{3})(\d)/, "$1.$2"); v = v.replace(/(\d{3})(\d)/, "$1.$2"); v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2"); i.value = v; };
         window.mascaraTelefone = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/^(\d{2})(\d)/g, "($1) $2"); v = v.replace(/(\d)(\d{4})$/, "$1-$2"); i.value = v; };
         window.mascaraCEP = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/^(\d{5})(\d)/, "$1-$2"); i.value = v; };
-        window.buscarCEP = async (cep) => { const cleanCep = cep.replace(/\D/g, ""); if (cleanCep.length !== 8) return; const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json()); if (!r.erro) { document.getElementById('aluno-endereco').value = r.logradouro || ""; document.getElementById('aluno-bairro').value = r.bairro || ""; document.getElementById('aluno-numero').focus(); } };
+        window.buscarCEP = async (cep) => { const cleanCep = cep.replace(/\D/g, ""); if (cleanCep.length !== 8) return; const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json()); if (!r.erro) { const endereco = document.getElementById('aluno-endereco'); const bairro = document.getElementById('aluno-bairro'); const numero = document.getElementById('aluno-numero');
+        if(endereco) endereco.value = r.logradouro || ""; if(bairro) bairro.value = r.bairro || ""; if(numero) numero.focus(); } };
         
         window.calcularIdade = function() { 
-            const dataNascStr = document.getElementById('aluno-nasc').value; 
+            const dataNascStr = document.getElementById('aluno-nasc')?.value; 
             const alertaIdade = document.getElementById('alerta-idade'); 
             const blocoResp = document.getElementById('bloco-responsavel'); 
-            const blocoEmerg = document.getElementById('bloco-emergencia'); 
-            if (!dataNascStr) { alertaIdade.classList.remove('hidden'); blocoResp.classList.add('hidden'); blocoEmerg.classList.add('hidden'); window.idadeAtual = 0; return; } 
-            alertaIdade.classList.add('hidden'); 
-            const hoje = new Date(); const nasc = new Date(dataNascStr); 
+            const blocoEmerg = document.getElementById('bloco-emergencia');
+            const idadeDisplay = document.getElementById('aluno-idade-exibir');
+            
+            if (!dataNascStr) { 
+                if(alertaIdade) alertaIdade.classList.remove('hidden'); 
+                if(blocoResp) blocoResp.classList.add('hidden'); 
+                if(blocoEmerg) blocoEmerg.classList.add('hidden'); 
+                window.idadeAtual = 0;
+                if (idadeDisplay) idadeDisplay.innerText = '-- anos';
+                return; 
+            } 
+            if(alertaIdade) alertaIdade.classList.add('hidden'); 
+            
+            const hoje = new Date(); 
+            const nasc = new Date(dataNascStr); 
             window.idadeAtual = hoje.getFullYear() - nasc.getFullYear(); 
             const mes = hoje.getMonth() - nasc.getMonth(); 
-            if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) window.idadeAtual--; 
-            if (window.idadeAtual < 18) { blocoResp.classList.remove('hidden'); blocoEmerg.classList.add('hidden'); } else { blocoResp.classList.add('hidden'); blocoEmerg.classList.remove('hidden'); } 
+            
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+                window.idadeAtual--; 
+            }
+            
+            if (idadeDisplay) {
+                idadeDisplay.innerText = `${window.idadeAtual} anos`;
+                idadeDisplay.style.backgroundColor = window.idadeAtual < 18 ? '#fef3c7' : '#dcfce7';
+                idadeDisplay.style.color = window.idadeAtual < 18 ? '#b45309' : '#166534';
+            }
+            
+            if (window.idadeAtual < 18) { 
+                if(blocoResp) blocoResp.classList.remove('hidden'); 
+                if(blocoEmerg) blocoEmerg.classList.add('hidden'); 
+            } else { 
+                if(blocoResp) blocoResp.classList.add('hidden'); 
+                if(blocoEmerg) blocoEmerg.classList.remove('hidden'); 
+            } 
         };
 
         window.mostrarPreviewFoto = function(event) { 
@@ -733,27 +943,196 @@
                 const reader = new FileReader(); 
                 reader.onload = function(e) { 
                     const imgPreview = document.getElementById('preview-foto'); 
-                    imgPreview.src = e.target.result; imgPreview.classList.remove('hidden'); 
-                    document.getElementById('placeholder-foto').classList.add('hidden'); 
+                    const placeholder = document.getElementById('placeholder-foto');
+                    if(imgPreview) {
+                        imgPreview.src = e.target.result;
+                        imgPreview.classList.remove('hidden');
+                    }
+                    if(placeholder) placeholder.classList.add('hidden'); 
                 }; 
                 reader.readAsDataURL(file); 
             } 
         };
 
+        // ===================== RENDERIZAR ANAMNESE =====================
+        function renderizarAnamnese(aluno) {
+            console.log("=== RENDERIZANDO ANAMNESE ===");
+            console.log("Aluno:", aluno);
+            
+            const divVazia = document.getElementById('anamnese-vazia');
+            const divPreenchida = document.getElementById('anamnese-preenchida');
+            
+            if (!divVazia || !divPreenchida) {
+                console.error("Elementos da anamnese não encontrados!");
+                return;
+            }
+            
+            const temAnamnese = aluno.anamnese_preenchida || 
+                                aluno.anamnese_completa || 
+                                aluno.ficha_saude_preenchida ||
+                                (aluno.anamnese && Object.keys(aluno.anamnese).length > 0);
+            
+            const dadosAnamnese = aluno.anamnese || aluno.ficha_saude || null;
+            
+            console.log("Tem anamnese?", temAnamnese);
+            console.log("Dados anamnese:", dadosAnamnese);
+            
+            if (!temAnamnese || !dadosAnamnese) {
+                console.log("Mostrando mensagem de ficha pendente");
+                divVazia.classList.remove('hidden');
+                divPreenchida.classList.add('hidden');
+                return;
+            }
+            
+            console.log("Mostrando ficha preenchida");
+            divVazia.classList.add('hidden');
+            divPreenchida.classList.remove('hidden');
+            
+            const an = dadosAnamnese;
+            const medico = an.medico || {};
+            const diagnostico = an.diagnostico || {};
+            
+            const alturaEl = document.getElementById('anamnese-altura');
+            const pesoEl = document.getElementById('anamnese-peso');
+            const dataEl = document.getElementById('anamnese-data');
+            
+            if (alturaEl) alturaEl.innerText = aluno.altura || an.altura || '---';
+            if (pesoEl) pesoEl.innerText = aluno.peso || an.peso || '---';
+            if (dataEl && an.data_preenchimento) {
+                const dt = new Date(an.data_preenchimento);
+                dataEl.innerText = dt.toLocaleDateString('pt-BR');
+            } else if (dataEl && an.created_at) {
+                const dt = new Date(an.created_at);
+                dataEl.innerText = dt.toLocaleDateString('pt-BR');
+            }
+            
+            const doresEl = document.getElementById('anamnese-dores');
+            const colunaEl = document.getElementById('anamnese-coluna');
+            const cirurgiasEl = document.getElementById('anamnese-cirurgias');
+            const medicamentosEl = document.getElementById('anamnese-medicamentos');
+            
+            if (doresEl) doresEl.innerText = medico.dores_articulacoes || an.dores_articulares || '---';
+            if (colunaEl) colunaEl.innerText = medico.problema_coluna || an.problemas_coluna || '---';
+            if (cirurgiasEl) cirurgiasEl.innerText = medico.cirurgias || an.cirurgias || '---';
+            if (medicamentosEl) medicamentosEl.innerText = medico.medicamentos || an.medicamentos || '---';
+            
+            const setStatus = (id, value) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (value === true || value === 'Sim' || value === 'sim' || value === 'SIM') {
+                    el.className = 'w-3 h-3 rounded-full bg-red-500';
+                } else {
+                    el.className = 'w-3 h-3 rounded-full bg-green-500';
+                }
+            };
+            
+            setStatus('anamnese-asma', medico.asma);
+            setStatus('anamnese-hipertensao', medico.hipertensao);
+            setStatus('anamnese-cardiopatia', medico.cardiopatia);
+            setStatus('anamnese-diabetes', medico.diabetes);
+            setStatus('anamnese-epilepsia', medico.epilepsia);
+            setStatus('anamnese-desmaios', medico.desmaios);
+            
+            const neuroContainer = document.getElementById('anamnese-neuro-container');
+            const possuiNeuro = diagnostico.possui_neurodivergencia === true || 
+                                diagnostico.possui_neurodivergencia === 'Sim' ||
+                                diagnostico.possui_neurodivergencia === 'SIM';
+            
+            if (neuroContainer) {
+                if (possuiNeuro) {
+                    const diags = [];
+                    if (diagnostico.tea === true || diagnostico.tea === 'Sim') diags.push('TEA');
+                    if (diagnostico.tdah === true || diagnostico.tdah === 'Sim') diags.push('TDAH');
+                    if (diagnostico.def_intelectual === true || diagnostico.def_intelectual === 'Sim') diags.push('Def. Intelectual');
+                    if (diagnostico.def_fisica === true || diagnostico.def_fisica === 'Sim') diags.push('Def. Física');
+                    if (diagnostico.def_visual === true || diagnostico.def_visual === 'Sim') diags.push('Def. Visual');
+                    if (diagnostico.def_auditiva === true || diagnostico.def_auditiva === 'Sim') diags.push('Def. Auditiva');
+                    if (diagnostico.transtorno_aprendizagem === true || diagnostico.transtorno_aprendizagem === 'Sim') diags.push('Trans. Aprendizagem');
+                    if (diagnostico.ansiedade_emocional === true || diagnostico.ansiedade_emocional === 'Sim') diags.push('Ansiedade/Emocional');
+                    if (diagnostico.outro) diags.push(diagnostico.outro);
+                    
+                    neuroContainer.innerHTML = `
+                        <div class="mb-3"><strong class="text-sm">Diagnósticos:</strong> <span class="text-slate-700">${diags.length > 0 ? diags.join(', ') : 'Nenhum declarado'}</span></div>
+                        <div><strong class="text-sm">Confirmado por médico:</strong> <span class="text-slate-700">${diagnostico.confirmado === true || diagnostico.confirmado === 'Sim' ? 'SIM' : 'NÃO'} ${diagnostico.profissional ? '(' + diagnostico.profissional + ')' : ''}</span></div>
+                    `;
+                } else {
+                    neuroContainer.innerHTML = '<p class="text-slate-500 text-sm">Nenhum diagnóstico de neurodivergência declarado</p>';
+                }
+            }
+            
+            const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val === 'SIM' ? '✅ SIM' : '❌ NÃO';
+            const equilibrioEl = document.getElementById('anamnese-equilibrio');
+            const comandosEl = document.getElementById('anamnese-comandos');
+            const comunicacaoEl = document.getElementById('anamnese-comunicacao');
+            const fugaEl = document.getElementById('anamnese-fuga');
+            const apoioEl = document.getElementById('anamnese-apoio');
+            const sonsEl = document.getElementById('anamnese-sons');
+            const toquesEl = document.getElementById('anamnese-toques');
+            const crisesEl = document.getElementById('anamnese-crises');
+            
+            if (equilibrioEl) equilibrioEl.innerHTML = simNao(an.motor?.dificuldade_equilibrio);
+            if (comandosEl) comandosEl.innerHTML = simNao(an.comunicacao?.entende_comandos);
+            if (comunicacaoEl) comunicacaoEl.innerText = an.comunicacao?.comunicacao_alternativa || '---';
+            if (fugaEl) fugaEl.innerHTML = simNao(an.comportamento?.fuga_isolamento);
+            if (apoioEl) apoyoEl.innerHTML = simNao(an.social?.precisa_apoio);
+            if (sonsEl) sonsEl.innerHTML = simNao(an.sensorial?.sons);
+            if (toquesEl) toquesEl.innerHTML = simNao(an.sensorial?.toques);
+            if (crisesEl) crisesEl.innerText = an.comportamento?.crises_agressividade || '---';
+            
+            const alergiasEl = document.getElementById('anamnese-alergias');
+            const expectativasEl = document.getElementById('anamnese-expectativas');
+            if (alergiasEl) alergiasEl.innerText = an.saude?.alergias_restricoes || an.alergias || '---';
+            if (expectativasEl) expectativasEl.innerText = an.expectativas?.geral || an.expectativas || '---';
+            
+            console.log("Renderização da anamnese concluída!");
+        }
+
         function getCorFaixa(faixaTexto) { const f = faixaTexto ? faixaTexto.toLowerCase() : ''; if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300'; if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500'; if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500'; if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500'; if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500'; if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500'; if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600'; if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600'; if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300'; if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500'; if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500'; if (f.includes('laranja')) return 'bg-orange-500 text-white border border-orange-600'; if (f.includes('verde')) return 'bg-green-600 text-white border border-green-700'; if (f.includes('azul')) return 'bg-blue-600 text-white border border-blue-700'; if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700'; if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900'; if (f.includes('preta')) return 'bg-slate-900 text-white border border-black'; return 'bg-slate-100 text-slate-600 border border-slate-200'; }
         function getCorFaixaDupla(faixaTexto) { const f = faixaTexto ? faixaTexto.toLowerCase() : ''; if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)'; if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)'; if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)'; if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)'; if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)'; if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)'; if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)'; if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)'; if (f.includes('branca')) return '#f8fafc'; if (f.includes('cinza')) return '#94A3B8'; if (f.includes('amarela')) return '#FACC15'; if (f.includes('laranja')) return '#F97316'; if (f.includes('verde')) return '#16A34A'; if (f.includes('azul')) return '#3b82f6'; if (f.includes('roxa')) return '#a855f7'; if (f.includes('marrom')) return '#78350f'; if (f.includes('preta')) return '#0F172A'; return '#cbd5e1'; }
+
+        // ===================== FUNÇÃO PARA CALCULAR IDADE NA TABELA =====================
+        function calcularIdadeExibir(dataNascStr) {
+            if (!dataNascStr) return '?';
+            try {
+                let nascimento;
+                if (dataNascStr.includes('-')) {
+                    const partes = dataNascStr.split('-');
+                    nascimento = new Date(partes[0], partes[1] - 1, partes[2]);
+                } else {
+                    nascimento = new Date(dataNascStr);
+                }
+                
+                if (isNaN(nascimento.getTime())) return '?';
+                
+                const hoje = new Date();
+                let idade = hoje.getFullYear() - nascimento.getFullYear();
+                const mes = hoje.getMonth() - nascimento.getMonth();
+                if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+                    idade--;
+                }
+                return idade;
+            } catch(e) {
+                return '?';
+            }
+        }
 
         // ===================== BUSCAR ALUNOS =====================
         async function buscarAlunosFirebase(forceRefresh = false) { 
             const table = document.getElementById('tabela-alunos'); 
-            table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-slate-400 font-bold">Buscando alunos no banco de dados...</td></tr>';
+            if(table) table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-slate-400 font-bold">Buscando alunos no banco de dados...</td></tr>';
+            
+            if (!window.teamId) {
+                if(table) table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro: Equipe não identificada. Faça login novamente.</td></tr>';
+                return;
+            }
             
             if (!forceRefresh) { 
                 const cachedAlunos = carregarAlunosCache(); 
                 if (cachedAlunos) { 
                     window.todosAlunosCache = cachedAlunos; 
                     window.renderizarTabela(); 
-                    if (document.getElementById('aba-evolucao') && !document.getElementById('aba-evolucao').classList.contains('hidden')) atualizarGraficos();
+                    const abaEvolucao = document.getElementById('aba-evolucao');
+                    if (abaEvolucao && !abaEvolucao.classList.contains('hidden')) window.atualizarGraficos();
                     return; 
                 } 
             } 
@@ -764,17 +1143,19 @@
                 window.todosAlunosCache.sort((a, b) => (a.nome || '').localeCompare(b.nome || '')); 
                 salvarAlunosCache(window.todosAlunosCache); 
                 window.renderizarTabela(); 
-                if (document.getElementById('aba-evolucao') && !document.getElementById('aba-evolucao').classList.contains('hidden')) atualizarGraficos(); 
+                const abaEvolucao = document.getElementById('aba-evolucao');
+                if (abaEvolucao && !abaEvolucao.classList.contains('hidden')) window.atualizarGraficos(); 
             } catch (err) { 
                 console.error(err); 
-                table.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Falha ao acessar os dados. <br><span class="text-xs text-slate-400">${err.message}</span></td></tr>`; 
+                if(table) table.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Falha ao acessar os dados. <br><span class="text-xs text-slate-400">${err.message}</span></td></tr>`; 
             } 
         }
 
+        // ===================== RENDERIZAR TABELA =====================
         window.renderizarTabela = function() { 
             const tab = document.getElementById('tabela-alunos'); 
-            const busca = document.getElementById('input-busca').value.toLowerCase(); 
-            const status = document.getElementById('filtro-status').value; 
+            const busca = document.getElementById('input-busca')?.value.toLowerCase() || ''; 
+            const status = document.getElementById('filtro-status')?.value || 'ATIVO'; 
             const faixaFiltro = document.getElementById('filtro-faixa')?.value || 'TODAS'; 
             
             const filtrados = window.todosAlunosCache.filter(a => { 
@@ -784,7 +1165,10 @@
                 return matchBusca && matchStatus && matchFaixa; 
             }); 
             
-            document.getElementById('lbl-total-ativos').innerText = "Total Ativos: " + window.todosAlunosCache.filter(x => x.status === "ATIVO").length; 
+            const totalLabel = document.getElementById('lbl-total-ativos');
+            if(totalLabel) totalLabel.innerText = "Total Ativos: " + window.todosAlunosCache.filter(x => x.status === "ATIVO").length; 
+            
+            if (!tab) return;
             
             if (filtrados.length === 0) { 
                 tab.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.</td></tr>'; 
@@ -809,7 +1193,7 @@
                             ${avatarHtml}
                             <div>
                                 <div class="font-bold text-slate-700 text-sm group-hover:text-cyan-600 transition-colors">${a.nome || 'Sem Nome'}</div>
-                                <div class="text-[10px] text-slate-400 uppercase tracking-wider">${a.matricula || 'SEM MAT.'} | ${a.telefone || 'Sem contato'}</div>
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wider">${a.matricula || 'SEM MAT.'} | ${a.telefone || 'Sem contato'} ${a.data_nascimento ? `| ${calcularIdadeExibir(a.data_nascimento)} anos` : ''}</div>
                             </div>
                         </div>
                     </td>
@@ -826,175 +1210,183 @@
         window.mudarAba = (idAba) => { 
             window.abaIndexAtual = window.ordemDasAbas.indexOf(idAba); 
             document.querySelectorAll('.aba-content').forEach(x => x.classList.add('hidden')); 
-            document.getElementById(idAba).classList.remove('hidden'); 
-            document.querySelectorAll('.aba-item').forEach(x => { x.classList.remove('tab-active'); x.classList.add('text-slate-400'); }); 
-            document.getElementById('btn-'+idAba).classList.add('tab-active'); document.getElementById('btn-'+idAba).classList.remove('text-slate-400'); 
+            const abaContent = document.getElementById(idAba);
+            if(abaContent) abaContent.classList.remove('hidden'); 
+            
+            document.querySelectorAll('.aba-item').forEach(x => { 
+                x.classList.remove('tab-active'); 
+                x.classList.add('text-slate-400'); 
+            }); 
+            
+            const btnAba = document.getElementById('btn-'+idAba);
+            if(btnAba) {
+                btnAba.classList.add('tab-active'); 
+                btnAba.classList.remove('text-slate-400');
+            }
+
             const btnProximo = document.getElementById('btn-proximo'); 
             const btnSalvar = document.getElementById('btn-salvar-aluno'); 
-            if (window.abaIndexAtual === window.ordemDasAbas.length - 1) { btnProximo.classList.add('hidden'); btnSalvar.classList.remove('hidden'); } else { btnProximo.classList.remove('hidden'); btnSalvar.classList.add('hidden'); } 
+            
+            if (window.abaIndexAtual === window.ordemDasAbas.length - 1) { 
+                if(btnProximo) btnProximo.classList.add('hidden'); 
+                if(btnSalvar) btnSalvar.classList.remove('hidden'); 
+            } else { 
+                if(btnProximo) btnProximo.classList.remove('hidden'); 
+                if(btnSalvar) btnSalvar.classList.add('hidden'); 
+            } 
         };
         window.proximaAba = () => { if (window.abaIndexAtual < window.ordemDasAbas.length - 1) window.mudarAba(window.ordemDasAbas[window.abaIndexAtual + 1]); };
 
-        // ===================== MODAL ALUNO (FICHA) =====================
-        window.abrirFichaAluno = async (id) => { 
-            const a = window.todosAlunosCache.find(x => x.id === id); 
-            if(!a) return; 
-            window.alunoEditandoId = id; 
-            window.ficheiroFotoSelecionado = null; 
-            document.getElementById('cad-foto').value = ""; 
+        // ===================== ABRIR FICHA DO ALUNO =====================
+        window.abrirFichaAluno = async (alunoId) => {
+            showLoading();
+            window.alunoEditandoId = alunoId;
             
-            document.getElementById('modal-titulo').innerText = "Editar Ficha"; 
-            document.getElementById('aluno-id-oculto').value = id; 
-            document.getElementById('aluno-nome').value = a.nome || ''; 
-            document.getElementById('aluno-matricula').value = a.matricula || 'S/N'; 
-            document.getElementById('aluno-nasc').value = a.data_nascimento || ''; 
-            document.getElementById('aluno-cpf').value = a.cpf || ''; 
-            document.getElementById('aluno-faixa').value = a.faixa || 'Branca'; 
-            document.getElementById('aluno-grau').value = a.grau || 'Sem grau'; 
-            document.getElementById('aluno-tel').value = a.telefone || ''; 
-            document.getElementById('aluno-peso').value = a.peso || ''; 
-            document.getElementById('aluno-email').value = a.email || ''; 
-            
-            if(document.getElementById('aluno-senha-portal')) { 
-                document.getElementById('aluno-senha-portal').value = ''; 
-                document.getElementById('aluno-senha-portal').type = "password";
-                document.getElementById('aluno-senha-portal').placeholder = "Deixe em branco para não alterar";
-            } 
-            
-            document.getElementById('aluno-endereco').value = a.endereco || ''; 
-            document.getElementById('aluno-bairro').value = a.bairro || ''; 
-            document.getElementById('aluno-numero').value = a.numero || ''; 
-            document.getElementById('aluno-cep').value = a.cep || ''; 
-            document.getElementById('aluno-resp-nome').value = a.nome_responsavel || ''; 
-            document.getElementById('aluno-resp-cpf').value = a.cpf_responsavel || ''; 
-            document.getElementById('aluno-resp-tel').value = a.telefone_responsavel || ''; 
-            document.getElementById('aluno-emerg-nome').value = a.emergencia_nome || ''; 
-            document.getElementById('aluno-emerg-tel').value = a.emergencia_telefone || ''; 
-            document.getElementById('aluno-emerg-parentesco').value = a.emergencia_parentesco || ''; 
-            document.getElementById('aluno-bolsa').value = a.bolsa_perc || '0'; 
-            document.getElementById('aluno-vencimento').value = a.dia_vencimento || '10'; 
-            document.getElementById('aluno-status').value = a.status || 'ATIVO'; 
-            
-            document.getElementById('lgpd-concordo').checked = a.lgpd_concordo || false; 
-            document.getElementById('lgpd-redes').checked = a.lgpd_redes || false; 
-            document.getElementById('lgpd-site').checked = a.lgpd_site || false; 
-            document.getElementById('lgpd-promo').checked = a.lgpd_promo || false; 
-            document.getElementById('lgpd-relatorio').checked = a.lgpd_relatorios || false; 
-            
-            const imgPreview = document.getElementById('preview-foto'); 
-            const placeholder = document.getElementById('placeholder-foto'); 
-            if (a.foto_url) { 
-                imgPreview.src = a.foto_url; imgPreview.classList.remove('hidden'); placeholder.classList.add('hidden'); 
-            } else { 
-                imgPreview.src = ""; imgPreview.classList.add('hidden'); placeholder.classList.remove('hidden'); 
-            } 
-            
-            await carregarFrequenciaDoAluno(id); 
-            
-            const divVazia = document.getElementById('anamnese-vazia'); 
-            const divPreenchida = document.getElementById('anamnese-preenchida'); 
-            
-            if (a.anamnese_preenchida && a.anamnese) { 
-                divVazia.classList.add('hidden'); divPreenchida.classList.remove('hidden'); 
+            try {
+                const docRef = doc(db, "alunos", alunoId);
+                const docSnap = await getDoc(docRef);
                 
-                const an = a.anamnese; 
-                const boolText = (val) => val ? '<span class="text-emerald-600 font-black">SIM</span>' : '<span class="text-slate-400 font-bold">NÃO</span>';
-                const strText = (val) => val === 'Sim' ? '<span class="text-emerald-600 font-black">SIM</span>' : (val === 'Não' ? '<span class="text-slate-400 font-bold">NÃO</span>' : `<span class="text-slate-700 font-bold">${val || '-'}</span>`);
-                const textOrDash = (val) => val ? `<span class="text-slate-700 font-bold">${val}</span>` : '<span class="text-slate-400">-</span>'; 
+                if (!docSnap.exists()) {
+                    hideLoading();
+                    showToast("Aluno não encontrado!", "error");
+                    return;
+                }
                 
-                const med = []; 
-                if(an.medico?.asma) med.push("Asma/Bronquite"); if(an.medico?.hipertensao) med.push("Hipertensão"); 
-                if(an.medico?.cardiopatia) med.push("Cardiopatia"); if(an.medico?.diabetes) med.push("Diabetes"); 
-                if(an.medico?.epilepsia) med.push("Epilepsia"); if(an.medico?.desmaios) med.push("Desmaios"); 
-                const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada"; 
+                const aluno = { id: docSnap.id, ...docSnap.data() };
                 
-                const diags = []; 
-                if(an.diagnostico?.tea) diags.push("TEA"); if(an.diagnostico?.tdah) diags.push("TDAH"); 
-                if(an.diagnostico?.def_intelectual) diags.push("Def. Intelectual"); if(an.diagnostico?.def_fisica) diags.push("Def. Física"); 
-                if(an.diagnostico?.def_visual) diags.push("Def. Visual"); if(an.diagnostico?.def_auditiva) diags.push("Def. Auditiva"); 
-                if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem"); if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional"); 
-                if(an.diagnostico?.outro) diags.push(an.diagnostico.outro); 
-                const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada"; 
+                // Preencher dados pessoais
+                const nomeEl = document.getElementById('aluno-nome');
+                const cpfEl = document.getElementById('aluno-cpf');
+                const rgEl = document.getElementById('aluno-rg');
+                const nascEl = document.getElementById('aluno-nasc');
+                const naturalidadeEl = document.getElementById('aluno-naturalidade');
+                const faixaEl = document.getElementById('aluno-faixa');
+                const grauEl = document.getElementById('aluno-grau');
+                const matriculaEl = document.getElementById('aluno-matricula');
                 
-                let dataFormatada = 'Data não registrada'; 
-                if(an.data_preenchimento) { 
-                    const dtObj = new Date(an.data_preenchimento); 
-                    dataFormatada = dtObj.toLocaleDateString('pt-BR') + ' às ' + dtObj.toLocaleTimeString('pt-BR'); 
-                } 
+                if(nomeEl) nomeEl.value = aluno.nome || '';
+                if(cpfEl) cpfEl.value = aluno.cpf || '';
+                if(rgEl) rgEl.value = aluno.rg || '';
+                if(nascEl) nascEl.value = aluno.data_nascimento || '';
+                if(naturalidadeEl) naturalidadeEl.value = aluno.naturalidade || '';
+                if(faixaEl) faixaEl.value = aluno.faixa || 'Branca';
+                if(grauEl) grauEl.value = aluno.grau || 'Sem grau';
+                if(matriculaEl) matriculaEl.value = aluno.matricula || 'S/N';
+                window.calcularIdade();
                 
-                let htmlNeuro = ''; 
-                if (an.diagnostico?.possui_neurodivergencia || diags.length > 0) { 
-                    htmlNeuro = `
-                        <div class="space-y-3">
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Diagnósticos:</p><p class="text-xs font-black text-rose-500">${diagsText}</p></div>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Confirmado p/ Médico?</span> <span class="text-xs font-bold text-slate-700">${strText(an.diagnostico?.confirmado)}</span></div>
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Especialidade:</p><p class="text-xs">${textOrDash(an.diagnostico?.profissional)}</p></div>
-                            <h5 class="text-[10px] font-black text-slate-400 uppercase border-b border-slate-100 pb-1 mt-3">Desenvolvimento e Comunicação</h5>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Dif. Coordenação / Equilíbrio?</span> ${strText(an.motor?.dificuldade_equilibrio)}</div>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Entende comandos simples?</span> ${strText(an.comunicacao?.entende_comandos)}</div>
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-1">Comunicação Alternativa (App, Pastas):</p><p class="text-xs">${textOrDash(an.comunicacao?.comunicacao_alternativa)}</p></div>
-                            <h5 class="text-[10px] font-black text-slate-400 uppercase border-b border-slate-100 pb-1 mt-3">Comportamento e Senses</h5>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Fuga ou Isolamento?</span> ${boolText(an.comportamento?.fuga_isolamento)}</div>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Precisa apoio p/ interagir?</span> ${boolText(an.social?.precisa_apoio)}</div>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a sons?</span> ${boolText(an.sensorial?.sons)}</div>
-                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a toques?</span> ${boolText(an.sensorial?.toques)}</div>
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-1">Crises / Autolesão (Gatilhos):</p><p class="text-xs">${textOrDash(an.comportamento?.crises_agressividade)}</p></div>
-                        </div>
-                    `; 
-                } else { 
-                    htmlNeuro = `<div class="flex flex-col items-center justify-center h-full py-4 text-slate-300"><span class="text-3xl mb-2">✅</span><p class="text-xs font-black uppercase tracking-widest text-center">NÃO POSSUI</p></div>`; 
-                } 
+                // Preencher contato
+                const telEl = document.getElementById('aluno-tel');
+                const emailEl = document.getElementById('aluno-email');
+                const enderecoEl = document.getElementById('aluno-endereco');
+                const numeroEl = document.getElementById('aluno-numero');
+                const bairroEl = document.getElementById('aluno-bairro');
+                const cidadeEl = document.getElementById('aluno-cidade');
+                const ufEl = document.getElementById('aluno-uf');
+                const cepEl = document.getElementById('aluno-cep');
+                const pesoEl = document.getElementById('aluno-peso');
                 
-                divPreenchida.innerHTML = `
-                    <div class="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4">
-                        <span class="text-[10px] font-black text-cyan-600 uppercase tracking-widest">Ficha de Saúde salva em: <span class="text-cyan-800">${dataFormatada}</span></span>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">1. Saúde Clínica / Ortopédica</h4>
-                            <div class="space-y-3">
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Condições:</p><p class="text-xs font-black ${med.length > 0 ? 'text-rose-500' : 'text-emerald-500'}">${medText}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Dores Articulares (Joelho, Ombro):</p><p class="text-xs text-rose-500 font-bold">${textOrDash(an.medico?.dores_articulacoes)}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Problemas de Coluna:</p><p class="text-xs text-rose-500 font-bold">${textOrDash(an.medico?.problema_coluna)}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Cirurgias/Lesões graves:</p><p class="text-xs">${textOrDash(an.medico?.cirurgias)}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Uso de Medicamentos:</p><p class="text-xs font-bold text-slate-700">${textOrDash(an.medico?.medicamentos)}</p></div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-rose-400 uppercase tracking-widest border-b border-slate-100 pb-2">2. Inclusão / Neurodivergência</h4>
-                            ${htmlNeuro}
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">3. Avaliação Geral</h4>
-                        <div class="space-y-3">
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Alergias graves:</p><p class="text-xs font-bold text-rose-500">${textOrDash(an.saude?.alergias_restricoes)}</p></div>
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">O que esperam atingir com os treinos?</p><p class="text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-lg">${textOrDash(an.expectativas?.geral)}</p></div>
-                        </div>
-                    </div>
-                    <button onclick="window.gerarPDF_Anamnese()" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm uppercase tracking-widest">
-                        📥 Baixar Ficha Completa (PDF)
-                    </button>
-                `; 
-            } else { 
-                divVazia.classList.remove('hidden'); divPreenchida.classList.add('hidden'); 
-            } 
-            
-            atualizarAbasPorPlano();
-            
-            const btnCartInfo = document.getElementById('btn-abrir-carteirinha'); 
-            const btnCartPvc = document.getElementById('btn-imprimir-pvc'); 
-            
-            if (window.verificarAcesso('carteirinha')) {
-                btnCartInfo.classList.remove('hidden'); btnCartPvc.classList.remove('hidden'); 
-            } else {
-                btnCartInfo.classList.add('hidden'); btnCartPvc.classList.add('hidden'); 
+                if(telEl) telEl.value = aluno.telefone || '';
+                if(emailEl) emailEl.value = aluno.email || '';
+                if(enderecoEl) enderecoEl.value = aluno.endereco || '';
+                if(numeroEl) numeroEl.value = aluno.numero || '';
+                if(bairroEl) bairroEl.value = aluno.bairro || '';
+                if(cidadeEl) cidadeEl.value = aluno.cidade || '';
+                if(ufEl) ufEl.value = aluno.uf || '';
+                if(cepEl) cepEl.value = aluno.cep || '';
+                if(pesoEl) pesoEl.value = aluno.peso || '';
+                
+                const senhaPortal = document.getElementById('aluno-senha-portal');
+                if(senhaPortal) { 
+                    senhaPortal.value = ''; 
+                    senhaPortal.type = "password";
+                    senhaPortal.placeholder = "Deixe em branco para não alterar";
+                }
+                
+                // Preencher dados financeiros
+                const bolsaEl = document.getElementById('aluno-bolsa');
+                const vencimentoEl = document.getElementById('aluno-vencimento');
+                const statusEl = document.getElementById('aluno-status');
+                if(bolsaEl) bolsaEl.value = aluno.bolsa_perc || '0';
+                if(vencimentoEl) vencimentoEl.value = aluno.dia_vencimento || '10';
+                if(statusEl) statusEl.value = aluno.status || 'ATIVO';
+                
+                // Preencher responsável (se menor de idade)
+                if (window.idadeAtual < 18) {
+                    const respNome = document.getElementById('aluno-responsavel-nome');
+                    const respCpf = document.getElementById('aluno-responsavel-cpf');
+                    const respTel = document.getElementById('aluno-responsavel-telefone');
+                    if(respNome) respNome.value = aluno.nome_responsavel || '';
+                    if(respCpf) respCpf.value = aluno.cpf_responsavel || '';
+                    if(respTel) respTel.value = aluno.telefone_responsavel || '';
+                } else {
+                    const emergNome = document.getElementById('aluno-emerg-nome');
+                    const emergTel = document.getElementById('aluno-emerg-tel');
+                    const emergParentesco = document.getElementById('aluno-emerg-parentesco');
+                    if(emergNome) emergNome.value = aluno.emergencia_nome || '';
+                    if(emergTel) emergTel.value = aluno.emergencia_telefone || '';
+                    if(emergParentesco) emergParentesco.value = aluno.emergencia_parentesco || '';
+                }
+                
+                // Preencher LGPD
+                const lgpdConcordo = document.getElementById('lgpd-concordo');
+                const lgpdRedes = document.getElementById('lgpd-redes');
+                const lgpdSite = document.getElementById('lgpd-site');
+                const lgpdPromo = document.getElementById('lgpd-promo');
+                const lgpdRelatorio = document.getElementById('lgpd-relatorio');
+                if(lgpdConcordo) lgpdConcordo.checked = aluno.lgpd_concordo || false;
+                if(lgpdRedes) lgpdRedes.checked = aluno.lgpd_redes || false;
+                if(lgpdSite) lgpdSite.checked = aluno.lgpd_site || false;
+                if(lgpdPromo) lgpdPromo.checked = aluno.lgpd_promo || false;
+                if(lgpdRelatorio) lgpdRelatorio.checked = aluno.lgpd_relatorios || false;
+                
+                // Foto
+                const imgPreview = document.getElementById('preview-foto');
+                const placeholder = document.getElementById('placeholder-foto');
+                if (aluno.foto_url && imgPreview && placeholder) {
+                    imgPreview.src = aluno.foto_url;
+                    imgPreview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                } else if(imgPreview && placeholder) {
+                    imgPreview.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                }
+                
+                // Buscar check-ins
+                await carregarFrequenciaDoAluno(alunoId);
+                
+                // Anamnese
+                renderizarAnamnese(aluno);
+                atualizarAbasPorPlano();
+
+                // Configurar botões da carteirinha
+                const btnCartInfo = document.getElementById('btn-abrir-carteirinha');
+                const btnCartPvc = document.getElementById('btn-imprimir-pvc');
+                
+                if (window.verificarAcesso('carteirinha')) {
+                    if(btnCartInfo) btnCartInfo.classList.remove('hidden');
+                    if(btnCartPvc) btnCartPvc.classList.remove('hidden');
+                } else {
+                    if(btnCartInfo) btnCartInfo.classList.add('hidden');
+                    if(btnCartPvc) btnCartPvc.classList.add('hidden');
+                }
+                
+                const btnGerarPdf = document.getElementById('btn-gerar-pdf');
+                if(btnGerarPdf) btnGerarPdf.classList.remove('hidden');
+                
+                // Abrir modal
+                const modalAluno = document.getElementById('modal-aluno');
+                if(modalAluno) {
+                    modalAluno.classList.remove('hidden');
+                    modalAluno.classList.add('flex');
+                }
+                window.mudarAba('aba-pessoal');
+                
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao carregar dados do aluno", "error");
+            } finally {
+                hideLoading();
             }
-            
-            document.getElementById('btn-gerar-pdf').classList.remove('hidden'); 
-            window.calcularIdade(); 
-            window.mudarAba('aba-pessoal'); 
-            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
         };
 
         window.abrirModal = () => { 
@@ -1005,176 +1397,254 @@
 
             window.alunoEditandoId = null; 
             window.ficheiroFotoSelecionado = null; 
-            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="password"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
-            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false); 
-            document.getElementById('cad-foto').value = ""; 
-            document.getElementById('preview-foto').src = ""; 
-            document.getElementById('preview-foto').classList.add('hidden'); 
-            document.getElementById('placeholder-foto').classList.remove('hidden'); 
+            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="password"], #modal-aluno input[type="date"]').forEach(i => { if(i) i.value = ''; }); 
+            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => { if(i) i.checked = false; }); 
+            const cadFoto = document.getElementById('cad-foto');
+            if(cadFoto) cadFoto.value = "";
+            const previewFoto = document.getElementById('preview-foto');
+            const placeholderFoto = document.getElementById('placeholder-foto');
+            if(previewFoto) previewFoto.src = "";
+            if(previewFoto) previewFoto.classList.add('hidden');
+            if(placeholderFoto) placeholderFoto.classList.remove('hidden'); 
             
-            document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
-            document.getElementById('aluno-matricula').value = "Gerada Auto"; 
-            document.getElementById('aluno-faixa').value = "Branca"; 
-            document.getElementById('aluno-grau').value = "Sem grau"; 
-            document.getElementById('aluno-bolsa').value = "0"; 
-            document.getElementById('aluno-vencimento').value = "10"; 
-            document.getElementById('aluno-status').value = "ATIVO"; 
-            document.getElementById('aluno-senha-portal').value = "";
+            const modalTitulo = document.getElementById('modal-titulo');
+            if(modalTitulo) modalTitulo.innerText = "Nova Matrícula"; 
+            const alunoMatricula = document.getElementById('aluno-matricula');
+            if(alunoMatricula) alunoMatricula.value = "Gerada Auto"; 
+            const alunoFaixa = document.getElementById('aluno-faixa');
+            if(alunoFaixa) alunoFaixa.value = "Branca"; 
+            const alunoGrau = document.getElementById('aluno-grau');
+            if(alunoGrau) alunoGrau.value = "Sem grau"; 
+            const alunoBolsa = document.getElementById('aluno-bolsa');
+            if(alunoBolsa) alunoBolsa.value = "0"; 
+            const alunoVencimento = document.getElementById('aluno-vencimento');
+            if(alunoVencimento) alunoVencimento.value = "10"; 
+            const alunoStatus = document.getElementById('aluno-status');
+            if(alunoStatus) alunoStatus.value = "ATIVO"; 
+            const senhaPortal = document.getElementById('aluno-senha-portal');
+            if (senhaPortal) senhaPortal.value = "";
             
-            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
-            document.getElementById('btn-imprimir-pvc').classList.add('hidden'); 
-            document.getElementById('btn-gerar-pdf').classList.add('hidden'); 
-            document.getElementById('alerta-idade').classList.remove('hidden'); 
-            document.getElementById('bloco-responsavel').classList.add('hidden'); 
-            document.getElementById('bloco-emergencia').classList.add('hidden'); 
+            const btnCartInfo = document.getElementById('btn-abrir-carteirinha');
+            const btnCartPvc = document.getElementById('btn-imprimir-pvc');
+            if(btnCartInfo) btnCartInfo.classList.add('hidden'); 
+            if(btnCartPvc) btnCartPvc.classList.add('hidden'); 
+            const btnGerarPdf = document.getElementById('btn-gerar-pdf');
+            if(btnGerarPdf) btnGerarPdf.classList.add('hidden'); 
+            
+            const alertaIdade = document.getElementById('alerta-idade');
+            const blocoResp = document.getElementById('bloco-responsavel');
+            const blocoEmerg = document.getElementById('bloco-emergencia');
+            if(alertaIdade) alertaIdade.classList.remove('hidden'); 
+            if(blocoResp) blocoResp.classList.add('hidden'); 
+            if(blocoEmerg) blocoEmerg.classList.add('hidden'); 
             
             window.idadeAtual = 0; 
             atualizarAbasPorPlano();
             window.mudarAba('aba-pessoal'); 
-            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
+            const modalAluno = document.getElementById('modal-aluno');
+            if(modalAluno) modalAluno.classList.replace('hidden', 'flex'); 
         };
-        window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
 
-        // ===================== FREQUÊNCIA E CHECK-INS =====================
+        window.fecharModal = () => {
+            const modalAluno = document.getElementById('modal-aluno');
+            if(modalAluno) modalAluno.classList.replace('flex', 'hidden');
+            window.alunoEditandoId = null;
+            window.ficheiroFotoSelecionado = null;
+        };
+
+        // ===================== BUSCAR CHECK-INS =====================
         async function carregarFrequenciaDoAluno(idAluno) { 
             const listaEl = document.getElementById('admin-lista-checkins'); 
+            if (!listaEl) return;
+            
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
+            
             try { 
                 const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno)); 
                 const snap = await getDocs(q); 
                 window.checkinsDoAlunoAtualCache = []; 
-                snap.forEach(doc => window.checkinsDoAlunoAtualCache.push(doc.data())); 
-                window.checkinsDoAlunoAtualCache.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()); 
-                const hojeData = new Date(); const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
-                document.getElementById('filtro-mes-freq-admin').value = `${hojeData.getFullYear()}-${mesFormatado}`; 
+                
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    window.checkinsDoAlunoAtualCache.push({
+                        id: doc.id,
+                        ...data,
+                        data: data.timestamp || data.data
+                    }); 
+                });
+                
+                window.checkinsDoAlunoAtualCache.sort((a,b) => {
+                    const dateA = a.data?.toDate ? a.data.toDate() : new Date(a.data);
+                    const dateB = b.data?.toDate ? b.data.toDate() : new Date(b.data);
+                    return dateB - dateA;
+                }); 
+                
+                const hojeData = new Date(); 
+                const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0'); 
+                const filtroMes = document.getElementById('filtro-mes-freq-admin');
+                if (filtroMes) {
+                    filtroMes.value = `${hojeData.getFullYear()}-${mesFormatado}`; 
+                }
+                
                 window.filtrarFrequenciaAdmin(); 
             } catch(e) { 
-                listaEl.innerHTML = '<p class="text-center text-xs text-rose-500 py-6 font-bold">Erro ao puxar dados.</p>'; 
+                console.error(e);
+                if(listaEl) listaEl.innerHTML = '<p class="text-center text-xs text-rose-500 py-6 font-bold">Erro ao carregar frequência.</p>'; 
             } 
         }
         
-        window.filtrarFrequenciaAdmin = async function() { 
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
+        window.filtrarFrequenciaAdmin = function() { 
+            const valFiltro = document.getElementById('filtro-mes-freq-admin')?.value; 
             if (!valFiltro) return; 
-            const partes = valFiltro.split('-'); 
-            const anoSelecionado = parseInt(partes[0]); const mesSelecionado = parseInt(partes[1]); 
             
-            let checkinsFiltrados = window.checkinsDoAlunoAtualCache.filter(ck => { 
-                const d = new Date(ck.timestamp); 
-                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado; 
+            const partes = valFiltro.split('-'); 
+            const anoSelecionado = parseInt(partes[0]); 
+            const mesSelecionado = parseInt(partes[1]); 
+            
+            const checkinsFiltrados = window.checkinsDoAlunoAtualCache.filter(ck => { 
+                let dataObj;
+                if (ck.data && ck.data.toDate) {
+                    dataObj = ck.data.toDate();
+                } else if (ck.data) {
+                    dataObj = new Date(ck.data);
+                } else if (ck.timestamp && ck.timestamp.toDate) {
+                    dataObj = ck.timestamp.toDate();
+                } else if (ck.timestamp) {
+                    dataObj = new Date(ck.timestamp);
+                } else {
+                    return false;
+                }
+                
+                return dataObj.getFullYear() === anoSelecionado && (dataObj.getMonth() + 1) === mesSelecionado; 
             }); 
             
-            document.getElementById('admin-contador-treinos').innerText = checkinsFiltrados.length; 
+            const contadorEl = document.getElementById('admin-contador-treinos');
+            if (contadorEl) contadorEl.innerText = checkinsFiltrados.length; 
+            
             const container = document.getElementById('admin-lista-checkins'); 
+            if (!container) return;
             
             if (checkinsFiltrados.length === 0) { 
-                container.innerHTML = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registados neste mês.</p>"; 
+                container.innerHTML = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registrados neste mês.</p>"; 
                 return; 
             } 
             
-            container.innerHTML = '<p class="text-center text-xs text-slate-400 py-4 italic">A descodificar localizações... 📍</p>'; 
             let html = ''; 
-            for (let ck of checkinsFiltrados) { 
-                const dataObj = new Date(ck.timestamp); 
+            checkinsFiltrados.forEach(ck => { 
+                let dataObj;
+                if (ck.data && ck.data.toDate) {
+                    dataObj = ck.data.toDate();
+                } else if (ck.data) {
+                    dataObj = new Date(ck.data);
+                } else if (ck.timestamp && ck.timestamp.toDate) {
+                    dataObj = ck.timestamp.toDate();
+                } else {
+                    dataObj = new Date(ck.timestamp || ck.data);
+                }
+                
                 const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); 
                 const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'}); 
                 
-                let enderecoHtml = ''; 
-                if (ck.localizacao && ck.localizacao.lat && ck.localizacao.lng) { 
-                    if(!ck.endereco_texto) { 
-                        try { 
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${ck.localizacao.lat}&lon=${ck.localizacao.lng}`, { headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' } }); 
-                            const data = await res.json(); 
-                            if(data && data.address) { 
-                                const rua = data.address.road || data.address.pedestrian || data.address.suburb || "Rua Desconhecida"; 
-                                const num = data.address.house_number ? `, ${data.address.house_number}` : ''; 
-                                const cidade = data.address.city || data.address.town || data.address.village || ""; 
-                                ck.endereco_texto = `${rua}${num} - ${cidade}`.trim(); 
-                            } 
-                        } catch(e) { ck.endereco_texto = "Localização obtida"; } 
-                    } 
-                    enderecoHtml = `
-                        <div class="mt-2 pt-2 border-t border-slate-100 flex items-start gap-1">
-                            <span class="text-[10px] text-slate-400">📍</span>
-                            <span class="text-[9px] text-slate-500 italic mt-0.5 leading-tight">${ck.endereco_texto || "Localização obtida"}</span>
-                        </div>
-                    `; 
-                } 
                 html += `
-                    <div class="p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all hover:border-cyan-200">
+                    <div class="p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs shrink-0">🥋</div>
+                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs">🥋</div>
                                 <div>
                                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${dataBonita}</p>
-                                    <p class="text-[11px] font-bold text-slate-800 truncate">${ck.turma_nome || 'Treino'}</p>
+                                    <p class="text-[11px] font-bold text-slate-800">Treino Registrado</p>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
+                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md">${hora}</span>
                         </div>
-                        ${enderecoHtml}
                     </div>
                 `; 
-            } 
+            }); 
             container.innerHTML = html; 
         };
 
-        // ===================== SALVAR ALUNO (CORRIGIDO) =====================
+        // ===================== SALVAR ALUNO =====================
         window.salvarAluno = async function() { 
             const id = window.alunoEditandoId; 
-            const nome = document.getElementById('aluno-nome').value.toUpperCase(); 
-            const cpf = document.getElementById('aluno-cpf').value; 
-            const nasc = document.getElementById('aluno-nasc').value; 
-            const tel = document.getElementById('aluno-tel').value; 
+            const nome = document.getElementById('aluno-nome')?.value.toUpperCase() || ''; 
+            const cpf = document.getElementById('aluno-cpf')?.value || ''; 
+            const nasc = document.getElementById('aluno-nasc')?.value || ''; 
+            const tel = document.getElementById('aluno-tel')?.value || ''; 
             
-            if(!nome || !cpf || !nasc || !tel) return showToast("Preencha os campos obrigatórios (*)", "error"); 
-            if(!document.getElementById('lgpd-concordo').checked) return showToast("É necessário aceitar os Termos da LGPD.", "error"); 
+            if(!nome || !cpf || !nasc || !tel) {
+                showToast("Preencha os campos obrigatórios (Nome, CPF, Nascimento, Telefone)", "error"); 
+                return;
+            }
             
-            let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '', nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
-            if (nasc) { 
-                if (window.idadeAtual < 18) { 
-                    nomeResponsavel = document.getElementById('aluno-resp-nome').value.toUpperCase().trim(); 
-                    cpfResponsavel = document.getElementById('aluno-resp-cpf').value.trim(); 
-                    telResponsavel = document.getElementById('aluno-resp-tel').value.trim(); 
-                } else { 
-                    nomeEmergencia = document.getElementById('aluno-emerg-nome').value.toUpperCase().trim(); 
-                    telEmergencia = document.getElementById('aluno-emerg-tel').value.trim(); 
-                    parentescoEmergencia = document.getElementById('aluno-emerg-parentesco').value.toUpperCase().trim(); 
-                } 
+            const lgpdConcordo = document.getElementById('lgpd-concordo');
+            if(!lgpdConcordo || !lgpdConcordo.checked) {
+                showToast("É necessário aceitar os Termos da LGPD.", "error"); 
+                return;
+            }
+            
+            let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '';
+            let nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
+            
+            if (window.idadeAtual < 18) { 
+                const respNome = document.getElementById('aluno-responsavel-nome');
+                const respCpf = document.getElementById('aluno-responsavel-cpf');
+                const respTel = document.getElementById('aluno-responsavel-telefone');
+                nomeResponsavel = respNome ? respNome.value.toUpperCase().trim() : ''; 
+                cpfResponsavel = respCpf ? respCpf.value.trim() : ''; 
+                telResponsavel = respTel ? respTel.value.trim() : ''; 
+                
+                if(!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
+                    showToast("Preencha todos os dados do responsável legal", "error");
+                    return;
+                }
+            } else { 
+                const emergNome = document.getElementById('aluno-emerg-nome');
+                const emergTel = document.getElementById('aluno-emerg-tel');
+                const emergParentesco = document.getElementById('aluno-emerg-parentesco');
+                nomeEmergencia = emergNome ? emergNome.value.toUpperCase().trim() : ''; 
+                telEmergencia = emergTel ? emergTel.value.trim() : ''; 
+                parentescoEmergencia = emergParentesco ? emergParentesco.value.toUpperCase().trim() : ''; 
             } 
             
             const btnSalvar = document.getElementById('btn-salvar-aluno'); 
+            if(!btnSalvar) return;
             const textoOriginal = btnSalvar.innerHTML; 
-            btnSalvar.innerHTML = "⏳ SALVANDO..."; btnSalvar.disabled = true; 
+            btnSalvar.innerHTML = "⏳ SALVANDO..."; 
+            btnSalvar.disabled = true; 
             
             const dados = { 
                 equipe_id: window.teamId, 
                 nome: nome, 
                 cpf: cpf, 
+                rg: document.getElementById('aluno-rg')?.value || '',
                 data_nascimento: nasc, 
-                faixa: document.getElementById('aluno-faixa').value, 
-                grau: document.getElementById('aluno-grau').value, 
+                naturalidade: document.getElementById('aluno-naturalidade')?.value || '',
+                faixa: document.getElementById('aluno-faixa')?.value || 'Branca', 
+                grau: document.getElementById('aluno-grau')?.value || 'Sem grau', 
                 telefone: tel, 
-                peso: document.getElementById('aluno-peso').value, 
-                email: document.getElementById('aluno-email').value, 
-                endereco: document.getElementById('aluno-endereco').value, 
-                bairro: document.getElementById('aluno-bairro').value, 
-                numero: document.getElementById('aluno-numero').value, 
-                cep: document.getElementById('aluno-cep').value, 
+                peso: document.getElementById('aluno-peso')?.value || '', 
+                email: document.getElementById('aluno-email')?.value || '', 
+                endereco: document.getElementById('aluno-endereco')?.value || '', 
+                bairro: document.getElementById('aluno-bairro')?.value || '', 
+                numero: document.getElementById('aluno-numero')?.value || '', 
+                cidade: document.getElementById('aluno-cidade')?.value || '',
+                uf: document.getElementById('aluno-uf')?.value || '',
+                cep: document.getElementById('aluno-cep')?.value || '', 
                 nome_responsavel: nomeResponsavel, 
                 cpf_responsavel: cpfResponsavel, 
                 telefone_responsavel: telResponsavel, 
                 emergencia_nome: nomeEmergencia, 
                 emergencia_telefone: telEmergencia, 
                 emergencia_parentesco: parentescoEmergencia, 
-                bolsa_perc: parseInt(document.getElementById('aluno-bolsa').value), 
-                dia_vencimento: parseInt(document.getElementById('aluno-vencimento').value), 
-                status: document.getElementById('aluno-status').value, 
-                lgpd_concordo: document.getElementById('lgpd-concordo').checked, 
-                lgpd_redes: document.getElementById('lgpd-redes').checked, 
-                lgpd_site: document.getElementById('lgpd-site').checked, 
-                lgpd_promo: document.getElementById('lgpd-promo').checked, 
-                lgpd_relatorios: document.getElementById('lgpd-relatorio').checked 
+                bolsa_perc: parseInt(document.getElementById('aluno-bolsa')?.value || '0'), 
+                dia_vencimento: parseInt(document.getElementById('aluno-vencimento')?.value || '10'), 
+                status: document.getElementById('aluno-status')?.value || 'ATIVO', 
+                lgpd_concordo: lgpdConcordo ? lgpdConcordo.checked : false, 
+                lgpd_redes: document.getElementById('lgpd-redes')?.checked || false, 
+                lgpd_site: document.getElementById('lgpd-site')?.checked || false, 
+                lgpd_promo: document.getElementById('lgpd-promo')?.checked || false, 
+                lgpd_relatorios: document.getElementById('lgpd-relatorio')?.checked || false,
+                updated_at: new Date().toISOString()
             }; 
             
             const campoSenha = document.getElementById('aluno-senha-portal'); 
@@ -1184,84 +1654,79 @@
                 let docRefId = id; 
                 
                 if (!id) { 
-                    // NOVO ALUNO - Usar Cloud Function criarAlunoComHash
-                    dados.matricula = new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000).toString(); 
+                    dados.matricula = `${new Date().getFullYear()}${Math.floor(1000 + Math.random() * 9000)}`; 
                     dados.data_cadastro = new Date().toISOString(); 
+                    dados.created_at = new Date().toISOString();
+                    
+                    const docRef = await addDoc(collection(db, "alunos"), dados); 
+                    docRefId = docRef.id;
                     
                     if (novaSenha) {
-                        const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
-                        const result = await criarAluno({ dados: dados, senha: novaSenha });
-                        if (result.data.success) {
-                            docRefId = result.data.alunoId;
-                        } else {
-                            throw new Error(result.data.error);
+                        try {
+                            const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
+                            await criarAluno({ alunoId: docRefId, senha: novaSenha });
+                        } catch(e) {
+                            console.warn("Cloud function não disponível, senha não foi salva:", e);
                         }
-                    } else {
-                        // Se não tem senha, salva normalmente (mas aluno não terá acesso ao portal)
-                        const docRef = await addDoc(collection(db, "alunos"), dados); 
-                        docRefId = docRef.id;
                     }
-                } else {
-                    // EDITANDO ALUNO EXISTENTE
-                    if (novaSenha) {
-                        // Se tem nova senha, usa Cloud Function com hash
-                        const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
-                        await atualizarAluno({ alunoId: id, dados: dados, novaSenha: novaSenha });
-                    } else {
-                        // Sem alteração de senha, atualiza normalmente
-                        await updateDoc(doc(db, "alunos", id), dados); 
-                    }
+                } else { 
+                    await updateDoc(doc(db, "alunos", id), dados); 
                     docRefId = id;
+                    
+                    if (novaSenha) {
+                        try {
+                            const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
+                            await atualizarAluno({ alunoId: id, senha: novaSenha });
+                        } catch(e) {
+                            console.warn("Cloud function não disponível, senha não foi atualizada:", e);
+                        }
+                    }
                 }
                 
-                // Upload da foto (se houver)
-                let fotoUrlFinal = null; 
                 if (window.ficheiroFotoSelecionado) { 
-                    btnSalvar.innerHTML = "📷 ENVIANDO FOTO..."; 
+                    btnSalvar.innerHTML = "⏳ ENVIANDO FOTO..."; 
                     
-                    // Apaga foto antiga se existir
                     const alunoAntigo = window.todosAlunosCache.find(a => a.id === docRefId); 
                     if (alunoAntigo && alunoAntigo.foto_url) { 
                         try { 
-                            const refFotoAntiga = ref(storage, alunoAntigo.foto_url); 
-                            await deleteObject(refFotoAntiga); 
-                        } catch (err) { console.log("Aviso: Foto antiga não encontrada."); } 
+                            const fotoRef = ref(storage, alunoAntigo.foto_url); 
+                            await deleteObject(fotoRef); 
+                        } catch (err) { 
+                            console.log("Aviso: Foto antiga não encontrada."); 
+                        } 
                     } 
                     
                     const timestamp = new Date().getTime(); 
                     const fotoPath = `fotos_carteirinha/${window.teamId}/${docRefId}_${timestamp}.jpg`; 
                     const storageRef = ref(storage, fotoPath); 
                     await uploadBytes(storageRef, window.ficheiroFotoSelecionado); 
-                    fotoUrlFinal = await getDownloadURL(storageRef); 
+                    const fotoUrlFinal = await getDownloadURL(storageRef); 
                     
                     await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal }); 
                 } 
                 
-                let acaoLog = "", detalhesLog = "";
-                
-                if (id) { 
-                    showToast("Ficha atualizada com sucesso!", "success"); 
-                    acaoLog = "EDITOU_ALUNO"; detalhesLog = `Atualizou a ficha do aluno: ${nome}`;
-                } else { 
-                    showToast("Matrícula criada com sucesso!", "success"); 
-                    acaoLog = "NOVA_MATRICULA"; detalhesLog = `Cadastrou o aluno: ${nome}`;
-                } 
-                
                 try {
                     await addDoc(collection(db, "auditoria"), {
-                        equipe_id: window.teamId, equipe_nome: window.equipeDados.nome,
-                        usuario_email: auth.currentUser.email, acao: acaoLog, detalhes: detalhesLog, timestamp: new Date().toISOString()
+                        equipe_id: window.teamId, 
+                        equipe_nome: window.equipeDados.nome,
+                        usuario_email: auth.currentUser.email, 
+                        acao: id ? "EDITOU_ALUNO" : "NOVA_MATRICULA",
+                        detalhes: `${id ? "Atualizou" : "Cadastrou"} o aluno: ${nome}`,
+                        timestamp: new Date().toISOString()
                     });
                 } catch(e) {}
 
+                showToast(id ? "Ficha atualizada com sucesso!" : "Matrícula criada com sucesso!", "success"); 
                 window.fecharModal(); 
                 clearCache();
                 await buscarAlunosFirebase(true); 
+                
             } catch(e) { 
                 console.error(e); 
                 showToast("Erro ao salvar a ficha: " + (e.message || "Erro desconhecido"), "error"); 
             } finally { 
-                btnSalvar.innerHTML = textoOriginal; btnSalvar.disabled = false; 
+                btnSalvar.innerHTML = textoOriginal; 
+                btnSalvar.disabled = false; 
             } 
         };
 
@@ -1314,60 +1779,86 @@
             const aluno = window.todosAlunosCache.find(a => a.id === window.alunoEditandoId); 
             if (!aluno) return; 
             
-            document.getElementById('cart-equipe-nome').innerText = window.equipeDados.nome.toUpperCase(); 
+            const equipeNome = document.getElementById('cart-equipe-nome');
+            if(equipeNome) equipeNome.innerText = window.equipeDados.nome.toUpperCase(); 
+            
             const logoEquipe = document.getElementById('cart-equipe-logo'); 
             const fallbackEquipe = document.getElementById('cart-equipe-fallback'); 
             
-            if (window.equipeDados.logo) { 
-                logoEquipe.src = window.equipeDados.logo; logoEquipe.classList.remove('hidden'); fallbackEquipe.classList.add('hidden'); 
-            } else { 
-                logoEquipe.classList.add('hidden'); fallbackEquipe.classList.remove('hidden'); fallbackEquipe.innerText = window.equipeDados.nome.charAt(0).toUpperCase(); 
+            if (window.equipeDados.logo && logoEquipe && fallbackEquipe) { 
+                logoEquipe.src = window.equipeDados.logo; 
+                logoEquipe.classList.remove('hidden'); 
+                fallbackEquipe.classList.add('hidden'); 
+            } else if(logoEquipe && fallbackEquipe) { 
+                logoEquipe.classList.add('hidden'); 
+                fallbackEquipe.classList.remove('hidden'); 
+                fallbackEquipe.innerText = window.equipeDados.nome.charAt(0).toUpperCase(); 
             } 
             
             const watermark = document.getElementById('cart-equipe-watermark'); 
             const watermarkFallback = document.getElementById('cart-equipe-watermark-fallback'); 
-            if (window.equipeDados.logo) { 
-                watermark.src = window.equipeDados.logo; watermark.classList.remove('hidden'); watermarkFallback.classList.add('hidden'); 
-            } else { 
-                watermark.classList.add('hidden'); watermarkFallback.classList.remove('hidden'); watermarkFallback.innerText = window.equipeDados.nome.charAt(0).toUpperCase(); 
+            if (window.equipeDados.logo && watermark && watermarkFallback) { 
+                watermark.src = window.equipeDados.logo; 
+                watermark.classList.remove('hidden'); 
+                watermarkFallback.classList.add('hidden'); 
+            } else if(watermark && watermarkFallback) { 
+                watermark.classList.add('hidden'); 
+                watermarkFallback.classList.remove('hidden'); 
+                watermarkFallback.innerText = window.equipeDados.nome.charAt(0).toUpperCase(); 
             } 
             
-            document.getElementById('cart-aluno-nome-txt').innerText = aluno.nome; 
-            document.getElementById('cart-aluno-matricula-txt').innerText = aluno.matricula || 'S/N'; 
+            const alunoNome = document.getElementById('cart-aluno-nome-txt');
+            const alunoMatricula = document.getElementById('cart-aluno-matricula-txt');
+            if(alunoNome) alunoNome.innerText = aluno.nome;
+            if(alunoMatricula) alunoMatricula.innerText = aluno.matricula || 'S/N'; 
             
             const faixaTexto = `${aluno.faixa || 'Branca'} ${aluno.grau && aluno.grau !== 'Sem grau' ? aluno.grau : ''}`.trim(); 
-            document.getElementById('cart-aluno-faixa-texto').innerText = faixaTexto; 
+            const faixaTextoEl = document.getElementById('cart-aluno-faixa-texto');
+            if(faixaTextoEl) faixaTextoEl.innerText = faixaTexto; 
             
             const corFaixa = getCorFaixaDupla(aluno.faixa); 
-            document.getElementById('cart-faixa-border').style.background = corFaixa;
-            if (aluno.faixa && (aluno.faixa.toLowerCase().includes('branca') || aluno.faixa.toLowerCase().includes('amarela'))) {
-                document.getElementById('cart-faixa-border').style.borderRight = '1px solid #cbd5e1';
+            const faixaBorder = document.getElementById('cart-faixa-border');
+            if(faixaBorder) faixaBorder.style.background = corFaixa;
+            if (aluno.faixa && (aluno.faixa.toLowerCase().includes('branca') || aluno.faixa.toLowerCase().includes('amarela')) && faixaBorder) {
+                faixaBorder.style.borderRight = '1px solid #cbd5e1';
             } 
             
             if (aluno.data_nascimento) { 
                 const partes = aluno.data_nascimento.split('-'); 
-                if (partes.length === 3) { document.getElementById('cart-aluno-nascimento-txt').innerText = `${partes[2]}/${partes[1]}/${partes[0]}`; } 
+                if (partes.length === 3) {
+                    const nascimentoEl = document.getElementById('cart-aluno-nascimento-txt');
+                    if(nascimentoEl) nascimentoEl.innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                } 
             } 
             
             const anoAtual = new Date().getFullYear(); 
-            document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`; 
+            const validadeEl = document.getElementById('cart-aluno-validade-txt');
+            if(validadeEl) validadeEl.innerText = `DEZ / ${anoAtual}`; 
             
             const fotoModal = document.getElementById('cart-aluno-foto-modal'); 
             const fotoFallback = document.getElementById('cart-aluno-foto-fallback-modal'); 
-            if (aluno.foto_url) { 
-                fotoModal.src = aluno.foto_url; fotoModal.classList.remove('hidden'); fotoFallback.classList.add('hidden'); 
-            } else { 
-                fotoModal.classList.add('hidden'); fotoFallback.classList.remove('hidden'); fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase(); 
+            if (aluno.foto_url && fotoModal && fotoFallback) { 
+                fotoModal.src = aluno.foto_url; 
+                fotoModal.classList.remove('hidden'); 
+                fotoFallback.classList.add('hidden'); 
+            } else if(fotoModal && fotoFallback) { 
+                fotoModal.classList.add('hidden'); 
+                fotoFallback.classList.remove('hidden'); 
+                fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase(); 
             } 
             
             const qrCodeImg = document.getElementById('cart-qr-code'); 
             const urlValidacao = window.location.origin + '/validar.html?mat=' + (aluno.matricula || ''); 
-            qrCodeImg.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlValidacao)}&bgcolor=ffffff&color=000000" class="w-full h-full object-contain" crossorigin="anonymous" alt="QR Code">`; 
+            if(qrCodeImg) qrCodeImg.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlValidacao)}&bgcolor=ffffff&color=000000" class="w-full h-full object-contain" crossorigin="anonymous" alt="QR Code">`; 
             
-            document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex'); 
+            const modalCarteirinha = document.getElementById('modal-carteirinha');
+            if(modalCarteirinha) modalCarteirinha.classList.replace('hidden', 'flex'); 
         };
         
-        window.fecharModalCarteirinha = () => document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden');
+        window.fecharModalCarteirinha = () => {
+            const modalCarteirinha = document.getElementById('modal-carteirinha');
+            if(modalCarteirinha) modalCarteirinha.classList.replace('flex', 'hidden');
+        };
         window.abrirEImprimirPVC = function() { 
             if (!window.verificarAcesso('carteirinha')) return;
             window.abrirModalCarteirinha(); 
@@ -1378,6 +1869,7 @@
         // ===================== RELATÓRIOS PDF =====================
         window.gerarRelatorioGeralFrequencia = async function() { 
             const btn = document.getElementById('btn-relatorio-freq'); 
+            if(!btn) return;
             const originalTxt = btn.innerHTML; btn.innerHTML = "⏳ A Gerar..."; btn.disabled = true; 
             try { 
                 const hoje = new Date(); const mesAtual = hoje.getMonth() + 1; const anoAtual = hoje.getFullYear(); const mesStr = String(mesAtual).padStart(2, '0'); 
@@ -1397,7 +1889,7 @@
                     linhasHtml += `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 10px 8px; font-size: 12px; color: #334155;">${a.nome}</td><td style="padding: 10px 8px; font-size: 12px; color: #64748b;">${a.faixa || 'Branca'}</td><td style="padding: 10px 8px; font-size: 13px; text-align: center; color: ${treinos > 0 ? '#059669' : '#ef4444'}; font-weight: bold;">${treinos}</td></tr>`; 
                 }); 
                 const element = document.createElement('div'); 
-                element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 30px; color: #333;"><div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">${window.equipeDados.logo ? `<img src="${window.equipeDados.logo}" style="height: 90px; max-width: 200px; display: block; margin: 0 auto 15px auto; object-fit: contain;" crossorigin="anonymous">` : ''}<h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase;">RELATÓRIO DE FREQUÊNCIA</h1><p style="font-size: 14px; margin: 5px 0; font-weight: bold; color: #475569;">${window.equipeDados.nome.toUpperCase()}</p><p style="font-size: 12px; color: #64748b; background-color: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 10px;">Referência: Mês ${mesStr}/${anoAtual}</p></div><table style="width: 100%; border-collapse: collapse; text-align: left;"><thead><tr style="background-color: #f8fafc; border-bottom: 2px solid #cbd5e1;"><th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Nome do Atleta</th><th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Faixa</th><th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Treinos no Mês</th></tr></thead><tbody>${linhasHtml}</tbody></table><div style="margin-top: 40px; font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px;"><p>Documento gerado eletronicamente via <strong>BJJ Manager</strong></p><p>Emitido em ${hoje.toLocaleDateString('pt-BR')} às ${hoje.toLocaleTimeString('pt-BR')}</p></div></div>`; 
+                element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 30px; color: #333;"><div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">${window.equipeDados.logo ? `<img src="${window.equipeDados.logo}" style="height: 90px; max-width: 200px; display: block; margin: 0 auto 15px auto; object-fit: contain;" crossorigin="anonymous">` : ''}<h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase;">RELATÓRIO DE FREQUÊNCIA</h1><p style="font-size: 14px; margin: 5px 0; font-weight: bold; color: #475569;">${window.equipeDados.nome.toUpperCase()}</p><p style="font-size: 12px; color: #64748b; background-color: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 10px;">Referência: Mês ${mesStr}/${anoAtual}</p></div><table style="width: 100%; border-collapse: collapse; text-align: left;"><thead><tr style="background-color: #f8fafc; border-bottom: 2px solid #cbd5e1;"><th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Nome do Atleta</th><th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Faixa</th><th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Treinos no Mês</th></tr></thead><tbody>${linhasHtml}</tbody></table><div style="margin-top: 40px; font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px;"><p>Documento gerado eletronicamente via <strong>BJJ Manager</strong></p><p>Emitido em ${hoje.toLocaleDateString('pt-BR')} às ${hoje.toLocaleTimeString('pt-BR')}</p></div></div>`; 
                 const opt = { margin: 10, filename: `Relatorio_Frequencia_${mesStr}_${anoAtual}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }; 
                 showToast("Gerando PDF...", "success"); 
                 await html2pdf().set(opt).from(element).save(); 
@@ -1409,15 +1901,20 @@
         };
 
         window.gerarPDF_LGPD = function() { 
-            if(!document.getElementById('lgpd-concordo').checked) return showToast("Atenção: A caixa de 'Li e Concordo' precisa estar marcada.", "error"); 
-            const nome = document.getElementById('aluno-nome').value || '[NOME DO ALUNO]'; 
-            const resp = document.getElementById('aluno-resp-nome').value; 
+            const lgpdConcordo = document.getElementById('lgpd-concordo');
+            if(!lgpdConcordo || !lgpdConcordo.checked) return showToast("Atenção: A caixa de 'Li e Concordo' precisa estar marcada.", "error"); 
+            const nome = document.getElementById('aluno-nome')?.value || '[NOME DO ALUNO]'; 
+            const resp = document.getElementById('aluno-responsavel-nome')?.value || ''; 
             const repTexto = resp ? " neste ato representado(a) por seu responsável legal " + resp + ", " : " "; 
             let usos = []; 
-            if(document.getElementById('lgpd-redes').checked) usos.push("Publicações em redes sociais oficiais da Equipe."); 
-            if(document.getElementById('lgpd-site').checked) usos.push("Divulgação em site institucional."); 
-            if(document.getElementById('lgpd-promo').checked) usos.push("Materiais informativos e promocionais."); 
-            if(document.getElementById('lgpd-relatorio').checked) usos.push("Relatórios e prestação de contas."); 
+            const lgpdRedes = document.getElementById('lgpd-redes');
+            const lgpdSite = document.getElementById('lgpd-site');
+            const lgpdPromo = document.getElementById('lgpd-promo');
+            const lgpdRelatorio = document.getElementById('lgpd-relatorio');
+            if(lgpdRedes && lgpdRedes.checked) usos.push("Publicações em redes sociais oficiais da Equipe."); 
+            if(lgpdSite && lgpdSite.checked) usos.push("Divulgação em site institucional."); 
+            if(lgpdPromo && lgpdPromo.checked) usos.push("Materiais informativos e promocionais."); 
+            if(lgpdRelatorio && lgpdRelatorio.checked) usos.push("Relatórios e prestação de contas."); 
             let listaUsosHtml = usos.length > 0 ? usos.map(u => `<p style='margin: 10px 0;'>• ${u}</p>`).join('') : "<p style='margin: 10px 0;'><i>Nenhuma autorização específica.</i></p>"; 
             let dataAtual = new Date().toLocaleString('pt-BR'); 
             let hash = "GERADO-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
@@ -1429,46 +1926,123 @@
             } 
             const assinante = (resp || nome).toUpperCase(); 
             const element = document.createElement('div'); 
-            element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.6;"><h1 style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px;">TERMO DE AUTORIZAÇÃO E CONSENTIMENTO (LGPD)</h1><p style="text-align: justify; margin-bottom: 20px;">Pelo presente instrumento, em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei n° 13.853/2019)</strong>, o(a) atleta <strong>${nome.toUpperCase()}</strong>${repTexto}declara estar ciente e de expresso acordo com as políticas da equipe.</p><h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Finalidade do Uso de Imagem e Dados:</h2><div style="margin-left: 20px; margin-bottom: 30px; font-size: 14px;">${listaUsosHtml}</div><p style="text-align: justify; margin-bottom: 40px;">A Equipe declara que não divulgará dados pessoais sensíveis de forma indevida, não comercializará imagens e adotará medidas de segurança para a proteção das informações coletadas, limitando seu uso exclusivamente às atividades inerentes à prática esportiva e sua respectiva divulgação oficial.</p><div style="margin-top: 50px; border: 2px dashed #94a3b8; padding: 25px; border-radius: 10px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;"><div style="text-align: center; margin-bottom: 20px;"><span style="background-color: #0ea5e9; color: white; padding: 5px 15px; font-family: Arial, sans-serif; font-weight: bold; font-size: 12px; border-radius: 20px; text-transform: uppercase;">Validação de Assinatura Digital</span></div><p style="margin: 8px 0; font-size: 14px;"><strong>ASSINANTE:</strong> ${assinante}</p><p style="margin: 8px 0; font-size: 14px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p><p style="margin: 8px 0; font-size: 14px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <br><span style="word-break: break-all; color: #0369a1;">${hash}</span></p><p style="margin-top: 20px; font-size: 11px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">* Documento assinado eletronicamente via plataforma BJJ Manager, possuindo validade legal mediante concordância explícita no ato da matrícula.</p></div></div>`; 
+            element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.6;"><h1 style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px;">TERMO DE AUTORIZAÇÃO E CONSENTIMENTO (LGPD)</h1><p style="text-align: justify; margin-bottom: 20px;">Pelo presente instrument, em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei n° 13.853/2019)</strong>, o(a) atleta <strong>${nome.toUpperCase()}</strong>${repTexto}declara estar ciente e de expresso acordo com as políticas da equipe.</p><h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Finalidade do Uso de Imagem e Dados:</h2><div style="margin-left: 20px; margin-bottom: 30px; font-size: 14px;">${listaUsosHtml}</div><p style="text-align: justify; margin-bottom: 40px;">A Equipe declara que não divulgará dados pessoais sensíveis de forma indevida, não comercializará imagens e adotará medidas de segurança para a proteção das informações coletadas, limitando seu uso exclusivamente às atividades inerentes à prática esportiva e sua respectiva divulgação oficial.</p><div style="margin-top: 50px; border: 2px dashed #94a3b8; padding: 25px; border-radius: 10px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;"><div style="text-align: center; margin-bottom: 20px;"><span style="background-color: #0ea5e9; color: white; padding: 5px 15px; font-family: Arial, sans-serif; font-weight: bold; font-size: 12px; border-radius: 20px; text-transform: uppercase;">Validação de Assinatura Digital</span></div><p style="margin: 8px 0; font-size: 14px;"><strong>ASSINANTE:</strong> ${assinante}</p><p style="margin: 8px 0; font-size: 14px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p><p style="margin: 8px 0; font-size: 14px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <br><span style="word-break: break-all; color: #0369a1;">${hash}</span></p><p style="margin-top: 20px; font-size: 11px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">* Documento assinado eletronicamente via plataforma BJJ Manager, possuindo validade legal mediante concordância explícita no ato da matrícula.</p></div></div>`; 
             const opt = { margin: 10, filename: `Termo_LGPD_${nome.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }; 
             showToast("Gerando Download do PDF...", "success"); html2pdf().set(opt).from(element).save(); 
         };
 
         window.gerarPDF_Anamnese = function() { 
             const aluno = window.todosAlunosCache.find(a => a.id === window.alunoEditandoId); 
-            if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) return showToast("Ficha de anamnese não encontrada.", "error"); 
-            const an = aluno.anamnese; const nome = aluno.nome || 'NÃO INFORMADO'; 
+            if (!aluno) {
+                showToast("Aluno não encontrado.", "error");
+                return;
+            }
+            
+            if (!aluno.anamnese_preenchida || !aluno.anamnese) {
+                showToast("Ficha de anamnese não encontrada. O aluno precisa preencher no portal.", "error");
+                return;
+            }
+            
+            const an = aluno.anamnese; 
+            const nome = aluno.nome || 'NÃO INFORMADO'; 
+            
             let isMenor = false; 
             if (aluno.data_nascimento) { 
-                const hoje = new Date(); const nasc = new Date(aluno.data_nascimento); 
-                let idade = hoje.getFullYear() - nasc.getFullYear(); const mes = hoje.getMonth() - nasc.getMonth(); 
-                if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) idade--; isMenor = idade < 18; 
+                const hoje = new Date(); 
+                const nasc = new Date(aluno.data_nascimento); 
+                let idade = hoje.getFullYear() - nasc.getFullYear(); 
+                const mes = hoje.getMonth() - nasc.getMonth(); 
+                if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) idade--; 
+                isMenor = idade < 18; 
             } 
-            const resp = aluno.nome_responsavel || ''; const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase(); const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA"; 
-            let dataAtual = 'Data não registrada'; 
-            if (an.data_preenchimento) { const dt = new Date(an.data_preenchimento); dataAtual = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR'); } 
-            let hash = "ANAMNESE-" + aluno.id.toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
-            const simNao = (val) => val ? 'SIM' : 'NÃO'; const valOuDash = (val) => val ? val : '---'; const strForm = (val) => (val === 'Sim' || val === 'Não') ? val.toUpperCase() : (val || '---'); 
             
+            const resp = aluno.nome_responsavel || ''; 
+            const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase(); 
+            const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA"; 
+            
+            let dataAtual = 'Data não registrada'; 
+            if (an.data_preenchimento) { 
+                const dt = new Date(an.data_preenchimento); 
+                dataAtual = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR'); 
+            } 
+            
+            let hash = "ANAMNESE-" + aluno.id.toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
+            
+            const simNao = (val) => val === true || val === 'Sim' || val === 'sim' ? 'SIM' : (val === false || val === 'Não' || val === 'não' ? 'NÃO' : '---');
+            const valOuDash = (val) => (val && val.trim) ? val.trim() : (val ? String(val) : '---');
+            const strForm = (val) => {
+                if (val === true || val === 'Sim' || val === 'sim') return 'SIM';
+                if (val === false || val === 'Não' || val === 'não') return 'NÃO';
+                return val || '---';
+            };
+            
+            const medico = an.medico || {};
             const med = []; 
-            if(an.medico?.asma) med.push("Asma/Bronquite"); if(an.medico?.hipertensao) med.push("Hipertensão"); 
-            if(an.medico?.cardiopatia) med.push("Cardiopatia"); if(an.medico?.diabetes) med.push("Diabetes"); 
-            if(an.medico?.epilepsia) med.push("Epilepsia"); if(an.medico?.desmaios) med.push("Desmaios"); 
-            const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada"; 
+            if(medico.asma === true || medico.asma === 'Sim') med.push("Asma/Bronquite");
+            if(medico.hipertensao === true || medico.hipertensao === 'Sim') med.push("Hipertensão"); 
+            if(medico.cardiopatia === true || medico.cardiopatia === 'Sim') med.push("Cardiopatia");
+            if(medico.diabetes === true || medico.diabetes === 'Sim') med.push("Diabetes"); 
+            if(medico.epilepsia === true || medico.epilepsia === 'Sim') med.push("Epilepsia");
+            if(medico.desmaios === true || medico.desmaios === 'Sim') med.push("Desmaios"); 
+            const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada";
+            
+            const diagnostico = an.diagnostico || {};
             const diags = []; 
-            if(an.diagnostico?.tea) diags.push("TEA"); if(an.diagnostico?.tdah) diags.push("TDAH"); 
-            if(an.diagnostico?.def_intelectual) diags.push("Def. Intelectual"); if(an.diagnostico?.def_fisica) diags.push("Def. Física"); 
-            if(an.diagnostico?.def_visual) diags.push("Def. Visual"); if(an.diagnostico?.def_auditiva) diags.push("Def. Auditiva"); 
-            if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem"); if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional"); 
-            if(an.diagnostico?.outro) diags.push(an.diagnostico.outro); 
-            const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada"; 
-            const htmlNeurodivergencia = an.diagnostico?.possui_neurodivergencia ? `<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2><div style="margin-bottom: 5px;"><strong>Diagnósticos:</strong> ${diagsText}</div><div style="margin-bottom: 5px;"><strong>Confirmado p/ Médico:</strong> ${strForm(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '('+an.diagnostico.profissional+')' : ''}</div><h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Desenvolvimento Motor e Comunicação</h2><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span><span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span></div><div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div><h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação</h2><div style="display: flex; gap: 20px; margin-bottom: 5px;"><span><strong>Fuga/Isolamento:</strong> ${simNao(an.comportamento?.fuga_isolamento)}</span><span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span><span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span><span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span></div><div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>` : `<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2><div style="margin-bottom: 5px; color: #64748b;"><em>Não possui diagnósticos de neurodivergência ou necessidade de inclusão declarados.</em></div>`; 
+            if(diagnostico.tea === true || diagnostico.tea === 'Sim') diags.push("TEA");
+            if(diagnostico.tdah === true || diagnostico.tdah === 'Sim') diags.push("TDAH"); 
+            if(diagnostico.def_intelectual === true || diagnostico.def_intelectual === 'Sim') diags.push("Def. Intelectual");
+            if(diagnostico.def_fisica === true || diagnostico.def_fisica === 'Sim') diags.push("Def. Física"); 
+            if(diagnostico.def_visual === true || diagnostico.def_visual === 'Sim') diags.push("Def. Visual");
+            if(diagnostico.def_auditiva === true || diagnostico.def_auditiva === 'Sim') diags.push("Def. Auditiva"); 
+            if(diagnostico.transtorno_aprendizagem === true || diagnostico.transtorno_aprendizagem === 'Sim') diags.push("Trans. Aprendizagem");
+            if(diagnostico.ansiedade_emocional === true || diagnostico.ansiedade_emocional === 'Sim') diags.push("Ansiedade/Emocional"); 
+            if(diagnostico.outro) diags.push(diagnostico.outro); 
+            const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada";
+            
+            const possuiNeuro = diagnostico.possui_neurodivergencia === true || diagnostico.possui_neurodivergencia === 'Sim';
+            
+            const htmlNeurodivergencia = possuiNeuro ? `
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2>
+                <div style="margin-bottom: 5px;"><strong>Diagnósticos:</strong> ${diagsText}</div>
+                <div style="margin-bottom: 5px;"><strong>Confirmado p/ Médico:</strong> ${strForm(diagnostico.confirmado)} ${diagnostico.profissional ? '('+diagnostico.profissional+')' : ''}</div>
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Desenvolvimento Motor e Comunicação</h2>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span><span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span></div>
+                <div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div>
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação</h2>
+                <div style="display: flex; gap: 20px; margin-bottom: 5px;"><span><strong>Fuga/Isolamento:</strong> ${simNao(an.comportamento?.fuga_isolamento)}</span><span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span><span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span><span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span></div>
+                <div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>
+            ` : `<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2><div style="margin-bottom: 5px; color: #64748b;"><em>Não possui diagnósticos de neurodivergência ou necessidade de inclusão declarados.</em></div>`; 
+            
             const element = document.createElement('div'); 
-            element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.3; font-size: 12px;"><h1 style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px;">FICHA DE SAÚDE E INCLUSÃO (ANAMNESE)</h1><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><div><strong>ATLETA:</strong> ${nome.toUpperCase()}</div><div><strong>DATA:</strong> ${dataAtual}</div></div>${resp ? `<div style="margin-bottom: 5px;"><strong>RESPONSÁVEL LEGAL:</strong> ${resp.toUpperCase()}</div>` : ''}<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;"><h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Clínica e Ortopédica</h2><div style="margin-bottom: 5px;"><strong>Condições:</strong> ${medText}</div><div style="margin-bottom: 5px;"><strong>Dores Articulares (Joelho, Ombro...):</strong> ${valOuDash(an.medico?.dores_articulacoes)}</div><div style="margin-bottom: 5px;"><strong>Problemas de Coluna:</strong> ${valOuDash(an.medico?.problema_coluna)}</div><div style="margin-bottom: 5px;"><strong>Cirurgias/Lesões Prévias:</strong> ${valOuDash(an.medico?.cirurgias)}</div><div style="margin-bottom: 5px;"><strong>Uso de Medicamentos:</strong> ${valOuDash(an.medico?.medicamentos)}</div>${htmlNeurodivergencia}<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Avaliação Geral</h2><div style="margin-bottom: 5px;"><strong>Alergias graves:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div><div style="margin-bottom: 5px;"><strong>O que esperam dos treinos:</strong> ${valOuDash(an.expectativas?.geral)}</div><div style="margin-top: 15px; border: 1.5px dashed #94a3b8; padding: 15px; border-radius: 8px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;"><div style="text-align: center; margin-bottom: 10px;"><span style="background-color: #0ea5e9; color: white; padding: 4px 12px; font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; border-radius: 15px; text-transform: uppercase;">Validação de Assinatura Eletrônica</span></div><p style="margin: 4px 0; font-size: 12px;"><strong>ASSINANTE (${tipoAssinante}):</strong> ${assinante}</p><p style="margin: 4px 0; font-size: 12px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p><p style="margin: 4px 0; font-size: 12px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <span style="color: #0369a1;">${hash}</span></p><p style="margin-top: 10px; font-size: 9px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">* Documento assinado eletronicamente via plataforma BJJ Manager. O assinante declara a veracidade das informações prestadas.</p></div></div>`; 
+            element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.3; font-size: 12px;">
+                <h1 style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px;">FICHA DE SAÚDE E INCLUSÃO (ANAMNESE)</h1>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><div><strong>ATLETA:</strong> ${nome.toUpperCase()}</div><div><strong>DATA:</strong> ${dataAtual}</div></div>
+                ${resp ? `<div style="margin-bottom: 5px;"><strong>RESPONSÁVEL LEGAL:</strong> ${resp.toUpperCase()}</div>` : ''}
+                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Clínica e Ortopédica</h2>
+                <div style="margin-bottom: 5px;"><strong>Condições:</strong> ${medText}</div>
+                <div style="margin-bottom: 5px;"><strong>Dores Articulares (Joelho, Ombro...):</strong> ${valOuDash(medico.dores_articulacoes)}</div>
+                <div style="margin-bottom: 5px;"><strong>Problemas de Coluna:</strong> ${valOuDash(medico.problema_coluna)}</div>
+                <div style="margin-bottom: 5px;"><strong>Cirurgias/Lesões Prévias:</strong> ${valOuDash(medico.cirurgias)}</div>
+                <div style="margin-bottom: 5px;"><strong>Uso de Medicamentos:</strong> ${valOuDash(medico.medicamentos)}</div>
+                ${htmlNeurodivergencia}
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Avaliação Geral</h2>
+                <div style="margin-bottom: 5px;"><strong>Alergias graves:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div>
+                <div style="margin-bottom: 5px;"><strong>O que esperam dos treinos:</strong> ${valOuDash(an.expectativas?.geral)}</div>
+                <div style="margin-top: 15px; border: 1.5px dashed #94a3b8; padding: 15px; border-radius: 8px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;">
+                    <div style="text-align: center; margin-bottom: 10px;"><span style="background-color: #0ea5e9; color: white; padding: 4px 12px; font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; border-radius: 15px; text-transform: uppercase;">Validação de Assinatura Eletrônica</span></div>
+                    <p style="margin: 4px 0; font-size: 12px;"><strong>ASSINANTE (${tipoAssinante}):</strong> ${assinante}</p>
+                    <p style="margin: 4px 0; font-size: 12px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p>
+                    <p style="margin: 4px 0; font-size: 12px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <span style="color: #0369a1;">${hash}</span></p>
+                    <p style="margin-top: 10px; font-size: 9px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">* Documento assinado eletronicamente via plataforma BJJ Manager. O assinante declara a veracidade das informações prestadas.</p>
+                </div>
+            </div>`; 
+            
             const opt = { margin: [5, 5, 5, 5], filename: `Ficha_Anamnese_${nome.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }; 
-            showToast("Gerando PDF da Ficha de Saúde...", "success"); html2pdf().set(opt).from(element).save(); 
+            showToast("Gerando PDF da Ficha de Saúde...", "success"); 
+            html2pdf().set(opt).from(element).save(); 
         };
-
+        
         // ===================== AUTENTICAÇÃO E INICIALIZAÇÃO =====================
         onAuthStateChanged(auth, async (user) => { 
             if (user) { 
@@ -1549,21 +2123,39 @@
                             }
                         }
                         
+                        const anoSelect = document.getElementById('ano-grafico');
+                        if(anoSelect) {
+                            const anoAtual = new Date().getFullYear();
+                            for (let i = anoAtual - 5; i <= anoAtual + 1; i++) {
+                                const option = document.createElement('option');
+                                option.value = i;
+                                option.textContent = i;
+                                if (i === anoAtual) option.selected = true;
+                                anoSelect.appendChild(option);
+                            }
+                        }
+                        
                         await buscarAlunosFirebase(false);
-                        mudarAbaDashboard('lista');
+                        window.mudarAbaDashboard('lista');
                     } else {
-                        document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
+                        const tabelaAlunos = document.getElementById('tabela-alunos');
+                        if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                     }
                 } catch(e) {
                     console.error("Erro na autenticação:", e);
-                    document.getElementById('tabela-alunos').innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro de conexão ao verificar usuário.</td></tr>';
+                    const tabelaAlunos = document.getElementById('tabela-alunos');
+                    if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro de conexão ao verificar usuário.</td></tr>';
                 }
             } else { 
                 window.location.href = "index.html"; 
             } 
         });
 
-        window.limparBusca = () => { document.getElementById('input-busca').value = ''; window.renderizarTabela(); };
+        window.limparBusca = () => { 
+            const buscaInput = document.getElementById('input-busca');
+            if(buscaInput) buscaInput.value = ''; 
+            window.renderizarTabela(); 
+        };
     </script>
 </body>
 </html>
