@@ -953,8 +953,6 @@
 function renderizarAnamnese(aluno) {
     console.log("=== RENDERIZANDO ANAMNESE ===");
     console.log("Aluno:", aluno);
-    console.log("Tem anamnese?", aluno.anamnese_preenchida);
-    console.log("Dados anamnese:", aluno.anamnese);
     
     const divVazia = document.getElementById('anamnese-vazia');
     const divPreenchida = document.getElementById('anamnese-preenchida');
@@ -964,7 +962,18 @@ function renderizarAnamnese(aluno) {
         return;
     }
     
-    if (!aluno.anamnese_preenchida || !aluno.anamnese) {
+    // Verificar se existe anamnese (suporte para diferentes nomes de campo)
+    const temAnamnese = aluno.anamnese_preenchida || 
+                        aluno.anamnese_completa || 
+                        aluno.ficha_saude_preenchida ||
+                        (aluno.anamnese && Object.keys(aluno.anamnese).length > 0);
+    
+    const dadosAnamnese = aluno.anamnese || aluno.ficha_saude || null;
+    
+    console.log("Tem anamnese?", temAnamnese);
+    console.log("Dados anamnese:", dadosAnamnese);
+    
+    if (!temAnamnese || !dadosAnamnese) {
         console.log("Mostrando mensagem de ficha pendente");
         divVazia.classList.remove('hidden');
         divPreenchida.classList.add('hidden');
@@ -975,7 +984,7 @@ function renderizarAnamnese(aluno) {
     divVazia.classList.add('hidden');
     divPreenchida.classList.remove('hidden');
     
-    const an = aluno.anamnese;
+    const an = dadosAnamnese;
     const medico = an.medico || {};
     const diagnostico = an.diagnostico || {};
     
@@ -984,10 +993,13 @@ function renderizarAnamnese(aluno) {
     const pesoEl = document.getElementById('anamnese-peso');
     const dataEl = document.getElementById('anamnese-data');
     
-    if (alturaEl) alturaEl.innerText = aluno.altura || '---';
-    if (pesoEl) pesoEl.innerText = aluno.peso || '---';
+    if (alturaEl) alturaEl.innerText = aluno.altura || an.altura || '---';
+    if (pesoEl) pesoEl.innerText = aluno.peso || an.peso || '---';
     if (dataEl && an.data_preenchimento) {
         const dt = new Date(an.data_preenchimento);
+        dataEl.innerText = dt.toLocaleDateString('pt-BR');
+    } else if (dataEl && an.created_at) {
+        const dt = new Date(an.created_at);
         dataEl.innerText = dt.toLocaleDateString('pt-BR');
     }
     
@@ -997,16 +1009,16 @@ function renderizarAnamnese(aluno) {
     const cirurgiasEl = document.getElementById('anamnese-cirurgias');
     const medicamentosEl = document.getElementById('anamnese-medicamentos');
     
-    if (doresEl) doresEl.innerText = medico.dores_articulacoes || '---';
-    if (colunaEl) colunaEl.innerText = medico.problema_coluna || '---';
-    if (cirurgiasEl) cirurgiasEl.innerText = medico.cirurgias || '---';
-    if (medicamentosEl) medicamentosEl.innerText = medico.medicamentos || '---';
+    if (doresEl) doresEl.innerText = medico.dores_articulacoes || an.dores_articulares || '---';
+    if (colunaEl) colunaEl.innerText = medico.problema_coluna || an.problemas_coluna || '---';
+    if (cirurgiasEl) cirurgiasEl.innerText = medico.cirurgias || an.cirurgias || '---';
+    if (medicamentosEl) medicamentosEl.innerText = medico.medicamentos || an.medicamentos || '---';
     
     // Indicadores visuais (círculos)
     const setStatus = (id, value) => {
         const el = document.getElementById(id);
         if (!el) return;
-        if (value === true || value === 'Sim' || value === 'sim') {
+        if (value === true || value === 'Sim' || value === 'sim' || value === 'SIM') {
             el.className = 'w-3 h-3 rounded-full bg-red-500';
         } else {
             el.className = 'w-3 h-3 rounded-full bg-green-500';
@@ -1022,7 +1034,9 @@ function renderizarAnamnese(aluno) {
     
     // Neurodivergência
     const neuroContainer = document.getElementById('anamnese-neuro-container');
-    const possuiNeuro = diagnostico.possui_neurodivergencia === true || diagnostico.possui_neurodivergencia === 'Sim';
+    const possuiNeuro = diagnostico.possui_neurodivergencia === true || 
+                        diagnostico.possui_neurodivergencia === 'Sim' ||
+                        diagnostico.possui_neurodivergencia === 'SIM';
     
     if (neuroContainer) {
         if (possuiNeuro) {
@@ -1047,7 +1061,7 @@ function renderizarAnamnese(aluno) {
     }
     
     // Comportamento
-    const simNao = (val) => val === true || val === 'Sim' || val === 'sim' ? '✅ SIM' : '❌ NÃO';
+    const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val === 'SIM' ? '✅ SIM' : '❌ NÃO';
     const equilibrioEl = document.getElementById('anamnese-equilibrio');
     const comandosEl = document.getElementById('anamnese-comandos');
     const comunicacaoEl = document.getElementById('anamnese-comunicacao');
@@ -1069,8 +1083,8 @@ function renderizarAnamnese(aluno) {
     // Avaliação Geral
     const alergiasEl = document.getElementById('anamnese-alergias');
     const expectativasEl = document.getElementById('anamnese-expectativas');
-    if (alergiasEl) alergiasEl.innerText = an.saude?.alergias_restricoes || '---';
-    if (expectativasEl) expectativasEl.innerText = an.expectativas?.geral || '---';
+    if (alergiasEl) alergiasEl.innerText = an.saude?.alergias_restricoes || an.alergias || '---';
+    if (expectativasEl) expectativasEl.innerText = an.expectativas?.geral || an.expectativas || '---';
     
     console.log("Renderização da anamnese concluída!");
 }
