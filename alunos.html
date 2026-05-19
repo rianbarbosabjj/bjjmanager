@@ -1558,41 +1558,120 @@
             showToast("Gerando Download do PDF...", "success"); html2pdf().set(opt).from(element).save(); 
         };
 
-        window.gerarPDF_Anamnese = function() { 
-            const aluno = window.todosAlunosCache.find(a => a.id === window.alunoEditandoId); 
-            if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) return showToast("Ficha de anamnese não encontrada.", "error"); 
-            const an = aluno.anamnese; const nome = aluno.nome || 'NÃO INFORMADO'; 
-            let isMenor = false; 
-            if (aluno.data_nascimento) { 
-                const hoje = new Date(); const nasc = new Date(aluno.data_nascimento); 
-                let idade = hoje.getFullYear() - nasc.getFullYear(); const mes = hoje.getMonth() - nasc.getMonth(); 
-                if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) idade--; isMenor = idade < 18; 
-            } 
-            const resp = aluno.nome_responsavel || ''; const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase(); const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA"; 
-            let dataAtual = 'Data não registrada'; 
-            if (an.data_preenchimento) { const dt = new Date(an.data_preenchimento); dataAtual = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR'); } 
-            let hash = "ANAMNESE-" + aluno.id.toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
-            const simNao = (val) => val ? 'SIM' : 'NÃO'; const valOuDash = (val) => val ? val : '---'; const strForm = (val) => (val === 'Sim' || val === 'Não') ? val.toUpperCase() : (val || '---'); 
-            
-            const med = []; 
-            if(an.medico?.asma) med.push("Asma/Bronquite"); if(an.medico?.hipertensao) med.push("Hipertensão"); 
-            if(an.medico?.cardiopatia) med.push("Cardiopatia"); if(an.medico?.diabetes) med.push("Diabetes"); 
-            if(an.medico?.epilepsia) med.push("Epilepsia"); if(an.medico?.desmaios) med.push("Desmaios"); 
-            const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada"; 
-            const diags = []; 
-            if(an.diagnostico?.tea) diags.push("TEA"); if(an.diagnostico?.tdah) diags.push("TDAH"); 
-            if(an.diagnostico?.def_intelectual) diags.push("Def. Intelectual"); if(an.diagnostico?.def_fisica) diags.push("Def. Física"); 
-            if(an.diagnostico?.def_visual) diags.push("Def. Visual"); if(an.diagnostico?.def_auditiva) diags.push("Def. Auditiva"); 
-            if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem"); if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional"); 
-            if(an.diagnostico?.outro) diags.push(an.diagnostico.outro); 
-            const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada"; 
-            const htmlNeurodivergencia = an.diagnostico?.possui_neurodivergencia ? `<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2><div style="margin-bottom: 5px;"><strong>Diagnósticos:</strong> ${diagsText}</div><div style="margin-bottom: 5px;"><strong>Confirmado p/ Médico:</strong> ${strForm(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '('+an.diagnostico.profissional+')' : ''}</div><h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Desenvolvimento Motor e Comunicação</h2><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span><span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span></div><div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div><h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação</h2><div style="display: flex; gap: 20px; margin-bottom: 5px;"><span><strong>Fuga/Isolamento:</strong> ${simNao(an.comportamento?.fuga_isolamento)}</span><span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span><span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span><span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span></div><div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>` : `<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2><div style="margin-bottom: 5px; color: #64748b;"><em>Não possui diagnósticos de neurodivergência ou necessidade de inclusão declarados.</em></div>`; 
-            const element = document.createElement('div'); 
-            element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.3; font-size: 12px;"><h1 style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px;">FICHA DE SAÚDE E INCLUSÃO (ANAMNESE)</h1><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><div><strong>ATLETA:</strong> ${nome.toUpperCase()}</div><div><strong>DATA:</strong> ${dataAtual}</div></div>${resp ? `<div style="margin-bottom: 5px;"><strong>RESPONSÁVEL LEGAL:</strong> ${resp.toUpperCase()}</div>` : ''}<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;"><h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Clínica e Ortopédica</h2><div style="margin-bottom: 5px;"><strong>Condições:</strong> ${medText}</div><div style="margin-bottom: 5px;"><strong>Dores Articulares (Joelho, Ombro...):</strong> ${valOuDash(an.medico?.dores_articulacoes)}</div><div style="margin-bottom: 5px;"><strong>Problemas de Coluna:</strong> ${valOuDash(an.medico?.problema_coluna)}</div><div style="margin-bottom: 5px;"><strong>Cirurgias/Lesões Prévias:</strong> ${valOuDash(an.medico?.cirurgias)}</div><div style="margin-bottom: 5px;"><strong>Uso de Medicamentos:</strong> ${valOuDash(an.medico?.medicamentos)}</div>${htmlNeurodivergencia}<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Avaliação Geral</h2><div style="margin-bottom: 5px;"><strong>Alergias graves:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div><div style="margin-bottom: 5px;"><strong>O que esperam dos treinos:</strong> ${valOuDash(an.expectativas?.geral)}</div><div style="margin-top: 15px; border: 1.5px dashed #94a3b8; padding: 15px; border-radius: 8px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;"><div style="text-align: center; margin-bottom: 10px;"><span style="background-color: #0ea5e9; color: white; padding: 4px 12px; font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; border-radius: 15px; text-transform: uppercase;">Validação de Assinatura Eletrônica</span></div><p style="margin: 4px 0; font-size: 12px;"><strong>ASSINANTE (${tipoAssinante}):</strong> ${assinante}</p><p style="margin: 4px 0; font-size: 12px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p><p style="margin: 4px 0; font-size: 12px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <span style="color: #0369a1;">${hash}</span></p><p style="margin-top: 10px; font-size: 9px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">* Documento assinado eletronicamente via plataforma BJJ Manager. O assinante declara a veracidade das informações prestadas.</p></div></div>`; 
-            const opt = { margin: [5, 5, 5, 5], filename: `Ficha_Anamnese_${nome.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }; 
-            showToast("Gerando PDF da Ficha de Saúde...", "success"); html2pdf().set(opt).from(element).save(); 
-        };
-
+window.gerarPDF_Anamnese = function() { 
+    const aluno = window.todosAlunosCache.find(a => a.id === window.alunoEditandoId); 
+    if (!aluno) {
+        showToast("Aluno não encontrado.", "error");
+        return;
+    }
+    
+    if (!aluno.anamnese_preenchida || !aluno.anamnese) {
+        showToast("Ficha de anamnese não encontrada. O aluno precisa preencher no portal.", "error");
+        return;
+    }
+    
+    const an = aluno.anamnese; 
+    const nome = aluno.nome || 'NÃO INFORMADO'; 
+    
+    let isMenor = false; 
+    if (aluno.data_nascimento) { 
+        const hoje = new Date(); 
+        const nasc = new Date(aluno.data_nascimento); 
+        let idade = hoje.getFullYear() - nasc.getFullYear(); 
+        const mes = hoje.getMonth() - nasc.getMonth(); 
+        if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) idade--; 
+        isMenor = idade < 18; 
+    } 
+    
+    const resp = aluno.nome_responsavel || ''; 
+    const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase(); 
+    const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA"; 
+    
+    let dataAtual = 'Data não registrada'; 
+    if (an.data_preenchimento) { 
+        const dt = new Date(an.data_preenchimento); 
+        dataAtual = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR'); 
+    } 
+    
+    let hash = "ANAMNESE-" + aluno.id.toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
+    
+    // Funções auxiliares seguras
+    const simNao = (val) => val === true || val === 'Sim' || val === 'sim' ? 'SIM' : (val === false || val === 'Não' || val === 'não' ? 'NÃO' : '---');
+    const valOuDash = (val) => (val && val.trim) ? val.trim() : (val ? String(val) : '---');
+    const strForm = (val) => {
+        if (val === true || val === 'Sim' || val === 'sim') return 'SIM';
+        if (val === false || val === 'Não' || val === 'não') return 'NÃO';
+        return val || '---';
+    };
+    
+    // Coletar condições médicas com segurança
+    const medico = an.medico || {};
+    const med = []; 
+    if(medico.asma === true || medico.asma === 'Sim') med.push("Asma/Bronquite");
+    if(medico.hipertensao === true || medico.hipertensao === 'Sim') med.push("Hipertensão"); 
+    if(medico.cardiopatia === true || medico.cardiopatia === 'Sim') med.push("Cardiopatia");
+    if(medico.diabetes === true || medico.diabetes === 'Sim') med.push("Diabetes"); 
+    if(medico.epilepsia === true || medico.epilepsia === 'Sim') med.push("Epilepsia");
+    if(medico.desmaios === true || medico.desmaios === 'Sim') med.push("Desmaios"); 
+    const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada";
+    
+    // Coletar diagnósticos com segurança
+    const diagnostico = an.diagnostico || {};
+    const diags = []; 
+    if(diagnostico.tea === true || diagnostico.tea === 'Sim') diags.push("TEA");
+    if(diagnostico.tdah === true || diagnostico.tdah === 'Sim') diags.push("TDAH"); 
+    if(diagnostico.def_intelectual === true || diagnostico.def_intelectual === 'Sim') diags.push("Def. Intelectual");
+    if(diagnostico.def_fisica === true || diagnostico.def_fisica === 'Sim') diags.push("Def. Física"); 
+    if(diagnostico.def_visual === true || diagnostico.def_visual === 'Sim') diags.push("Def. Visual");
+    if(diagnostico.def_auditiva === true || diagnostico.def_auditiva === 'Sim') diags.push("Def. Auditiva"); 
+    if(diagnostico.transtorno_aprendizagem === true || diagnostico.transtorno_aprendizagem === 'Sim') diags.push("Trans. Aprendizagem");
+    if(diagnostico.ansiedade_emocional === true || diagnostico.ansiedade_emocional === 'Sim') diags.push("Ansiedade/Emocional"); 
+    if(diagnostico.outro) diags.push(diagnostico.outro); 
+    const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada";
+    
+    const possuiNeuro = diagnostico.possui_neurodivergencia === true || diagnostico.possui_neurodivergencia === 'Sim';
+    
+    const htmlNeurodivergencia = possuiNeuro ? `
+        <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2>
+        <div style="margin-bottom: 5px;"><strong>Diagnósticos:</strong> ${diagsText}</div>
+        <div style="margin-bottom: 5px;"><strong>Confirmado p/ Médico:</strong> ${strForm(diagnostico.confirmado)} ${diagnostico.profissional ? '('+diagnostico.profissional+')' : ''}</div>
+        <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Desenvolvimento Motor e Comunicação</h2>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span><span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span></div>
+        <div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div>
+        <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação</h2>
+        <div style="display: flex; gap: 20px; margin-bottom: 5px;"><span><strong>Fuga/Isolamento:</strong> ${simNao(an.comportamento?.fuga_isolamento)}</span><span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span><span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span><span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span></div>
+        <div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>
+    ` : `<h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2><div style="margin-bottom: 5px; color: #64748b;"><em>Não possui diagnósticos de neurodivergência ou necessidade de inclusão declarados.</em></div>`; 
+    
+    const element = document.createElement('div'); 
+    element.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.3; font-size: 12px;">
+        <h1 style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px;">FICHA DE SAÚDE E INCLUSÃO (ANAMNESE)</h1>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><div><strong>ATLETA:</strong> ${nome.toUpperCase()}</div><div><strong>DATA:</strong> ${dataAtual}</div></div>
+        ${resp ? `<div style="margin-bottom: 5px;"><strong>RESPONSÁVEL LEGAL:</strong> ${resp.toUpperCase()}</div>` : ''}
+        <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">
+        <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Clínica e Ortopédica</h2>
+        <div style="margin-bottom: 5px;"><strong>Condições:</strong> ${medText}</div>
+        <div style="margin-bottom: 5px;"><strong>Dores Articulares (Joelho, Ombro...):</strong> ${valOuDash(medico.dores_articulacoes)}</div>
+        <div style="margin-bottom: 5px;"><strong>Problemas de Coluna:</strong> ${valOuDash(medico.problema_coluna)}</div>
+        <div style="margin-bottom: 5px;"><strong>Cirurgias/Lesões Prévias:</strong> ${valOuDash(medico.cirurgias)}</div>
+        <div style="margin-bottom: 5px;"><strong>Uso de Medicamentos:</strong> ${valOuDash(medico.medicamentos)}</div>
+        ${htmlNeurodivergencia}
+        <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Avaliação Geral</h2>
+        <div style="margin-bottom: 5px;"><strong>Alergias graves:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div>
+        <div style="margin-bottom: 5px;"><strong>O que esperam dos treinos:</strong> ${valOuDash(an.expectativas?.geral)}</div>
+        <div style="margin-top: 15px; border: 1.5px dashed #94a3b8; padding: 15px; border-radius: 8px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;">
+            <div style="text-align: center; margin-bottom: 10px;"><span style="background-color: #0ea5e9; color: white; padding: 4px 12px; font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; border-radius: 15px; text-transform: uppercase;">Validação de Assinatura Eletrônica</span></div>
+            <p style="margin: 4px 0; font-size: 12px;"><strong>ASSINANTE (${tipoAssinante}):</strong> ${assinante}</p>
+            <p style="margin: 4px 0; font-size: 12px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p>
+            <p style="margin: 4px 0; font-size: 12px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <span style="color: #0369a1;">${hash}</span></p>
+            <p style="margin-top: 10px; font-size: 9px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">* Documento assinado eletronicamente via plataforma BJJ Manager. O assinante declara a veracidade das informações prestadas.</p>
+        </div>
+    </div>`; 
+    
+    const opt = { margin: [5, 5, 5, 5], filename: `Ficha_Anamnese_${nome.replace(/\s+/g, '_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }; 
+    showToast("Gerando PDF da Ficha de Saúde...", "success"); 
+    html2pdf().set(opt).from(element).save(); 
+};
         // ===================== AUTENTICAÇÃO E INICIALIZAÇÃO =====================
         onAuthStateChanged(auth, async (user) => { 
             if (user) { 
