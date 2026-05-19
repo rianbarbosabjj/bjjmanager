@@ -630,15 +630,15 @@
     </div>
 
 <script type="module">
-
+// ===================== IMPORTS =====================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc, deleteDoc, enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; // 🔧 ADICIONE ESTA LINHA
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; 
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";    
 
+// ===================== CONFIG =====================
 const firebaseConfig = {
     apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
     authDomain: "bjj-maneger.firebaseapp.com",
@@ -1349,111 +1349,58 @@ async function iniciarPortal() {
     
     console.log("✅ Portal iniciado com sucesso!");
 }
-    
 window.fazerLoginAluno = async function() {
-    const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const senha = document.getElementById('login-senha').value;
+    const emailBruto = document.getElementById('login-email').value;
+    const email = emailBruto.replace(/\s/g, '').toLowerCase(); 
+    const senha = document.getElementById('login-senha').value.trim();
     const btn = document.getElementById('btn-login');
-    
-    if (!email || !senha) {
-        showToast("Preencha e-mail e senha.", "error");
+
+    if(!email || !senha) {
+        showToast("Preencha todos os campos.", "error");
         return;
     }
     
-    btn.disabled = true;
-    btn.innerHTML = "⏳ Entrando...";
-    
+    btn.disabled = true; 
+    btn.innerHTML = "<span class='animate-pulse'>⏳</span> VALIDANDO ACESSO...";
+
     try {
-        // 1. Autenticar no Firebase Auth
-        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-        const firebaseUser = userCredential.user;
-        
-        // 2. Buscar dados do aluno no Firestore
-        const qAluno = query(
-            collection(db, "alunos"), 
-            where("email", "==", email),
-            where("status", "in", ["ATIVO", "ativo"])
-        );
-        const querySnapshot = await getDocs(qAluno);
+        // 🔐 Buscar no Firestore (não no Auth)
+        const q = query(collection(db, "alunos"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
         
         if (querySnapshot.empty) {
-            showToast("Aluno não encontrado ou conta inativa.", "error");
-            await auth.signOut();
+            showToast("E-mail não encontrado.", "error");
+            btn.disabled = false;
+            btn.innerHTML = "Entrar no Portal";
             return;
         }
         
         const alunoDoc = querySnapshot.docs[0];
-        const alunoData = alunoDoc.data();
+        const aluno = { id: alunoDoc.id, ...alunoDoc.data() };
         
-        // 3. Verificar se a senha do portal bate (se o campo senha_portal existir)
-        if (alunoData.senha_portal && alunoData.senha_portal !== senha) {
+        // Comparar senha (texto simples - apenas para teste)
+        if (senha === aluno.senha_portal) {
+            alunoLogado = aluno;
+            localStorage.setItem('bjj_aluno_token', 'temp_' + Date.now());
+            localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+            showToast("Acesso liberado! Oss!", "success");
+            iniciarPortal();
+        } else {
             showToast("Senha incorreta.", "error");
-            await auth.signOut();
-            return;
+            btn.disabled = false;
+            btn.innerHTML = "Entrar no Portal";
         }
-        
-        // 4. Gerar token de sessão
-        const token = await firebaseUser.getIdToken();
-        
-        // 5. Preparar objeto do aluno
-        alunoLogado = {
-            id: alunoDoc.id,
-            equipe_id: alunoData.equipe_id,
-            nome: alunoData.nome,
-            email: alunoData.email,
-            cpf: alunoData.cpf,
-            telefone: alunoData.telefone || '',
-            faixa: alunoData.faixa || 'BRANCA',
-            grau: alunoData.grau || '',
-            matricula: alunoData.matricula,
-            data_nascimento: alunoData.data_nascimento,
-            foto_url: alunoData.foto_url || '',
-            peso: alunoData.peso || '',
-            dia_vencimento: alunoData.dia_vencimento || 10,
-            cep: alunoData.cep || '',
-            endereco: alunoData.endereco || '',
-            numero: alunoData.numero || '',
-            complemento: alunoData.complemento || '',
-            bairro: alunoData.bairro || '',
-            cidade: alunoData.cidade || '',
-            uf: alunoData.uf || '',
-            anamnese_preenchida: alunoData.anamnese_preenchida || false,
-            anamnese: alunoData.anamnese || null,
-            status: alunoData.status
-        };
-        
-        // 6. Salvar sessão
-        salvarSessaoAluno(token, alunoLogado);
-        
-        // 7. Iniciar portal
-        await iniciarPortal();
         
     } catch (error) {
         console.error("Erro no login:", error);
-        
-        let mensagem = "Erro ao fazer login.";
-        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
-            mensagem = "E-mail ou senha incorretos.";
-        } else if (error.code === 'auth/wrong-password') {
-            mensagem = "Senha incorreta.";
-        } else if (error.code === 'auth/too-many-requests') {
-            mensagem = "Muitas tentativas. Aguarde um momento.";
-        } else if (error.code === 'auth/invalid-email') {
-            mensagem = "E-mail inválido.";
-        }
-        
-        showToast(mensagem, "error");
-    } finally {
+        showToast("Erro ao conectar. Tente novamente.", "error");
         btn.disabled = false;
         btn.innerHTML = "Entrar no Portal";
     }
 };
-
 window.sairDoPortal = function() { 
     if (typeof removerTokenPush === 'function') removerTokenPush();
     limparSessaoAluno();
-    // Limpar também a autenticação do Firebase
-    auth.signOut().catch(console.error);
     window.location.reload(); 
 };
 
@@ -1462,26 +1409,17 @@ const sessaoToken = localStorage.getItem('bjj_aluno_token');
 const sessaoAluno = localStorage.getItem('bjj_aluno_auth');
 
 if (sessaoToken && sessaoAluno) {
-    // Verificar se o token ainda é válido
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            try {
-                await user.getIdToken(true);
-                alunoLogado = JSON.parse(sessaoAluno);
-                iniciarPortal();
-            } catch (error) {
-                limparSessaoAluno();
-                auth.signOut();
-                console.log("Sessão expirada, faça login novamente.");
-            }
+    validarTokenAtual().then(isValid => {
+        if (isValid) {
+            alunoLogado = JSON.parse(sessaoAluno);
+            iniciarPortal();
         } else {
             limparSessaoAluno();
+            console.log("Sessão expirada, faça login novamente.");
         }
+    }).catch(() => {
+        limparSessaoAluno();
     });
-} else {
-    // Mostrar tela de login, esconder portal
-    document.getElementById('tela-login').classList.remove('hidden');
-    document.getElementById('tela-portal').classList.add('hidden');
 }
 
 // ==========================================
@@ -2664,41 +2602,41 @@ window.fecharModalEsqueciSenha = function() {
 
 window.recuperarSenha = async function() {
     const email = document.getElementById('recuperar-email').value.trim().toLowerCase();
-    if(!email) {
-        showToast("Digite seu e-mail de acesso.", "error");
-        return;
-    }
+    if(!email) return showToast("Digite seu e-mail de acesso.", "error");
     
     const btn = document.getElementById('btn-recuperar');
-    btn.disabled = true; 
-    btn.innerHTML = "⏳ Enviando...";
+    btn.disabled = true; btn.innerHTML = "⏳ Enviando...";
     
     try {
-        const auth = getAuth();
-        await sendPasswordResetEmail(auth, email, {
-            url: window.location.origin + '/portal_aluno.html',
-            handleCodeInApp: false
-        });
+        const q = query(collection(db, "alunos"), where("email", "==", email));
+        const snap = await getDocs(q);
         
-        showToast("✅ E-mail de redefinição enviado! Verifique sua caixa de entrada (incluindo SPAM).", "success");
-        fecharModalEsqueciSenha();
-        
-    } catch (error) {
-        console.error("Erro ao enviar redefinição:", error);
-        
-        let mensagemErro = "Erro ao enviar e-mail de recuperação.";
-        if (error.code === 'auth/user-not-found') {
-            mensagemErro = "Este e-mail não está cadastrado no sistema.";
-        } else if (error.code === 'auth/invalid-email') {
-            mensagemErro = "Digite um e-mail válido.";
-        } else if (error.code === 'auth/too-many-requests') {
-            mensagemErro = "Muitas tentativas. Aguarde alguns minutos.";
+        if (snap.empty) {
+            showToast("E-mail não encontrado no sistema.", "error");
+            btn.disabled = false; btn.innerHTML = "Pedir Recuperação";
+            return;
         }
+
+        const dadosAluno = snap.docs[0].data();
         
-        showToast(mensagemErro, "error");
+        await addDoc(collection(db, "mensagens"), {
+            equipe_id: dadosAluno.equipe_id,
+            aluno_id: snap.docs[0].id,
+            aluno_nome: dadosAluno.nome,
+            titulo: `🔑 Recuperação de Senha: ${dadosAluno.nome}`,
+            conteudo: `O aluno(a) ${dadosAluno.nome} (${dadosAluno.email}) solicitou a recuperação da senha de acesso ao portal.\nPor favor, acesse o painel de alunos, edite o cadastro dele(a) e redefina a senha na aba Contato.`,
+            tipo: "notificacao_sistema",
+            data_envio: new Date().toISOString(),
+            status: "ativo",
+            urgencia: "urgente"
+        });
+
+        showToast("Pedido enviado ao seu professor! Ele(a) irá redefinir sua senha.", "success");
+        fecharModalEsqueciSenha();
+    } catch(e) {
+        showToast("Erro ao processar pedido. Tente novamente.", "error");
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = "Pedir Recuperação";
+        btn.disabled = false; btn.innerHTML = "Pedir Recuperação";
     }
 };
 
