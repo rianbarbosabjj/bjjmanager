@@ -392,25 +392,25 @@
                                 <p class="text-xs text-cyan-700 mt-1 font-medium">Preencha a Data de Nascimento do atleta para liberar os contatos de segurança.</p>
                             </div>
 
-                            <div id="bloco-responsavel" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4 hidden">
-                                <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <span class="text-base">👨‍👩‍👦</span> Responsável Legal <span class="text-[9px] text-rose-500 font-bold ml-2 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Atleta Menor de Idade</span>
-                                </h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
-                                        <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR...">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
-                                        <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label>
-                                        <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all">
-                                    </div>
+<div id="bloco-responsavel" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4 hidden">
+    <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4 flex items-center gap-2">
+        <span class="text-base">👨‍👩‍👦</span> Responsável Legal 
+    </h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">
+            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
+            <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none uppercase" placeholder="NOME...">
+        </div>
+        <div>
+            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
+            <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700">
                                 </div>
-                            </div>
+                                <div>
+                                <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label>
+                               <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700">
+                               </div>
+                           </div>
+                      </div>
 
                             <div id="bloco-emergencia" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4 hidden">
                                 <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3"><span class="text-base">🚨</span><h4 class="text-xs font-black text-slate-700 uppercase tracking-widest">Contato de Emergência</h4></div>
@@ -1060,21 +1060,22 @@
                 }
             }
             
-            const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val === 'SIM' ? '✅ SIM' : '❌ NÃO';
+const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val === 'SIM' ? '✅ SIM' : '❌ NÃO';
+
             const equilibrioEl = document.getElementById('anamnese-equilibrio');
             const comandosEl = document.getElementById('anamnese-comandos');
             const comunicacaoEl = document.getElementById('anamnese-comunicacao');
             const fugaEl = document.getElementById('anamnese-fuga');
-            const apoioEl = document.getElementById('anamnese-apoio');
+            const apoioEl = document.getElementById('anamnese-apoio'); // O erro aponta aqui
             const sonsEl = document.getElementById('anamnese-sons');
             const toquesEl = document.getElementById('anamnese-toques');
             const crisesEl = document.getElementById('anamnese-crises');
-            
+
             if (equilibrioEl) equilibrioEl.innerHTML = simNao(an.motor?.dificuldade_equilibrio);
             if (comandosEl) comandosEl.innerHTML = simNao(an.comunicacao?.entende_comandos);
             if (comunicacaoEl) comunicacaoEl.innerText = an.comunicacao?.comunicacao_alternativa || '---';
             if (fugaEl) fugaEl.innerHTML = simNao(an.comportamento?.fuga_isolamento);
-            if (apoioEl) apoyoEl.innerHTML = simNao(an.social?.precisa_apoio);
+            if (apoioEl) apoioEl.innerHTML = simNao(an.social?.precisa_apoio);
             if (sonsEl) sonsEl.innerHTML = simNao(an.sensorial?.sons);
             if (toquesEl) toquesEl.innerHTML = simNao(an.sensorial?.toques);
             if (crisesEl) crisesEl.innerText = an.comportamento?.crises_agressividade || '---';
