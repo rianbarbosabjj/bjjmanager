@@ -1,11 +1,21 @@
 // ==========================================
 // 🌙 MOTOR GLOBAL DE MODO ESCURO E SCROLLBAR
 // ==========================================
+
+// CSS para transição suave e impressão
 const injetarEstilosGlobais = () => {
     if (!document.getElementById('bjj-global-styles')) {
         const style = document.createElement('style');
         style.id = 'bjj-global-styles';
         style.innerHTML = `
+            /* Transição suave para dark mode */
+            * {
+                transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            }
+            .no-transition {
+                transition: none !important;
+            }
+            
             /* MODO ESCURO GERAL (Pula elementos com a classe .ignorar-dark) */
             html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
             
@@ -75,6 +85,26 @@ const injetarEstilosGlobais = () => {
             .custom-scroll::-webkit-scrollbar-thumb { background-color: #334155; border-radius: 10px; }
             .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #475569; }
             .custom-scroll { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+            
+            /* ESTILOS DE IMPRESSÃO */
+            @media print {
+                #bjj-sidebar, #bjj-hamburger-btn, #bjj-menu-overlay, .no-print {
+                    display: none !important;
+                }
+                main {
+                    margin-left: 0 !important;
+                    padding-left: 0 !important;
+                }
+                body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+            }
+            
+            /* MODAIS COM DARK MODE */
+            .modal-dark-sync {
+                transition: background-color 0.2s ease, border-color 0.2s ease;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -86,8 +116,16 @@ const injetarEstilosGlobais = () => {
     }
 };
 
+// ==========================================
+// 🌓 DARK MODE MELHORADO COM TRANSIÇÃO SUAVE
+// ==========================================
 window.toggleDarkMode = function() {
     const htmlTag = document.documentElement;
+    const btn = window.event?.currentTarget;
+    
+    // Desativa transições temporariamente para evitar flash
+    document.body.classList.add('no-transition');
+    
     if (htmlTag.classList.contains('dark')) {
         htmlTag.classList.remove('dark');
         localStorage.setItem('bjj-theme', 'light');
@@ -95,39 +133,193 @@ window.toggleDarkMode = function() {
         htmlTag.classList.add('dark');
         localStorage.setItem('bjj-theme', 'dark');
     }
-};
-
-window.addEventListener('beforeprint', () => { document.documentElement.classList.remove('dark'); });
-window.addEventListener('afterprint', () => { if (localStorage.getItem('bjj-theme') === 'dark') document.documentElement.classList.add('dark'); });
-
-injetarEstilosGlobais();
-
-window.toggleBjjMenu = function() {
-    const sidebar = document.getElementById('bjj-sidebar');
-    const overlay = document.getElementById('bjj-menu-overlay');
-
-    if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-    } else {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('opacity-0');
-        setTimeout(() => overlay.classList.add('hidden'), 300);
-    }
-};
-
-// 🔥 FUNÇÃO PARA LIGAR/DESLIGAR A BOLINHA DO SUPORTE
-window.atualizarBadgeSuporte = function(temNotificacao) {
-    const badge = document.getElementById('badge-suporte');
-    if (badge) {
-        if (temNotificacao) badge.classList.remove('hidden');
-        else badge.classList.add('hidden');
+    
+    // Reativa transições após o próximo frame
+    requestAnimationFrame(() => {
+        document.body.classList.remove('no-transition');
+    });
+    
+    // Sincroniza modais com o novo tema
+    setTimeout(() => sincronizarModaisComTema(), 50);
+    
+    // Atualiza ícone do botão se existir
+    if (btn) {
+        const isDark = htmlTag.classList.contains('dark');
+        const spanIcone = btn.querySelector('span:first-child');
+        if (spanIcone) {
+            spanIcone.innerHTML = isDark ? '🌙' : '☀️';
+        }
     }
 };
 
 // ==========================================
-// 📱 CONSTRUTOR DO MENU GAVETA UNIVERSAL
+// 🎨 SINCRONIZAR MODAIS COM O TEMA
+// ==========================================
+function sincronizarModaisComTema() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const modais = document.querySelectorAll('.fixed.inset-0, [class*="modal"], [id*="modal"]');
+    
+    modais.forEach(modal => {
+        if (isDark) {
+            modal.classList.add('dark');
+            modal.classList.add('modal-dark-sync');
+        } else {
+            modal.classList.remove('dark');
+            modal.classList.remove('modal-dark-sync');
+        }
+    });
+}
+
+// ==========================================
+// 📱 SWIPE PARA ABRIR/FECHAR MENU (MOBILE)
+// ==========================================
+let touchStartX = 0;
+let touchEndX = 0;
+let swipeEnabled = true;
+
+document.addEventListener('touchstart', (e) => {
+    if (!swipeEnabled) return;
+    // Ignora se o toque começou dentro do menu
+    const sidebar = document.getElementById('bjj-sidebar');
+    if (sidebar && sidebar.contains(e.target)) return;
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', (e) => {
+    if (!swipeEnabled) return;
+    const sidebar = document.getElementById('bjj-sidebar');
+    if (!sidebar) return;
+    
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    
+    // Swipe direito para abrir (diferença > 50px) - apenas na borda esquerda
+    if (diff > 50 && !isOpen && touchStartX < 50) {
+        toggleBjjMenu();
+    }
+    // Swipe esquerdo para fechar (diferença < -50px)
+    if (diff < -50 && isOpen) {
+        toggleBjjMenu();
+    }
+});
+
+// ==========================================
+// 💾 SALVAR ESTADO DO MENU (ABERTO/FECHADO)
+// ==========================================
+function carregarPreferenciaMenu() {
+    const menuAberto = localStorage.getItem('bjj_menu_aberto');
+    const sidebar = document.getElementById('bjj-sidebar');
+    const overlay = document.getElementById('bjj-menu-overlay');
+    
+    if (!sidebar || !overlay) return;
+    
+    if (menuAberto === 'true' && window.innerWidth > 768) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+    }
+}
+
+// ==========================================
+// 📱 AJUSTAR COMPORTAMENTO POR TAMANHO DE TELA
+// ==========================================
+function ajustarMenuPorTela() {
+    const sidebar = document.getElementById('bjj-sidebar');
+    const overlay = document.getElementById('bjj-menu-overlay');
+    const isMobile = window.innerWidth < 768;
+    
+    if (!sidebar || !overlay) return;
+    
+    if (!isMobile) {
+        // Em desktop, mantém estado salvo
+        const menuAberto = localStorage.getItem('bjj_menu_aberto') === 'true';
+        if (menuAberto) {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            overlay.classList.add('opacity-0');
+        }
+    } else {
+        // Em mobile, sempre começa fechado
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        overlay.classList.add('opacity-0');
+        localStorage.setItem('bjj_menu_aberto', 'false');
+    }
+}
+
+// Adicionar listener para redimensionamento
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(ajustarMenuPorTela, 250);
+});
+
+// ==========================================
+// 🔔 CONTADOR DE NOTIFICAÇÕES NÃO LIDAS
+// ==========================================
+async function verificarNotificacoesNaoLidas() {
+    // Só executa se tiver os dados necessários
+    if (!window.uid || !window.db) return;
+    
+    try {
+        const db = window.db;
+        const collection = window.collection;
+        const query = window.query;
+        const where = window.where;
+        const getDocs = window.getDocs;
+        
+        if (!collection || !query || !where || !getDocs) return;
+        
+        const q = query(
+            collection(db, "chamados_suporte"),
+            where("equipe_id", "==", window.uid),
+            where("lida", "==", false)
+        );
+        const snap = await getDocs(q);
+        const naoLidas = snap.size;
+        
+        const badge = document.getElementById('badge-suporte');
+        if (badge) {
+            if (naoLidas > 0) {
+                badge.classList.remove('hidden');
+                badge.innerHTML = naoLidas > 9 ? '9+' : naoLidas;
+                badge.classList.add('flex', 'items-center', 'justify-center');
+                badge.style.minWidth = '1.25rem';
+                badge.style.height = '1.25rem';
+                badge.style.borderRadius = '9999px';
+            } else {
+                badge.classList.add('hidden');
+                badge.innerHTML = '';
+            }
+        }
+    } catch(e) {
+        console.error("Erro ao verificar notificações:", e);
+    }
+}
+
+// Iniciar verificação periódica quando o usuário estiver logado
+let intervaloNotificacoes = null;
+
+function iniciarVerificacaoNotificacoes() {
+    if (intervaloNotificacoes) clearInterval(intervaloNotificacoes);
+    verificarNotificacoesNaoLidas();
+    intervaloNotificacoes = setInterval(verificarNotificacoesNaoLidas, 30000);
+}
+
+function pararVerificacaoNotificacoes() {
+    if (intervaloNotificacoes) {
+        clearInterval(intervaloNotificacoes);
+        intervaloNotificacoes = null;
+    }
+}
+
+// ==========================================
+// 📋 MENU GAVETA UNIVERSAL
 // ==========================================
 function carregarMenu() {
     try {
@@ -146,7 +338,7 @@ function carregarMenu() {
         let cacheLogoHTML = cacheNome.charAt(0).toUpperCase();
         let cacheLogoBg = "";
         if (cacheLogoUrl && cacheLogoUrl !== "null" && cacheLogoUrl !== "") {
-            cacheLogoHTML = `<img src="${cacheLogoUrl}" class="w-full h-full object-cover" alt="Logo">`;
+            cacheLogoHTML = `<img src="${cacheLogoUrl}" class="w-full h-full object-cover" alt="Logo" crossorigin="anonymous">`;
             cacheLogoBg = "background: transparent;";
         }
 
@@ -169,10 +361,10 @@ function carregarMenu() {
         const canTurmas = hasAccess('Turmas'); 
         const canExtra = hasAccess('Ilimitados') || hasAccess('Portal'); 
 
-        const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`; };
+        const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade();`; };
 
         const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
-        const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75 4.365-9.75 9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
+        const svgTema = `<span class="mr-2 text-base">${document.documentElement.classList.contains('dark') ? '🌙' : '☀️'}</span>`;
 
         // --- HTML DO MENU LATERAL ---
         const menuSidebar = `
@@ -281,9 +473,21 @@ function carregarMenu() {
             containerPrincipal.insertAdjacentHTML('afterbegin', menuSidebar);
         }
 
-        if (document.body) document.body.insertAdjacentHTML('beforeend', btnHamburguer);
+        if (document.body) {
+            const existingBtn = document.getElementById('bjj-hamburger-btn');
+            if (!existingBtn) {
+                document.body.insertAdjacentHTML('beforeend', btnHamburguer);
+            }
+        }
 
-        // 🔥 INJETAR MARCA D'ÁGUA NO FINAL DO CONTEÚDO (SUPER COMPACTA)
+        // Carregar preferência do menu e ajustar por tela
+        setTimeout(() => {
+            carregarPreferenciaMenu();
+            ajustarMenuPorTela();
+            sincronizarModaisComTema();
+        }, 100);
+
+        // 🔥 INJETAR MARCA D'ÁGUA NO FINAL DO CONTEÚDO
         const mainContainer = document.querySelector('main');
         if (mainContainer && !document.getElementById('bjj-footer-powered')) {
             const poweredHTML = `
@@ -294,7 +498,6 @@ function carregarMenu() {
                     </a>
                 </div>
             `;
-            // Adiciona no final da tag <main>, forçando-a para baixo.
             mainContainer.insertAdjacentHTML('beforeend', poweredHTML);
         }
 
@@ -303,6 +506,9 @@ function carregarMenu() {
     }
 }
 
+// ==========================================
+// 📋 FUNÇÕES DE CONTROLE DO MENU
+// ==========================================
 window.mostrarAvisoUpgrade = function() {
     if(typeof showToast === 'function') showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
     else alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
@@ -314,8 +520,46 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     carregarMenu(); 
 };
 
+window.toggleBjjMenu = function() {
+    const sidebar = document.getElementById('bjj-sidebar');
+    const overlay = document.getElementById('bjj-menu-overlay');
+
+    if (!sidebar || !overlay) return;
+
+    if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+        // Salvar estado se for desktop
+        if (window.innerWidth > 768) {
+            localStorage.setItem('bjj_menu_aberto', 'true');
+        }
+    } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+        // Salvar estado se for desktop
+        if (window.innerWidth > 768) {
+            localStorage.setItem('bjj_menu_aberto', 'false');
+        }
+    }
+};
+
+// ==========================================
+// 🚀 INICIALIZAÇÃO
+// ==========================================
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', carregarMenu);
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarMenu();
+        iniciarVerificacaoNotificacoes();
+    });
 } else {
     carregarMenu();
+    iniciarVerificacaoNotificacoes();
 }
+
+// Exportar funções para uso global
+window.verificarNotificacoesNaoLidas = verificarNotificacoesNaoLidas;
+window.iniciarVerificacaoNotificacoes = iniciarVerificacaoNotificacoes;
+window.pararVerificacaoNotificacoes = pararVerificacaoNotificacoes;
+window.sincronizarModaisComTema = sincronizarModaisComTema;
