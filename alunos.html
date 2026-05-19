@@ -949,110 +949,131 @@
             } 
         };
 
-        // ===================== RENDERIZAR ANAMNESE =====================
-        function renderizarAnamnese(aluno) {
-            const divVazia = document.getElementById('anamnese-vazia');
-            const divPreenchida = document.getElementById('anamnese-preenchida');
-            
-            if (!aluno.anamnese_preenchida || !aluno.anamnese) {
-                if(divVazia) divVazia.classList.remove('hidden');
-                if(divPreenchida) divPreenchida.classList.add('hidden');
-                return;
-            }
-            
-            if(divVazia) divVazia.classList.add('hidden');
-            if(divPreenchida) divPreenchida.classList.remove('hidden');
-            
-            const an = aluno.anamnese;
-            const medico = an.medico || {};
-            const diagnostico = an.diagnostico || {};
-            
-            const alturaEl = document.getElementById('anamnese-altura');
-            const pesoEl = document.getElementById('anamnese-peso');
-            const dataEl = document.getElementById('anamnese-data');
-            if (alturaEl) alturaEl.innerText = aluno.altura || '---';
-            if (pesoEl) pesoEl.innerText = aluno.peso || '---';
-            if (dataEl && an.data_preenchimento) {
-                const dt = new Date(an.data_preenchimento);
-                dataEl.innerText = dt.toLocaleDateString('pt-BR');
-            }
-            
-            const doresEl = document.getElementById('anamnese-dores');
-            const colunaEl = document.getElementById('anamnese-coluna');
-            const cirurgiasEl = document.getElementById('anamnese-cirurgias');
-            const medicamentosEl = document.getElementById('anamnese-medicamentos');
-            
-            if (doresEl) doresEl.innerText = medico.dores_articulacoes || '---';
-            if (colunaEl) colunaEl.innerText = medico.problema_coluna || '---';
-            if (cirurgiasEl) cirurgiasEl.innerText = medico.cirurgias || '---';
-            if (medicamentosEl) medicamentosEl.innerText = medico.medicamentos || '---';
-            
-            const setStatus = (id, value) => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                if (value === true || value === 'Sim' || value === 'sim') {
-                    el.className = 'w-3 h-3 rounded-full bg-red-500';
-                } else {
-                    el.className = 'w-3 h-3 rounded-full bg-green-500';
-                }
-            };
-            
-            setStatus('anamnese-asma', medico.asma);
-            setStatus('anamnese-hipertensao', medico.hipertensao);
-            setStatus('anamnese-cardiopatia', medico.cardiopatia);
-            setStatus('anamnese-diabetes', medico.diabetes);
-            setStatus('anamnese-epilepsia', medico.epilepsia);
-            setStatus('anamnese-desmaios', medico.desmaios);
-            
-            const neuroContainer = document.getElementById('anamnese-neuro-container');
-            const possuiNeuro = diagnostico.possui_neurodivergencia === true || diagnostico.possui_neurodivergencia === 'Sim';
-            
-            if (neuroContainer) {
-                if (possuiNeuro) {
-                    const diags = [];
-                    if (diagnostico.tea === true || diagnostico.tea === 'Sim') diags.push('TEA');
-                    if (diagnostico.tdah === true || diagnostico.tdah === 'Sim') diags.push('TDAH');
-                    if (diagnostico.def_intelectual === true || diagnostico.def_intelectual === 'Sim') diags.push('Def. Intelectual');
-                    if (diagnostico.def_fisica === true || diagnostico.def_fisica === 'Sim') diags.push('Def. Física');
-                    if (diagnostico.def_visual === true || diagnostico.def_visual === 'Sim') diags.push('Def. Visual');
-                    if (diagnostico.def_auditiva === true || diagnostico.def_auditiva === 'Sim') diags.push('Def. Auditiva');
-                    if (diagnostico.transtorno_aprendizagem === true || diagnostico.transtorno_aprendizagem === 'Sim') diags.push('Trans. Aprendizagem');
-                    if (diagnostico.ansiedade_emocional === true || diagnostico.ansiedade_emocional === 'Sim') diags.push('Ansiedade/Emocional');
-                    if (diagnostico.outro) diags.push(diagnostico.outro);
-                    
-                    neuroContainer.innerHTML = `
-                        <div class="mb-3"><strong class="text-sm">Diagnósticos:</strong> <span class="text-slate-700">${diags.length > 0 ? diags.join(', ') : 'Nenhum declarado'}</span></div>
-                        <div><strong class="text-sm">Confirmado por médico:</strong> <span class="text-slate-700">${diagnostico.confirmado === true || diagnostico.confirmado === 'Sim' ? 'SIM' : 'NÃO'} ${diagnostico.profissional ? '(' + diagnostico.profissional + ')' : ''}</span></div>
-                    `;
-                } else {
-                    neuroContainer.innerHTML = '<p class="text-slate-500 text-sm">Nenhum diagnóstico de neurodivergência declarado</p>';
-                }
-            }
-            
-            const simNao = (val) => val === true || val === 'Sim' || val === 'sim' ? '✅ SIM' : '❌ NÃO';
-            const equilibrioEl = document.getElementById('anamnese-equilibrio');
-            const comandosEl = document.getElementById('anamnese-comandos');
-            const comunicacaoEl = document.getElementById('anamnese-comunicacao');
-            const fugaEl = document.getElementById('anamnese-fuga');
-            const apoioEl = document.getElementById('anamnese-apoio');
-            const sonsEl = document.getElementById('anamnese-sons');
-            const toquesEl = document.getElementById('anamnese-toques');
-            const crisesEl = document.getElementById('anamnese-crises');
-            
-            if (equilibrioEl) equilibrioEl.innerHTML = simNao(an.motor?.dificuldade_equilibrio);
-            if (comandosEl) comandosEl.innerHTML = simNao(an.comunicacao?.entende_comandos);
-            if (comunicacaoEl) comunicacaoEl.innerText = an.comunicacao?.comunicacao_alternativa || '---';
-            if (fugaEl) fugaEl.innerHTML = simNao(an.comportamento?.fuga_isolamento);
-            if (apoioEl) apoioEl.innerHTML = simNao(an.social?.precisa_apoio);
-            if (sonsEl) sonsEl.innerHTML = simNao(an.sensorial?.sons);
-            if (toquesEl) toquesEl.innerHTML = simNao(an.sensorial?.toques);
-            if (crisesEl) crisesEl.innerText = an.comportamento?.crises_agressividade || '---';
-            
-            const alergiasEl = document.getElementById('anamnese-alergias');
-            const expectativasEl = document.getElementById('anamnese-expectativas');
-            if (alergiasEl) alergiasEl.innerText = an.saude?.alergias_restricoes || '---';
-            if (expectativasEl) expectativasEl.innerText = an.expectativas?.geral || '---';
+// ===================== RENDERIZAR ANAMNESE =====================
+function renderizarAnamnese(aluno) {
+    console.log("=== RENDERIZANDO ANAMNESE ===");
+    console.log("Aluno:", aluno);
+    console.log("Tem anamnese?", aluno.anamnese_preenchida);
+    console.log("Dados anamnese:", aluno.anamnese);
+    
+    const divVazia = document.getElementById('anamnese-vazia');
+    const divPreenchida = document.getElementById('anamnese-preenchida');
+    
+    if (!divVazia || !divPreenchida) {
+        console.error("Elementos da anamnese não encontrados!");
+        return;
+    }
+    
+    if (!aluno.anamnese_preenchida || !aluno.anamnese) {
+        console.log("Mostrando mensagem de ficha pendente");
+        divVazia.classList.remove('hidden');
+        divPreenchida.classList.add('hidden');
+        return;
+    }
+    
+    console.log("Mostrando ficha preenchida");
+    divVazia.classList.add('hidden');
+    divPreenchida.classList.remove('hidden');
+    
+    const an = aluno.anamnese;
+    const medico = an.medico || {};
+    const diagnostico = an.diagnostico || {};
+    
+    // Dados Pessoais
+    const alturaEl = document.getElementById('anamnese-altura');
+    const pesoEl = document.getElementById('anamnese-peso');
+    const dataEl = document.getElementById('anamnese-data');
+    
+    if (alturaEl) alturaEl.innerText = aluno.altura || '---';
+    if (pesoEl) pesoEl.innerText = aluno.peso || '---';
+    if (dataEl && an.data_preenchimento) {
+        const dt = new Date(an.data_preenchimento);
+        dataEl.innerText = dt.toLocaleDateString('pt-BR');
+    }
+    
+    // Condições Clínicas
+    const doresEl = document.getElementById('anamnese-dores');
+    const colunaEl = document.getElementById('anamnese-coluna');
+    const cirurgiasEl = document.getElementById('anamnese-cirurgias');
+    const medicamentosEl = document.getElementById('anamnese-medicamentos');
+    
+    if (doresEl) doresEl.innerText = medico.dores_articulacoes || '---';
+    if (colunaEl) colunaEl.innerText = medico.problema_coluna || '---';
+    if (cirurgiasEl) cirurgiasEl.innerText = medico.cirurgias || '---';
+    if (medicamentosEl) medicamentosEl.innerText = medico.medicamentos || '---';
+    
+    // Indicadores visuais (círculos)
+    const setStatus = (id, value) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (value === true || value === 'Sim' || value === 'sim') {
+            el.className = 'w-3 h-3 rounded-full bg-red-500';
+        } else {
+            el.className = 'w-3 h-3 rounded-full bg-green-500';
         }
+    };
+    
+    setStatus('anamnese-asma', medico.asma);
+    setStatus('anamnese-hipertensao', medico.hipertensao);
+    setStatus('anamnese-cardiopatia', medico.cardiopatia);
+    setStatus('anamnese-diabetes', medico.diabetes);
+    setStatus('anamnese-epilepsia', medico.epilepsia);
+    setStatus('anamnese-desmaios', medico.desmaios);
+    
+    // Neurodivergência
+    const neuroContainer = document.getElementById('anamnese-neuro-container');
+    const possuiNeuro = diagnostico.possui_neurodivergencia === true || diagnostico.possui_neurodivergencia === 'Sim';
+    
+    if (neuroContainer) {
+        if (possuiNeuro) {
+            const diags = [];
+            if (diagnostico.tea === true || diagnostico.tea === 'Sim') diags.push('TEA');
+            if (diagnostico.tdah === true || diagnostico.tdah === 'Sim') diags.push('TDAH');
+            if (diagnostico.def_intelectual === true || diagnostico.def_intelectual === 'Sim') diags.push('Def. Intelectual');
+            if (diagnostico.def_fisica === true || diagnostico.def_fisica === 'Sim') diags.push('Def. Física');
+            if (diagnostico.def_visual === true || diagnostico.def_visual === 'Sim') diags.push('Def. Visual');
+            if (diagnostico.def_auditiva === true || diagnostico.def_auditiva === 'Sim') diags.push('Def. Auditiva');
+            if (diagnostico.transtorno_aprendizagem === true || diagnostico.transtorno_aprendizagem === 'Sim') diags.push('Trans. Aprendizagem');
+            if (diagnostico.ansiedade_emocional === true || diagnostico.ansiedade_emocional === 'Sim') diags.push('Ansiedade/Emocional');
+            if (diagnostico.outro) diags.push(diagnostico.outro);
+            
+            neuroContainer.innerHTML = `
+                <div class="mb-3"><strong class="text-sm">Diagnósticos:</strong> <span class="text-slate-700">${diags.length > 0 ? diags.join(', ') : 'Nenhum declarado'}</span></div>
+                <div><strong class="text-sm">Confirmado por médico:</strong> <span class="text-slate-700">${diagnostico.confirmado === true || diagnostico.confirmado === 'Sim' ? 'SIM' : 'NÃO'} ${diagnostico.profissional ? '(' + diagnostico.profissional + ')' : ''}</span></div>
+            `;
+        } else {
+            neuroContainer.innerHTML = '<p class="text-slate-500 text-sm">Nenhum diagnóstico de neurodivergência declarado</p>';
+        }
+    }
+    
+    // Comportamento
+    const simNao = (val) => val === true || val === 'Sim' || val === 'sim' ? '✅ SIM' : '❌ NÃO';
+    const equilibrioEl = document.getElementById('anamnese-equilibrio');
+    const comandosEl = document.getElementById('anamnese-comandos');
+    const comunicacaoEl = document.getElementById('anamnese-comunicacao');
+    const fugaEl = document.getElementById('anamnese-fuga');
+    const apoioEl = document.getElementById('anamnese-apoio');
+    const sonsEl = document.getElementById('anamnese-sons');
+    const toquesEl = document.getElementById('anamnese-toques');
+    const crisesEl = document.getElementById('anamnese-crises');
+    
+    if (equilibrioEl) equilibrioEl.innerHTML = simNao(an.motor?.dificuldade_equilibrio);
+    if (comandosEl) comandosEl.innerHTML = simNao(an.comunicacao?.entende_comandos);
+    if (comunicacaoEl) comunicacaoEl.innerText = an.comunicacao?.comunicacao_alternativa || '---';
+    if (fugaEl) fugaEl.innerHTML = simNao(an.comportamento?.fuga_isolamento);
+    if (apoioEl) apoioEl.innerHTML = simNao(an.social?.precisa_apoio);
+    if (sonsEl) sonsEl.innerHTML = simNao(an.sensorial?.sons);
+    if (toquesEl) toquesEl.innerHTML = simNao(an.sensorial?.toques);
+    if (crisesEl) crisesEl.innerText = an.comportamento?.crises_agressividade || '---';
+    
+    // Avaliação Geral
+    const alergiasEl = document.getElementById('anamnese-alergias');
+    const expectativasEl = document.getElementById('anamnese-expectativas');
+    if (alergiasEl) alergiasEl.innerText = an.saude?.alergias_restricoes || '---';
+    if (expectativasEl) expectativasEl.innerText = an.expectativas?.geral || '---';
+    
+    console.log("Renderização da anamnese concluída!");
+}
 
         function getCorFaixa(faixaTexto) { const f = faixaTexto ? faixaTexto.toLowerCase() : ''; if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300'; if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500'; if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500'; if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500'; if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500'; if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500'; if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600'; if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600'; if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300'; if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500'; if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500'; if (f.includes('laranja')) return 'bg-orange-500 text-white border border-orange-600'; if (f.includes('verde')) return 'bg-green-600 text-white border border-green-700'; if (f.includes('azul')) return 'bg-blue-600 text-white border border-blue-700'; if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700'; if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900'; if (f.includes('preta')) return 'bg-slate-900 text-white border border-black'; return 'bg-slate-100 text-slate-600 border border-slate-200'; }
         function getCorFaixaDupla(faixaTexto) { const f = faixaTexto ? faixaTexto.toLowerCase() : ''; if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)'; if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)'; if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)'; if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)'; if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)'; if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)'; if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)'; if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)'; if (f.includes('branca')) return '#f8fafc'; if (f.includes('cinza')) return '#94A3B8'; if (f.includes('amarela')) return '#FACC15'; if (f.includes('laranja')) return '#F97316'; if (f.includes('verde')) return '#16A34A'; if (f.includes('azul')) return '#3b82f6'; if (f.includes('roxa')) return '#a855f7'; if (f.includes('marrom')) return '#78350f'; if (f.includes('preta')) return '#0F172A'; return '#cbd5e1'; }
@@ -1322,6 +1343,7 @@
                 await carregarFrequenciaDoAluno(alunoId);
                 
                 // Anamnese
+                console.log("Chamando renderizarAnamnese para o aluno:", aluno);
                 renderizarAnamnese(aluno);
                 atualizarAbasPorPlano();
 
