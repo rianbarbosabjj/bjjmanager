@@ -1,22 +1,13 @@
 // ==========================================
-// 🌙 MOTOR GLOBAL DE MODO ESCURO E SCROLLBAR
+// 🌙 MOTOR GLOBAL DE MODO ESCURO
 // ==========================================
 
-// CSS para transição suave e impressão
 const injetarEstilosGlobais = () => {
     if (!document.getElementById('bjj-global-styles')) {
         const style = document.createElement('style');
         style.id = 'bjj-global-styles';
         style.innerHTML = `
-            /* Transição suave para dark mode */
-            * {
-                transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-            }
-            .no-transition {
-                transition: none !important;
-            }
-            
-            /* MODO ESCURO GERAL (Pula elementos com a classe .ignorar-dark) */
+            /* MODO ESCURO GERAL */
             html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
             
             html.dark .bg-[#F4F7F8]:not(.ignorar-dark):not(.ignorar-dark *), 
@@ -25,35 +16,23 @@ const injetarEstilosGlobais = () => {
             html.dark .bg-white:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .card-premium:not(.ignorar-dark):not(.ignorar-dark *) { background-color: #0f172a !important; border-color: #1e293b !important; }
             
-            /* Engloba tons de cinza usados em fundos */
             html.dark .bg-slate-50:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .bg-slate-100:not(.ignorar-dark):not(.ignorar-dark *),
             html.dark .bg-slate-200:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .bg-slate-300:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .bg-gray-50:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .bg-gray-100:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .bg-gray-200:not(.ignorar-dark):not(.ignorar-dark *) { 
+            html.dark .bg-slate-300:not(.ignorar-dark):not(.ignorar-dark *) { 
                 background-color: #1e293b !important; 
                 border-color: #334155 !important; 
             }
             
-            /* Textos padrão */
             html.dark .text-slate-900:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .text-slate-800:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-slate-700:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .text-gray-900:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-gray-800:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-gray-700:not(.ignorar-dark):not(.ignorar-dark *) { color: #f8fafc !important; }
+            html.dark .text-slate-700:not(.ignorar-dark):not(.ignorar-dark *) { color: #f8fafc !important; }
             
             html.dark .text-slate-600:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-slate-500:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .text-gray-600:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-gray-500:not(.ignorar-dark):not(.ignorar-dark *) { color: #94a3b8 !important; }
+            html.dark .text-slate-500:not(.ignorar-dark):not(.ignorar-dark *) { color: #94a3b8 !important; }
             
             html.dark .border-slate-200:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .border-slate-100:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .border-gray-200:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .border-gray-100:not(.ignorar-dark):not(.ignorar-dark *) { border-color: #1e293b !important; }
+            html.dark .border-slate-100:not(.ignorar-dark):not(.ignorar-dark *) { border-color: #1e293b !important; }
 
             html.dark label:not(.ignorar-dark):not(.ignorar-dark *) { color: #cbd5e1 !important; }
             
@@ -67,16 +46,10 @@ const injetarEstilosGlobais = () => {
             
             html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
 
-            /* FUNDOS COLORIDOS */
-            html.dark .bg-emerald-50:not(.ignorar-dark), html.dark .bg-green-50:not(.ignorar-dark) { background-color: rgba(6, 78, 59, 0.2) !important; border-color: rgba(6, 78, 59, 0.4) !important; }
-            html.dark .bg-cyan-50:not(.ignorar-dark), html.dark .bg-blue-50:not(.ignorar-dark), html.dark .bg-indigo-50:not(.ignorar-dark) { background-color: rgba(30, 58, 138, 0.2) !important; border-color: rgba(30, 58, 138, 0.4) !important; }
-            html.dark .bg-amber-50:not(.ignorar-dark), html.dark .bg-yellow-50:not(.ignorar-dark) { background-color: rgba(120, 53, 15, 0.2) !important; border-color: rgba(120, 53, 15, 0.4) !important; }
-            html.dark .bg-rose-50:not(.ignorar-dark), html.dark .bg-red-50:not(.ignorar-dark) { background-color: rgba(136, 19, 55, 0.2) !important; border-color: rgba(136, 19, 55, 0.4) !important; }
-
-            html.dark .text-emerald-800:not(.ignorar-dark) { color: #6ee7b7 !important; }
-            html.dark .text-cyan-800:not(.ignorar-dark), html.dark .text-indigo-800:not(.ignorar-dark) { color: #7dd3fc !important; }
-            html.dark .text-amber-800:not(.ignorar-dark) { color: #fcd34d !important; }
-            html.dark .text-rose-800:not(.ignorar-dark) { color: #fda4af !important; }
+            html.dark .bg-emerald-50:not(.ignorar-dark) { background-color: rgba(6, 78, 59, 0.2) !important; }
+            html.dark .bg-cyan-50:not(.ignorar-dark) { background-color: rgba(30, 58, 138, 0.2) !important; }
+            html.dark .bg-amber-50:not(.ignorar-dark) { background-color: rgba(120, 53, 15, 0.2) !important; }
+            html.dark .bg-rose-50:not(.ignorar-dark) { background-color: rgba(136, 19, 55, 0.2) !important; }
 
             html.dark tr:hover td { background-color: #1e293b !important; }
 
@@ -86,7 +59,7 @@ const injetarEstilosGlobais = () => {
             .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #475569; }
             .custom-scroll { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
             
-            /* ESTILOS DE IMPRESSÃO */
+            /* IMPRESSÃO */
             @media print {
                 #bjj-sidebar, #bjj-hamburger-btn, #bjj-menu-overlay, .no-print {
                     display: none !important;
@@ -95,15 +68,16 @@ const injetarEstilosGlobais = () => {
                     margin-left: 0 !important;
                     padding-left: 0 !important;
                 }
-                body {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                }
             }
             
-            /* MODAIS COM DARK MODE */
-            .modal-dark-sync {
-                transition: background-color 0.2s ease, border-color 0.2s ease;
+            /* MODAIS NO DARK MODE */
+            html.dark .fixed.inset-0, html.dark [class*="modal"], html.dark [id*="modal"] {
+                background-color: rgba(2, 6, 23, 0.95) !important;
+            }
+            html.dark .fixed.inset-0 > div, html.dark [class*="modal"] > div, html.dark [id*="modal"] > div {
+                background-color: #0f172a !important;
+                border-color: #1e293b !important;
+                color: #f8fafc !important;
             }
         `;
         document.head.appendChild(style);
@@ -117,14 +91,10 @@ const injetarEstilosGlobais = () => {
 };
 
 // ==========================================
-// 🌓 DARK MODE MELHORADO COM TRANSIÇÃO SUAVE
+// 🌓 TOGGLE DARK MODE
 // ==========================================
 window.toggleDarkMode = function() {
     const htmlTag = document.documentElement;
-    const btn = window.event?.currentTarget;
-    
-    // Desativa transições temporariamente para evitar flash
-    document.body.classList.add('no-transition');
     
     if (htmlTag.classList.contains('dark')) {
         htmlTag.classList.remove('dark');
@@ -133,193 +103,10 @@ window.toggleDarkMode = function() {
         htmlTag.classList.add('dark');
         localStorage.setItem('bjj-theme', 'dark');
     }
-    
-    // Reativa transições após o próximo frame
-    requestAnimationFrame(() => {
-        document.body.classList.remove('no-transition');
-    });
-    
-    // Sincroniza modais com o novo tema
-    setTimeout(() => sincronizarModaisComTema(), 50);
-    
-    // Atualiza ícone do botão se existir
-    if (btn) {
-        const isDark = htmlTag.classList.contains('dark');
-        const spanIcone = btn.querySelector('span:first-child');
-        if (spanIcone) {
-            spanIcone.innerHTML = isDark ? '🌙' : '☀️';
-        }
-    }
 };
 
 // ==========================================
-// 🎨 SINCRONIZAR MODAIS COM O TEMA
-// ==========================================
-function sincronizarModaisComTema() {
-    const isDark = document.documentElement.classList.contains('dark');
-    const modais = document.querySelectorAll('.fixed.inset-0, [class*="modal"], [id*="modal"]');
-    
-    modais.forEach(modal => {
-        if (isDark) {
-            modal.classList.add('dark');
-            modal.classList.add('modal-dark-sync');
-        } else {
-            modal.classList.remove('dark');
-            modal.classList.remove('modal-dark-sync');
-        }
-    });
-}
-
-// ==========================================
-// 📱 SWIPE PARA ABRIR/FECHAR MENU (MOBILE)
-// ==========================================
-let touchStartX = 0;
-let touchEndX = 0;
-let swipeEnabled = true;
-
-document.addEventListener('touchstart', (e) => {
-    if (!swipeEnabled) return;
-    // Ignora se o toque começou dentro do menu
-    const sidebar = document.getElementById('bjj-sidebar');
-    if (sidebar && sidebar.contains(e.target)) return;
-    touchStartX = e.changedTouches[0].screenX;
-});
-
-document.addEventListener('touchend', (e) => {
-    if (!swipeEnabled) return;
-    const sidebar = document.getElementById('bjj-sidebar');
-    if (!sidebar) return;
-    
-    touchEndX = e.changedTouches[0].screenX;
-    const diff = touchEndX - touchStartX;
-    const isOpen = !sidebar.classList.contains('-translate-x-full');
-    
-    // Swipe direito para abrir (diferença > 50px) - apenas na borda esquerda
-    if (diff > 50 && !isOpen && touchStartX < 50) {
-        toggleBjjMenu();
-    }
-    // Swipe esquerdo para fechar (diferença < -50px)
-    if (diff < -50 && isOpen) {
-        toggleBjjMenu();
-    }
-});
-
-// ==========================================
-// 💾 SALVAR ESTADO DO MENU (ABERTO/FECHADO)
-// ==========================================
-function carregarPreferenciaMenu() {
-    const menuAberto = localStorage.getItem('bjj_menu_aberto');
-    const sidebar = document.getElementById('bjj-sidebar');
-    const overlay = document.getElementById('bjj-menu-overlay');
-    
-    if (!sidebar || !overlay) return;
-    
-    if (menuAberto === 'true' && window.innerWidth > 768) {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-    }
-}
-
-// ==========================================
-// 📱 AJUSTAR COMPORTAMENTO POR TAMANHO DE TELA
-// ==========================================
-function ajustarMenuPorTela() {
-    const sidebar = document.getElementById('bjj-sidebar');
-    const overlay = document.getElementById('bjj-menu-overlay');
-    const isMobile = window.innerWidth < 768;
-    
-    if (!sidebar || !overlay) return;
-    
-    if (!isMobile) {
-        // Em desktop, mantém estado salvo
-        const menuAberto = localStorage.getItem('bjj_menu_aberto') === 'true';
-        if (menuAberto) {
-            sidebar.classList.remove('-translate-x-full');
-            overlay.classList.remove('hidden');
-            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-        } else {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-            overlay.classList.add('opacity-0');
-        }
-    } else {
-        // Em mobile, sempre começa fechado
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-        overlay.classList.add('opacity-0');
-        localStorage.setItem('bjj_menu_aberto', 'false');
-    }
-}
-
-// Adicionar listener para redimensionamento
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(ajustarMenuPorTela, 250);
-});
-
-// ==========================================
-// 🔔 CONTADOR DE NOTIFICAÇÕES NÃO LIDAS
-// ==========================================
-async function verificarNotificacoesNaoLidas() {
-    // Só executa se tiver os dados necessários
-    if (!window.uid || !window.db) return;
-    
-    try {
-        const db = window.db;
-        const collection = window.collection;
-        const query = window.query;
-        const where = window.where;
-        const getDocs = window.getDocs;
-        
-        if (!collection || !query || !where || !getDocs) return;
-        
-        const q = query(
-            collection(db, "chamados_suporte"),
-            where("equipe_id", "==", window.uid),
-            where("lida", "==", false)
-        );
-        const snap = await getDocs(q);
-        const naoLidas = snap.size;
-        
-        const badge = document.getElementById('badge-suporte');
-        if (badge) {
-            if (naoLidas > 0) {
-                badge.classList.remove('hidden');
-                badge.innerHTML = naoLidas > 9 ? '9+' : naoLidas;
-                badge.classList.add('flex', 'items-center', 'justify-center');
-                badge.style.minWidth = '1.25rem';
-                badge.style.height = '1.25rem';
-                badge.style.borderRadius = '9999px';
-            } else {
-                badge.classList.add('hidden');
-                badge.innerHTML = '';
-            }
-        }
-    } catch(e) {
-        console.error("Erro ao verificar notificações:", e);
-    }
-}
-
-// Iniciar verificação periódica quando o usuário estiver logado
-let intervaloNotificacoes = null;
-
-function iniciarVerificacaoNotificacoes() {
-    if (intervaloNotificacoes) clearInterval(intervaloNotificacoes);
-    verificarNotificacoesNaoLidas();
-    intervaloNotificacoes = setInterval(verificarNotificacoesNaoLidas, 30000);
-}
-
-function pararVerificacaoNotificacoes() {
-    if (intervaloNotificacoes) {
-        clearInterval(intervaloNotificacoes);
-        intervaloNotificacoes = null;
-    }
-}
-
-// ==========================================
-// 📋 MENU GAVETA UNIVERSAL
+// 📋 MENU GAVETA UNIVERSAL (SIMPLIFICADO)
 // ==========================================
 function carregarMenu() {
     try {
@@ -368,7 +155,7 @@ function carregarMenu() {
 
         // --- HTML DO MENU LATERAL ---
         const menuSidebar = `
-            <div id="bjj-menu-overlay" onclick="toggleBjjMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] hidden transition-opacity opacity-0"></div>
+            <div id="bjj-menu-overlay" onclick="toggleBjjMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] hidden transition-all duration-300 opacity-0 pointer-events-none"></div>
             
             <aside id="bjj-sidebar" class="fixed inset-y-0 left-0 w-[260px] bg-slate-900 text-white flex-col h-full shadow-[5px_0_25px_rgba(0,0,0,0.5)] z-[60] border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex shrink-0">
                 
@@ -480,14 +267,7 @@ function carregarMenu() {
             }
         }
 
-        // Carregar preferência do menu e ajustar por tela
-        setTimeout(() => {
-            carregarPreferenciaMenu();
-            ajustarMenuPorTela();
-            sincronizarModaisComTema();
-        }, 100);
-
-        // 🔥 INJETAR MARCA D'ÁGUA NO FINAL DO CONTEÚDO
+        // INJETAR MARCA D'ÁGUA
         const mainContainer = document.querySelector('main');
         if (mainContainer && !document.getElementById('bjj-footer-powered')) {
             const poweredHTML = `
@@ -507,7 +287,33 @@ function carregarMenu() {
 }
 
 // ==========================================
-// 📋 FUNÇÕES DE CONTROLE DO MENU
+// 📋 FUNÇÃO PARA ABRIR/FECHAR MENU
+// ==========================================
+window.toggleBjjMenu = function() {
+    const sidebar = document.getElementById('bjj-sidebar');
+    const overlay = document.getElementById('bjj-menu-overlay');
+
+    if (!sidebar || !overlay) return;
+
+    if (sidebar.classList.contains('-translate-x-full')) {
+        // Abrir menu
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        overlay.classList.remove('pointer-events-none');
+        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+    } else {
+        // Fechar menu
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            overlay.classList.add('pointer-events-none');
+        }, 300);
+    }
+};
+
+// ==========================================
+// 📋 OUTRAS FUNÇÕES
 // ==========================================
 window.mostrarAvisoUpgrade = function() {
     if(typeof showToast === 'function') showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
@@ -520,46 +326,13 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     carregarMenu(); 
 };
 
-window.toggleBjjMenu = function() {
-    const sidebar = document.getElementById('bjj-sidebar');
-    const overlay = document.getElementById('bjj-menu-overlay');
-
-    if (!sidebar || !overlay) return;
-
-    if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-        // Salvar estado se for desktop
-        if (window.innerWidth > 768) {
-            localStorage.setItem('bjj_menu_aberto', 'true');
-        }
-    } else {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('opacity-0');
-        setTimeout(() => overlay.classList.add('hidden'), 300);
-        // Salvar estado se for desktop
-        if (window.innerWidth > 768) {
-            localStorage.setItem('bjj_menu_aberto', 'false');
-        }
-    }
-};
-
 // ==========================================
 // 🚀 INICIALIZAÇÃO
 // ==========================================
+injetarEstilosGlobais();
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        carregarMenu();
-        iniciarVerificacaoNotificacoes();
-    });
+    document.addEventListener('DOMContentLoaded', carregarMenu);
 } else {
     carregarMenu();
-    iniciarVerificacaoNotificacoes();
 }
-
-// Exportar funções para uso global
-window.verificarNotificacoesNaoLidas = verificarNotificacoesNaoLidas;
-window.iniciarVerificacaoNotificacoes = iniciarVerificacaoNotificacoes;
-window.pararVerificacaoNotificacoes = pararVerificacaoNotificacoes;
-window.sincronizarModaisComTema = sincronizarModaisComTema;
