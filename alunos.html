@@ -1558,197 +1558,171 @@ async function carregarFrequenciaDoAluno(idAluno) {
         };
 
         // ===================== SALVAR ALUNO =====================
-window.salvarAluno = async function() { 
-    const id = window.alunoEditandoId; 
-    const nome = document.getElementById('aluno-nome').value.toUpperCase(); 
-    const cpf = document.getElementById('aluno-cpf').value; 
-    const nasc = document.getElementById('aluno-nasc').value; 
-    const tel = document.getElementById('aluno-tel').value; 
-    const email = document.getElementById('aluno-email').value.toLowerCase().trim();
-    const novaSenha = document.getElementById('aluno-senha-portal')?.value.trim() || '';
-    
-    if(!nome || !cpf || !nasc || !tel) {
-        showToast("Preencha os campos obrigatórios (Nome, CPF, Nascimento, Telefone)", "error"); 
-        return;
-    }
-    
-    if(!document.getElementById('lgpd-concordo').checked) {
-        showToast("É necessário aceitar os Termos da LGPD.", "error"); 
-        return;
-    }
-    
-    let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '';
-    let nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
-    
-    if (window.idadeAtual < 18) { 
-        nomeResponsavel = document.getElementById('aluno-responsavel-nome').value.toUpperCase().trim(); 
-        cpfResponsavel = document.getElementById('aluno-responsavel-cpf').value.trim(); 
-        telResponsavel = document.getElementById('aluno-responsavel-telefone').value.trim(); 
-        
-        if(!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
-            showToast("Preencha todos os dados do responsável legal", "error");
-            return;
-        }
-    } else { 
-        nomeEmergencia = document.getElementById('aluno-emerg-nome').value.toUpperCase().trim(); 
-        telEmergencia = document.getElementById('aluno-emerg-tel').value.trim(); 
-        parentescoEmergencia = document.getElementById('aluno-emerg-parentesco').value.toUpperCase().trim(); 
-    }
-    
-    const btnSalvar = document.getElementById('btn-salvar-aluno'); 
-    const textoOriginal = btnSalvar.innerHTML; 
-    btnSalvar.innerHTML = "⏳ SALVANDO..."; 
-    btnSalvar.disabled = true; 
-    
-    const dados = { 
-        equipe_id: window.teamId, 
-        nome: nome, 
-        cpf: cpf, 
-        rg: document.getElementById('aluno-rg')?.value || '',
-        data_nascimento: nasc, 
-        naturalidade: document.getElementById('aluno-naturalidade')?.value || '',
-        faixa: document.getElementById('aluno-faixa').value, 
-        grau: document.getElementById('aluno-grau').value, 
-        telefone: tel, 
-        peso: document.getElementById('aluno-peso').value, 
-        email: email, 
-        endereco: document.getElementById('aluno-endereco').value, 
-        bairro: document.getElementById('aluno-bairro').value, 
-        numero: document.getElementById('aluno-numero').value, 
-        cidade: document.getElementById('aluno-cidade')?.value || '',
-        uf: document.getElementById('aluno-uf')?.value || '',
-        cep: document.getElementById('aluno-cep').value, 
-        nome_responsavel: nomeResponsavel, 
-        cpf_responsavel: cpfResponsavel, 
-        telefone_responsavel: telResponsavel, 
-        emergencia_nome: nomeEmergencia, 
-        emergencia_telefone: telEmergencia, 
-        emergencia_parentesco: parentescoEmergencia, 
-        bolsa_perc: parseInt(document.getElementById('aluno-bolsa').value), 
-        dia_vencimento: parseInt(document.getElementById('aluno-vencimento').value), 
-        status: document.getElementById('aluno-status').value, 
-        lgpd_concordo: document.getElementById('lgpd-concordo').checked, 
-        lgpd_redes: document.getElementById('lgpd-redes').checked, 
-        lgpd_site: document.getElementById('lgpd-site').checked, 
-        lgpd_promo: document.getElementById('lgpd-promo').checked, 
-        lgpd_relatorios: document.getElementById('lgpd-relatorio').checked,
-        updated_at: new Date().toISOString()
-    }; 
-    
-    try { 
-        let docRefId = id; 
-        
-        if (!id) { 
-            // 🔐 NOVO ALUNO - Validar email e senha
-            if (!email) {
-                showToast("E-mail é obrigatório para criar acesso", "error");
-                btnSalvar.innerHTML = textoOriginal; btnSalvar.disabled = false;
+        window.salvarAluno = async function() { 
+            const id = window.alunoEditandoId; 
+            const nome = document.getElementById('aluno-nome')?.value.toUpperCase() || ''; 
+            const cpf = document.getElementById('aluno-cpf')?.value || ''; 
+            const nasc = document.getElementById('aluno-nasc')?.value || ''; 
+            const tel = document.getElementById('aluno-tel')?.value || ''; 
+            
+            if(!nome || !cpf || !nasc || !tel) {
+                showToast("Preencha os campos obrigatórios (Nome, CPF, Nascimento, Telefone)", "error"); 
                 return;
             }
             
-            if (!novaSenha || novaSenha.length < 6) {
-                showToast("Senha deve ter no mínimo 6 caracteres", "error");
-                btnSalvar.innerHTML = textoOriginal; btnSalvar.disabled = false;
+            const lgpdConcordo = document.getElementById('lgpd-concordo');
+            if(!lgpdConcordo || !lgpdConcordo.checked) {
+                showToast("É necessário aceitar os Termos da LGPD.", "error"); 
                 return;
             }
             
-            dados.matricula = `${new Date().getFullYear()}${Math.floor(1000 + Math.random() * 9000)}`; 
-            dados.data_cadastro = new Date().toISOString(); 
-            dados.created_at = new Date().toISOString();
+            let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '';
+            let nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
             
-            btnSalvar.innerHTML = "🔐 CRIANDO ACESSO...";
-            
-            // 🔐 Usar Cloud Function para criar usuário no Auth
-            const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
-            const result = await criarAluno({ 
-                dados: dados, 
-                senha: novaSenha,
-                email: email
-            });
-            
-            if (result.data.success) {
-                docRefId = result.data.alunoId;
-                showToast("Aluno criado com acesso ao portal!", "success");
-            } else {
-                throw new Error(result.data.error || "Erro ao criar aluno");
-            }
-            
-        } else { 
-            // 🔐 EDITANDO ALUNO EXISTENTE
-            await updateDoc(doc(db, "alunos", id), dados); 
-            docRefId = id;
-            
-            // Se informou nova senha, atualizar no Auth
-            if (novaSenha && novaSenha.length >= 6) {
-                try {
-                    const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
-                    await atualizarAluno({ 
-                        alunoId: id, 
-                        dados: dados, 
-                        novaSenha: novaSenha,
-                        email: email
-                    });
-                    showToast("Senha do portal atualizada!", "success");
-                } catch(e) {
-                    console.warn("Erro ao atualizar senha:", e);
+            if (window.idadeAtual < 18) { 
+                const respNome = document.getElementById('aluno-responsavel-nome');
+                const respCpf = document.getElementById('aluno-responsavel-cpf');
+                const respTel = document.getElementById('aluno-responsavel-telefone');
+                nomeResponsavel = respNome ? respNome.value.toUpperCase().trim() : ''; 
+                cpfResponsavel = respCpf ? respCpf.value.trim() : ''; 
+                telResponsavel = respTel ? respTel.value.trim() : ''; 
+                
+                if(!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
+                    showToast("Preencha todos os dados do responsável legal", "error");
+                    return;
                 }
-            }
-        }
-        
-        // Upload da foto (se houver)
-        if (window.ficheiroFotoSelecionado) { 
-            btnSalvar.innerHTML = "📷 ENVIANDO FOTO..."; 
-            
-            const alunoAntigo = window.todosAlunosCache.find(a => a.id === docRefId); 
-            if (alunoAntigo && alunoAntigo.foto_url) { 
-                try { 
-                    const fotoRef = ref(storage, alunoAntigo.foto_url); 
-                    await deleteObject(fotoRef); 
-                } catch (err) { 
-                    console.log("Aviso: Foto antiga não encontrada."); 
-                } 
+            } else { 
+                const emergNome = document.getElementById('aluno-emerg-nome');
+                const emergTel = document.getElementById('aluno-emerg-tel');
+                const emergParentesco = document.getElementById('aluno-emerg-parentesco');
+                nomeEmergencia = emergNome ? emergNome.value.toUpperCase().trim() : ''; 
+                telEmergencia = emergTel ? emergTel.value.trim() : ''; 
+                parentescoEmergencia = emergParentesco ? emergParentesco.value.toUpperCase().trim() : ''; 
             } 
             
-            const timestamp = new Date().getTime(); 
-            const fotoPath = `fotos_carteirinha/${window.teamId}/${docRefId}_${timestamp}.jpg`; 
-            const storageRef = ref(storage, fotoPath); 
-            await uploadBytes(storageRef, window.ficheiroFotoSelecionado); 
-            const fotoUrlFinal = await getDownloadURL(storageRef); 
+            const btnSalvar = document.getElementById('btn-salvar-aluno'); 
+            if(!btnSalvar) return;
+            const textoOriginal = btnSalvar.innerHTML; 
+            btnSalvar.innerHTML = "⏳ SALVANDO..."; 
+            btnSalvar.disabled = true; 
             
-            await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal }); 
-        } 
-        
-        // Log de auditoria
-        try {
-            await addDoc(collection(db, "auditoria"), {
+            const dados = { 
                 equipe_id: window.teamId, 
-                equipe_nome: window.equipeDados.nome,
-                usuario_email: auth.currentUser.email, 
-                acao: id ? "EDITOU_ALUNO" : "NOVA_MATRICULA",
-                detalhes: `${id ? "Atualizou" : "Cadastrou"} o aluno: ${nome}`,
-                timestamp: new Date().toISOString()
-            });
-        } catch(e) {}
+                nome: nome, 
+                cpf: cpf, 
+                rg: document.getElementById('aluno-rg')?.value || '',
+                data_nascimento: nasc, 
+                naturalidade: document.getElementById('aluno-naturalidade')?.value || '',
+                faixa: document.getElementById('aluno-faixa')?.value || 'Branca', 
+                grau: document.getElementById('aluno-grau')?.value || 'Sem grau', 
+                telefone: tel, 
+                peso: document.getElementById('aluno-peso')?.value || '', 
+                email: document.getElementById('aluno-email')?.value || '', 
+                endereco: document.getElementById('aluno-endereco')?.value || '', 
+                bairro: document.getElementById('aluno-bairro')?.value || '', 
+                numero: document.getElementById('aluno-numero')?.value || '', 
+                cidade: document.getElementById('aluno-cidade')?.value || '',
+                uf: document.getElementById('aluno-uf')?.value || '',
+                cep: document.getElementById('aluno-cep')?.value || '', 
+                nome_responsavel: nomeResponsavel, 
+                cpf_responsavel: cpfResponsavel, 
+                telefone_responsavel: telResponsavel, 
+                emergencia_nome: nomeEmergencia, 
+                emergencia_telefone: telEmergencia, 
+                emergencia_parentesco: parentescoEmergencia, 
+                bolsa_perc: parseInt(document.getElementById('aluno-bolsa')?.value || '0'), 
+                dia_vencimento: parseInt(document.getElementById('aluno-vencimento')?.value || '10'), 
+                status: document.getElementById('aluno-status')?.value || 'ATIVO', 
+                lgpd_concordo: lgpdConcordo ? lgpdConcordo.checked : false, 
+                lgpd_redes: document.getElementById('lgpd-redes')?.checked || false, 
+                lgpd_site: document.getElementById('lgpd-site')?.checked || false, 
+                lgpd_promo: document.getElementById('lgpd-promo')?.checked || false, 
+                lgpd_relatorios: document.getElementById('lgpd-relatorio')?.checked || false,
+                updated_at: new Date().toISOString()
+            }; 
+            
+            const campoSenha = document.getElementById('aluno-senha-portal'); 
+            const novaSenha = (campoSenha && campoSenha.value && campoSenha.value.trim().length >= 6) ? campoSenha.value.trim() : null;
+            
+            try { 
+                let docRefId = id; 
+                
+                if (!id) { 
+                    dados.matricula = `${new Date().getFullYear()}${Math.floor(1000 + Math.random() * 9000)}`; 
+                    dados.data_cadastro = new Date().toISOString(); 
+                    dados.created_at = new Date().toISOString();
+                    
+                    const docRef = await addDoc(collection(db, "alunos"), dados); 
+                    docRefId = docRef.id;
+                    
+                    if (novaSenha) {
+                        try {
+                            const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
+                            await criarAluno({ alunoId: docRefId, senha: novaSenha });
+                        } catch(e) {
+                            console.warn("Cloud function não disponível, senha não foi salva:", e);
+                        }
+                    }
+                } else { 
+                    await updateDoc(doc(db, "alunos", id), dados); 
+                    docRefId = id;
+                    
+                    if (novaSenha) {
+                        try {
+                            const atualizarAluno = httpsCallable(functions, 'atualizarAlunoComHash');
+                            await atualizarAluno({ alunoId: id, senha: novaSenha });
+                        } catch(e) {
+                            console.warn("Cloud function não disponível, senha não foi atualizada:", e);
+                        }
+                    }
+                }
+                
+                if (window.ficheiroFotoSelecionado) { 
+                    btnSalvar.innerHTML = "⏳ ENVIANDO FOTO..."; 
+                    
+                    const alunoAntigo = window.todosAlunosCache.find(a => a.id === docRefId); 
+                    if (alunoAntigo && alunoAntigo.foto_url) { 
+                        try { 
+                            const fotoRef = ref(storage, alunoAntigo.foto_url); 
+                            await deleteObject(fotoRef); 
+                        } catch (err) { 
+                            console.log("Aviso: Foto antiga não encontrada."); 
+                        } 
+                    } 
+                    
+                    const timestamp = new Date().getTime(); 
+                    const fotoPath = `fotos_carteirinha/${window.teamId}/${docRefId}_${timestamp}.jpg`; 
+                    const storageRef = ref(storage, fotoPath); 
+                    await uploadBytes(storageRef, window.ficheiroFotoSelecionado); 
+                    const fotoUrlFinal = await getDownloadURL(storageRef); 
+                    
+                    await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal }); 
+                } 
+                
+                try {
+                    await addDoc(collection(db, "auditoria"), {
+                        equipe_id: window.teamId, 
+                        equipe_nome: window.equipeDados.nome,
+                        usuario_email: auth.currentUser.email, 
+                        acao: id ? "EDITOU_ALUNO" : "NOVA_MATRICULA",
+                        detalhes: `${id ? "Atualizou" : "Cadastrou"} o aluno: ${nome}`,
+                        timestamp: new Date().toISOString()
+                    });
+                } catch(e) {}
 
-        showToast(id ? "Ficha atualizada com sucesso!" : "Matrícula criada com sucesso!", "success"); 
-        window.fecharModal(); 
-        clearCache();
-        await buscarAlunosFirebase(true); 
-        
-    } catch(e) { 
-        console.error(e); 
-        let mensagemErro = e.message || "Erro desconhecido";
-        if (mensagemErro.includes('email-already-exists')) {
-            mensagemErro = "Este e-mail já está cadastrado em outro aluno.";
-        } else if (mensagemErro.includes('weak-password')) {
-            mensagemErro = "Senha muito fraca. Use pelo menos 6 caracteres.";
-        }
-        showToast("Erro ao salvar: " + mensagemErro, "error"); 
-    } finally { 
-        btnSalvar.innerHTML = textoOriginal; 
-        btnSalvar.disabled = false; 
-    } 
-};
+                showToast(id ? "Ficha atualizada com sucesso!" : "Matrícula criada com sucesso!", "success"); 
+                window.fecharModal(); 
+                clearCache();
+                await buscarAlunosFirebase(true); 
+                
+            } catch(e) { 
+                console.error(e); 
+                showToast("Erro ao salvar a ficha: " + (e.message || "Erro desconhecido"), "error"); 
+            } finally { 
+                btnSalvar.innerHTML = textoOriginal; 
+                btnSalvar.disabled = false; 
+            } 
+        };
 
         // ===================== EXCLUIR ALUNO =====================
         window.excluirAluno = async (id) => { 
