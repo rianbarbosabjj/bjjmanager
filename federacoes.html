@@ -1,829 +1,605 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BJJ Manager">
+    <meta name="theme-color" content="#0f172a">
+    
+    <link rel="apple-touch-icon" href="logo_bjj_manager.png">
+    <link rel="icon" type="image/png" href="logo_bjj_manager.png">
+    
+    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Loja · Vitrine da Equipe + Visual do Aluno</title>
-    <!-- Font Awesome 6 (gratuito, ícones) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Federações | BJJ Manager</title>
+    
+    <link rel="icon" type="image/png" href="logo_bjj_manager.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-        }
-
-        body {
-            background: #f4f7fc;
-            padding: 1.5rem;
-            color: #1e2a3a;
-        }
-
-        /* container principal responsivo */
-        .dashboard {
-            max-width: 1600px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        /* ÁREA DE GESTÃO (admin) */
-        .management-area {
-            flex: 2;
-            min-width: 280px;
-            background: white;
-            border-radius: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            padding: 1.5rem;
-            transition: all 0.2s;
-        }
-
-        /* ÁREA DA VITRINE (como o aluno vê) - visível em telas grandes */
-        .student-showcase {
-            flex: 1.5;
-            min-width: 300px;
-            background: #ffffffea;
-            border-radius: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            padding: 1.5rem;
-            backdrop-filter: blur(0px);
-            transition: all 0.2s;
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .student-showcase h2, .management-area h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            border-left: 5px solid #e67e22;
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .student-showcase h2 i, .management-area h2 i {
-            color: #e67e22;
-            font-size: 1.4rem;
-        }
-
-        /* cards vitrine (aluno) */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .student-product-card {
-            background: white;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #eef2f6;
-        }
-
-        .student-product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-        }
-
-        .product-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #f0f2f5;
-            display: block;
-        }
-
-        .product-info {
-            padding: 1rem 1rem 1.2rem;
-        }
-
-        .product-name {
-            font-weight: 800;
-            font-size: 1.1rem;
-            margin-bottom: 0.4rem;
-            color: #0f172a;
-        }
-
-        .product-desc {
-            font-size: 0.8rem;
-            color: #475569;
-            margin-bottom: 0.8rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-price {
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #2c6e2f;
-            margin: 0.5rem 0;
-        }
-
-        .btn-group-student {
-            display: flex;
-            gap: 0.7rem;
-            margin-top: 0.8rem;
-        }
-
-        .btn-wa, .btn-link {
-            flex: 1;
-            text-align: center;
-            padding: 0.5rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-decoration: none;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-wa {
-            background: #25D366;
-            color: white;
-        }
-
-        .btn-wa:hover {
-            background: #128C7E;
-        }
-
-        .btn-link {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .btn-link:hover {
-            background: #2563eb;
-        }
-
-        /* formulário novo produto */
-        .form-card {
-            background: #fef9f0;
-            border-radius: 1.5rem;
-            padding: 1.2rem;
-            margin-bottom: 2rem;
-            border: 1px solid #ffe6c7;
-        }
-
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .form-group {
-            flex: 1;
-            min-width: 160px;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: block;
-            margin-bottom: 0.3rem;
-            color: #2c3e50;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 0.65rem;
-            border-radius: 1rem;
-            border: 1px solid #cfdfed;
-            background: white;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #e67e22;
-            box-shadow: 0 0 0 2px rgba(230,126,34,0.2);
-        }
-
-        .btn-primary {
-            background: #e67e22;
-            border: none;
-            color: white;
-            font-weight: bold;
-            padding: 0.7rem 1.5rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: #d35400;
-        }
-
-        .btn-secondary {
-            background: #94a3b8;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            cursor: pointer;
-        }
-
-        /* lista de produtos (gestão) */
-        .product-list-manager {
-            margin-top: 1rem;
-        }
-
-        .manager-item {
-            background: #ffffff;
-            border-radius: 1.2rem;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e9edf2;
-        }
-
-        .manager-info {
-            flex: 3;
-        }
-
-        .manager-info strong {
-            font-size: 1rem;
-        }
-
-        .manager-badge {
-            background: #eef2ff;
-            border-radius: 2rem;
-            padding: 0.2rem 0.7rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #2563eb;
-        }
-
-        .manager-actions {
-            display: flex;
-            gap: 0.7rem;
-        }
-
-        .edit-btn, .delete-btn {
-            background: transparent;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.4rem;
-            border-radius: 50%;
-            transition: 0.1s;
-        }
-
-        .edit-btn { color: #e67e22; }
-        .delete-btn { color: #e53e3e; }
-
-        /* botão flutuante para modal (aparece apenas mobile) */
-        .mobile-show-vitrine {
-            display: none;
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: #e67e22;
-            color: white;
-            border: none;
-            padding: 0.9rem 1.5rem;
-            border-radius: 3rem;
-            font-weight: bold;
-            font-size: 1rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 999;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* MODAL (para telas pequenas) */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.75);
-            backdrop-filter: blur(6px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.2s ease;
-        }
-
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal-container {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            max-height: 85vh;
-            border-radius: 2rem;
-            overflow-y: auto;
-            padding: 1rem;
-            position: relative;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0.2rem 1rem;
-            border-bottom: 1px solid #edf2f7;
-        }
-
-        .modal-header h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .modal-body {
-            margin-top: 1rem;
-        }
-
-        /* responsividade */
-        @media (max-width: 880px) {
-            body { padding: 1rem; }
-            .dashboard { gap: 1.5rem; }
-        }
-
-        @media (max-width: 768px) {
-            .student-showcase {
-                display: none;  /* esconde vitrine em telas pequenas */
-            }
-            .mobile-show-vitrine {
-                display: flex;   /* botão flutuante para abrir modal */
-            }
-            .management-area {
-                flex: 1;
-            }
-        }
-
-        /* pequenos ajustes */
-        .status-badge {
-            background: #dcfce7;
-            color: #15803d;
-            font-size: 0.7rem;
-            border-radius: 50px;
-            padding: 0.2rem 0.6rem;
-            margin-left: 0.5rem;
-        }
-
-        .img-preview {
-            font-size: 0.7rem;
-            color: #6c757d;
-        }
-
-        hr {
-            margin: 1.2rem 0;
-        }
-
-        .empty-message {
-            color: #6c757d;
-            text-align: center;
-            padding: 2rem;
-            font-style: italic;
-        }
-
-        button:active { transform: scale(0.98); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
-<body>
+<body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
-<div class="dashboard">
-    <!-- GESTÃO (EQUIPE) -->
-    <div class="management-area">
-        <h2><i class="fas fa-store"></i> Vitrine da Equipe</h2>
-        <p style="margin-bottom: 1rem; color: #475569;">Gerencie os produtos que os alunos podem encomendar</p>
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-        <!-- Formulário novo produto / edição -->
-        <div class="form-card" id="productFormCard">
-            <h3 id="formTitle" style="font-size: 1.2rem; margin-bottom: 1rem;"><i class="fas fa-plus-circle"></i> NOVO PRODUTO</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-tag"></i> NOME DO PRODUTO</label>
-                    <input type="text" id="prodName" placeholder="Ex: Rash Guard, Kimono...">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-dollar-sign"></i> PREÇO (R$)</label>
-                    <input type="number" step="0.01" id="prodPrice" placeholder="150.00">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-align-left"></i> DESCRIÇÃO</label>
-                    <textarea rows="2" id="prodDesc" placeholder="Detalhes do produto, tamanhos disponíveis..."></textarea>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-image"></i> URL DA IMAGEM (principal)</label>
-                    <input type="text" id="prodImage" placeholder="https://exemplo.com/kimono.jpg">
-                    <div class="img-preview">Até 5 imagens permitidas (usaremos esta como principal)</div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-link"></i> LINK PAGAMENTO / CHAVE PIX</label>
-                    <input type="text" id="prodLink" placeholder="Link do pagamento ou chave pix">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-eye"></i> STATUS DO PRODUTO</label>
-                    <select id="prodStatus">
-                        <option value="active">Disponível na vitrine</option>
-                        <option value="inactive">Indisponível (oculto)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label><i class="fab fa-whatsapp"></i> WhatsApp da Loja (para botões)</label>
-                    <input type="text" id="teamWhatsapp" placeholder="5511999999999" value="5511999999999">
-                </div>
-            </div>
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 0.5rem;">
-                <button type="button" id="cancelEditBtn" class="btn-secondary" style="display: none;">Cancelar</button>
-                <button type="button" id="saveProductBtn" class="btn-primary"><i class="fas fa-save"></i> Salvar Produto</button>
-            </div>
-        </div>
+    <div id="interface-sistema" class="flex w-full h-full relative">
 
-        <!-- Lista de produtos (gestão) -->
-        <h3><i class="fas fa-list-ul"></i> Produtos cadastrados</h3>
-        <div id="managerProductsList" class="product-list-manager">
-            <!-- produtos serão inseridos via js -->
-            <div class="empty-message">Carregando produtos...</div>
-        </div>
-    </div>
-
-    <!-- VITRINE DO ALUNO (VISÍVEL EM TELAS GRANDES) -->
-    <div class="student-showcase" id="studentShowcaseLarge">
-        <h2><i class="fas fa-graduation-cap"></i> Vitrine do Aluno</h2>
-        <div id="studentProductsGrid" class="products-grid">
-            <!-- produtos visíveis (status ativo) -->
-        </div>
-    </div>
-</div>
-
-<!-- Botão flutuante APENAS para mobile (abrir modal) -->
-<button id="mobileOpenVitrineBtn" class="mobile-show-vitrine"><i class="fas fa-mobile-alt"></i> Ver vitrine do aluno</button>
-
-<!-- MODAL (conteúdo vitrine para mobile) -->
-<div id="vitrineModal" class="modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3><i class="fas fa-store"></i> Vitrine do Aluno</h3>
-            <button class="close-modal" id="closeModalBtn">&times;</button>
-        </div>
-        <div class="modal-body" id="modalStudentBody">
-            <!-- conteudo será dinâmico igual à vitrine -->
-            <div class="products-grid" id="modalProductsGrid"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // ------ SEGURANÇA: escape HTML para prevenir XSS ------
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-
-    // Modelo de dados
-    let products = [];
-    let editingId = null;
-    let teamWhatsApp = "5511999999999"; // valor padrão
-
-    // Carregar dados do localStorage ou inicializar com produtos exemplo (segurança incluída)
-    function loadInitialData() {
-        const stored = localStorage.getItem("loja_produtos");
-        if (stored) {
-            try {
-                products = JSON.parse(stored);
-            } catch(e) { products = []; }
-        }
-        if (!products || products.length === 0) {
-            // Produtos padrão igual exemplo do enunciado
-            products = [
-                {
-                    id: "p1",
-                    name: "KIMONOS BRAZIL COMBAT XTREME",
-                    description: "Ao concluir a compra, informe as cores desejadas para o kimono pelo WhatsApp.",
-                    price: 305.00,
-                    imageUrl: "https://placehold.co/400x300/f8f0e6/bf8f50?text=Kimono+Brazil",
-                    paymentLink: "https://pag.gg/kimono305",
-                    status: true,
-                },
-                {
-                    id: "p2",
-                    name: "KIMONOS BRAZIL COMBAT XTREME PRO",
-                    description: "Ao concluir a compra, informe as cores desejadas para o kimono pelo WhatsApp. Edição especial.",
-                    price: 395.00,
-                    imageUrl: "https://placehold.co/400x300/ecd9c6/aa6f3c?text=Kimono+Pro",
-                    paymentLink: "https://pag.gg/kimono395",
-                    status: true,
-                }
-            ];
-        }
-        // Garantir que cada produto tenha status booleano
-        products = products.map(p => ({ ...p, status: p.status !== undefined ? p.status : true }));
-        // Carregar WhatsApp da equipe do storage
-        const storedWhats = localStorage.getItem("team_whatsapp");
-        if (storedWhats) teamWhatsApp = storedWhats;
-        const waInput = document.getElementById("teamWhatsapp");
-        if (waInput) waInput.value = teamWhatsApp;
-    }
-
-    function saveToLocal() {
-        localStorage.setItem("loja_produtos", JSON.stringify(products));
-        localStorage.setItem("team_whatsapp", teamWhatsApp);
-    }
-
-    // Função para gerar o código HTML da vitrine (aluno) em qualquer container
-    function renderStudentView(containerElement) {
-        if (!containerElement) return;
-        const activeProducts = products.filter(p => p.status === true);
-        if (activeProducts.length === 0) {
-            containerElement.innerHTML = `<div class="empty-message">✨ Nenhum produto disponível na vitrine no momento.</div>`;
-            return;
-        }
-        let html = '';
-        activeProducts.forEach(prod => {
-            const safeName = escapeHtml(prod.name);
-            const safeDesc = escapeHtml(prod.description);
-            const priceFormatted = prod.price.toFixed(2).replace('.', ',');
-            const imageSrc = prod.imageUrl && prod.imageUrl.trim() !== "" ? prod.imageUrl : "https://placehold.co/400x300/e2e8f0/64748b?text=Sem+Imagem";
-            // Mensagem para WhatsApp (segurança: conteúdo escapado)
-            const whatsMsg = `Olá! Gostaria de saber mais sobre *${prod.name}*. Preço: R$ ${prod.price.toFixed(2)}. ${prod.description ? `Detalhes: ${prod.description}` : ''}`;
-            const encodedMsg = encodeURIComponent(whatsMsg);
-            const whatsLink = `https://wa.me/${teamWhatsApp.replace(/\D/g, '')}?text=${encodedMsg}`;
-            // Lógica do link/pix: se for url válida abre, senão copia o texto
-            const paymentValue = prod.paymentLink || '';
-            let linkAction = '';
-            const isUrl = paymentValue.match(/^(https?:\/\/)/i);
-            if (paymentValue) {
-                if (isUrl) {
-                    linkAction = `window.open('${escapeHtml(paymentValue)}', '_blank')`;
-                } else {
-                    linkAction = `navigator.clipboard.writeText('${escapeHtml(paymentValue).replace(/'/g, "\\'")}'); alert('Chave PIX / Link copiado: ${escapeHtml(paymentValue)}')`;
-                }
-            } else {
-                linkAction = `alert('Nenhum link/chave Pix configurado para este produto.')`;
-            }
-
-            html += `
-                <div class="student-product-card">
-                    <img class="product-img" src="${escapeHtml(imageSrc)}" alt="${safeName}" loading="lazy" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Erro+imagem'">
-                    <div class="product-info">
-                        <div class="product-name">${safeName}</div>
-                        <div class="product-desc">${safeDesc}</div>
-                        <div class="product-price">R$ ${priceFormatted}</div>
-                        <div class="btn-group-student">
-                            <a href="${whatsLink}" target="_blank" class="btn-wa"><i class="fab fa-whatsapp"></i> WHATSAPP</a>
-                            <button class="btn-link" onclick="${linkAction}"><i class="fas fa-credit-card"></i> LINK/PIX</button>
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            
+            <div class="flex-1 overflow-hidden p-4 md:p-8 pb-20 md:pb-8 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
+                
+                <div id="painel-lista" class="w-full md:w-1/3 flex flex-col h-full bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden shrink-0">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50 shrink-0">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-black text-slate-800">Atletas</h3>
+                        </div>
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</div>
+                            <input type="text" id="input-busca" onkeyup="filtrarLista()" class="bg-white border border-slate-200 text-slate-900 text-sm rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar atleta...">
                         </div>
                     </div>
+                    <div class="flex-1 overflow-y-auto hide-scrollbar" id="lista-alunos">
+                        <div class="p-8 text-center text-slate-400 text-sm font-medium">Buscando atletas...</div>
+                    </div>
                 </div>
-            `;
-        });
-        containerElement.innerHTML = html;
-    }
 
-    // renderizar lista de gestão (equipe)
-    function renderManagementList() {
-        const container = document.getElementById("managerProductsList");
-        if (!container) return;
-        if (products.length === 0) {
-            container.innerHTML = `<div class="empty-message">Nenhum produto cadastrado. Adicione usando o formulário.</div>`;
-            return;
+                <div id="painel-historico" class="w-full md:w-2/3 hidden flex-col h-full gap-4 md:gap-6 overflow-y-auto hide-scrollbar pb-6">
+                    
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0 relative">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 transition-colors shrink-0">
+                                <span class="text-xl">🔙</span>
+                            </button>
+
+                            <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-slate-100 flex items-center justify-center text-xl md:text-2xl font-black text-slate-400 border-2 border-slate-200 shrink-0" id="aluno-avatar">--</div>
+                            <div class="flex-1 overflow-hidden">
+                                <h2 class="text-lg md:text-2xl font-black text-slate-800 truncate" id="aluno-nome-detalhe">Nome do Aluno</h2>
+                                <div id="aluno-faixa-badge" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm bg-slate-100 border border-slate-200 inline-block mt-1">FAIXA ATUAL</div>
+                            </div>
+                        </div>
+                        
+                        <div id="alerta-vencimento" class="hidden mt-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3">
+                            <span class="text-lg">⚠️</span>
+                            <p class="text-xs font-bold text-rose-600 mt-0.5" id="alerta-vencimento-texto">Atenção: Existem carteirinhas vencidas ou a vencer nos próximos 30 dias!</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 flex-1 min-h-[450px]">
+                        
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 flex flex-col h-fit">
+                            <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4">
+                                <span class="text-xl">📝</span>
+                                <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form-fed">Registar Carteirinha</h3>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Federação</label>
+                                    <select id="fed-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                        <option value="CBJJ/IBJJF">CBJJ/IBJJF</option>
+                                        <option value="CBJJD">CBJJD</option>
+                                        <option value="CBJJO">CBJJO</option>
+                                        <option value="FJJRio">FJJRio</option>
+                                        <option value="SJJSAF">SJJSAF</option>
+                                        <option value="UAEJJF/AJP">UAEJJF/AJP</option>
+                                        <option value="[P]BJJF">[P]BJJF</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nº Registo</label>
+                                    <input type="text" id="fed-registro" placeholder="Ex: 123456" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-slate-700 font-bold">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Vencimento</label>
+                                        <input type="date" id="fed-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status</label>
+                                        <select id="fed-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                            <option value="Ativo">Ativo</option>
+                                            <option value="Pendente">Pendente</option>
+                                            <option value="Vencido">Vencido</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex gap-2 mt-2">
+                                    <button onclick="cancelarEdicaoFed()" id="btn-cancelar-fed" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-4 rounded-xl transition-all text-xs">
+                                        Cancelar
+                                    </button>
+                                    <button onclick="salvarFederacao()" id="btn-salvar-fed" class="flex-[2] bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-4 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                                        <span class="mr-2">💾</span> Salvar Filiação
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 flex flex-col h-full min-h-[300px] overflow-hidden">
+                            <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4 shrink-0">
+                                <span class="text-xl">📜</span>
+                                <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Filiações Registadas</h3>
+                            </div>
+                            
+                            <div class="flex-1 overflow-y-auto pr-2 hide-scrollbar space-y-3" id="lista-federacoes">
+                                <div class="text-center text-sm text-slate-400 mt-10">Selecione um aluno para ver as filiações.</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div id="painel-vazio" class="hidden md:flex w-full md:w-2/3 h-full flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center p-10">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm border border-slate-100 mb-4">🪪</div>
+                    <h3 class="text-xl font-black text-slate-700 mb-2">Nenhum atleta selecionado</h3>
+                    <p class="text-slate-400 text-sm max-w-sm">Pesquise e clique no nome de um aluno na lista ao lado para gerir as suas carteirinhas e anuidades.</p>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="menu.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let uid = null;
+        let alunosCache = [];
+        let federacoesCache = [];
+        let alunoSelecionado = null;
+        let federacaoEditandoId = null;
+
+        // --- SISTEMA DE TOASTS ---
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
         }
-        let itemsHtml = '';
-        products.forEach(prod => {
-            const statusText = prod.status ? "Disponível" : "Indisponível";
-            const statusClass = prod.status ? "status-badge" : "status-badge" ;
-            const priceShow = prod.price.toFixed(2);
-            itemsHtml += `
-                <div class="manager-item" data-id="${prod.id}">
-                    <div class="manager-info">
-                        <strong>${escapeHtml(prod.name)}</strong> 
-                        <span class="${statusClass}" style="background: ${prod.status ? '#dcfce7' : '#ffe4e2'}; color:${prod.status ? '#15803d' : '#b91c1c'}">${statusText}</span>
-                        <div style="font-size:0.8rem; color:#2c3e50;">R$ ${priceShow} | ${prod.paymentLink ? '🔗 link cadastrado' : '⚠️ sem link'}</div>
-                        <small>${escapeHtml(prod.description.substring(0, 60))}${prod.description.length > 60 ? '…' : ''}</small>
-                    </div>
-                    <div class="manager-actions">
-                        <button class="edit-btn" data-id="${prod.id}" title="Editar"><i class="fas fa-edit"></i></button>
-                        <button class="delete-btn" data-id="${prod.id}" title="Excluir"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                </div>
-            `;
-        });
-        container.innerHTML = itemsHtml;
 
-        // Eventos de editar e excluir dinâmicos
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = btn.getAttribute('data-id');
-                startEditProduct(id);
-            });
-        });
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = btn.getAttribute('data-id');
-                if (confirm('Tem certeza que deseja excluir este produto permanentemente?')) {
-                    products = products.filter(p => p.id !== id);
-                    saveToLocal();
-                    syncAllRenders();
+        // =====================================================================================
+        // 🔥 LÓGICA DE AUTENTICAÇÃO BLINDADA COM MODO SUPORTE
+        // =====================================================================================
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) {
+                    isSuper = false;
                 }
-            });
-        });
-    }
 
-    // sincroniza todas as views: gestão, vitrine grande e modal (se o modal estiver aberto, atualizamos seu conteúdo também)
-    function syncAllRenders() {
-        renderManagementList();
-        // vitrine em desktop:
-        const studentGrid = document.getElementById("studentProductsGrid");
-        if (studentGrid) renderStudentView(studentGrid);
-        // também atualizar modal se ele estiver visível (para consistência)
-        const modalGrid = document.getElementById("modalProductsGrid");
-        if (modalGrid && getComputedStyle(document.getElementById("vitrineModal")).visibility === 'visible') {
-            renderStudentView(modalGrid);
-        } else if (modalGrid) {
-            // apenas mantém atualizado para quando abrir, mas não precisa mostrar agora
-            renderStudentView(modalGrid);
-        }
-    }
-
-    function startEditProduct(id) {
-        const product = products.find(p => p.id === id);
-        if (!product) return;
-        editingId = id;
-        document.getElementById("prodName").value = product.name;
-        document.getElementById("prodPrice").value = product.price;
-        document.getElementById("prodDesc").value = product.description;
-        document.getElementById("prodImage").value = product.imageUrl || '';
-        document.getElementById("prodLink").value = product.paymentLink || '';
-        document.getElementById("prodStatus").value = product.status ? "active" : "inactive";
-        document.getElementById("formTitle").innerHTML = '<i class="fas fa-edit"></i> EDITAR PRODUTO';
-        document.getElementById("cancelEditBtn").style.display = "inline-block";
-        document.getElementById("saveProductBtn").innerHTML = '<i class="fas fa-pen"></i> Atualizar';
-    }
-
-    function cancelEdit() {
-        editingId = null;
-        document.getElementById("formTitle").innerHTML = '<i class="fas fa-plus-circle"></i> NOVO PRODUTO';
-        document.getElementById("cancelEditBtn").style.display = "none";
-        document.getElementById("saveProductBtn").innerHTML = '<i class="fas fa-save"></i> Salvar Produto';
-        document.getElementById("productFormCard").querySelectorAll('input, textarea, select').forEach(field => {
-            if (field.id && field.id !== "teamWhatsapp") {
-                if (field.tagName === 'SELECT') field.value = 'active';
-                else field.value = '';
+                try {
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; 
+                        } else {
+                            window.location.href = "super_admin.html";
+                            return;
+                        }
+                    } else {
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
+                            }
+                        }
+                    }
+                    
+                    await carregarInfoEquipe(user); 
+                    carregarAlunos(); 
+                    
+                } catch (error) { console.log(error); }
+            } else {
+                window.location.href = "index.html";
             }
         });
-        document.getElementById("prodPrice").value = '';
-        document.getElementById("prodDesc").value = '';
-    }
 
-    function saveProduct() {
-        const name = document.getElementById("prodName").value.trim();
-        const priceRaw = document.getElementById("prodPrice").value;
-        const description = document.getElementById("prodDesc").value.trim();
-        const imageUrl = document.getElementById("prodImage").value.trim();
-        const paymentLink = document.getElementById("prodLink").value.trim();
-        const statusVal = document.getElementById("prodStatus").value;
-        const status = statusVal === "active";
-        
-        if (!name) { alert("Informe o nome do produto."); return; }
-        if (!priceRaw || isNaN(parseFloat(priceRaw)) || parseFloat(priceRaw) <= 0) { alert("Preço inválido. Use números positivos (ex: 150.00)"); return; }
-        const price = parseFloat(priceRaw);
-        
-        if (editingId) {
-            // atualiza produto existente
-            const index = products.findIndex(p => p.id === editingId);
-            if (index !== -1) {
-                products[index] = {
-                    ...products[index],
-                    name: name,
-                    price: price,
-                    description: description,
-                    imageUrl: imageUrl,
-                    paymentLink: paymentLink,
-                    status: status,
+        async function carregarInfoEquipe(user) {
+            const elEmailLogado = document.getElementById('email-logado');
+            if (elEmailLogado) elEmailLogado.innerText = user.email;
+
+            try {
+                const docSnap = await getDoc(doc(db, "equipes", uid));
+                let dadosEquipe = null;
+                
+                if (docSnap.exists()) {
+                    const lblCargo = document.getElementById('lbl-cargo');
+                    if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
+                    dadosEquipe = docSnap.data();
+                } else {
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id; 
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                        
+                        const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                        if(equipeMestreSnap.exists()) {
+                            dadosEquipe = equipeMestreSnap.data();
+                        }
+                    }
+                }
+
+                if (dadosEquipe) {
+                    const nomeEquipe = dadosEquipe.nome_equipe;
+                    
+                    const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipe.toUpperCase();
+
+                    const elLogo = document.getElementById('container-logo');
+                    if (elLogo) {
+                        if (dadosEquipe.url_logo) {
+                            elLogo.style.background = 'transparent';
+                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                        } else {
+                            elLogo.style.background = ''; 
+                            elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
+                        }
+                    }
+                }
+            } catch (error) { console.log(error); }
+        }
+
+        // === MAGIA DAS DUAS CORES ===
+        function getCorFaixa(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
+            if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500';
+            if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500';
+            if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500';
+            if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500';
+            if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500';
+            if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600';
+            if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600';
+            if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300';
+            if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500';
+            if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500';
+            if (f.includes('laranja')) return 'bg-orange-500 text-white border border-orange-600';
+            if (f.includes('verde')) return 'bg-green-600 text-white border border-green-700';
+            if (f.includes('azul')) return 'bg-blue-600 text-white border border-blue-700';
+            if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700';
+            if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900';
+            if (f.includes('preta')) return 'bg-slate-900 text-white border border-slate-900';
+            return 'bg-slate-100 text-slate-600 border border-slate-200';
+        }
+
+        async function carregarAlunos() {
+            try {
+                const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
+                const snap = await getDocs(q);
+                alunosCache = [];
+                snap.forEach(docSnap => {
+                    alunosCache.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
+                renderizarListaAlunos(alunosCache);
+            } catch (err) {
+                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-rose-500 font-bold'>Erro ao carregar atletas.</p>`;
+            }
+        }
+
+        function renderizarListaAlunos(lista) {
+            const container = document.getElementById('lista-alunos');
+            container.innerHTML = '';
+            
+            if(lista.length === 0) {
+                container.innerHTML = `<p class='text-center p-8 text-slate-400 text-sm font-medium'>Nenhum aluno encontrado.</p>`;
+                return;
+            }
+
+            lista.forEach(aluno => {
+                const corFaixa = getCorFaixa(aluno.faixa);
+                
+                const item = document.createElement('div');
+                item.className = "p-4 border-b border-slate-50 hover:bg-slate-100 cursor-pointer transition-colors flex items-center justify-between group";
+                item.onclick = () => selecionarAluno(aluno.id);
+                
+                item.innerHTML = `
+                    <div class="flex flex-col truncate pr-3">
+                        <span class="font-bold text-slate-700 text-xs md:text-sm group-hover:text-cyan-600 transition-colors truncate">${aluno.nome}</span>
+                        <span class="text-[9px] md:text-[10px] text-slate-400 uppercase font-bold mt-0.5">${aluno.grau || 'Sem grau'}</span>
+                    </div>
+                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full shadow-sm ${corFaixa} shrink-0" title="${aluno.faixa}"></div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        window.filtrarLista = function() {
+            const termo = document.getElementById('input-busca').value.toLowerCase();
+            const filtrados = alunosCache.filter(a => a.nome.toLowerCase().includes(termo));
+            renderizarListaAlunos(filtrados);
+        }
+
+        window.selecionarAluno = async function(id) {
+            alunoSelecionado = alunosCache.find(a => a.id === id);
+            if(!alunoSelecionado) return;
+
+            cancelarEdicaoFed(); 
+
+            document.getElementById('painel-vazio').classList.add('hidden');
+            document.getElementById('painel-vazio').classList.remove('md:flex');
+            
+            const painelHistorico = document.getElementById('painel-historico');
+            painelHistorico.classList.remove('hidden');
+            painelHistorico.classList.add('flex');
+
+            const painelLista = document.getElementById('painel-lista');
+            painelLista.classList.add('hidden', 'md:flex'); 
+            painelLista.classList.remove('flex');
+
+            document.getElementById('aluno-nome-detalhe').innerText = alunoSelecionado.nome;
+            document.getElementById('aluno-avatar').innerText = alunoSelecionado.nome.charAt(0).toUpperCase();
+            
+            const badge = document.getElementById('aluno-faixa-badge');
+            badge.innerText = alunoSelecionado.faixa || "BRANCA";
+            badge.className = `px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm bg-slate-100 border border-slate-200 inline-block mt-1 ${getCorFaixa(alunoSelecionado.faixa)}`;
+            
+            carregarFederacoes(id);
+        }
+
+        window.voltarLista = function() {
+            const painelLista = document.getElementById('painel-lista');
+            painelLista.classList.remove('hidden', 'md:flex');
+            painelLista.classList.add('flex');
+            
+            const painelHistorico = document.getElementById('painel-historico');
+            painelHistorico.classList.add('hidden');
+            painelHistorico.classList.remove('flex');
+        }
+
+        // === CARREGAR FEDERAÇÕES ===
+        async function carregarFederacoes(alunoId) {
+            const container = document.getElementById('lista-federacoes');
+            container.innerHTML = `<div class="text-center text-slate-400 mt-5 text-sm">Carregando...</div>`;
+            
+            document.getElementById('alerta-vencimento').classList.add('hidden');
+
+            try {
+                // Filtro blindado: garante segurança no acesso do Firestore
+                const q = query(collection(db, "federacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId));
+                const snap = await getDocs(q);
+                
+                federacoesCache = [];
+                snap.forEach(doc => {
+                    federacoesCache.push({ id: doc.id, ...doc.data() });
+                });
+
+                federacoesCache.sort((a, b) => a.nome_federacao.localeCompare(b.nome_federacao));
+                renderizarFederacoes(federacoesCache);
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<div class="text-center text-rose-500 font-bold mt-5 text-sm">Acesso negado ou erro ao buscar dados.</div>`;
+            }
+        }
+
+        function renderizarFederacoes(fedLista) {
+            const container = document.getElementById('lista-federacoes');
+            container.innerHTML = '';
+
+            if (fedLista.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-center">
+                        <div class="text-4xl mb-3 opacity-50">🪪</div>
+                        <p class="text-sm text-slate-500 font-bold">Nenhuma filiação registada.</p>
+                    </div>`;
+                return;
+            }
+
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            let temAlerta = false;
+
+            fedLista.forEach(fed => {
+                
+                // Formatação Data BR
+                let dataBR = fed.data_vencimento || "--";
+                if(fed.data_vencimento && fed.data_vencimento.includes('-')) {
+                    const p = fed.data_vencimento.split('-');
+                    dataBR = `${p[2]}/${p[1]}/${p[0]}`;
+                }
+
+                // Lógica de Vencimento
+                let corFundo = "bg-slate-50 border-slate-200";
+                let statusBadge = "bg-slate-200 text-slate-600";
+                let icone = "✅";
+                let statusReal = fed.status;
+
+                if (fed.data_vencimento) {
+                    const dataVenc = new Date(fed.data_vencimento + "T00:00:00");
+                    const diffTime = dataVenc - hoje;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays < 0) {
+                        corFundo = "bg-rose-50 border-rose-200";
+                        statusBadge = "bg-rose-100 text-rose-700 border-rose-200";
+                        icone = "❌";
+                        statusReal = "Vencido";
+                        temAlerta = true;
+                    } else if (diffDays <= 30) {
+                        corFundo = "bg-amber-50 border-amber-200";
+                        statusBadge = "bg-amber-100 text-amber-700 border-amber-200";
+                        icone = "⚠️";
+                        temAlerta = true;
+                    } else if (statusReal === 'Ativo') {
+                        corFundo = "bg-emerald-50 border-emerald-200";
+                        statusBadge = "bg-emerald-100 text-emerald-700 border-emerald-200";
+                    }
+                }
+
+                if(statusReal === 'Pendente') {
+                    corFundo = "bg-slate-50 border-slate-200";
+                    statusBadge = "bg-slate-200 text-slate-600 border-slate-300";
+                    icone = "⏳";
+                }
+
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-2xl border ${corFundo} hover:shadow-md transition-shadow relative group cursor-pointer`;
+                
+                // Clicar edita
+                item.onclick = (e) => {
+                    if(e.target.tagName !== 'BUTTON') editarFederacao(fed.id);
                 };
-            }
-            editingId = null;
-        } else {
-            // novo produto
-            const newId = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 6);
-            products.push({
-                id: newId,
-                name: name,
-                price: price,
-                description: description,
-                imageUrl: imageUrl,
-                paymentLink: paymentLink,
-                status: status,
+                
+                item.innerHTML = `
+                    <div class="flex gap-3 items-center">
+                        <div class="text-2xl">${icone}</div>
+                        <div class="flex-1 overflow-hidden">
+                            <h4 class="font-black text-slate-800 text-xs md:text-sm truncate pr-14">${fed.nome_federacao}</h4>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Registo: <span class="text-slate-700">${fed.numero_registro || 'N/A'}</span></p>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Validade: <span class="text-slate-700">${dataBR}</span></p>
+                        </div>
+                        <div class="text-right flex flex-col items-end gap-1 absolute top-4 right-4">
+                            <span class="${statusBadge} px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border">${statusReal}</span>
+                            <div class="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity mt-2">
+                                <button onclick="editarFederacao('${fed.id}')" class="text-[10px] bg-white border border-cyan-200 px-2 py-1 rounded text-cyan-600 font-bold hover:bg-cyan-50">✏️</button>
+                                <button onclick="excluirFederacao('${fed.id}', '${alunoSelecionado.id}')" class="text-[10px] bg-white border border-rose-200 px-2 py-1 rounded text-rose-500 font-bold hover:bg-rose-50">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
             });
-        }
-        saveToLocal();
-        cancelEdit(); // reseta formulário
-        syncAllRenders();
-    }
 
-    // Atualizar número WhatsApp da equipe e salvar
-    function updateTeamWhatsapp() {
-        const waInput = document.getElementById("teamWhatsapp");
-        if (waInput) {
-            let newWa = waInput.value.trim();
-            if (newWa === "") newWa = "5511999999999";
-            teamWhatsApp = newWa;
-            localStorage.setItem("team_whatsapp", teamWhatsApp);
-            syncAllRenders(); // recarrega vitrine com novo número
-        }
-    }
-
-    // Configurar modal para mobile
-    function initModal() {
-        const modal = document.getElementById("vitrineModal");
-        const openBtn = document.getElementById("mobileOpenVitrineBtn");
-        const closeBtn = document.getElementById("closeModalBtn");
-        const modalGrid = document.getElementById("modalProductsGrid");
-        
-        function openModal() {
-            // antes de abrir, renderiza vitrine dentro do modal com dados atualizados
-            if (modalGrid) renderStudentView(modalGrid);
-            modal.classList.add("active");
-            document.body.style.overflow = "hidden";
-        }
-        function closeModalFunc() {
-            modal.classList.remove("active");
-            document.body.style.overflow = "";
-        }
-        if (openBtn) openBtn.addEventListener("click", openModal);
-        if (closeBtn) closeBtn.addEventListener("click", closeModalFunc);
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) closeModalFunc();
-        });
-        // garantir que se o modal estiver fechado e houver resize não atrapalha
-        window.addEventListener("resize", () => {
-            if (window.innerWidth > 768 && modal.classList.contains("active")) {
-                closeModalFunc();
+            if(temAlerta) {
+                document.getElementById('alerta-vencimento').classList.remove('hidden');
             }
-        });
-    }
-
-    // Eventos iniciais e segurança: protege contra XSS e inicializa
-    document.addEventListener("DOMContentLoaded", () => {
-        loadInitialData();
-        const waInput = document.getElementById("teamWhatsapp");
-        if (waInput) {
-            waInput.addEventListener("change", updateTeamWhatsapp);
-            waInput.addEventListener("blur", updateTeamWhatsapp);
         }
-        // Botões de formulário
-        document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
-        document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
-        // Renderização inicial
-        syncAllRenders();
-        initModal();
-        // validar segurança extra: evitar submissões maliciosas de script nos campos já tratados pelo escapeHtml ao exibir
-        console.log("Ambiente seguro com escape HTML e validação.");
-    });
-</script>
+
+        // === INICIA A EDIÇÃO ===
+        window.editarFederacao = function(fedId) {
+            const fed = federacoesCache.find(c => c.id === fedId);
+            if(!fed) return;
+
+            federacaoEditandoId = fedId;
+            
+            document.getElementById('fed-nome').value = fed.nome_federacao || "CBJJ/IBJJF";
+            document.getElementById('fed-registro').value = fed.numero_registro || "";
+            document.getElementById('fed-vencimento').value = fed.data_vencimento || "";
+            document.getElementById('fed-status').value = fed.status || "Ativo";
+
+            document.getElementById('titulo-form-fed').innerText = "Editar Filiação";
+            document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Atualizar";
+            document.getElementById('btn-cancelar-fed').classList.remove('hidden');
+        }
+
+        window.cancelarEdicaoFed = function() {
+            federacaoEditandoId = null;
+            document.getElementById('fed-nome').value = "CBJJ/IBJJF";
+            document.getElementById('fed-registro').value = "";
+            document.getElementById('fed-vencimento').value = "";
+            document.getElementById('fed-status').value = "Ativo";
+            
+            document.getElementById('titulo-form-fed').innerText = "Registar Carteirinha";
+            document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Salvar Filiação";
+            document.getElementById('btn-cancelar-fed').classList.add('hidden');
+        }
+
+        // === SALVAR (NOVO OU EDIÇÃO) ===
+        window.salvarFederacao = async function() {
+            if (!alunoSelecionado) return showToast("Selecione um aluno primeiro!", "error");
+
+            const nome = document.getElementById('fed-nome').value;
+            const reg = document.getElementById('fed-registro').value;
+            const venc = document.getElementById('fed-vencimento').value;
+            const stat = document.getElementById('fed-status').value;
+
+            if (!nome) return showToast("A Federação é obrigatória!", "error");
+
+            const dadosFed = {
+                equipe_id: uid,
+                aluno_id: alunoSelecionado.id,
+                nome_federacao: nome,
+                numero_registro: reg,
+                data_vencimento: venc,
+                status: stat,
+                atualizado_em: new Date().toISOString()
+            };
+
+            try {
+                if (federacaoEditandoId) {
+                    await updateDoc(doc(db, "federacoes", federacaoEditandoId), dadosFed);
+                    showToast("Filiação atualizada com sucesso!", "success");
+                } else {
+                    await addDoc(collection(db, "federacoes"), dadosFed);
+                    showToast("Filiação salva com sucesso!", "success");
+                }
+
+                cancelarEdicaoFed(); 
+                carregarFederacoes(alunoSelecionado.id); 
+                
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao registar filiação.", "error");
+            }
+        }
+
+        window.excluirFederacao = async function(fedId, alunoId) {
+            if(!confirm("Tem a certeza que deseja apagar este registo?")) return;
+            try {
+                await deleteDoc(doc(db, "federacoes", fedId));
+                showToast("Registo apagado com sucesso.", "success");
+                if (federacaoEditandoId === fedId) cancelarEdicaoFed();
+                carregarFederacoes(alunoId);
+            } catch (error) {
+                showToast("Erro ao excluir registo.", "error");
+            }
+        }
+
+        window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+
+    </script>
 </body>
 </html>
