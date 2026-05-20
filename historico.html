@@ -9,8 +9,8 @@
     
     <link rel="apple-touch-icon" href="logo_bjj_manager.png">
     <link rel="icon" type="image/png" href="logo_bjj_manager.png">
-    
     <link rel="manifest" href="manifest.json">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Histórico de Graduação | BJJ Manager</title>
@@ -42,7 +42,6 @@
         }
         .animate-spin { animation: spin 1s linear infinite; }
         
-        /* Timeline styling */
         .timeline-item::before {
             content: '';
             position: absolute;
@@ -54,7 +53,6 @@
         }
         .timeline-item:last-child::before { display: none; }
         
-        /* Botão refresh */
         .btn-refresh {
             transition: all 0.2s ease;
         }
@@ -67,7 +65,6 @@
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
     
-    <!-- Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center">
         <div class="bg-white rounded-2xl p-6 flex flex-col items-center shadow-2xl animate-fade-in">
             <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -76,10 +73,8 @@
     </div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
-
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
-            <!-- Cabeçalho -->
             <div class="bg-white border-b border-slate-200 px-4 py-3 shrink-0 shadow-sm">
                 <div class="flex items-center justify-between max-w-7xl mx-auto">
                     <div>
@@ -94,7 +89,6 @@
 
             <div class="flex-1 overflow-hidden p-4 md:p-6 pb-20 md:pb-6 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
                 
-                <!-- PAINEL ESQUERDO - LISTA DE ALUNOS -->
                 <div id="painel-lista" class="w-full md:w-1/3 flex flex-col bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 overflow-hidden shrink-0 transition-all">
                     <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 shrink-0">
                         <h3 class="font-black text-slate-800 text-sm mb-3">Selecione o(a) Atleta</h3>
@@ -108,10 +102,8 @@
                     </div>
                 </div>
 
-                <!-- PAINEL DIREITO - HISTÓRICO E REGISTRO -->
                 <div id="painel-historico" class="w-full md:w-2/3 hidden flex-col h-full gap-4 md:gap-6 overflow-y-auto hide-scrollbar pb-6 transition-all">
                     
-                    <!-- Cabeçalho do Aluno -->
                     <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4 shrink-0">
                         <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                             <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 transition-colors shrink-0">
@@ -129,10 +121,8 @@
                         </div>
                     </div>
 
-                    <!-- Grid de Conteúdo -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 flex-1 min-h-[400px]">
                         
-                        <!-- Formulário de Registro -->
                         <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col h-fit">
                             <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3 shrink-0">
                                 <span class="text-xl">🎖️</span>
@@ -185,7 +175,6 @@
                             </div>
                         </div>
 
-                        <!-- Timeline de Graduações -->
                         <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col h-full min-h-[300px] overflow-hidden">
                             <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3 shrink-0">
                                 <span class="text-xl">📜</span>
@@ -200,7 +189,6 @@
                     </div>
                 </div>
                 
-                <!-- Painel Vazio (Mobile/Desktop) -->
                 <div id="painel-vazio" class="hidden md:flex w-full md:w-2/3 h-full flex-col items-center justify-center bg-white border-2 border-dashed border-slate-200 rounded-3xl text-center p-6 md:p-10">
                     <div class="w-20 h-20 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center text-3xl md:text-4xl shadow-sm border border-slate-200 mb-4">🔍</div>
                     <h3 class="text-base md:text-xl font-black text-slate-700 mb-2">Nenhum atleta selecionado</h3>
@@ -211,67 +199,78 @@
 
         </main>
     </div>
-<div id="modal-aviso-graduacao" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[300] p-4 transition-opacity">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="modal-aviso-content">
-        <div class="bg-amber-500 p-5 text-white flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl">⚠️</span>
-                <h3 class="font-black uppercase tracking-widest text-sm">Atenção! Graduação Regressiva</h3>
-            </div>
-            <button onclick="fecharModalAviso()" class="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
-        </div>
-        
-        <div class="p-6 space-y-4">
-            <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-lg">🥋</div>
-                    <div>
-                        <p class="text-xs font-bold text-amber-700 uppercase">Faixa Atual</p>
-                        <p class="text-xl font-black text-amber-800" id="aviso-faixa-atual">--</p>
-                    </div>
-                </div>
-                <div class="flex items-center justify-center my-2">
-                    <svg class="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                </div>
+
+    <div id="modal-aviso-graduacao" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[300] p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="modal-aviso-content">
+            <div class="bg-amber-500 p-5 text-white flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-lg">🎓</div>
-                    <div>
-                        <p class="text-xs font-bold text-emerald-700 uppercase">Nova Faixa</p>
-                        <p class="text-xl font-black text-emerald-800" id="aviso-faixa-nova">--</p>
+                    <span class="text-2xl">⚠️</span>
+                    <h3 class="font-black uppercase tracking-widest text-sm">Atenção! Graduação Regressiva</h3>
+                </div>
+                <button onclick="fecharModalAviso()" class="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-lg">🥋</div>
+                        <div>
+                            <p class="text-xs font-bold text-amber-700 uppercase">Faixa Atual</p>
+                            <p class="text-xl font-black text-amber-800" id="aviso-faixa-atual">--</p>
+                        </div>
                     </div>
+                    <div class="flex items-center justify-center my-2">
+                        <svg class="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-lg">🎓</div>
+                        <div>
+                            <p class="text-xs font-bold text-emerald-700 uppercase">Nova Faixa</p>
+                            <p class="text-xl font-black text-emerald-800" id="aviso-faixa-nova">--</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                    <p class="text-sm text-blue-800 font-medium leading-relaxed">
+                        📌 <span class="font-bold">Isso é comum para alunos transferidos</span> de outras academias ou quando se está corrigindo o histórico.
+                    </p>
+                </div>
+                
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p class="text-xs text-slate-600 font-medium">
+                        ℹ️ O sistema permitirá o registro, mas ficará registrado que esta foi uma graduação regressiva (transferência).
+                    </p>
                 </div>
             </div>
             
-            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                <p class="text-sm text-blue-800 font-medium leading-relaxed">
-                    📌 <span class="font-bold">Isso é comum para alunos transferidos</span> de outras academias ou quando se está corrigindo o histórico.
-                </p>
+            <div class="p-5 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalAviso()" class="flex-1 py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold rounded-xl text-sm transition-colors">
+                    Cancelar
+                </button>
+                <button id="btn-confirmar-graduacao" onclick="confirmarGraduacaoRegressiva()" class="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                    <span>✅</span> Continuar Mesmo Assim
+                </button>
             </div>
-            
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <p class="text-xs text-slate-600 font-medium">
-                    ℹ️ O sistema permitirá o registro, mas ficará registrado que esta foi uma graduação regressiva (transferência).
-                </p>
-            </div>
-        </div>
-        
-        <div class="p-5 bg-slate-50 border-t border-slate-200 flex gap-3">
-            <button onclick="fecharModalAviso()" class="flex-1 py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold rounded-xl text-sm transition-colors">
-                Cancelar
-            </button>
-            <button id="btn-confirmar-graduacao" onclick="confirmarGraduacaoRegressiva()" class="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
-                <span>✅</span> Continuar Mesmo Assim
-            </button>
         </div>
     </div>
-</div>
+
     <script src="menu.js"></script>
-<script type="module">
+
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ===================== ESCAPE HTML =====================
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            const div = document.createElement('div');
+            div.textContent = texto;
+            return div.innerHTML;
+        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -286,21 +285,18 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // ===================== VARIÁVEIS GLOBAIS =====================
         let uid = null;
         let alunosCache = [];
         let alunoSelecionado = null;
         let isLoading = false;
         let dadosGraduacaoPendente = null;
 
-        // ===================== CACHE =====================
         const CACHE_KEYS = { ALUNOS: 'bjj_hist_alunos_cache', GRADUACOES: 'bjj_hist_graduacoes_cache_' };
         const CACHE_TTL = 5 * 60 * 1000;
 
         function saveToCache(key, data) {
             try { localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: CACHE_TTL })); } catch(e) { console.warn("Cache error:", e); }
         }
-
         function getFromCache(key) {
             try {
                 const cached = localStorage.getItem(key);
@@ -310,7 +306,6 @@
                 return data;
             } catch(e) { return null; }
         }
-
         function clearCache() { 
             localStorage.removeItem(CACHE_KEYS.ALUNOS);
             Object.keys(localStorage).forEach(key => {
@@ -318,23 +313,15 @@
             });
         }
 
-        // ===================== LOADING =====================
         function showLoading() { 
             const overlay = document.getElementById('loading-overlay'); 
-            if (overlay) {
-                overlay.classList.remove('hidden'); 
-                overlay.classList.add('flex'); 
-            }
+            if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('flex'); }
         }
         function hideLoading() { 
             const overlay = document.getElementById('loading-overlay'); 
-            if (overlay) {
-                overlay.classList.add('hidden'); 
-                overlay.classList.remove('flex'); 
-            }
+            if (overlay) { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }
         }
 
-        // ===================== TOAST =====================
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -347,7 +334,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-        // ===================== MANUAL REFRESH =====================
         window.manualRefreshHistorico = async function() {
             if (isLoading) return;
             isLoading = true;
@@ -366,7 +352,6 @@
             }
         };
 
-        // ===================== AUTENTICAÇÃO =====================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const tentarLimpar = setInterval(() => {
@@ -387,10 +372,7 @@
                 setTimeout(() => clearInterval(tentarLimpar), 5000);
 
                 let isSuper = false;
-                try {
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (superSnap.exists()) isSuper = true;
-                } catch(e) { isSuper = false; }
+                try { const superSnap = await getDoc(doc(db, "super_admins", user.uid)); if (superSnap.exists()) isSuper = true; } catch(e) { isSuper = false; }
 
                 try {
                     if (isSuper) {
@@ -412,12 +394,9 @@
                     document.getElementById('grad-data').valueAsDate = new Date();
                     
                 } catch (error) { console.log(error); }
-            } else {
-                window.location.href = "index.html";
-            }
+            } else { window.location.href = "index.html"; }
         });
 
-        // ===================== AUTOMAÇÃO DE CERTIFICADOS =====================
         async function processarAgendamentosPendentes(forceRefresh = false) {
             try {
                 const hoje = new Date();
@@ -478,7 +457,6 @@
             } catch(e) { console.error("Erro na automação do certificado:", e); }
         }
 
-        // ===================== CARREGAR INFORMAÇÕES DA EQUIPE =====================
         async function carregarInfoEquipe(user) {
             const elEmailLogado = document.getElementById('email-logado');
             if (elEmailLogado) elEmailLogado.innerText = user.email;
@@ -486,7 +464,6 @@
             try {
                 const docSnap = await getDoc(doc(db, "equipes", uid));
                 let dadosEquipe = null;
-                
                 if (docSnap.exists()) {
                     const lblCargo = document.getElementById('lbl-cargo');
                     if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
@@ -511,17 +488,16 @@
                     if (elLogo) {
                         if (dadosEquipe.url_logo) {
                             elLogo.style.background = 'transparent';
-                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo" crossorigin="anonymous">`;
+                            elLogo.innerHTML = `<img src="${escapeHtml(dadosEquipe.url_logo)}" class="w-full h-full object-cover" alt="Logo" crossorigin="anonymous">`;
                         } else {
-                            elLogo.style.background = ''; 
-                            elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
+                            elLogo.style.background = '';
+                            elLogo.innerHTML = escapeHtml(nomeEquipe.charAt(0).toUpperCase());
                         }
                     }
                 }
             } catch (error) { console.log(error); }
         }
 
-        // ===================== CORES DAS FAIXAS =====================
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -544,7 +520,6 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
-        // ===================== HIERARQUIA DE FAIXAS =====================
         const HIERARQUIA_FaIXAS = [
             'Branca', 'Cinza e Branca', 'Cinza', 'Cinza e Preta',
             'Amarela e Branca', 'Amarela', 'Amarela e Preta',
@@ -553,7 +528,6 @@
             'Azul', 'Roxa', 'Marrom', 'Preta'
         ];
 
-        // ===================== CARREGAR ALUNOS =====================
         async function carregarAlunos(forceRefresh = false) {
             if (!forceRefresh) {
                 const cached = getFromCache(CACHE_KEYS.ALUNOS);
@@ -576,16 +550,14 @@
                 renderizarListaAlunos(alunosCache);
             } catch (err) {
                 console.error("Erro ao carregar alunos:", err);
-                document.getElementById('lista-alunos').innerHTML = `<div class='p-8 text-center text-rose-500 text-sm font-bold'>Erro ao carregar atletas.<br><span class="text-xs text-slate-400">${err.message}</span></div>`;
+                document.getElementById('lista-alunos').innerHTML = `<div class='p-8 text-center text-rose-500 text-sm font-bold'>Erro ao carregar atletas.<br><span class="text-xs text-slate-400">${escapeHtml(err.message)}</span></div>`;
             }
         }
 
         function renderizarListaAlunos(lista) {
             const container = document.getElementById('lista-alunos');
             if (!container) return;
-            
             container.innerHTML = '';
-            
             if(!lista || lista.length === 0) {
                 container.innerHTML = `<div class='p-8 text-center text-slate-400 text-sm font-medium'>Nenhum aluno encontrado.</div>`;
                 return;
@@ -611,141 +583,80 @@
             });
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
         window.filtrarLista = function() {
             const termo = document.getElementById('input-busca').value.toLowerCase();
             const filtrados = alunosCache.filter(a => a.nome.toLowerCase().includes(termo));
             renderizarListaAlunos(filtrados);
         }
 
-        // ===================== CÁLCULO DE TEMPO NA FAIXA =====================
-function calcularTempoFaixa(dataUltimaMudancaFaixaStr) {
-    if (!dataUltimaMudancaFaixaStr) return "Desconhecido";
-    
-    try {
-        let dt;
-        if (dataUltimaMudancaFaixaStr.includes('T')) {
-            dt = new Date(dataUltimaMudancaFaixaStr);
-        } else if (dataUltimaMudancaFaixaStr.includes('-')) {
-            const partes = dataUltimaMudancaFaixaStr.split('-');
-            dt = new Date(partes[0], partes[1]-1, partes[2]);
-        } else {
-            return "Desconhecido";
+        function calcularTempoFaixa(dataUltimaMudancaFaixaStr) {
+            if (!dataUltimaMudancaFaixaStr) return "Desconhecido";
+            try {
+                let dt;
+                if (dataUltimaMudancaFaixaStr.includes('T')) {
+                    dt = new Date(dataUltimaMudancaFaixaStr);
+                } else if (dataUltimaMudancaFaixaStr.includes('-')) {
+                    const partes = dataUltimaMudancaFaixaStr.split('-');
+                    dt = new Date(partes[0], partes[1]-1, partes[2]);
+                } else return "Desconhecido";
+                if (isNaN(dt.getTime())) return "Desconhecido";
+                const hoje = new Date();
+                let anos = hoje.getFullYear() - dt.getFullYear();
+                let meses = hoje.getMonth() - dt.getMonth();
+                if (meses < 0) { anos -= 1; meses += 12; }
+                if (hoje.getDate() < dt.getDate()) { meses -= 1; if (meses < 0) { anos -= 1; meses += 12; } }
+                if (anos > 0 && meses > 0) return `${anos} anos e ${meses} meses`;
+                if (anos > 0) return `${anos} ano(s)`;
+                if (meses > 0) return `${meses} mes(es)`;
+                return "Menos de 1 mês";
+            } catch (e) { return "Erro no cálculo"; }
         }
-        
-        if (isNaN(dt.getTime())) return "Desconhecido";
-        
-        const hoje = new Date();
-        let anos = hoje.getFullYear() - dt.getFullYear();
-        let meses = hoje.getMonth() - dt.getMonth();
-        
-        if (meses < 0) {
-            anos -= 1;
-            meses += 12;
+
+        window.selecionarAluno = async function(id) {
+            if (!id) { showToast("ID do aluno inválido", "error"); return; }
+            alunoSelecionado = alunosCache.find(a => a.id === id);
+            if (!alunoSelecionado) { showToast("Aluno não encontrado", "error"); return; }
+            
+            const nomeAluno = alunoSelecionado.nome || "Aluno sem nome";
+            document.getElementById('painel-vazio').classList.add('hidden');
+            document.getElementById('painel-vazio').classList.remove('md:flex');
+            const painelHistorico = document.getElementById('painel-historico');
+            painelHistorico.classList.remove('hidden');
+            painelHistorico.classList.add('flex');
+            const painelLista = document.getElementById('painel-lista');
+            painelLista.classList.add('hidden', 'md:flex'); 
+            painelLista.classList.remove('flex');
+
+            const nomeElemento = document.getElementById('aluno-nome-detalhe');
+            if (nomeElemento) nomeElemento.innerText = escapeHtml(nomeAluno);
+            const avatarElemento = document.getElementById('aluno-avatar');
+            if (avatarElemento) avatarElemento.innerText = escapeHtml(nomeAluno.charAt(0).toUpperCase());
+            
+            const badge = document.getElementById('aluno-faixa-badge');
+            if (badge) {
+                const faixaAluno = alunoSelecionado.faixa || "BRANCA";
+                badge.innerText = escapeHtml(faixaAluno);
+                badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(faixaAluno)}`;
+            }
+            const grauElemento = document.getElementById('aluno-grau-detalhe');
+            if (grauElemento) grauElemento.innerText = `GRAU: ${escapeHtml(alunoSelecionado.grau || 'Sem grau')}`;
+
+            const selectFaixa = document.getElementById('grad-faixa');
+            const selectGrau = document.getElementById('grad-grau');
+            if (selectFaixa) {
+                Array.from(selectFaixa.options).forEach(opt => {
+                    if(opt.value.toLowerCase() === (alunoSelecionado.faixa || '').toLowerCase()) opt.selected = true;
+                });
+            }
+            if (selectGrau) {
+                Array.from(selectGrau.options).forEach(opt => {
+                    if(opt.value === alunoSelecionado.grau) opt.selected = true;
+                });
+            }
+
+            await carregarTimeline(id);
+            await atualizarTempoNaFaixa();
         }
-        
-        if (hoje.getDate() < dt.getDate()) {
-            meses -= 1;
-            if (meses < 0) {
-                anos -= 1;
-                meses += 12;
-            }
-        }
-        
-        if (anos > 0 && meses > 0) return `${anos} anos e ${meses} meses`;
-        if (anos > 0) return `${anos} ano(s)`;
-        if (meses > 0) return `${meses} mes(es)`;
-        return "Menos de 1 mês";
-        
-    } catch (e) {
-        console.error("Erro ao calcular tempo:", e);
-        return "Erro no cálculo";
-    }
-}
-
-        // ===================== SELEÇÃO DE ALUNO =====================
-window.selecionarAluno = async function(id) {
-    // Verifica se o ID é válido
-    if (!id) {
-        showToast("ID do aluno inválido", "error");
-        return;
-    }
-    
-    alunoSelecionado = alunosCache.find(a => a.id === id);
-    
-    // Verifica se o aluno foi encontrado
-    if (!alunoSelecionado) {
-        showToast("Aluno não encontrado", "error");
-        return;
-    }
-    
-    // Garante que o nome existe
-    const nomeAluno = alunoSelecionado.nome || "Aluno sem nome";
-    
-    // Mostra o painel de histórico
-    document.getElementById('painel-vazio').classList.add('hidden');
-    document.getElementById('painel-vazio').classList.remove('md:flex');
-    
-    const painelHistorico = document.getElementById('painel-historico');
-    painelHistorico.classList.remove('hidden');
-    painelHistorico.classList.add('flex');
-
-    const painelLista = document.getElementById('painel-lista');
-    painelLista.classList.add('hidden', 'md:flex'); 
-    painelLista.classList.remove('flex');
-
-    // Atualiza o cabeçalho do aluno com segurança
-    const nomeElemento = document.getElementById('aluno-nome-detalhe');
-    if (nomeElemento) nomeElemento.innerText = nomeAluno;
-    
-    const avatarElemento = document.getElementById('aluno-avatar');
-    if (avatarElemento) avatarElemento.innerText = nomeAluno.charAt(0).toUpperCase();
-    
-    // Atualiza o badge da faixa
-    const badge = document.getElementById('aluno-faixa-badge');
-    if (badge) {
-        const faixaAluno = alunoSelecionado.faixa || "BRANCA";
-        badge.innerText = faixaAluno;
-        badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(faixaAluno)}`;
-    }
-    
-    // Atualiza o grau do aluno
-    const grauElemento = document.getElementById('aluno-grau-detalhe');
-    if (grauElemento) grauElemento.innerText = `GRAU: ${alunoSelecionado.grau || 'Sem grau'}`;
-
-    // Atualiza os selects do formulário com os valores atuais do aluno
-    const selectFaixa = document.getElementById('grad-faixa');
-    const selectGrau = document.getElementById('grad-grau');
-    
-    if (selectFaixa) {
-        Array.from(selectFaixa.options).forEach(opt => {
-            if(opt.value.toLowerCase() === (alunoSelecionado.faixa || '').toLowerCase()) {
-                opt.selected = true;
-            }
-        });
-    }
-    
-    if (selectGrau) {
-        Array.from(selectGrau.options).forEach(opt => {
-            if(opt.value === alunoSelecionado.grau) {
-                opt.selected = true;
-            }
-        });
-    }
-
-    // Carrega a timeline do aluno
-    await carregarTimeline(id);
-    
-    // 🔥 ATUALIZA O TEMPO NA FAIXA (calculado a partir da última troca de faixa)
-    await atualizarTempoNaFaixa();
-}
-
 
         window.voltarLista = function() {
             const painelLista = document.getElementById('painel-lista');
@@ -757,479 +668,301 @@ window.selecionarAluno = async function(id) {
             alunoSelecionado = null;
         }
 
-        // ===================== CARREGAR TIMELINE =====================
-async function carregarTimeline(alunoId, forceRefresh = false) {
-    if (!alunoId) {
-        console.error("carregarTimeline: alunoId é undefined");
-        const container = document.getElementById('timeline-container');
-        if (container) container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro: ID do aluno não informado</div>`;
-        return;
-    }
-    
-    const container = document.getElementById('timeline-container');
-    if (!container) return;
-    
-    // Mostra skeleton loading
-    container.innerHTML = `
-        <div class="space-y-4 animate-pulse">
-            <div class="bg-slate-100 h-20 rounded-xl"></div>
-            <div class="bg-slate-100 h-20 rounded-xl"></div>
-        </div>
-    `;
+        async function carregarTimeline(alunoId, forceRefresh = false) {
+            if (!alunoId) {
+                const container = document.getElementById('timeline-container');
+                if (container) container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro: ID do aluno não informado</div>`;
+                return;
+            }
+            const container = document.getElementById('timeline-container');
+            if (!container) return;
+            container.innerHTML = `<div class="space-y-4 animate-pulse"><div class="bg-slate-100 h-20 rounded-xl"></div><div class="bg-slate-100 h-20 rounded-xl"></div></div>`;
 
-    const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
-    
-    if (!forceRefresh) {
-        const cached = getFromCache(cacheKey);
-        if (cached && cached.length > 0) {
-            renderizarTimeline(cached, alunoId);
-            return;
-        }
-    }
-    
-    try {
-        const q = query(
-            collection(db, "graduacoes"), 
-            where("equipe_id", "==", uid), 
-            where("aluno_id", "==", alunoId)
-        );
-        const snap = await getDocs(q);
-        
-        let historico = [];
-        snap.forEach(doc => {
-            historico.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // 🔥 ORDENA CORRETAMENTE (MAIS RECENTE PRIMEIRO)
-        historico.sort((a, b) => {
-            const dateA = a.data ? new Date(a.data) : new Date(0);
-            const dateB = b.data ? new Date(b.data) : new Date(0);
-            return dateB - dateA;
-        });
-
-        saveToCache(cacheKey, historico);
-        renderizarTimeline(historico, alunoId);
-        
-        // 🔥 ATUALIZA O TEMPO NA FAIXA (USA A PRIMEIRA GRADUAÇÃO DA LISTA = MAIS RECENTE)
-        if (historico.length > 0) {
-            const ultimaGrad = historico[0];
-            document.getElementById('aluno-tempo-faixa').innerText = calcularTempoFaixa(ultimaGrad.data);
-        }
-        
-    } catch (error) {
-        console.error("Erro Firebase:", error);
-        let errorMsg = error.message || "Erro desconhecido";
-        if (errorMsg.includes("index")) {
-            errorMsg = "Configurando banco de dados...";
-        }
-        container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados.<br><span class="text-xs">${errorMsg}</span></div>`;
-    }
-}
-function renderizarTimeline(historico, alunoId) {
-    const container = document.getElementById('timeline-container');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (!historico || historico.length === 0) {
-        container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-12 text-center">
-                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-3xl mb-4">🥋</div>
-                <p class="text-sm text-slate-500 font-bold">Nenhuma graduação registrada</p>
-                <p class="text-xs text-slate-400 mt-2 max-w-xs">Registre a primeira graduação do atleta utilizando o formulário ao lado.</p>
-            </div>`;
-        return;
-    }
-
-    // Atualiza o tempo na faixa
-    atualizarTempoNaFaixa();
-
-    const fragment = document.createDocumentFragment();
-    
-    historico.forEach(grad => {
-        let dataBR = grad.data || "--";
-        if(grad.data && grad.data.includes('-')) {
-            const p = grad.data.split('-');
-            dataBR = `${p[2]}/${p[1]}/${p[0]}`;
+            const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
+            if (!forceRefresh) {
+                const cached = getFromCache(cacheKey);
+                if (cached && cached.length > 0) {
+                    renderizarTimeline(cached, alunoId);
+                    return;
+                }
+            }
+            try {
+                const q = query(collection(db, "graduacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId));
+                const snap = await getDocs(q);
+                let historico = [];
+                snap.forEach(doc => { historico.push({ id: doc.id, ...doc.data() }); });
+                historico.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+                saveToCache(cacheKey, historico);
+                renderizarTimeline(historico, alunoId);
+                if (historico.length > 0) {
+                    const ultimaGrad = historico[0];
+                    document.getElementById('aluno-tempo-faixa').innerText = calcularTempoFaixa(ultimaGrad.data);
+                }
+            } catch (error) {
+                console.error("Erro Firebase:", error);
+                let errorMsg = error.message || "Erro desconhecido";
+                if (errorMsg.includes("index")) errorMsg = "Configurando banco de dados...";
+                container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Erro ao buscar dados.<br><span class="text-xs">${escapeHtml(errorMsg)}</span></div>`;
+            }
         }
 
-        // 🔥 INDICADOR DE MUDANÇA DE FAIXA
-        const mudouFaixaBadge = grad.mudou_faixa 
-            ? `<span class="ml-2 text-[8px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">🔄 Troca de Faixa</span>` 
-            : `<span class="ml-2 text-[8px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">📈 Apenas Grau</span>`;
-
-        const btnCertificado = grad.certificado_url 
-            ? `<a href="${grad.certificado_url}" target="_blank" class="mt-2 text-[9px] md:text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 px-3 py-1.5 rounded-xl transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"><span class="text-sm">🎓</span> Ver Diploma</a>` 
-            : '';
-
-        const item = document.createElement('div');
-        item.className = "timeline-item relative pl-6 md:pl-8 pb-5 md:pb-6";
-        item.innerHTML = `
-            <div class="absolute left-0 top-1 w-4 h-4 md:w-5 md:h-5 rounded-full border-3 border-white shadow-sm flex items-center justify-center ${getCorFaixa(grad.faixa)} z-10"></div>
-            <div class="bg-slate-50 p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 hover:border-cyan-200 transition-colors group">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-1">
-                    <div class="flex items-center flex-wrap gap-1">
-                        <h4 class="font-black text-slate-800 text-xs md:text-sm uppercase">${grad.faixa}</h4>
-                        ${mudouFaixaBadge}
+        async function renderizarTimeline(historico, alunoId) {
+            const container = document.getElementById('timeline-container');
+            if (!container) return;
+            container.innerHTML = '';
+            if (!historico || historico.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-12 text-center"><div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-3xl mb-4">🥋</div><p class="text-sm text-slate-500 font-bold">Nenhuma graduação registrada</p><p class="text-xs text-slate-400 mt-2 max-w-xs">Registre a primeira graduação do atleta utilizando o formulário ao lado.</p></div>`;
+                return;
+            }
+            await atualizarTempoNaFaixa();
+            const fragment = document.createDocumentFragment();
+            historico.forEach(grad => {
+                let dataBR = grad.data || "--";
+                if(grad.data && grad.data.includes('-')) { const p = grad.data.split('-'); dataBR = `${p[2]}/${p[1]}/${p[0]}`; }
+                const mudouFaixaBadge = grad.mudou_faixa 
+                    ? `<span class="ml-2 text-[8px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">🔄 Troca de Faixa</span>` 
+                    : `<span class="ml-2 text-[8px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">📈 Apenas Grau</span>`;
+                const btnCertificado = grad.certificado_url 
+                    ? `<a href="${escapeHtml(grad.certificado_url)}" target="_blank" class="mt-2 text-[9px] md:text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 px-3 py-1.5 rounded-xl transition-colors flex items-center justify-center gap-1 w-full sm:w-auto"><span class="text-sm">🎓</span> Ver Diploma</a>` 
+                    : '';
+                const faixaEscapada = escapeHtml(grad.faixa);
+                const grauEscapado = escapeHtml(grad.grau || 'Sem grau');
+                const dataEscapada = escapeHtml(dataBR);
+                const item = document.createElement('div');
+                item.className = "timeline-item relative pl-6 md:pl-8 pb-5 md:pb-6";
+                item.innerHTML = `
+                    <div class="absolute left-0 top-1 w-4 h-4 md:w-5 md:h-5 rounded-full border-3 border-white shadow-sm flex items-center justify-center ${getCorFaixa(grad.faixa)} z-10"></div>
+                    <div class="bg-slate-50 p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 hover:border-cyan-200 transition-colors group">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-1">
+                            <div class="flex items-center flex-wrap gap-1">
+                                <h4 class="font-black text-slate-800 text-xs md:text-sm uppercase">${faixaEscapada}</h4>
+                                ${mudouFaixaBadge}
+                            </div>
+                            <span class="text-[8px] md:text-[9px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${dataEscapada}</span>
+                        </div>
+                        <div>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-medium">Grau: ${grauEscapado}</p>
+                        </div>
+                        ${btnCertificado}
+                        <div class="mt-2 flex justify-end">
+                            <button onclick="excluirGraduacao('${grad.id}', '${alunoId}')" class="text-[8px] md:text-[9px] font-bold text-rose-400 hover:text-rose-600 uppercase transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">Excluir</button>
+                        </div>
                     </div>
-                    <span class="text-[8px] md:text-[9px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${dataBR}</span>
-                </div>
-                <div>
-                    <p class="text-[9px] md:text-[10px] text-slate-500 font-medium">Grau: ${grad.grau || 'Sem grau'}</p>
-                </div>
-                ${btnCertificado}
-                <div class="mt-2 flex justify-end">
-                    <button onclick="excluirGraduacao('${grad.id}', '${alunoId}')" class="text-[8px] md:text-[9px] font-bold text-rose-400 hover:text-rose-600 uppercase transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">Excluir</button>
-                </div>
-            </div>
-        `;
-        fragment.appendChild(item);
-    });
-    
-    container.appendChild(fragment);
-}
+                `;
+                fragment.appendChild(item);
+            });
+            container.appendChild(fragment);
+        }
 
-        // ===================== MODAL DE AVISO =====================
         window.abrirModalAviso = function(faixaAtual, novaFaixa, dados) {
             dadosGraduacaoPendente = dados;
-            
-            document.getElementById('aviso-faixa-atual').innerText = faixaAtual;
-            document.getElementById('aviso-faixa-nova').innerText = novaFaixa;
-            
+            document.getElementById('aviso-faixa-atual').innerText = escapeHtml(faixaAtual);
+            document.getElementById('aviso-faixa-nova').innerText = escapeHtml(novaFaixa);
             const modal = document.getElementById('modal-aviso-graduacao');
             const content = document.getElementById('modal-aviso-content');
-            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 50);
+            setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 50);
         }
-
         window.fecharModalAviso = function() {
             const modal = document.getElementById('modal-aviso-graduacao');
             const content = document.getElementById('modal-aviso-content');
-            
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                dadosGraduacaoPendente = null;
-            }, 300);
+            content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); dadosGraduacaoPendente = null; }, 300);
         }
 
-window.confirmarGraduacaoRegressiva = async function() {
-    if (!dadosGraduacaoPendente) return;
-    
-    fecharModalAviso();
-    
-    const btn = document.getElementById('btn-salvar-grad');
-    if (btn) {
-        btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
-        btn.disabled = true;
-    }
-    showLoading();
-
-    try {
-        // 1. SALVA A GRADUAÇÃO REGRESSIVA NO HISTÓRICO
-        await addDoc(collection(db, "graduacoes"), {
-            equipe_id: uid,
-            aluno_id: dadosGraduacaoPendente.alunoId,
-            data: dadosGraduacaoPendente.data,
-            faixa: dadosGraduacaoPendente.novaFaixa,
-            grau: dadosGraduacaoPendente.novoGrau || "Sem grau",
-            registado_em: new Date().toISOString(),
-            origem: "MANUAL",
-            observacao: "Graduação regressiva (transferência)"
-        });
-
-        // 2. 🔥 ATUALIZA O CADASTRO DO ALUNO COM A NOVA GRADUAÇÃO
-        await updateDoc(doc(db, "alunos", dadosGraduacaoPendente.alunoId), {
-            faixa: dadosGraduacaoPendente.novaFaixa,
-            grau: dadosGraduacaoPendente.novoGrau || "Sem grau"
-        });
-
-        showToast("🎉 Graduação transferida registrada com sucesso! Oss!", "success");
-        
-        // 3. ATUALIZA O ALUNO SELECIONADO NA MEMÓRIA
-        if (alunoSelecionado && alunoSelecionado.id === dadosGraduacaoPendente.alunoId) {
-            alunoSelecionado.faixa = dadosGraduacaoPendente.novaFaixa;
-            alunoSelecionado.grau = dadosGraduacaoPendente.novoGrau || "Sem grau";
-            
-            // Atualiza a interface
-            const badge = document.getElementById('aluno-faixa-badge');
-            if (badge) {
-                badge.innerText = dadosGraduacaoPendente.novaFaixa;
-                badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(dadosGraduacaoPendente.novaFaixa)}`;
-            }
-            
-            const grauElemento = document.getElementById('aluno-grau-detalhe');
-            if (grauElemento) grauElemento.innerText = `GRAU: ${dadosGraduacaoPendente.novoGrau || 'Sem grau'}`;
-        }
-        
-        // 4. LIMPA CACHE E RECARREGA
-        clearCache();
-        await carregarAlunos(true);
-        await carregarTimeline(dadosGraduacaoPendente.alunoId, true);
-        
-    } catch (error) {
-        console.error("Erro ao salvar:", error);
-        showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
-    } finally {
-        if (btn) {
-            btn.innerHTML = "<span class='mr-2 text-base'>➕</span> Salvar Conquista";
-            btn.disabled = false;
-        }
-        hideLoading();
-        dadosGraduacaoPendente = null;
-    }
-}
-
-        // ===================== SALVAR GRADUAÇÃO =====================
-window.salvarGraduacao = async function() {
-    if (!alunoSelecionado) {
-        showToast("Selecione um aluno primeiro!", "warning");
-        return;
-    }
-    
-    if (!alunoSelecionado.id) {
-        showToast("Erro: ID do aluno não encontrado", "error");
-        return;
-    }
-
-    const data = document.getElementById('grad-data')?.value;
-    const novaFaixa = document.getElementById('grad-faixa')?.value;
-    const novoGrau = document.getElementById('grad-grau')?.value;
-
-    if (!data) return showToast("A data da graduação é obrigatória!", "error");
-    if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
-
-    const faixaAtual = alunoSelecionado.faixa || 'Branca';
-    const grauAtual = alunoSelecionado.grau || 'Sem grau';
-    
-    // 🔥 VERIFICA SE É GRADUAÇÃO REGRESSIVA (para transferências)
-    let isRegressiva = false;
-    if (faixaAtual !== novaFaixa) {
-        const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
-        const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
-        if (indexNova < indexAtual && indexAtual !== -1 && indexNova !== -1) {
-            isRegressiva = true;
-        }
-    }
-    
-    // Se for regressiva, mostra o modal de aviso
-    if (isRegressiva) {
-        abrirModalAviso(faixaAtual, novaFaixa, {
-            alunoId: alunoSelecionado.id,
-            data: data,
-            novaFaixa: novaFaixa,
-            novoGrau: novoGrau
-        });
-        return;
-    }
-    
-    const btn = document.getElementById('btn-salvar-grad');
-    if (!btn) return;
-    
-    const originalTxt = btn.innerHTML;
-    btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
-    btn.disabled = true;
-    showLoading();
-
-    try {
-        // 🔥 VERIFICA SE HOUVE MUDANÇA DE FAIXA
-        const mudouFaixa = houveMudancaDeFaixa(faixaAtual, novaFaixa);
-        
-        // 1. SALVA A NOVA GRADUAÇÃO NO HISTÓRICO
-        await addDoc(collection(db, "graduacoes"), {
-            equipe_id: uid,
-            aluno_id: alunoSelecionado.id,
-            data: data,
-            faixa: novaFaixa,
-            grau: novoGrau || "Sem grau",
-            registado_em: new Date().toISOString(),
-            origem: "MANUAL",
-            mudou_faixa: mudouFaixa  // 🔥 NOVO CAMPO: indica se houve mudança de faixa
-        });
-
-        // 2. ATUALIZA O CADASTRO DO ALUNO
-        await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
-            faixa: novaFaixa,
-            grau: novoGrau || "Sem grau",
-            // 🔥 SE HOUVE MUDANÇA DE FAIXA, ATUALIZA A DATA DA ÚLTIMA TROCA
-            ...(mudouFaixa && { ultima_troca_faixa: data })
-        });
-
-        showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
-        
-        // 3. ATUALIZA O ALUNO SELECIONADO NA MEMÓRIA
-        alunoSelecionado.faixa = novaFaixa;
-        alunoSelecionado.grau = novoGrau || "Sem grau";
-        if (mudouFaixa) {
-            alunoSelecionado.ultima_troca_faixa = data;
-        }
-        
-        // 4. ATUALIZA A INTERFACE
-        const badge = document.getElementById('aluno-faixa-badge');
-        if (badge) {
-            badge.innerText = novaFaixa;
-            badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(novaFaixa)}`;
-        }
-        
-        const grauElemento = document.getElementById('aluno-grau-detalhe');
-        if (grauElemento) grauElemento.innerText = `GRAU: ${novoGrau || 'Sem grau'}`;
-        
-        // 5. ATUALIZA O TEMPO NA FAIXA
-        atualizarTempoNaFaixa();
-        
-        // 6. LIMPA CACHE E RECARREGA
-        clearCache();
-        await carregarAlunos(true);
-        await carregarTimeline(alunoSelecionado.id, true);
-        
-    } catch (error) {
-        console.error("Erro ao salvar:", error);
-        showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
-    } finally {
-        btn.innerHTML = originalTxt;
-        btn.disabled = false;
-        hideLoading();
-    }
-}
-
-        // ===================== EXCLUIR GRADUAÇÃO =====================
-window.excluirGraduacao = async function(gradId, alunoId) {
-    // Verifica se o gradId é válido
-    if (!gradId) {
-        showToast("ID da graduação inválido", "error");
-        return;
-    }
-    
-    let faixaInfo = "";
-    try {
-        const gradDoc = await getDoc(doc(db, "graduacoes", gradId));
-        if (gradDoc.exists()) {
-            const grad = gradDoc.data();
-            faixaInfo = ` (${grad.faixa || '?'}${grad.grau && grad.grau !== 'Sem grau' ? ' - ' + grad.grau : ''})`;
-        } else {
-            showToast("Graduação não encontrada no banco de dados", "error");
-            return;
-        }
-    } catch(e) {
-        console.error("Erro ao buscar graduação:", e);
-        showToast("Erro ao verificar a graduação", "error");
-        return;
-    }
-    
-    if(!confirm(`⚠️ Tem certeza que deseja apagar esta graduação${faixaInfo}?\n\nEsta ação não pode ser desfeita e removerá o registro da linha do tempo.`)) return;
-
-    showLoading();
-    try {
-        await deleteDoc(doc(db, "graduacoes", gradId));
-        showToast("Registro apagado com sucesso.", "success");
-        
-        // Limpa cache específico do aluno
-        const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
-        localStorage.removeItem(cacheKey);
-        
-        // Recarrega a timeline
-        if (alunoId) {
-            await carregarTimeline(alunoId, true);
-            await carregarAlunos(true);
-            
-            // Atualiza o aluno selecionado se for o mesmo
-            if (alunoSelecionado && alunoSelecionado.id === alunoId) {
-                const alunoAtualizado = alunosCache.find(a => a.id === alunoId);
-                if (alunoAtualizado) {
-                    alunoSelecionado = alunoAtualizado;
-                    
-                    // Atualiza a interface
+        window.confirmarGraduacaoRegressiva = async function() {
+            if (!dadosGraduacaoPendente) return;
+            fecharModalAviso();
+            const btn = document.getElementById('btn-salvar-grad');
+            if (btn) { btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando..."; btn.disabled = true; }
+            showLoading();
+            try {
+                await addDoc(collection(db, "graduacoes"), {
+                    equipe_id: uid,
+                    aluno_id: dadosGraduacaoPendente.alunoId,
+                    data: dadosGraduacaoPendente.data,
+                    faixa: dadosGraduacaoPendente.novaFaixa,
+                    grau: dadosGraduacaoPendente.novoGrau || "Sem grau",
+                    registado_em: new Date().toISOString(),
+                    origem: "MANUAL",
+                    observacao: "Graduação regressiva (transferência)"
+                });
+                await updateDoc(doc(db, "alunos", dadosGraduacaoPendente.alunoId), {
+                    faixa: dadosGraduacaoPendente.novaFaixa,
+                    grau: dadosGraduacaoPendente.novoGrau || "Sem grau"
+                });
+                showToast("🎉 Graduação transferida registrada com sucesso! Oss!", "success");
+                if (alunoSelecionado && alunoSelecionado.id === dadosGraduacaoPendente.alunoId) {
+                    alunoSelecionado.faixa = dadosGraduacaoPendente.novaFaixa;
+                    alunoSelecionado.grau = dadosGraduacaoPendente.novoGrau || "Sem grau";
                     const badge = document.getElementById('aluno-faixa-badge');
                     if (badge) {
-                        badge.innerText = alunoSelecionado.faixa || "BRANCA";
-                        badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(alunoSelecionado.faixa || "BRANCA")}`;
+                        badge.innerText = escapeHtml(dadosGraduacaoPendente.novaFaixa);
+                        badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(dadosGraduacaoPendente.novaFaixa)}`;
                     }
-                    
                     const grauElemento = document.getElementById('aluno-grau-detalhe');
-                    if (grauElemento) grauElemento.innerText = `GRAU: ${alunoSelecionado.grau || 'Sem grau'}`;
+                    if (grauElemento) grauElemento.innerText = `GRAU: ${escapeHtml(dadosGraduacaoPendente.novoGrau || 'Sem grau')}`;
                 }
+                clearCache();
+                await carregarAlunos(true);
+                await carregarTimeline(dadosGraduacaoPendente.alunoId, true);
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
+            } finally {
+                if (btn) { btn.innerHTML = "<span class='mr-2 text-base'>➕</span> Salvar Conquista"; btn.disabled = false; }
+                hideLoading();
+                dadosGraduacaoPendente = null;
             }
         }
-        
-    } catch (error) {
-        console.error("Erro ao excluir:", error);
-        showToast("Erro ao excluir registro: " + (error.message || "Erro desconhecido"), "error");
-    } finally {
-        hideLoading();
-    }
-}
-function houveMudancaDeFaixa(faixaAntiga, faixaNova) {
-    // Se é a mesma faixa, não houve mudança (apenas grau)
-    if (faixaAntiga === faixaNova) return false;
-    
-    // Se são diferentes, houve mudança de faixa
-    return true;
-}
-async function atualizarTempoNaFaixa() {
-    if (!alunoSelecionado) return;
-    
-    let dataReferencia = null;
-    
-    // 🔥 PRIORIDADE 1: Usa a data da última troca de faixa (se existir)
-    if (alunoSelecionado.ultima_troca_faixa) {
-        dataReferencia = alunoSelecionado.ultima_troca_faixa;
-    }
-    
-    // 🔥 PRIORIDADE 2: Busca a última graduação que teve mudança de faixa
-    if (!dataReferencia) {
-        try {
-            const q = query(
-                collection(db, "graduacoes"),
-                where("equipe_id", "==", uid),
-                where("aluno_id", "==", alunoSelecionado.id),
-                where("mudou_faixa", "==", true)
-            );
-            const snap = await getDocs(q);
-            if (!snap.empty) {
-                let ultimaMudanca = null;
-                snap.forEach(doc => {
-                    const grad = doc.data();
-                    if (!ultimaMudanca || grad.data > ultimaMudanca.data) {
-                        ultimaMudanca = grad;
-                    }
+
+        window.salvarGraduacao = async function() {
+            if (!alunoSelecionado) { showToast("Selecione um aluno primeiro!", "warning"); return; }
+            if (!alunoSelecionado.id) { showToast("Erro: ID do aluno não encontrado", "error"); return; }
+
+            const data = document.getElementById('grad-data')?.value;
+            const novaFaixa = document.getElementById('grad-faixa')?.value;
+            const novoGrau = document.getElementById('grad-grau')?.value;
+
+            if (!data) return showToast("A data da graduação é obrigatória!", "error");
+            if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
+
+            const faixaAtual = alunoSelecionado.faixa || 'Branca';
+            const grauAtual = alunoSelecionado.grau || 'Sem grau';
+            let isRegressiva = false;
+            if (faixaAtual !== novaFaixa) {
+                const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
+                const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
+                if (indexNova < indexAtual && indexAtual !== -1 && indexNova !== -1) isRegressiva = true;
+            }
+            if (isRegressiva) {
+                abrirModalAviso(faixaAtual, novaFaixa, { alunoId: alunoSelecionado.id, data: data, novaFaixa: novaFaixa, novoGrau: novoGrau });
+                return;
+            }
+
+            const btn = document.getElementById('btn-salvar-grad');
+            if (!btn) return;
+            const originalTxt = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Salvando...";
+            btn.disabled = true;
+            showLoading();
+
+            try {
+                const mudouFaixa = (faixaAtual !== novaFaixa);
+                await addDoc(collection(db, "graduacoes"), {
+                    equipe_id: uid,
+                    aluno_id: alunoSelecionado.id,
+                    data: data,
+                    faixa: novaFaixa,
+                    grau: novoGrau || "Sem grau",
+                    registado_em: new Date().toISOString(),
+                    origem: "MANUAL",
+                    mudou_faixa: mudouFaixa
                 });
-                if (ultimaMudanca && ultimaMudanca.data) {
-                    dataReferencia = ultimaMudanca.data;
+                await updateDoc(doc(db, "alunos", alunoSelecionado.id), {
+                    faixa: novaFaixa,
+                    grau: novoGrau || "Sem grau",
+                    ...(mudouFaixa && { ultima_troca_faixa: data })
+                });
+                showToast("🎉 Graduação registrada com sucesso! Oss!", "success");
+                alunoSelecionado.faixa = novaFaixa;
+                alunoSelecionado.grau = novoGrau || "Sem grau";
+                if (mudouFaixa) alunoSelecionado.ultima_troca_faixa = data;
+                const badge = document.getElementById('aluno-faixa-badge');
+                if (badge) {
+                    badge.innerText = escapeHtml(novaFaixa);
+                    badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(novaFaixa)}`;
+                }
+                const grauElemento = document.getElementById('aluno-grau-detalhe');
+                if (grauElemento) grauElemento.innerText = `GRAU: ${escapeHtml(novoGrau || 'Sem grau')}`;
+                atualizarTempoNaFaixa();
+                clearCache();
+                await carregarAlunos(true);
+                await carregarTimeline(alunoSelecionado.id, true);
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
+            } finally {
+                btn.innerHTML = originalTxt;
+                btn.disabled = false;
+                hideLoading();
+            }
+        }
+
+        window.excluirGraduacao = async function(gradId, alunoId) {
+            if (!gradId) { showToast("ID da graduação inválido", "error"); return; }
+            let faixaInfo = "";
+            try {
+                const gradDoc = await getDoc(doc(db, "graduacoes", gradId));
+                if (gradDoc.exists()) {
+                    const grad = gradDoc.data();
+                    faixaInfo = ` (${escapeHtml(grad.faixa || '?')}${grad.grau && grad.grau !== 'Sem grau' ? ' - ' + escapeHtml(grad.grau) : ''})`;
+                } else { showToast("Graduação não encontrada no banco de dados", "error"); return; }
+            } catch(e) { console.error("Erro ao buscar graduação:", e); showToast("Erro ao verificar a graduação", "error"); return; }
+            if(!confirm(`⚠️ Tem certeza que deseja apagar esta graduação${faixaInfo}?\n\nEsta ação não pode ser desfeita e removerá o registro da linha do tempo.`)) return;
+            showLoading();
+            try {
+                await deleteDoc(doc(db, "graduacoes", gradId));
+                showToast("Registro apagado com sucesso.", "success");
+                const cacheKey = CACHE_KEYS.GRADUACOES + alunoId;
+                localStorage.removeItem(cacheKey);
+                if (alunoId) {
+                    await carregarTimeline(alunoId, true);
+                    await carregarAlunos(true);
+                    if (alunoSelecionado && alunoSelecionado.id === alunoId) {
+                        const alunoAtualizado = alunosCache.find(a => a.id === alunoId);
+                        if (alunoAtualizado) {
+                            alunoSelecionado = alunoAtualizado;
+                            const badge = document.getElementById('aluno-faixa-badge');
+                            if (badge) {
+                                badge.innerText = escapeHtml(alunoSelecionado.faixa || "BRANCA");
+                                badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(alunoSelecionado.faixa || "BRANCA")}`;
+                            }
+                            const grauElemento = document.getElementById('aluno-grau-detalhe');
+                            if (grauElemento) grauElemento.innerText = `GRAU: ${escapeHtml(alunoSelecionado.grau || 'Sem grau')}`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao excluir:", error);
+                showToast("Erro ao excluir registro: " + (error.message || "Erro desconhecido"), "error");
+            } finally { hideLoading(); }
+        }
+
+        function houveMudancaDeFaixa(faixaAntiga, faixaNova) { return faixaAntiga !== faixaNova; }
+
+        async function atualizarTempoNaFaixa() {
+            if (!alunoSelecionado) return;
+            let dataReferencia = null;
+            if (alunoSelecionado.ultima_troca_faixa) dataReferencia = alunoSelecionado.ultima_troca_faixa;
+            if (!dataReferencia) {
+                try {
+                    const q = query(collection(db, "graduacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoSelecionado.id), where("mudou_faixa", "==", true));
+                    const snap = await getDocs(q);
+                    if (!snap.empty) {
+                        let ultimaMudanca = null;
+                        snap.forEach(doc => {
+                            const grad = doc.data();
+                            if (!ultimaMudanca || grad.data > ultimaMudanca.data) ultimaMudanca = grad;
+                        });
+                        if (ultimaMudanca && ultimaMudanca.data) dataReferencia = ultimaMudanca.data;
+                    }
+                } catch(e) { console.error("Erro ao buscar última mudança de faixa:", e); }
+            }
+            if (!dataReferencia && alunoSelecionado.data_cadastro) dataReferencia = alunoSelecionado.data_cadastro;
+            const tempoElemento = document.getElementById('aluno-tempo-faixa');
+            if (tempoElemento) {
+                const tempoTexto = calcularTempoFaixa(dataReferencia);
+                tempoElemento.innerText = tempoTexto;
+                if (dataReferencia) {
+                    const dataObj = new Date(dataReferencia);
+                    const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+                    tempoElemento.title = `Última troca de faixa em: ${escapeHtml(dataFormatada)}`;
                 }
             }
-        } catch(e) {
-            console.error("Erro ao buscar última mudança de faixa:", e);
         }
-    }
-    
-    // 🔥 PRIORIDADE 3: Usa a data de cadastro do aluno
-    if (!dataReferencia && alunoSelecionado.data_cadastro) {
-        dataReferencia = alunoSelecionado.data_cadastro;
-    }
-    
-    // Atualiza o elemento na tela
-    const tempoElemento = document.getElementById('aluno-tempo-faixa');
-    if (tempoElemento) {
-        const tempoTexto = calcularTempoFaixa(dataReferencia);
-        tempoElemento.innerText = tempoTexto;
-        
-        // Adiciona um tooltip explicativo
-        if (dataReferencia) {
-            const dataObj = new Date(dataReferencia);
-            const dataFormatada = dataObj.toLocaleDateString('pt-BR');
-            tempoElemento.title = `Última troca de faixa em: ${dataFormatada}`;
-        }
-    }
-}
+
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>
 </body>
