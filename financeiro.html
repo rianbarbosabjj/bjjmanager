@@ -929,84 +929,86 @@
             } else window.location.href = "index.html";
         });
 
-        async function carregarInfoEquipe(user) {
-            const elEmailLogado = document.getElementById('email-logado');
-            if (elEmailLogado) elEmailLogado.innerText = user.email;
+    async function carregarInfoEquipe(user) {
+        const elEmailLogado = document.getElementById('email-logado');
+        if (elEmailLogado) elEmailLogado.innerText = user.email;
 
-            try {
-                const docSnap = await getDoc(doc(db, "equipes", uid));
-                
-                if (docSnap.exists()) {
-                    const lblCargo = document.getElementById('lbl-cargo');
-                    if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
-                    equipeDados = docSnap.data();
-                } else {
-                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                    if(colabSnap.exists()) {
-                        uid = colabSnap.data().equipe_id; 
-                        const lblCargo = document.getElementById('lbl-cargo');
-                        if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                        const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                        if(equipeMestreSnap.exists()) equipeDados = equipeMestreSnap.data();
-                    }
-                }
-
-                if (equipeDados) {
-                    equipeNomeGlobal = equipeDados.nome_equipe;
-                    equipeLogoGlobal = equipeDados.url_logo;
-                     
-                    const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
-                    if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
-
-                    const elLogo = document.getElementById('container-logo');
-                    if (elLogo) {
-                        if (equipeLogoGlobal) {
-                            elLogo.style.background = 'transparent';
-                            elLogo.innerHTML = `<img src="${equipeLogoGlobal}" class="w-full h-full object-cover" alt="Logo">`;
-                        } else {
-                            elLogo.style.background = ''; 
-                            elLogo.innerHTML = equipeNomeGlobal.charAt(0).toUpperCase();
-                        }
-                    }
-
-                    if(equipeDados.valor_prazo) equipeBaseConfig.prazo = parseFloat(equipeDados.valor_prazo);
-                    if(equipeDados.valor_atraso) equipeBaseConfig.atraso = parseFloat(equipeDados.valor_atraso);
-                    if(equipeDados.chave_pix) {
-                        equipeBaseConfig.chave_pix = equipeDados.chave_pix;
-                        document.getElementById('config-pix').value = equipeDados.chave_pix;
-                    }
-
-                    document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
-                    document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
-                    document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
-                    document.getElementById('asaas-celular').value = equipeDados.telefone || equipeDados.celular || "";
-
-                    document.getElementById('asaas-aceita-boleto').checked = equipeDados.asaas_aceita_boleto === true;
-                    document.getElementById('asaas-aceita-cartao').checked = equipeDados.asaas_aceita_cartao === true;
-                    
-                    document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
-                    document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
-                    window.toggleTaxaInput();
-
-                    if(equipeDados.status_asaas === 'ATIVO') {
-                        document.getElementById('asaas-ativo-panel').classList.remove('hidden');
-                        document.getElementById('asaas-form-panel').classList.add('hidden');
-                        document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
-                        
-                        if(equipeDados.pix_saque_chave) {
-                            document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
-                            if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
-                        }
-
-                        carregarSaldoAsaas();
-                        carregarHistoricoSaques();
-                    } else {
-                        document.getElementById('asaas-ativo-panel').classList.add('hidden');
-                        document.getElementById('asaas-form-panel').classList.remove('hidden');
-                    }
-                }
-            } catch (error) { console.log(error); }
+        try {
+            const docSnap = await getDoc(doc(db, "equipes", uid));
+        
+        if (docSnap.exists()) {
+            const lblCargo = document.getElementById('lbl-cargo');
+            if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
+            equipeDados = docSnap.data();
+        } else {
+            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+            if(colabSnap.exists()) {
+                uid = colabSnap.data().equipe_id; 
+                const lblCargo = document.getElementById('lbl-cargo');
+                if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                if(equipeMestreSnap.exists()) equipeDados = equipeMestreSnap.data();
+            }
         }
+
+        if (equipeDados) {
+            equipeNomeGlobal = equipeDados.nome_equipe;
+            equipeLogoGlobal = equipeDados.url_logo;
+            
+            const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+            if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
+
+            const elLogo = document.getElementById('container-logo');
+            if (elLogo) {
+                if (equipeLogoGlobal) {
+                    elLogo.style.background = 'transparent';
+                    elLogo.innerHTML = `<img src="${equipeLogoGlobal}" class="w-full h-full object-cover" alt="Logo">`;
+                } else {
+                    elLogo.style.background = ''; 
+                    elLogo.innerHTML = equipeNomeGlobal.charAt(0).toUpperCase();
+                }
+            }
+
+            // CORREÇÃO: Verificamos se o valor é diferente de undefined para aceitar o número 0
+            if(equipeDados.valor_prazo !== undefined) equipeBaseConfig.prazo = parseFloat(equipeDados.valor_prazo);
+            if(equipeDados.valor_atraso !== undefined) equipeBaseConfig.atraso = parseFloat(equipeDados.valor_atraso);
+            
+            if(equipeDados.chave_pix) {
+                equipeBaseConfig.chave_pix = equipeDados.chave_pix;
+                document.getElementById('config-pix').value = equipeDados.chave_pix;
+            }
+
+            document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
+            document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
+            document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
+            document.getElementById('asaas-celular').value = equipeDados.telefone || equipeDados.celular || "";
+
+            document.getElementById('asaas-aceita-boleto').checked = equipeDados.asaas_aceita_boleto === true;
+            document.getElementById('asaas-aceita-cartao').checked = equipeDados.asaas_aceita_cartao === true;
+            
+            document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
+            document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
+            window.toggleTaxaInput();
+
+            if(equipeDados.status_asaas === 'ATIVO') {
+                document.getElementById('asaas-ativo-panel').classList.remove('hidden');
+                document.getElementById('asaas-form-panel').classList.add('hidden');
+                document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
+                
+                if(equipeDados.pix_saque_chave) {
+                    document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
+                    if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
+                }
+
+                carregarSaldoAsaas();
+                carregarHistoricoSaques();
+            } else {
+                document.getElementById('asaas-ativo-panel').classList.add('hidden');
+                document.getElementById('asaas-form-panel').classList.remove('hidden');
+            }
+        }
+                 } catch (error) { console.log(error); }
+    }
 
         window.salvarConfiguracaoGeral = async function() {
             const p = strToFloat(document.getElementById('config-prazo').value);
