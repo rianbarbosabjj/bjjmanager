@@ -36,7 +36,6 @@
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
-
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
             <div class="flex-1 overflow-hidden p-4 md:p-8 pb-20 md:pb-8 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
@@ -162,6 +161,14 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ===================== ESCAPE HTML =====================
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            const div = document.createElement('div');
+            div.textContent = texto;
+            return div.innerHTML;
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
             authDomain: "bjj-maneger.firebaseapp.com",
@@ -181,61 +188,42 @@
         let alunoSelecionado = null;
         let federacaoEditandoId = null;
 
-        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
-            
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
-            
             container.appendChild(toast);
-            
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
-            setTimeout(() => {
-                toast.classList.add('translate-x-full', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 4500);
+            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-        // =====================================================================================
-        // 🔥 LÓGICA DE AUTENTICAÇÃO BLINDADA COM MODO SUPORTE
-        // =====================================================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 let isSuper = false;
                 try {
                     const superSnap = await getDoc(doc(db, "super_admins", user.uid));
                     if (superSnap.exists()) isSuper = true;
-                } catch(e) {
-                    isSuper = false;
-                }
+                } catch(e) { isSuper = false; }
 
                 try {
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                        if (equipeImpersonada) {
-                            uid = equipeImpersonada; 
-                        } else {
-                            window.location.href = "super_admin.html";
-                            return;
-                        }
+                        if (equipeImpersonada) uid = equipeImpersonada;
+                        else { window.location.href = "super_admin.html"; return; }
                     } else {
                         uid = user.uid;
                         const docMestre = await getDoc(doc(db, "equipes", uid));
                         if (!docMestre.exists()) {
                             const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                            if(colabSnap.exists()) {
-                                uid = colabSnap.data().equipe_id;
-                            }
+                            if(colabSnap.exists()) uid = colabSnap.data().equipe_id;
                         }
                     }
                     
-                    await carregarInfoEquipe(user); 
-                    carregarAlunos(); 
+                    await carregarInfoEquipe(user);
+                    carregarAlunos();
                     
                 } catch (error) { console.log(error); }
             } else {
@@ -250,7 +238,6 @@
             try {
                 const docSnap = await getDoc(doc(db, "equipes", uid));
                 let dadosEquipe = null;
-                
                 if (docSnap.exists()) {
                     const lblCargo = document.getElementById('lbl-cargo');
                     if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
@@ -258,20 +245,16 @@
                 } else {
                     const colabSnap = await getDoc(doc(db, "colaboradores", uid));
                     if(colabSnap.exists()) {
-                        uid = colabSnap.data().equipe_id; 
+                        uid = colabSnap.data().equipe_id;
                         const lblCargo = document.getElementById('lbl-cargo');
                         if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                        
                         const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                        if(equipeMestreSnap.exists()) {
-                            dadosEquipe = equipeMestreSnap.data();
-                        }
+                        if(equipeMestreSnap.exists()) dadosEquipe = equipeMestreSnap.data();
                     }
                 }
 
                 if (dadosEquipe) {
                     const nomeEquipe = dadosEquipe.nome_equipe;
-                    
                     const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                     if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipe.toUpperCase();
 
@@ -279,17 +262,16 @@
                     if (elLogo) {
                         if (dadosEquipe.url_logo) {
                             elLogo.style.background = 'transparent';
-                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                            elLogo.innerHTML = `<img src="${escapeHtml(dadosEquipe.url_logo)}" class="w-full h-full object-cover" alt="Logo" crossorigin="anonymous">`;
                         } else {
-                            elLogo.style.background = ''; 
-                            elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
+                            elLogo.style.background = '';
+                            elLogo.innerHTML = escapeHtml(nomeEquipe.charAt(0).toUpperCase());
                         }
                     }
                 }
             } catch (error) { console.log(error); }
         }
 
-        // === MAGIA DAS DUAS CORES ===
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -320,36 +302,36 @@
                 snap.forEach(docSnap => {
                     alunosCache.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                
                 alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
                 renderizarListaAlunos(alunosCache);
             } catch (err) {
-                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-rose-500 font-bold'>Erro ao carregar atletas.</p>`;
+                document.getElementById('lista-alunos').innerHTML = `<div class='text-center p-5 text-rose-500 font-bold'>Erro ao carregar atletas.<br><span class="text-xs">${escapeHtml(err.message)}</span></div>`;
             }
         }
 
         function renderizarListaAlunos(lista) {
             const container = document.getElementById('lista-alunos');
             container.innerHTML = '';
-            
             if(lista.length === 0) {
-                container.innerHTML = `<p class='text-center p-8 text-slate-400 text-sm font-medium'>Nenhum aluno encontrado.</p>`;
+                container.innerHTML = `<div class='text-center p-8 text-slate-400 text-sm font-medium'>Nenhum aluno encontrado.</div>`;
                 return;
             }
 
             lista.forEach(aluno => {
                 const corFaixa = getCorFaixa(aluno.faixa);
+                const nomeEscapado = escapeHtml(aluno.nome);
+                const grauEscapado = escapeHtml(aluno.grau || 'Sem grau');
+                const faixaTitulo = escapeHtml(aluno.faixa);
                 
                 const item = document.createElement('div');
                 item.className = "p-4 border-b border-slate-50 hover:bg-slate-100 cursor-pointer transition-colors flex items-center justify-between group";
                 item.onclick = () => selecionarAluno(aluno.id);
-                
                 item.innerHTML = `
                     <div class="flex flex-col truncate pr-3">
-                        <span class="font-bold text-slate-700 text-xs md:text-sm group-hover:text-cyan-600 transition-colors truncate">${aluno.nome}</span>
-                        <span class="text-[9px] md:text-[10px] text-slate-400 uppercase font-bold mt-0.5">${aluno.grau || 'Sem grau'}</span>
+                        <span class="font-bold text-slate-700 text-xs md:text-sm group-hover:text-cyan-600 transition-colors truncate">${nomeEscapado}</span>
+                        <span class="text-[9px] md:text-[10px] text-slate-400 uppercase font-bold mt-0.5">${grauEscapado}</span>
                     </div>
-                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full shadow-sm ${corFaixa} shrink-0" title="${aluno.faixa}"></div>
+                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full shadow-sm ${corFaixa} shrink-0" title="${faixaTitulo}"></div>
                 `;
                 container.appendChild(item);
             });
@@ -365,25 +347,25 @@
             alunoSelecionado = alunosCache.find(a => a.id === id);
             if(!alunoSelecionado) return;
 
-            cancelarEdicaoFed(); 
+            cancelarEdicaoFed();
 
             document.getElementById('painel-vazio').classList.add('hidden');
             document.getElementById('painel-vazio').classList.remove('md:flex');
-            
             const painelHistorico = document.getElementById('painel-historico');
             painelHistorico.classList.remove('hidden');
             painelHistorico.classList.add('flex');
-
             const painelLista = document.getElementById('painel-lista');
-            painelLista.classList.add('hidden', 'md:flex'); 
+            painelLista.classList.add('hidden', 'md:flex');
             painelLista.classList.remove('flex');
 
-            document.getElementById('aluno-nome-detalhe').innerText = alunoSelecionado.nome;
-            document.getElementById('aluno-avatar').innerText = alunoSelecionado.nome.charAt(0).toUpperCase();
+            const nomeEscapado = escapeHtml(alunoSelecionado.nome);
+            document.getElementById('aluno-nome-detalhe').innerText = nomeEscapado;
+            document.getElementById('aluno-avatar').innerText = escapeHtml(alunoSelecionado.nome.charAt(0).toUpperCase());
             
             const badge = document.getElementById('aluno-faixa-badge');
-            badge.innerText = alunoSelecionado.faixa || "BRANCA";
-            badge.className = `px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm bg-slate-100 border border-slate-200 inline-block mt-1 ${getCorFaixa(alunoSelecionado.faixa)}`;
+            const faixaAluno = alunoSelecionado.faixa || "BRANCA";
+            badge.innerText = escapeHtml(faixaAluno);
+            badge.className = `px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mt-1 ${getCorFaixa(faixaAluno)}`;
             
             carregarFederacoes(id);
         }
@@ -392,32 +374,23 @@
             const painelLista = document.getElementById('painel-lista');
             painelLista.classList.remove('hidden', 'md:flex');
             painelLista.classList.add('flex');
-            
             const painelHistorico = document.getElementById('painel-historico');
             painelHistorico.classList.add('hidden');
             painelHistorico.classList.remove('flex');
         }
 
-        // === CARREGAR FEDERAÇÕES ===
         async function carregarFederacoes(alunoId) {
             const container = document.getElementById('lista-federacoes');
             container.innerHTML = `<div class="text-center text-slate-400 mt-5 text-sm">Carregando...</div>`;
-            
             document.getElementById('alerta-vencimento').classList.add('hidden');
 
             try {
-                // Filtro blindado: garante segurança no acesso do Firestore
                 const q = query(collection(db, "federacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId));
                 const snap = await getDocs(q);
-                
                 federacoesCache = [];
-                snap.forEach(doc => {
-                    federacoesCache.push({ id: doc.id, ...doc.data() });
-                });
-
+                snap.forEach(doc => { federacoesCache.push({ id: doc.id, ...doc.data() }); });
                 federacoesCache.sort((a, b) => a.nome_federacao.localeCompare(b.nome_federacao));
                 renderizarFederacoes(federacoesCache);
-
             } catch (error) {
                 console.error(error);
                 container.innerHTML = `<div class="text-center text-rose-500 font-bold mt-5 text-sm">Acesso negado ou erro ao buscar dados.</div>`;
@@ -427,13 +400,8 @@
         function renderizarFederacoes(fedLista) {
             const container = document.getElementById('lista-federacoes');
             container.innerHTML = '';
-
             if (fedLista.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-10 text-center">
-                        <div class="text-4xl mb-3 opacity-50">🪪</div>
-                        <p class="text-sm text-slate-500 font-bold">Nenhuma filiação registada.</p>
-                    </div>`;
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-center"><div class="text-4xl mb-3 opacity-50">🪪</div><p class="text-sm text-slate-500 font-bold">Nenhuma filiação registada.</p></div>`;
                 return;
             }
 
@@ -442,15 +410,13 @@
             let temAlerta = false;
 
             fedLista.forEach(fed => {
-                
-                // Formatação Data BR
                 let dataBR = fed.data_vencimento || "--";
                 if(fed.data_vencimento && fed.data_vencimento.includes('-')) {
                     const p = fed.data_vencimento.split('-');
                     dataBR = `${p[2]}/${p[1]}/${p[0]}`;
                 }
+                const dataEscapada = escapeHtml(dataBR);
 
-                // Lógica de Vencimento
                 let corFundo = "bg-slate-50 border-slate-200";
                 let statusBadge = "bg-slate-200 text-slate-600";
                 let icone = "✅";
@@ -460,7 +426,6 @@
                     const dataVenc = new Date(fed.data_vencimento + "T00:00:00");
                     const diffTime = dataVenc - hoje;
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
                     if (diffDays < 0) {
                         corFundo = "bg-rose-50 border-rose-200";
                         statusBadge = "bg-rose-100 text-rose-700 border-rose-200";
@@ -477,31 +442,31 @@
                         statusBadge = "bg-emerald-100 text-emerald-700 border-emerald-200";
                     }
                 }
-
                 if(statusReal === 'Pendente') {
                     corFundo = "bg-slate-50 border-slate-200";
                     statusBadge = "bg-slate-200 text-slate-600 border-slate-300";
                     icone = "⏳";
                 }
 
+                const nomeFedEscapado = escapeHtml(fed.nome_federacao);
+                const registroEscapado = escapeHtml(fed.numero_registro || 'N/A');
+                const statusRealEscapado = escapeHtml(statusReal);
+
                 const item = document.createElement('div');
                 item.className = `p-4 rounded-2xl border ${corFundo} hover:shadow-md transition-shadow relative group cursor-pointer`;
-                
-                // Clicar edita
                 item.onclick = (e) => {
                     if(e.target.tagName !== 'BUTTON') editarFederacao(fed.id);
                 };
-                
                 item.innerHTML = `
                     <div class="flex gap-3 items-center">
                         <div class="text-2xl">${icone}</div>
                         <div class="flex-1 overflow-hidden">
-                            <h4 class="font-black text-slate-800 text-xs md:text-sm truncate pr-14">${fed.nome_federacao}</h4>
-                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Registo: <span class="text-slate-700">${fed.numero_registro || 'N/A'}</span></p>
-                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Validade: <span class="text-slate-700">${dataBR}</span></p>
+                            <h4 class="font-black text-slate-800 text-xs md:text-sm truncate pr-14">${nomeFedEscapado}</h4>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Registo: <span class="text-slate-700">${registroEscapado}</span></p>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Validade: <span class="text-slate-700">${dataEscapada}</span></p>
                         </div>
                         <div class="text-right flex flex-col items-end gap-1 absolute top-4 right-4">
-                            <span class="${statusBadge} px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border">${statusReal}</span>
+                            <span class="${statusBadge} px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border">${statusRealEscapado}</span>
                             <div class="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity mt-2">
                                 <button onclick="editarFederacao('${fed.id}')" class="text-[10px] bg-white border border-cyan-200 px-2 py-1 rounded text-cyan-600 font-bold hover:bg-cyan-50">✏️</button>
                                 <button onclick="excluirFederacao('${fed.id}', '${alunoSelecionado.id}')" class="text-[10px] bg-white border border-rose-200 px-2 py-1 rounded text-rose-500 font-bold hover:bg-rose-50">🗑️</button>
@@ -509,7 +474,6 @@
                         </div>
                     </div>
                 `;
-                
                 container.appendChild(item);
             });
 
@@ -518,18 +482,14 @@
             }
         }
 
-        // === INICIA A EDIÇÃO ===
         window.editarFederacao = function(fedId) {
             const fed = federacoesCache.find(c => c.id === fedId);
             if(!fed) return;
-
             federacaoEditandoId = fedId;
-            
             document.getElementById('fed-nome').value = fed.nome_federacao || "CBJJ/IBJJF";
             document.getElementById('fed-registro').value = fed.numero_registro || "";
             document.getElementById('fed-vencimento').value = fed.data_vencimento || "";
             document.getElementById('fed-status').value = fed.status || "Ativo";
-
             document.getElementById('titulo-form-fed').innerText = "Editar Filiação";
             document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Atualizar";
             document.getElementById('btn-cancelar-fed').classList.remove('hidden');
@@ -541,13 +501,11 @@
             document.getElementById('fed-registro').value = "";
             document.getElementById('fed-vencimento').value = "";
             document.getElementById('fed-status').value = "Ativo";
-            
             document.getElementById('titulo-form-fed').innerText = "Registar Carteirinha";
             document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Salvar Filiação";
             document.getElementById('btn-cancelar-fed').classList.add('hidden');
         }
 
-        // === SALVAR (NOVO OU EDIÇÃO) ===
         window.salvarFederacao = async function() {
             if (!alunoSelecionado) return showToast("Selecione um aluno primeiro!", "error");
 
@@ -576,10 +534,8 @@
                     await addDoc(collection(db, "federacoes"), dadosFed);
                     showToast("Filiação salva com sucesso!", "success");
                 }
-
-                cancelarEdicaoFed(); 
-                carregarFederacoes(alunoSelecionado.id); 
-                
+                cancelarEdicaoFed();
+                carregarFederacoes(alunoSelecionado.id);
             } catch (error) {
                 console.error(error);
                 showToast("Erro ao registar filiação.", "error");
@@ -599,7 +555,6 @@
         }
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
-
     </script>
 </body>
 </html>
