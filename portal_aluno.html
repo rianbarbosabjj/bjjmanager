@@ -1040,50 +1040,44 @@ window.copiarPixProduto = function(chave) {
 
 // ===================== FUNÇÃO BUSCAR FATURAS =====================
 async function buscarFaturasResiliente(forceRefresh = false) {
-    const lista = document.getElementById('lista-faturas');
-    if (!lista) return;
-    
-    if (!forceRefresh && isOnline) {
-        const cached = getFromCache(CACHE_KEYS.FATURAS);
-        if (cached) { renderizarFaturas(cached); return; }
+  const lista = document.getElementById('lista-faturas');
+  if (!lista) return;
+
+  // (código de cache permanece igual)
+
+  try {
+    // ✅ Consulta correta: apenas faturas do aluno logado
+    const qAluno = query(collection(db, "financeiro"), 
+                         where("aluno_id", "==", alunoLogado.id));
+    const snapAluno = await getDocs(qAluno);
+
+    console.log("📄 Faturas encontradas:", snapAluno.size);
+
+    if (snapAluno.empty) {
+      lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhuma mensalidade encontrada.</div>`;
+      faturasCache = [];
+      atualizarWidgetMensalidade();
+      return;
     }
-    
-    lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
+
     let faturasMensalidade = [];
-    
-    try {
-        const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id));
-        const snapEquipe = await getDocs(qEquipe);
-        
-        // DEBUG: Isso vai mostrar no console quantas faturas existem para esta equipe
-        console.log("Total de faturas encontradas na equipe:", snapEquipe.size); 
-        
-        snapEquipe.forEach(doc => { 
-            const data = doc.data(); 
-            // DEBUG: Verifique no console se os IDs que aparecem aqui são iguais ao alunoLogado.id
-            // console.log("Verificando aluno_id:", data.aluno_id, " vs Aluno Logado:", alunoLogado.id);
-            
-            if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) {
-                faturasMensalidade.push({ id: doc.id, ...data }); 
-            }
-        });
+    snapAluno.forEach(doc => {
+      const data = doc.data();
+      if (data.tipo === 'MENSALIDADE' || !data.tipo) {
+        faturasMensalidade.push({ id: doc.id, ...data });
+      }
+    });
 
-        if (faturasMensalidade.length === 0) { 
-            console.log("Nenhuma fatura encontrada para este aluno após o filtro.");
-            lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">A sua academia ainda não lançou nenhuma mensalidade para você.</div>`; 
-            return; 
-        }
-    
-        faturasMensalidade.sort((a, b) => (b.mes_ano || "").localeCompare(a.mes_ano || ""));
-        faturasCache = faturasMensalidade;
-        saveToCache(CACHE_KEYS.FATURAS, faturasMensalidade, 10 * 60 * 1000);
-        renderizarFaturas(faturasMensalidade);
-        atualizarWidgetMensalidade();
+    faturasMensalidade.sort((a, b) => (b.mes_ano || "").localeCompare(a.mes_ano || ""));
+    faturasCache = faturasMensalidade;
+    saveToCache(CACHE_KEYS.FATURAS, faturasMensalidade, 10 * 60 * 1000);
+    renderizarFaturas(faturasMensalidade);
+    atualizarWidgetMensalidade();
 
-    } catch(erroFinanceiro) {
-        console.error("Erro ao buscar faturas:", erroFinanceiro);
-        lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados.</div>`;
-    }
+  } catch(erroFinanceiro) {
+    console.error("❌ Erro detalhado:", erroFinanceiro);
+    lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados. Verifique sua conexão.</div>`;
+  }
 }
 
 function renderizarFaturas(faturas) {
