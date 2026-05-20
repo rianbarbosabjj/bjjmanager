@@ -472,7 +472,6 @@
         const equipeId = paramsUrl.get('equipe');
 
         let ficheiroFotoSelecionado = null;
-        let quantidadeAlunosAtual = 0;
         let idadeAtual = 0;
 
         window.showToast = function(message, type = 'error') {
@@ -666,14 +665,7 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
-                    try {
-                        const q = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
-                        const snap = await getDocs(q);
-                        quantidadeAlunosAtual = snap.size;
-                    } catch (e) {
-                        console.warn("Erro ao contar alunos:", e);
-                        quantidadeAlunosAtual = 0;
-                    }
+                    // Removida a consulta de contagem de alunos por equipe_id (violava regra de segurança)
                 }
 
             } catch (e) {
