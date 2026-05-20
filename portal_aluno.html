@@ -1334,14 +1334,11 @@ window.fazerLoginAluno = async function() {
         } else {
             console.log(`❌ Nenhum documento para o UID: ${uid}. Tentando busca por e-mail...`);
             
-            // 3. Fallback: Busca pelo e-mail (Cadastros antigos)
-            const q = query(collection(db, "alunos"), where("email", "==", email));
+            const q = query(collection(db, "alunos"), where("email", "==", user.email));
             const querySnapshot = await getDocs(q);
             
             if (!querySnapshot.empty) {
                 alunoDoc = querySnapshot.docs[0];
-                alunoId = alunoDoc.id; // Pega o ID aleatório antigo
-                console.log(`✅ Aluno encontrado via e-mail com ID: ${alunoId}`);
             }
         }
         
