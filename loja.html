@@ -74,83 +74,88 @@
                 </div>
             </div>
 
-            <!-- Área rolável principal -->
+            <!-- Área rolável principal - agora com layout responsivo lado a lado / empilhado -->
             <div class="flex-1 overflow-y-auto p-4 md:p-6 max-w-7xl mx-auto w-full">
-                <div class="flex flex-col gap-6">
+                <!-- Flex container: coluna em mobile, linha em desktop -->
+                <div class="flex flex-col lg:flex-row gap-6 h-full">
                     
-                    <!-- FORMULÁRIO DE PRODUTO (com ID para destaque) -->
-                    <div id="formulario-produto" class="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 relative overflow-hidden transition-all duration-300">
-                        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xl drop-shadow-sm">🛒</span>
-                                <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form">Novo Produto</h3>
-                            </div>
-                            <button onclick="abrirModalAluno()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center gap-1">
-                                👁️ Visualizar como Aluno
-                            </button>
-                        </div>
-                        
-                        <div class="space-y-4 relative z-10">
-                            
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Imagens do Produto</label>
-                                <div class="flex gap-2 overflow-x-auto hide-scrollbar py-1" id="container-miniaturas">
-                                    <label class="shrink-0 w-20 h-20 rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 hover:bg-cyan-100 transition-colors flex flex-col items-center justify-center cursor-pointer group shadow-sm">
-                                        <span class="text-xl text-cyan-500 group-hover:scale-110 transition-transform">➕</span>
-                                        <span class="text-[8px] font-black text-cyan-600 uppercase mt-1">Fotos</span>
-                                        <input type="file" id="produto-foto" accept="image/*" multiple class="hidden" onchange="processarNovasImagens(this)">
-                                    </label>
+                    <!-- FORMULÁRIO (lado esquerdo em telas grandes) -->
+                    <div class="w-full lg:w-2/5 flex-shrink-0">
+                        <div id="formulario-produto" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 relative overflow-hidden transition-all duration-300">
+                            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl drop-shadow-sm">🛒</span>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form">Novo Produto</h3>
                                 </div>
-                                <p class="text-[9px] text-slate-400 mt-1">Até 5 imagens. Máx 5MB por foto (JPG, PNG).</p>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Produto *</label>
-                                <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono..." maxlength="100" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label>
-                                <textarea id="produto-descricao" rows="2" placeholder="Detalhes do produto, tamanhos disponíveis..." maxlength="500" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-xs font-medium text-slate-700 resize-none hide-scrollbar"></textarea>
-                                <p class="text-[8px] text-slate-400 text-right mt-1"><span id="desc-contador">0</span>/500</p>
+                                <button onclick="abrirModalAluno()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center gap-1">
+                                    👁️ Visualizar como Aluno
+                                </button>
                             </div>
                             
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Preço de Venda (R$) *</label>
-                                <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-emerald-700 font-black">
-                            </div>
+                            <div class="space-y-4 relative z-10">
+                                
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Imagens do Produto</label>
+                                    <div class="flex gap-2 overflow-x-auto hide-scrollbar py-1" id="container-miniaturas">
+                                        <label class="shrink-0 w-20 h-20 rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 hover:bg-cyan-100 transition-colors flex flex-col items-center justify-center cursor-pointer group shadow-sm">
+                                            <span class="text-xl text-cyan-500 group-hover:scale-110 transition-transform">➕</span>
+                                            <span class="text-[8px] font-black text-cyan-600 uppercase mt-1">Fotos</span>
+                                            <input type="file" id="produto-foto" accept="image/*" multiple class="hidden" onchange="processarNovasImagens(this)">
+                                        </label>
+                                    </div>
+                                    <p class="text-[9px] text-slate-400 mt-1">Até 5 imagens. Máx 5MB por foto (JPG, PNG).</p>
+                                </div>
 
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Link de Pagamento / Chave PIX</label>
-                                <input type="text" id="produto-link" placeholder="Ex: Link do seu produto ou chave pix" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs font-bold text-slate-700">
-                                <p class="text-[9px] text-slate-400 mt-1">O aluno terá a opção de acessar este link/pix além do WhatsApp.</p>
-                            </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Produto *</label>
+                                    <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono..." maxlength="100" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                                </div>
 
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status do Produto</label>
-                                <select id="produto-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
-                                    <option value="ATIVO">🟢 Disponível na vitrine</option>
-                                    <option value="INATIVO">🔴 Oculto / Esgotado</option>
-                                </select>
-                            </div>
-                            
-                            <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
-                                <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar Produto</button>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label>
+                                    <textarea id="produto-descricao" rows="2" placeholder="Detalhes do produto, tamanhos disponíveis..." maxlength="500" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-xs font-medium text-slate-700 resize-none hide-scrollbar"></textarea>
+                                    <p class="text-[8px] text-slate-400 text-right mt-1"><span id="desc-contador">0</span>/500</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Preço de Venda (R$) *</label>
+                                    <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-emerald-700 font-black">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Link de Pagamento / Chave PIX</label>
+                                    <input type="text" id="produto-link" placeholder="Ex: Link do seu produto ou chave pix" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs font-bold text-slate-700">
+                                    <p class="text-[9px] text-slate-400 mt-1">O aluno terá a opção de acessar este link/pix além do WhatsApp.</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status do Produto</label>
+                                    <select id="produto-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                        <option value="ATIVO">🟢 Disponível na vitrine</option>
+                                        <option value="INATIVO">🔴 Oculto / Esgotado</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
+                                    <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                                    <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar Produto</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- LISTA DE PRODUTOS CADASTRADOS -->
-                    <div class="w-full bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                        <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0 flex-wrap gap-2">
-                            <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">📦 Produtos Cadastrados</h3>
-                            <span class="text-[10px] bg-slate-200 text-slate-500 px-2 py-1 rounded-md font-bold uppercase tracking-widest">Gerencie sua vitrine</span>
-                        </div>
-                        
-                        <div class="overflow-y-auto p-4 md:p-6 hide-scrollbar bg-slate-50/50" style="max-height: 60vh;">
-                            <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                <div class="col-span-full text-center text-slate-400 text-sm mt-10 italic">Carregando vitrine...</div>
+                    <!-- LISTA DE PRODUTOS CADASTRADOS (lado direito em telas grandes) -->
+                    <div class="w-full lg:w-3/5 flex flex-col min-h-[400px]">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
+                            <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0 flex-wrap gap-2">
+                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">📦 Produtos Cadastrados</h3>
+                                <span class="text-[10px] bg-slate-200 text-slate-500 px-2 py-1 rounded-md font-bold uppercase tracking-widest">Gerencie sua vitrine</span>
+                            </div>
+                            
+                            <div class="flex-1 overflow-y-auto p-4 md:p-6 hide-scrollbar bg-slate-50/50">
+                                <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                                    <div class="col-span-full text-center text-slate-400 text-sm mt-10 italic">Carregando vitrine...</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -160,7 +165,7 @@
         </main>
     </div>
 
-    <!-- MODAL DO ALUNO -->
+    <!-- MODAL DO ALUNO (igual) -->
     <div id="modal-aluno" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4 transition-all duration-300 opacity-0 invisible pointer-events-none">
         <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50 shrink-0">
@@ -388,8 +393,8 @@
             if (!container) return;
             container.innerHTML = `
                 <div class="col-span-full">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        ${[...Array(3)].map(() => `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        ${[...Array(2)].map(() => `
                             <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200 animate-pulse">
                                 <div class="aspect-square bg-slate-200"></div>
                                 <div class="p-4 space-y-2">
@@ -581,21 +586,19 @@
             return div.innerHTML;
         }
 
-        // ========== FUNÇÃO EDITAR PRODUTO MELHORADA ==========
+        // Função Editar melhorada
         window.editarProduto = function(id) {
             const p = produtosCache.find(x => x.id === id);
             if(!p) return;
             
             produtoEditandoId = id;
             
-            // Carrega imagens
             if (p.imagens_urls && p.imagens_urls.length > 0) imagensUrlsExistentes = [...p.imagens_urls];
             else if (p.imagem_url) imagensUrlsExistentes = [p.imagem_url];
             else imagensUrlsExistentes = [];
             novosArquivosImagem = []; 
             atualizarContainerMiniaturas();
 
-            // Preenche os campos
             document.getElementById('produto-nome').value = p.nome || "";
             document.getElementById('produto-descricao').value = p.descricao || "";
             if (descCounter) descCounter.innerText = (p.descricao || "").length;
@@ -603,29 +606,20 @@
             document.getElementById('produto-status').value = p.status || "ATIVO";
             document.getElementById('produto-link').value = p.link_pagamento || "";
 
-            // Altera o título do formulário
             const tituloElem = document.getElementById('titulo-form');
             tituloElem.innerHTML = `✏️ Editando: ${p.nome.substring(0, 30)}${p.nome.length > 30 ? '…' : ''}`;
             
-            // Mostra o botão Cancelar
             const btnCancelar = document.getElementById('btn-cancelar-produto');
             if (btnCancelar) btnCancelar.classList.remove('hidden');
             
-            // 1) ROLAGEM SUAVE até o formulário
             const formulario = document.getElementById('formulario-produto');
             if (formulario) {
                 formulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-            
-            // 2) DESTAQUE VISUAL TEMPORÁRIO
-            if (formulario) {
                 formulario.classList.add('form-highlight');
                 setTimeout(() => {
                     formulario.classList.remove('form-highlight');
                 }, 1500);
             }
-            
-            // 3) Feedback adicional com toast (opcional, mas reforça)
             showToast(`Produto "${p.nome}" carregado para edição.`, 'success');
         };
 
