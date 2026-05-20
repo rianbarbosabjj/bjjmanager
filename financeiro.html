@@ -1415,10 +1415,7 @@
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
             
             try { 
-                const q = query(collection(db, "checkins"), 
-                where("aluno_id", "==", idAluno),
-                where("equipe_id", "==", window.teamId)
-                ); 
+                const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno)); 
                 const snap = await getDocs(q); 
                 window.checkinsDoAlunoAtualCache = []; 
                 
@@ -1703,7 +1700,7 @@
                     const colecoesParaLimpar = ["checkins", "faturas", "financeiro", "graduacoes", "competicoes", "certificados"];
                     for (const nomeColecao of colecoesParaLimpar) {
                         try {
-                            const q = query(collection(db, nomeColecao), where("aluno_id", "==", id), where("equipe_id", "==", window.teamId));
+                            const q = query(collection(db, nomeColecao), where("aluno_id", "==", id));
                             const snap = await getDocs(q);
                             const promessasDeletar = snap.docs.map(docSnap => deleteDoc(doc(db, nomeColecao, docSnap.id)));
                             await Promise.all(promessasDeletar); 
