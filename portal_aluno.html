@@ -1126,29 +1126,42 @@
         };
 
         // ===================== FUNÇÃO BUSCAR FATURAS =====================
-        async function buscarFaturasResiliente(forceRefresh = false) {
-            const lista = document.getElementById('lista-faturas');
-            if (!lista) return;
-            if (!forceRefresh && isOnline) {
-                const cached = getFromCache(CACHE_KEYS.FATURAS);
-                if (cached) { renderizarFaturas(cached); atualizarWidgetMensalidade(); return; }
-            }
-            try {
-                const qAluno = query(collection(db, "financeiro"), where("aluno_id", "==", alunoLogado.id));
-                const snapAluno = await getDocs(qAluno);
-                if (snapAluno.empty) { lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhuma mensalidade encontrada.</div>`; faturasCache = []; atualizarWidgetMensalidade(); return; }
-                let faturasMensalidade = [];
-                snapAluno.forEach(doc => { const data = doc.data(); if (data.tipo === 'MENSALIDADE' || !data.tipo) faturasMensalidade.push({ id: doc.id, ...data }); });
-                faturasMensalidade.sort((a, b) => (b.mes_ano || "").localeCompare(a.mes_ano || ""));
-                faturasCache = faturasMensalidade;
-                saveToCache(CACHE_KEYS.FATURAS, faturasMensalidade, 10 * 60 * 1000);
-                renderizarFaturas(faturasMensalidade);
-                atualizarWidgetMensalidade();
-            } catch(erroFinanceiro) {
-                console.error("❌ Erro detalhado:", erroFinanceiro);
-                lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados. Verifique sua conexão.</div>`;
-            }
+async function buscarFaturasResiliente(forceRefresh = false) {
+    const lista = document.getElementById('lista-faturas');
+    if (!lista) return;
+    if (!forceRefresh && isOnline) {
+        const cached = getFromCache(CACHE_KEYS.FATURAS);
+        if (cached) { renderizarFaturas(cached); atualizarWidgetMensalidade(); return; }
+    }
+    try {
+        const qAluno = query(
+            collection(db, "financeiro"),
+            where("aluno_id", "==", alunoLogado.id),
+            where("equipe_id", "==", alunoLogado.equipe_id)   // ← LINHA ADICIONADA
+        );
+        const snapAluno = await getDocs(qAluno);
+        if (snapAluno.empty) { 
+            lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhuma mensalidade encontrada.</div>`; 
+            faturasCache = []; 
+            atualizarWidgetMensalidade(); 
+            return; 
         }
+        let faturasMensalidade = [];
+        snapAluno.forEach(doc => { 
+            const data = doc.data(); 
+            if (data.tipo === 'MENSALIDADE' || !data.tipo) 
+                faturasMensalidade.push({ id: doc.id, ...data }); 
+        });
+        faturasMensalidade.sort((a, b) => (b.mes_ano || "").localeCompare(a.mes_ano || ""));
+        faturasCache = faturasMensalidade;
+        saveToCache(CACHE_KEYS.FATURAS, faturasMensalidade, 10 * 60 * 1000);
+        renderizarFaturas(faturasMensalidade);
+        atualizarWidgetMensalidade();
+    } catch(erroFinanceiro) {
+        console.error("❌ Erro detalhado:", erroFinanceiro);
+        lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados. Verifique sua conexão.</div>`;
+    }
+}
         
         function renderizarFaturas(faturas) {
             const lista = document.getElementById('lista-faturas');
@@ -1583,7 +1596,7 @@
             if(btn) { btn.innerHTML = '⏳ Localizando...'; btn.disabled = true; } 
             try { 
                 const hoje = new Date().toISOString().split('T')[0]; 
-                const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje), where("turma_id", "==", turmaId)); 
+                const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje), where("equipe_id", "==", alunoLogado.equipe_id), where("turma_id", "==", turmaId)); 
                 const snap = await getDocs(q); 
                 if (!snap.empty) { 
                     showToast("Você já fez check-in nesta turma hoje!", "error"); 
@@ -1827,7 +1840,7 @@
             try {
                 const qGrad = query(collection(db, "graduacoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
                 const qComp = query(collection(db, "competicoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
-                const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id));
+                const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("equipe_id", "==", alunoLogado.equipe_id));
                 
                 const [snapGrad, snapComp, snapCheck] = await Promise.all([getDocs(qGrad), getDocs(qComp), getDocs(qCheck)]);
                 let gradCache = []; snapGrad.forEach(doc => gradCache.push(doc.data()));
@@ -2201,4 +2214,3 @@
     </script>
 </body>
 </html>
-            
