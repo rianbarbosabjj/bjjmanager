@@ -1,62 +1,61 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dashboard | BJJ Manager</title>
-    
+    <title>Controle de Alunos | BJJ Manager</title>
     <meta property="og:title" content="Painel Administrativo | BJJ Manager">
     <meta property="og:description" content="Gestão inteligente para sua equipe de Jiu-Jitsu.">
     <meta property="og:image" content="https://manager.bjjdigital.com.br/logo_bjj_manager.png">
     <meta property="og:type" content="website">
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BJJ Manager">
     <meta name="theme-color" content="#0f172a">
-    
     <link rel="apple-touch-icon" href="logo_bjj_manager.png">
     <link rel="icon" type="image/png" href="logo_bjj_manager.png">
     <link rel="manifest" href="manifest.json">
-    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
-        
+        .tab-active { border-bottom: 3px solid #06B6D4; color: #06B6D4; font-weight: 800; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-        
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .table-row-hover:hover td { background-color: #F1F5F9; }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fade-in 0.3s ease-out; }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin { animation: spin 1s linear infinite; }
-        
         .card-hover { transition: all 0.2s ease; }
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02); }
+        #cart-preview-container { width: 600px; height: 380px; transform-origin: top center; margin: 0 auto; transition: transform 0.2s ease; }
+        @media screen and (max-width: 650px) { #cart-preview-container { transform: scale(calc((100vw - 40px) / 600)); margin-bottom: -120px; margin-top: 10px; } }
+        @media screen and (max-width: 480px) { #cart-preview-container { transform: scale(calc((100vw - 30px) / 600)); margin-bottom: -100px; } }
+        @media print {
+            @page { size: 85.6mm 54mm landscape; margin: 0 !important; }
+            html, body { margin: 0 !important; padding: 0 !important; background-color: white !important; }
+            #interface-sistema, #toast-container, #modal-aluno, #modal-paywall, .no-print { display: none !important; }
+            #modal-carteirinha { display: block !important; position: absolute !important; inset: 0 !important; background: white !important; padding: 0 !important; margin: 0 !important; }
+            #modal-carteirinha > div > div:first-child { display: none !important; }
+            #cart-preview-container { position: fixed !important; top: 0 !important; left: 0 !important; margin: 0 !important; width: 600px !important; height: 380px !important; transform: scale(0.539) !important; transform-origin: top left !important; border-radius: 0 !important; box-shadow: none !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
+        .chart-container { position: relative; width: 100%; min-height: 300px; }
+        .chart-wrapper { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: transform 0.2s ease; }
+        .chart-wrapper:hover { transform: translateY(-2px); }
+        @media (max-width: 768px) { .chart-container { min-height: 250px; } .chart-wrapper { padding: 15px; } }
     </style>
 </head>
 <body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC] hidden" id="body-content">
-
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center">
         <div class="bg-white rounded-2xl p-6 flex flex-col items-center shadow-2xl">
             <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -97,7 +96,6 @@
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
-                    
                     <div class="flex justify-center mb-6 md:mb-8">
                         <img id="img-topo-equipe" src="topo_curriculo.png" alt="Logo da Equipe" class="h-20 md:h-24 object-contain drop-shadow-sm" onerror="this.style.display='none'">
                     </div>
@@ -481,9 +479,8 @@
         let mensagensCache = [];
         let mensagemEditandoId = null;
 
-        // ===================== CACHE MANAGER =====================
         const CACHE_KEYS = { ALUNOS: 'bjj_dash_alunos', FINANCEIRO: 'bjj_dash_financeiro', TURMAS: 'bjj_dash_turmas', CHECKINS: 'bjj_dash_checkins' };
-        const CACHE_TTL = 3 * 60 * 1000; // 3 minutos
+        const CACHE_TTL = 3 * 60 * 1000;
 
         function saveToCache(key, data, ttl = CACHE_TTL) {
             try { localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: ttl })); } catch (e) { console.warn(e); }
@@ -499,7 +496,13 @@
         }
         function clearCache() { Object.values(CACHE_KEYS).forEach(key => localStorage.removeItem(key)); }
 
-        // ===================== TOAST & LOADING =====================
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            const div = document.createElement('div');
+            div.textContent = texto;
+            return div.innerHTML;
+        }
+
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -524,7 +527,6 @@
             finally { hideLoading(); }
         };
 
-        // ===================== MÁSCARAS =====================
         window.mascaraTelefone = (i) => { 
             let v = i.value.replace(/\D/g, ""); 
             if (v.length <= 10) { v = v.replace(/^(\d{2})(\d{4})(\d{4})/, "($1) $2-$3"); }
@@ -548,7 +550,6 @@
             } catch (e) { console.error("Erro ao buscar CEP:", e); }
         };
 
-        // ===================== PERMISSÕES E PAYWALL =====================
         const HIERARQUIA_PLANOS = { 'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'PREMIUM': 3, 'ULTIMATE': 4 };
         const REGRAS_DE_ACESSO = { 'mural_avisos': { nivel: 2, nome: 'Portal do Aluno (App)' } };
         
@@ -578,7 +579,6 @@
             if(modal && content) { content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300); }
         };
 
-        // ===================== AVISO GLOBAL =====================
         async function verificarAvisoGlobal() {
             try {
                 const snap = await getDoc(doc(db, "sistema", "aviso_global"));
@@ -610,7 +610,6 @@
             setTimeout(() => banner.classList.add('hidden'), 300);
         }
 
-        // ===================== MENSAGENS (MURAL) =====================
         window.switchMsgTab = function(tab) {
             if(tab === 'nova' && !mensagemEditandoId) { document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso"; document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso"; }
             if(tab === 'lista') window.cancelarEdicaoMensagem();
@@ -694,7 +693,7 @@
                     if (msg.urgencia === 'urgente') { cor = 'bg-rose-50 border-rose-200 text-rose-700'; icone = '🚨'; }
                     let dataLim = "Sem expiração";
                     if (msg.data_expiracao) { const dl = new Date(msg.data_expiracao); dataLim = `${String(dl.getDate()).padStart(2, '0')}/${String(dl.getMonth() + 1).padStart(2, '0')}/${dl.getFullYear()}`; }
-                    html += `<div class="p-4 rounded-xl border shadow-sm relative ${cor} group pr-24"><div><h4 class="text-xs font-black uppercase mb-1 flex items-center gap-1"><span>${icone}</span> ${msg.titulo}</h4><p class="text-[10px] opacity-80 mb-2 truncate">${msg.conteudo}</p><span class="text-[8px] font-bold uppercase tracking-widest opacity-60">Expira: ${dataLim}</span></div><div class="absolute top-1/2 -translate-y-1/2 right-3 flex gap-1.5 opacity-100 transition-opacity"><button onclick="editarMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 hover:bg-amber-50 hover:border-amber-500 rounded-lg text-slate-400 hover:text-white shadow-sm transition-all" title="Editar Aviso">✏️</button><button onclick="excluirMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-rose-100 hover:bg-rose-500 hover:border-rose-500 rounded-lg text-rose-500 hover:text-white shadow-sm transition-all" title="Excluir Aviso">🗑️</button></div></div>`;
+                    html += `<div class="p-4 rounded-xl border shadow-sm relative ${cor} group pr-24"><div><h4 class="text-xs font-black uppercase mb-1 flex items-center gap-1"><span>${icone}</span> ${escapeHtml(msg.titulo)}</h4><p class="text-[10px] opacity-80 mb-2 truncate">${escapeHtml(msg.conteudo)}</p><span class="text-[8px] font-bold uppercase tracking-widest opacity-60">Expira: ${escapeHtml(dataLim)}</span></div><div class="absolute top-1/2 -translate-y-1/2 right-3 flex gap-1.5 opacity-100 transition-opacity"><button onclick="editarMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 hover:bg-amber-50 hover:border-amber-500 rounded-lg text-slate-400 hover:text-white shadow-sm transition-all" title="Editar Aviso">✏️</button><button onclick="excluirMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-rose-100 hover:bg-rose-500 hover:border-rose-500 rounded-lg text-rose-500 hover:text-white shadow-sm transition-all" title="Excluir Aviso">🗑️</button></div></div>`;
                 });
                 listaEl.innerHTML = html;
             } catch (error) { listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro ao buscar avisos.</div>'; }
@@ -706,7 +705,6 @@
             catch (error) { showToast("Erro ao excluir aviso.", "error"); }
         };
 
-        // ===================== CONFIGURAÇÕES DA EQUIPE =====================
         window.switchConfigTab = function(tab) {
             if (tab === 'convites') {
                 const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
@@ -722,10 +720,8 @@
             abaAtiva.classList.remove('hidden');
             if(tab === 'dados') abaAtiva.classList.add('block');
             else abaAtiva.classList.add('flex', 'flex-col');
-            
             const btnAtivo = document.getElementById('tab-btn-' + tab);
             const btnSalvar = document.getElementById('btn-salvar-config');
-            
             if (tab === 'dados') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'block'; }
             else if (tab === 'colabs') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'none'; window.carregarColaboradores(); }
             else if (tab === 'convites') { btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-emerald-600 border-b-2 border-emerald-500 transition-colors whitespace-nowrap"; btnSalvar.style.display = 'none'; window.gerarLinksConvite(); }
@@ -763,7 +759,7 @@
                 const snap = await getDocs(q);
                 if (snap.empty) { listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Nenhum colaborador adicionado.</div>'; return; }
                 let html = '';
-                snap.forEach(doc => { html += `<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl shadow-sm"><span class="text-sm font-bold text-slate-700 truncate pr-2">${doc.data().email}</span><button onclick="removerColaborador('${doc.id}')" class="text-rose-500 hover:bg-rose-100 p-1.5 rounded-lg transition-colors">🗑️</button></div>`; });
+                snap.forEach(doc => { html += `<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl shadow-sm"><span class="text-sm font-bold text-slate-700 truncate pr-2">${escapeHtml(doc.data().email)}</span><button onclick="removerColaborador('${doc.id}')" class="text-rose-500 hover:bg-rose-100 p-1.5 rounded-lg transition-colors">🗑️</button></div>`; });
                 listaEl.innerHTML = html;
             } catch (e) { listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro.</div>'; }
         };
@@ -795,8 +791,7 @@
             } catch (error) { showToast("Erro ao salvar: " + error.message, "error"); btn.disabled = false; btn.innerHTML = "Salvar Dados"; } finally { hideLoading(); }
         };
 
-        // ===================== PAGAMENTO RÁPIDO =====================
-        window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) { pagRapidoDados = { alunoId, nomeAluno, valor, faturaId }; document.getElementById('lbl-pag-rapido-nome').innerText = nomeAluno; document.getElementById('lbl-pag-rapido-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`; document.getElementById('select-pag-rapido-forma').value = "PIX"; document.getElementById('modal-pagamento-rapido').classList.remove('hidden'); document.getElementById('modal-pagamento-rapido').classList.add('flex'); };
+        window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) { pagRapidoDados = { alunoId, nomeAluno, valor, faturaId }; document.getElementById('lbl-pag-rapido-nome').innerText = escapeHtml(nomeAluno); document.getElementById('lbl-pag-rapido-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`; document.getElementById('select-pag-rapido-forma').value = "PIX"; document.getElementById('modal-pagamento-rapido').classList.remove('hidden'); document.getElementById('modal-pagamento-rapido').classList.add('flex'); };
         window.fecharModalPagamentoRapido = function() { pagRapidoDados = null; document.getElementById('modal-pagamento-rapido').classList.add('hidden'); document.getElementById('modal-pagamento-rapido').classList.remove('flex'); };
         
         window.confirmarPagamentoRapido = async function() {
@@ -816,14 +811,12 @@
             } catch (e) { showToast("Erro ao registrar pagamento.", "error"); } finally { btn.disabled = false; btn.innerHTML = "Confirmar"; hideLoading(); }
         };
 
-        // ===================== ESTILO FAIXA =====================
         function obterEstiloFaixa(faixa) {
             const faixasInfo = { 'Branca': '#ffffff', 'Cinza e branca': 'linear-gradient(135deg, #94a3b8 50%, #ffffff 50%)', 'Cinza': '#94a3b8', 'Cinza e preta': 'linear-gradient(135deg, #94a3b8 50%, #000000 50%)', 'Amarela e branca': 'linear-gradient(135deg, #eab308 50%, #ffffff 50%)', 'Amarela': '#eab308', 'Amarela e preta': 'linear-gradient(135deg, #eab308 50%, #000000 50%)', 'Laranja e branca': 'linear-gradient(135deg, #f97316 50%, #ffffff 50%)', 'Laranja': '#f97316', 'Laranja e preta': 'linear-gradient(135deg, #f97316 50%, #000000 50%)', 'Verde e branca': 'linear-gradient(135deg, #22c55e 50%, #ffffff 50%)', 'Verde': '#22c55e', 'Verde e preta': 'linear-gradient(135deg, #22c55e 50%, #000000 50%)', 'Azul': '#3b82f6', 'Roxa': '#a855f7', 'Marrom': '#78350f', 'Preta': '#000000', 'Coral': 'linear-gradient(135deg, #ef4444 50%, #000000 50%)', 'Vermelha': '#dc2626' };
             const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
             return faixasInfo[faixaNormalizada] || '#cbd5e1';
         }
 
-        // ===================== DASHBOARD PRINCIPAL =====================
         async function carregarDashboard(forceRefresh = false) {
             if (!forceRefresh) {
                 const cachedAlunos = getFromCache(CACHE_KEYS.ALUNOS);
@@ -901,7 +894,7 @@
                         let mesNiver = null, diaNiver = null;
                         if (typeof aluno.data_nascimento === 'string') { const partes = aluno.data_nascimento.split('-'); if (partes.length >= 3) { mesNiver = parseInt(partes[1], 10); diaNiver = parseInt(partes[2], 10); } }
                         else if (aluno.data_nascimento && aluno.data_nascimento.toDate) { const dataNasc = aluno.data_nascimento.toDate(); mesNiver = dataNasc.getMonth() + 1; diaNiver = dataNasc.getDate(); }
-                        if (mesNiver === mesAtual) aniversariantesHTML += `<div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-sm"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">${diaNiver}</div><span class="text-sm font-bold text-slate-700 truncate w-32">${aluno.nome || 'Aluno'}</span></div><span class="text-[9px] uppercase font-black text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">${faixa}</span></div>`;
+                        if (mesNiver === mesAtual) aniversariantesHTML += `<div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-sm"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">${diaNiver}</div><span class="text-sm font-bold text-slate-700 truncate w-32">${escapeHtml(aluno.nome || 'Aluno')}</span></div><span class="text-[9px] uppercase font-black text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">${escapeHtml(faixa)}</span></div>`;
                     }
                     let turmasDoAluno = alunoParaTurmas[aluno.id] || [aluno.turma_id || "SEM TURMA DEFINIDA"];
                     if(turmasDoAluno.length === 0 || turmasDoAluno[0] === undefined) turmasDoAluno = ["SEM TURMA DEFINIDA"];
@@ -919,7 +912,7 @@
                             const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
                             const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
                             const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
-                            pendenciasHTML += `<div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm"><div class="flex-1 overflow-hidden pr-2"><p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p><p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta} • REF: ${fatura.mes_ano.split('-')[1]}/${fatura.mes_ano.split('-')[0]}</p></div><div class="flex items-center gap-2 shrink-0"><button onclick="pagamentoRapido('${aluno.id}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, '${fatura.id}')" class="bg-white hover:bg-emerald-100 text-emerald-500 border border-emerald-200 p-1.5 rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Confirmar Pagamento">✅</button></div></div>`;
+                            pendenciasHTML += `<div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm"><div class="flex-1 overflow-hidden pr-2"><p class="text-sm font-bold text-slate-800 truncate">${escapeHtml(aluno.nome || 'Aluno')}</p><p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${escapeHtml(msgAlerta)} • REF: ${fatura.mes_ano.split('-')[1]}/${fatura.mes_ano.split('-')[0]}</p></div><div class="flex items-center gap-2 shrink-0"><button onclick="pagamentoRapido('${aluno.id}', '${escapeHtml(aluno.nome || '').replace(/'/g, "\\'")}', ${valorDaDivida}, '${fatura.id}')" class="bg-white hover:bg-emerald-100 text-emerald-500 border border-emerald-200 p-1.5 rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Confirmar Pagamento">✅</button></div></div>`;
                         });
                     }
                 }
@@ -930,7 +923,7 @@
             const checkinsHoje = checkins.filter(c => c.data === dataHojeStr);
             checkinsHoje.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             if(checkinsHoje.length === 0) checkinsHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">😴</span><p class="text-sm font-medium">Ainda sem presenças registadas</p></div>`;
-            else checkinsHoje.forEach(ck => { const hora = new Date(ck.timestamp).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); checkinsHTML += `<div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 mb-2 shadow-sm"><div class="flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0">📍</div><div class="truncate"><span class="text-xs font-bold text-slate-700 truncate block">${ck.aluno_nome}</span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate block">${ck.turma_nome}</span></div></div><span class="text-[9px] font-black text-emerald-500 bg-white px-2 py-1 rounded-md border border-emerald-100 shrink-0 shadow-sm">${hora}</span></div>`; });
+            else checkinsHoje.forEach(ck => { const hora = new Date(ck.timestamp).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); checkinsHTML += `<div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 mb-2 shadow-sm"><div class="flex items-center gap-3 overflow-hidden"><div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0">📍</div><div class="truncate"><span class="text-xs font-bold text-slate-700 truncate block">${escapeHtml(ck.aluno_nome)}</span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate block">${escapeHtml(ck.turma_nome)}</span></div></div><span class="text-[9px] font-black text-emerald-500 bg-white px-2 py-1 rounded-md border border-emerald-100 shrink-0 shadow-sm">${escapeHtml(hora)}</span></div>`; });
             
             document.getElementById('lista-checkins').innerHTML = checkinsHTML;
             
@@ -947,7 +940,7 @@
                 const gridFaixas = document.getElementById('grid-faixas');
                 gridFaixas.innerHTML = '';
                 if (Object.keys(faixasCount).length === 0) gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
-                else for (const [faixa, qtd] of Object.entries(faixasCount)) { const estiloCss = obterEstiloFaixa(faixa); gridFaixas.innerHTML += `<div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm"><span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="background: ${estiloCss}"></span><span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span></div>`; }
+                else for (const [faixa, qtd] of Object.entries(faixasCount)) { const estiloCss = obterEstiloFaixa(faixa); gridFaixas.innerHTML += `<div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm"><span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="background: ${estiloCss}"></span><span class="text-xs font-bold text-slate-700">${escapeHtml(faixa)}: <span class="text-slate-900">${qtd}</span></span></div>`; }
                 
                 document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p></div>`;
                 document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência gerada ou faturas em dia!</p></div>`;
@@ -958,17 +951,16 @@
                     alunosDaTurma.sort((a, b) => a.nome.localeCompare(b.nome));
                     let listaAlunosHTML = '';
                     if (alunosDaTurma.length === 0) listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
-                    else for (const al of alunosDaTurma) { const estiloCss = obterEstiloFaixa(al.faixa); listaAlunosHTML += `<div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm"><span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span><span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0"><span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="background: ${estiloCss}"></span>${al.faixa}</span></div>`; }
+                    else for (const al of alunosDaTurma) { const estiloCss = obterEstiloFaixa(al.faixa); listaAlunosHTML += `<div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm"><span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${escapeHtml(al.nome)}</span><span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0"><span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="background: ${estiloCss}"></span>${escapeHtml(al.faixa)}</span></div>`; }
                     const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
                     const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
                     const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
-                    turmasHTML += `<div class="p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm"><h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2"><span class="text-base">${iconeTurma}</span> ${turmaNome}<span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span></h4><div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">${listaAlunosHTML}</div></div>`;
+                    turmasHTML += `<div class="p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm"><h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2"><span class="text-base">${iconeTurma}</span> ${escapeHtml(turmaNome)}<span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span></h4><div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">${listaAlunosHTML}</div></div>`;
                 }
                 document.getElementById('lista-turmas').innerHTML = turmasHTML || `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p></div>`;
             }
         }
 
-        // ===================== AUTENTICAÇÃO E INICIALIZAÇÃO =====================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -1057,9 +1049,9 @@
                                     if (aside) { 
                                         let injetou = false; 
                                         const fallbackDivs = aside.querySelectorAll('div.rounded-full'); 
-                                        fallbackDivs.forEach(div => { if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { div.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); div.classList.add('bg-transparent'); injetou = true; } }); 
+                                        fallbackDivs.forEach(div => { if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { div.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); div.classList.add('bg-transparent'); injetou = true; } }); 
                                         const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo'); 
-                                        if (elLogoMenu) { elLogoMenu.style.background = 'transparent'; elLogoMenu.innerHTML = `<img src="${logoEquipeAnterior}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`; injetou = true; } 
+                                        if (elLogoMenu) { elLogoMenu.style.background = 'transparent'; elLogoMenu.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`; injetou = true; } 
                                         if (injetou) clearInterval(injetarLogo); 
                                     } 
                                 }, 300); 
