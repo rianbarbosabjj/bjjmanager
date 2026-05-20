@@ -39,6 +39,7 @@
             </a>
             <h2 class="text-2xl font-black text-white uppercase tracking-wider">Acesso ao Sistema</h2>
             <p class="text-[10px] text-cyan-500 mt-1 uppercase font-black tracking-[0.2em]">Gestão de Equipes</p>
+            <p class="text-[9px] text-slate-400 mt-2">Acesso exclusivo para professores e administradores.<br>Alunos utilizem o <a href="portal_aluno.html" class="text-cyan-400 underline">Portal do Aluno</a>.</p>
         </div>
 
         <form id="form-login" class="space-y-5" onsubmit="event.preventDefault(); fazerLogin();">
@@ -92,7 +93,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; 
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -133,6 +134,37 @@
             }
         }
 
+        // 🔒 Verifica se o usuário tem permissão para acessar o sistema de gestão
+        async function verificarPermissaoGestao(user) {
+            try {
+                // Verifica se é mestre (equipes)
+                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                if (mestreDoc.exists()) return true;
+                
+                // Verifica se é colaborador
+                const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                if (colabDoc.exists()) return true;
+                
+                // Verifica se é aluno (não autorizado para gestão)
+                const alunoDoc = await getDoc(doc(db, "alunos", user.uid));
+                if (alunoDoc.exists()) {
+                    await signOut(auth);
+                    showToast("❌ Acesso não autorizado. Utilize o Portal do Aluno.", "error");
+                    return false;
+                }
+                
+                // Usuário desconhecido
+                await signOut(auth);
+                showToast("❌ Usuário não autorizado no sistema de gestão.", "error");
+                return false;
+            } catch (error) {
+                console.error("Erro ao verificar permissão:", error);
+                await signOut(auth);
+                showToast("Erro ao validar acesso. Tente novamente.", "error");
+                return false;
+            }
+        }
+
         window.fazerLogin = async function() {
             const email = document.getElementById('login-email').value;
             const senha = document.getElementById('login-senha').value;
@@ -144,16 +176,24 @@
             btn.innerText = "Entrando...";
             
             try {
-                const uc = await signInWithEmailAndPassword(auth, email, senha);
-                if (!uc.user.emailVerified) {
+                const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+                
+                if (!user.emailVerified) {
                     await signOut(auth);
-                    showToast("E-mail não verificado. Cheque sua caixa de entrada.");
+                    showToast("❌ E-mail não verificado. Cheque sua caixa de entrada (incluindo SPAM).", "error");
                     btn.disabled = false; btn.innerText = "Entrar";
                     return;
                 }
-                window.location.href = "dashboard.html";
+                
+                const permitido = await verificarPermissaoGestao(user);
+                if (permitido) {
+                    window.location.href = "dashboard.html";
+                } else {
+                    btn.disabled = false; btn.innerText = "Entrar";
+                }
             } catch (e) {
-                showToast("E-mail ou senha incorretos.");
+                showToast("E-mail ou senha incorretos.", "error");
                 btn.disabled = false; btn.innerText = "Entrar";
             }
         }
@@ -169,21 +209,19 @@
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
 
+                // Verifica se o usuário tem conta de gestão (equipe ou colaborador)
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-
+                
                 if (!mestreDoc.exists() && !colabDoc.exists()) {
-                    await setDoc(doc(db, "equipes", user.uid), {
-                        nome_equipe: user.displayName || "Nova Equipe",
-                        email_responsavel: user.email,
-                        url_logo: user.photoURL || "",
-                        data_cadastro: new Date().toISOString(),
-                        status_plano: 'TESTE',
-                        valor_prazo: 100.0, 
-                        valor_atraso: 120.0
-                    });
+                    // Cria automaticamente uma conta de equipe? Não, apenas nega acesso.
+                    await signOut(auth);
+                    showToast("❌ Acesso negado. Este e-mail não está registrado como administrador ou colaborador.", "error");
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    return;
                 }
-
+                
                 window.location.href = "dashboard.html";
             } catch (error) {
                 console.error(error);
@@ -198,7 +236,7 @@
             if(!email) return showToast("Digite seu e-mail no campo acima primeiro.");
             try {
                 await sendPasswordResetEmail(auth, email);
-                showToast("E-mail de recuperação enviado!", "success");
+                showToast("E-mail de recuperação enviado! Verifique sua caixa de entrada.", "success");
             } catch (e) {
                 showToast("Erro ao enviar e-mail. Verifique se ele está correto.", "error");
             }
