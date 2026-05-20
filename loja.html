@@ -39,6 +39,13 @@
             to { transform: translateX(0); opacity: 1; }
         }
         .toast-slide { animation: slide-in 0.3s ease-out; }
+
+        /* Destaque para o formulário ao editar */
+        .form-highlight {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 2px #f59e0b, 0 0 0 4px #fef3c7, 0 10px 25px -5px rgba(0,0,0,0.1) !important;
+            border-color: #f59e0b !important;
+        }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -67,12 +74,12 @@
                 </div>
             </div>
 
-            <!-- Área rolável principal: formulário + lista de produtos -->
+            <!-- Área rolável principal -->
             <div class="flex-1 overflow-y-auto p-4 md:p-6 max-w-7xl mx-auto w-full">
                 <div class="flex flex-col gap-6">
                     
-                    <!-- FORMULÁRIO DE PRODUTO -->
-                    <div class="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 relative overflow-hidden">
+                    <!-- FORMULÁRIO DE PRODUTO (com ID para destaque) -->
+                    <div id="formulario-produto" class="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 relative overflow-hidden transition-all duration-300">
                         <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
                             <div class="flex items-center gap-2">
                                 <span class="text-xl drop-shadow-sm">🛒</span>
@@ -134,7 +141,7 @@
                         </div>
                     </div>
 
-                    <!-- LISTA DE PRODUTOS CADASTRADOS (abaixo do formulário) -->
+                    <!-- LISTA DE PRODUTOS CADASTRADOS -->
                     <div class="w-full bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
                         <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0 flex-wrap gap-2">
                             <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">📦 Produtos Cadastrados</h3>
@@ -574,6 +581,54 @@
             return div.innerHTML;
         }
 
+        // ========== FUNÇÃO EDITAR PRODUTO MELHORADA ==========
+        window.editarProduto = function(id) {
+            const p = produtosCache.find(x => x.id === id);
+            if(!p) return;
+            
+            produtoEditandoId = id;
+            
+            // Carrega imagens
+            if (p.imagens_urls && p.imagens_urls.length > 0) imagensUrlsExistentes = [...p.imagens_urls];
+            else if (p.imagem_url) imagensUrlsExistentes = [p.imagem_url];
+            else imagensUrlsExistentes = [];
+            novosArquivosImagem = []; 
+            atualizarContainerMiniaturas();
+
+            // Preenche os campos
+            document.getElementById('produto-nome').value = p.nome || "";
+            document.getElementById('produto-descricao').value = p.descricao || "";
+            if (descCounter) descCounter.innerText = (p.descricao || "").length;
+            document.getElementById('produto-valor').value = p.valor || "";
+            document.getElementById('produto-status').value = p.status || "ATIVO";
+            document.getElementById('produto-link').value = p.link_pagamento || "";
+
+            // Altera o título do formulário
+            const tituloElem = document.getElementById('titulo-form');
+            tituloElem.innerHTML = `✏️ Editando: ${p.nome.substring(0, 30)}${p.nome.length > 30 ? '…' : ''}`;
+            
+            // Mostra o botão Cancelar
+            const btnCancelar = document.getElementById('btn-cancelar-produto');
+            if (btnCancelar) btnCancelar.classList.remove('hidden');
+            
+            // 1) ROLAGEM SUAVE até o formulário
+            const formulario = document.getElementById('formulario-produto');
+            if (formulario) {
+                formulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // 2) DESTAQUE VISUAL TEMPORÁRIO
+            if (formulario) {
+                formulario.classList.add('form-highlight');
+                setTimeout(() => {
+                    formulario.classList.remove('form-highlight');
+                }, 1500);
+            }
+            
+            // 3) Feedback adicional com toast (opcional, mas reforça)
+            showToast(`Produto "${p.nome}" carregado para edição.`, 'success');
+        };
+
         window.salvarProduto = async function() {
             const nome = document.getElementById('produto-nome').value.trim();
             const descricao = document.getElementById('produto-descricao').value.trim();
@@ -645,29 +700,6 @@
                 btn.disabled = false; 
                 btn.innerHTML = originalText;
             }
-        };
-
-        window.editarProduto = function(id) {
-            const p = produtosCache.find(x => x.id === id);
-            if(!p) return;
-            produtoEditandoId = id;
-            if (p.imagens_urls && p.imagens_urls.length > 0) imagensUrlsExistentes = [...p.imagens_urls];
-            else if (p.imagem_url) imagensUrlsExistentes = [p.imagem_url];
-            else imagensUrlsExistentes = [];
-            novosArquivosImagem = []; 
-            atualizarContainerMiniaturas();
-
-            document.getElementById('produto-nome').value = p.nome || "";
-            document.getElementById('produto-descricao').value = p.descricao || "";
-            if (descCounter) descCounter.innerText = (p.descricao || "").length;
-            document.getElementById('produto-valor').value = p.valor || "";
-            document.getElementById('produto-status').value = p.status || "ATIVO";
-            document.getElementById('produto-link').value = p.link_pagamento || "";
-
-            document.getElementById('titulo-form').innerText = "✏️ Editar Produto";
-            const btnCancelar = document.getElementById('btn-cancelar-produto');
-            if (btnCancelar) btnCancelar.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
         };
 
         window.excluirProduto = async function(id) {
