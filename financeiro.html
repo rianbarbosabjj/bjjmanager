@@ -1146,6 +1146,13 @@
         }
 
         window.gerarFaturas = async function() {
+            // --- TRAVA DE SEGURANÇA: Bloqueia se o valor base estiver zerado ---
+            if (equipeBaseConfig.prazo <= 0) {
+                showToast("Atenção: O valor da mensalidade (No Prazo) está zerado. Geração bloqueada.", "error");
+                return;
+            }
+            // -------------------------------------------------------------------
+
             const btn = document.getElementById('btn-gerar-faturas'); if(!btn) return;
             const originalTxt = btn.innerHTML; btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando..."; btn.disabled = true;
 
