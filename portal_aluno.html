@@ -1081,11 +1081,7 @@ async function buscarFaturasResiliente(forceRefresh = false) {
         atualizarWidgetMensalidade();
 
     } catch(erroFinanceiro) {
-        .catch((erroFinanceiro) => {
-        console.error("Erro ao buscar faturas:");
-        console.error("Código:", erroFinanceiro.code);
-        console.error("Mensagem:", erroFinanceiro.message);
-        });
+        console.error("Erro ao buscar faturas:", erroFinanceiro);
         lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados.</div>`;
     }
 }
