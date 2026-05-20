@@ -1453,7 +1453,11 @@ async function carregarFrequenciaDoAluno(idAluno) {
     listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>'; 
     
     try { 
-        const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno)); 
+        const q = query(
+            collection(db, "checkins"), 
+            where("aluno_id", "==", idAluno),
+            where("equipe_id", "==", window.teamId)  // ← ADICIONADO
+        ); 
         const snap = await getDocs(q); 
         window.checkinsDoAlunoAtualCache = []; 
         
@@ -1482,7 +1486,6 @@ async function carregarFrequenciaDoAluno(idAluno) {
         window.filtrarFrequenciaAdmin(); 
     } catch(e) { 
         console.error("Erro ao carregar check-ins:", e);
-        // ✅ MENSAGEM AMIGÁVEL EM VEZ DE "ERRO"
         if(listaEl) listaEl.innerHTML = '<p class="text-center text-xs text-amber-500 py-6 italic">Nenhum check-in registrado ainda. Os registros aparecerão aqui quando o aluno fizer check-in.</p>'; 
     } 
 }
@@ -1741,7 +1744,11 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     const colecoesParaLimpar = ["checkins", "faturas", "financeiro", "graduacoes", "competicoes", "certificados"];
                     for (const nomeColecao of colecoesParaLimpar) {
                         try {
-                            const q = query(collection(db, nomeColecao), where("aluno_id", "==", id));
+                            const q = query(
+                                collection(db, nomeColecao), 
+                                where("aluno_id", "==", id),
+                                 where("equipe_id", "==", window.teamId)   // ← ADICIONE ESTA LINHA
+                            );
                             const snap = await getDocs(q);
                             const promessasDeletar = snap.docs.map(docSnap => deleteDoc(doc(db, nomeColecao, docSnap.id)));
                             await Promise.all(promessasDeletar); 
