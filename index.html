@@ -625,40 +625,21 @@
             const senhaAluno = "aluno01";
 
             try {
-                try {
-                    const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
-                    const result = await validarLogin({ email: emailAluno, senha: senhaAluno });
-                    
-                    if (result.data && result.data.success) {
-                        localStorage.setItem('bjj_aluno_token', result.data.token);
-                        localStorage.setItem('bjj_aluno_auth', JSON.stringify(result.data.aluno));
-                        window.location.href = "portal_aluno.html";
-                        return;
-                    }
-                } catch (cloudFnError) {
-                    console.log("Cloud Function não disponível, usando método direto:", cloudFnError.message);
-                }
-
-                const q = query(collection(db, "alunos"), 
-                    where("email", "==", emailAluno), 
-                    where("senha_portal", "==", senhaAluno));
-                const snap = await getDocs(q);
+                // ✅ ÚNICA FORMA PERMITIDA: Cloud Function
+                const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
+                const result = await validarLogin({ email: emailAluno, senha: senhaAluno });
                 
-                if (!snap.empty) { 
-                    const alunoDoc = snap.docs[0].data();
-                    const alunoId = snap.docs[0].id;
-                    const alunoLogado = { id: alunoId, ...alunoDoc };
-                    
-                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                if (result.data && result.data.success) {
+                    localStorage.setItem('bjj_aluno_token', result.data.token);
+                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(result.data.aluno));
                     window.location.href = "portal_aluno.html";
                 } else {
-                    alert("❌ Conta de demonstração não encontrada.");
-                    btn.innerHTML = txtOriginal;
-                    btn.disabled = false;
+                    alert("❌ Conta de demonstração não encontrada. Entre em contato com o suporte.");
                 }
             } catch (error) {
-                console.error("Erro ao entrar na demo do portal:", error);
-                alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.");
+                console.error("Erro ao acessar a demo do portal:", error);
+                alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
+            } finally {
                 btn.innerHTML = txtOriginal;
                 btn.disabled = false;
             }
