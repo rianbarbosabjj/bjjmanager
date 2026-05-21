@@ -170,9 +170,13 @@
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
                                 <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
                             </div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center card-hover">
-                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
-                                <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
+                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col card-hover">
+                                    <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">📊 A Receber (Mês)</h3>
+                                    <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-total-receber">⏳</p>
+                                    <div class="flex items-baseline justify-between mt-1 border-t border-amber-100 pt-2">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Em atraso</span>
+                                <span class="text-sm md:text-base font-black text-rose-500" id="card-valor-atraso">R$ 0,00</span>
+                                </div>
                             </div>
                             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center card-hover">
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
@@ -871,18 +875,35 @@
                 }
             });
             
-            let caixaDoMes = 0, despesasDoMes = 0, valorTotalAtrasado = 0;
-            let faturasPendentes = {};
+        let caixaDoMes = 0, despesasDoMes = 0;
+        let valorTotalPendente = 0;   // Total em aberto (PENDENTE + ATRASADO) do mês atual
+        let valorTotalAtrasado = 0;   // Apenas os já vencidos
+        let faturasPendentes = {};
+
             financeiro.forEach(f => {
-                if (f.mes_ano === mesAnoFiltro) {
-                    if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) caixaDoMes += parseFloat(f.valor || 0);
-                    else if (f.tipo === 'DESPESA') despesasDoMes += parseFloat(f.valor || 0);
-                }
-                if (f.tipo === 'MENSALIDADE' && (f.status === 'PENDENTE' || f.status === 'ATRASADO')) {
-                    if (!faturasPendentes[f.aluno_id]) faturasPendentes[f.aluno_id] = [];
-                    faturasPendentes[f.aluno_id].push(f);
-                }
-            });
+    // Caixa do mês (receitas pagas)
+        if (f.mes_ano === mesAnoFiltro) {
+        if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) {
+            caixaDoMes += parseFloat(f.valor || 0);
+        } else if (f.tipo === 'DESPESA') {
+            despesasDoMes += parseFloat(f.valor || 0);
+        }
+     }
+
+    // Faturas pendentes/atrasadas do mês atual (consideramos apenas mensalidades)
+    if (f.tipo === 'MENSALIDADE' && f.mes_ano === mesAnoFiltro && (f.status === 'PENDENTE' || f.status === 'ATRASADO')) {
+        const valorFatura = parseFloat(f.valor || 0);
+        valorTotalPendente += valorFatura;
+        
+        // Se já está marcado como ATRASADO, soma separadamente
+        if (f.status === 'ATRASADO') {
+            valorTotalAtrasado += valorFatura;
+        }
+        
+        if (!faturasPendentes[f.aluno_id]) faturasPendentes[f.aluno_id] = [];
+        faturasPendentes[f.aluno_id].push(f);
+    }
+});
             
             let ativos = 0, faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
             alunos.forEach(aluno => {
@@ -934,7 +955,8 @@
                 painelMetricas.classList.remove('hidden'); painelOnboarding.classList.add('hidden');
                 document.getElementById('card-ativos').innerText = ativos;
                 document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
-                document.getElementById('card-inadimplencia').innerText = `R$ ${valorTotalAtrasado.toFixed(2).replace('.', ',')}`;
+                document.getElementById('card-total-receber').innerText = `R$ ${valorTotalPendente.toFixed(2).replace('.', ',')}`;
+                document.getElementById('card-valor-atraso').innerText = `R$ ${valorTotalAtrasado.toFixed(2).replace('.', ',')}`;
                 document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
                 
                 const gridFaixas = document.getElementById('grid-faixas');
