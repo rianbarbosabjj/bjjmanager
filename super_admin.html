@@ -33,6 +33,15 @@
         
         .status-blink { animation: blink 2s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.35); border-radius: 999px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.85); border-radius: 999px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 1); }
+
+        .focus-ring:focus-visible { outline: 2px solid rgba(244, 63, 94, 0.85); outline-offset: 2px; }
+        .soft-card { background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.86)); }
+        .status-dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; display: inline-block; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-rose-500 selection:text-white relative">
@@ -164,10 +173,27 @@
             </div>
 
             <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
-                    <div class="relative w-full max-w-md">
+                <div class="p-6 border-b border-slate-800 flex flex-col lg:flex-row gap-3 justify-between items-stretch lg:items-center bg-slate-800/20">
+                    <div class="relative w-full lg:max-w-md">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">🔍</div>
-                        <input type="text" id="busca-equipe" onkeyup="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-rose-500 transition-all" placeholder="Buscar por Nome, Mestre ou Email...">
+                        <input type="text" id="busca-equipe" onkeyup="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-rose-500 transition-all focus-ring" placeholder="Buscar por Nome, Mestre ou Email...">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full lg:w-auto">
+                        <select id="filtro-status-equipe" onchange="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
+                            <option value="TODAS">Todas as situações</option>
+                            <option value="ATIVAS">Com alunos</option>
+                            <option value="INATIVAS">Sem alunos</option>
+                            <option value="AUSENTES">Sem acesso há 20 dias</option>
+                            <option value="ISENTAS">Isentas</option>
+                        </select>
+                        <select id="filtro-plano-equipe" onchange="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
+                            <option value="TODOS">Todos os planos</option>
+                            <option value="TESTE">Teste</option>
+                            <option value="BASICO">Básico</option>
+                            <option value="INTERMEDIARIO">Intermediário</option>
+                            <option value="PREMIUM">Premium</option>
+                            <option value="BLOQUEADO">Bloqueado</option>
+                        </select>
                     </div>
                 </div>
                 <div class="overflow-x-auto w-full">
@@ -215,7 +241,7 @@
                         <button onclick="exportarCSV('faturamento')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 h-10">
                             <span>📥</span> CSV
                         </button>
-                        <button onclick="carregarExtratoCompletoMaster(); renderizarFaturamento(); carregarSaldoMaster();" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 h-10">
+                        <button onclick="atualizarFaturamentoMaster()" data-action="atualizar-faturamento" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-2.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 h-10">
                             <span>🔄</span>
                         </button>
                     </div>
@@ -751,7 +777,7 @@
                         <input type="checkbox" id="edit-isento" class="w-5 h-5 rounded text-cyan-500 border-slate-600 focus:ring-cyan-500 cursor-pointer bg-slate-900">
                         <div>
                             <span class="text-sm font-black text-white uppercase tracking-widest block">Equipe 100% Isenta</span>
-                            <span class="text-[9px] text-slate-400">Equipa não será faturada e não soma no MRR.</span>
+                            <span class="text-[9px] text-slate-400">Equipe não será faturada e não soma no MRR.</span>
                         </div>
                     </label>
                 </div>
@@ -898,7 +924,17 @@
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-blue-500' : 'bg-rose-500');
             const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto max-w-sm`;
-            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'text-xl';
+            iconSpan.textContent = icon;
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'flex-1';
+            textSpan.textContent = String(message ?? '');
+
+            toast.appendChild(iconSpan);
+            toast.appendChild(textSpan);
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
@@ -1008,6 +1044,38 @@
         const solicitarSaqueMaster = httpsCallable(functions, 'solicitarSaqueMaster');
         const extratoMasterAsaas = httpsCallable(functions, 'extratoMasterAsaas'); 
 
+        function escapeHTML(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function jsArg(value) {
+            return escapeHTML(JSON.stringify(String(value ?? '')));
+        }
+
+        function formatarMoeda(valor) {
+            return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        window.atualizarFaturamentoMaster = async function() {
+            const btns = document.querySelectorAll('[data-action="atualizar-faturamento"]');
+            btns.forEach(btn => btn.classList.add('opacity-60', 'cursor-wait'));
+            try {
+                await Promise.all([carregarExtratoCompletoMaster(), carregarSaldoMaster()]);
+                renderizarFaturamento();
+                showToast('Faturamento atualizado.', 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('Não foi possível atualizar o faturamento agora.', 'error');
+            } finally {
+                btns.forEach(btn => btn.classList.remove('opacity-60', 'cursor-wait'));
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const superSnap = await getDoc(doc(db, "super_admins", user.uid));
@@ -1062,7 +1130,7 @@
                 // Montar Cabeçalho com Coluna de Ações
                 let headerRow = '<tr>';
                 biColumns.forEach(col => {
-                    headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 sticky top-0 border-b border-slate-800">${col}</th>`;
+                    headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 sticky top-0 border-b border-slate-800">${escapeHTML(col)}</th>`;
                 });
                 headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 sticky top-0 border-b border-slate-800 text-center">Ações</th>`;
                 headerRow += '</tr>';
@@ -1086,12 +1154,12 @@
                             disp = JSON.stringify(disp);
                         }
                         
-                        tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-slate-400 max-w-[200px] truncate" title="${String(val).replace(/"/g, '&quot;')}">${disp}</td>`;
+                        tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-slate-400 max-w-[200px] truncate" title="${escapeHTML(val)}">${escapeHTML(disp)}</td>`;
                     });
                     
                     // Botão de Excluir na Tabela Bruta
                     tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-center">
-                        <button onclick="excluirRegistroBI('${colecao}', '${row._id}')" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-2 py-1 rounded transition-colors" title="Excluir Definitivamente">🗑️</button>
+                        <button onclick="excluirRegistroBI(${jsArg(colecao)}, ${jsArg(row._id)})" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-2 py-1 rounded transition-colors" title="Excluir Definitivamente">🗑️</button>
                     </td>`;
                     
                     tr.innerHTML = tdContent;
@@ -1100,7 +1168,7 @@
                 
             } catch(e) {
                 console.error("Erro no Data Explorer:", e);
-                tabelaBody.innerHTML = `<tr><td class="text-center p-8 text-rose-500 font-bold text-xs">Falha de Permissão ou Leitura. Detalhe: ${e.message}</td></tr>`;
+                tabelaBody.innerHTML = `<tr><td class="text-center p-8 text-rose-500 font-bold text-xs">Falha de Permissão ou Leitura. Detalhe: ${escapeHTML(e.message)}</td></tr>`;
                 counter.innerText = "Erro";
             }
         }
@@ -1551,14 +1619,21 @@
                     .filter(eq => eq.email_responsavel !== 'bjjmanager@teste.com.br');
 
                 const snapAlunos = await getDocs(collection(db, "alunos"));
-                const todosAlunos = snapAlunos.docs.map(d => d.data());
-                
+                const contagemAlunosPorEquipe = new Map();
                 const idsEquipesValidas = new Set(equipesCache.map(eq => eq.id));
-                totalAlunosGeral = todosAlunos.filter(a => a.status === 'ATIVO' && idsEquipesValidas.has(a.equipe_id)).length;
+
+                snapAlunos.docs.forEach(docAluno => {
+                    const aluno = docAluno.data();
+                    if (aluno.status === 'ATIVO' && idsEquipesValidas.has(aluno.equipe_id)) {
+                        contagemAlunosPorEquipe.set(aluno.equipe_id, (contagemAlunosPorEquipe.get(aluno.equipe_id) || 0) + 1);
+                    }
+                });
+
+                totalAlunosGeral = Array.from(contagemAlunosPorEquipe.values()).reduce((acc, total) => acc + total, 0);
 
                 let inativas = 0; let leads = 0;
                 equipesCache.forEach(eq => {
-                    eq.total_alunos = todosAlunos.filter(a => a.equipe_id === eq.id && a.status === 'ATIVO').length;
+                    eq.total_alunos = contagemAlunosPorEquipe.get(eq.id) || 0;
                     if(eq.total_alunos === 0 && eq.status_plano !== 'TESTE') inativas++;
                     if(eq.status_plano === 'TESTE') leads++;
                 });
@@ -1583,14 +1658,35 @@
 
         window.renderizarEquipes = function() {
             const termo = document.getElementById('busca-equipe').value.toLowerCase();
+            const filtroStatus = document.getElementById('filtro-status-equipe')?.value || 'TODAS';
+            const filtroPlano = document.getElementById('filtro-plano-equipe')?.value || 'TODOS';
             const tabela = document.getElementById('tabela-equipes');
             tabela.innerHTML = '';
 
-            const filtradas = equipesCache.filter(eq => 
-                (eq.nome_equipe || "").toLowerCase().includes(termo) || 
-                (eq.responsavel_nome || "").toLowerCase().includes(termo) ||
-                (eq.email_responsavel || "").toLowerCase().includes(termo)
-            );
+            const filtradas = equipesCache.filter(eq => {
+                const textoBusca = [eq.nome_equipe, eq.responsavel_nome, eq.email_responsavel].join(' ').toLowerCase();
+                const planoAtual = (eq.status_plano || 'TESTE').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+                const isIsento = (eq.isento === true || String(eq.isento) === 'true');
+                const totalAlunos = Number(eq.total_alunos || 0);
+                const ultimoAcesso = eq.ultimo_acesso || eq.data_cadastro;
+                const diffDias = ultimoAcesso ? Math.floor((new Date() - new Date(ultimoAcesso)) / (1000 * 60 * 60 * 24)) : 9999;
+
+                const passaBusca = textoBusca.includes(termo);
+                const passaPlano = filtroPlano === 'TODOS' || planoAtual === filtroPlano;
+                const passaStatus =
+                    filtroStatus === 'TODAS' ||
+                    (filtroStatus === 'ATIVAS' && totalAlunos > 0) ||
+                    (filtroStatus === 'INATIVAS' && totalAlunos === 0) ||
+                    (filtroStatus === 'AUSENTES' && diffDias > 20) ||
+                    (filtroStatus === 'ISENTAS' && isIsento);
+
+                return passaBusca && passaPlano && passaStatus;
+            });
+
+            if (filtradas.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Nenhuma academia encontrada com os filtros aplicados.</td></tr>';
+                return;
+            }
 
             filtradas.forEach(eq => {
                 let diasDeVidaStr = "Data não registrada";
@@ -1607,7 +1703,7 @@
                 else if(eq.total_alunos > 0) saudeHTML = `<span class="text-cyan-400 font-bold text-xs">🌱 Ativa (${eq.total_alunos})</span>`;
                 else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Sem Alunos (0)</span>`;
 
-                let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registo</span>`;
+                let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registro</span>`;
                 if (eq.ultimo_acesso || eq.data_cadastro) {
                     const lastLogin = new Date(eq.ultimo_acesso || eq.data_cadastro);
                     const diffDias = Math.floor((new Date() - lastLogin) / (1000 * 60 * 60 * 24));
