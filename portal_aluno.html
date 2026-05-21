@@ -1161,51 +1161,97 @@ async function buscarFaturasResiliente(forceRefresh = false) {
         console.error("❌ Erro detalhado:", erroFinanceiro);
         lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados. Verifique sua conexão.</div>`;
     }
+}       
+function calcularValorFatura(fatura, aluno, equipe) {
+        // Se já paga, mantém o valor original
+    if (fatura.status === 'PAGO') return fatura.valor;
+    
+    const bolsa = aluno.bolsa_perc || 0;
+    if (bolsa === 100) return 0; // isento
+    
+    // Valor base conforme o status (prazo ou atraso)
+    const valorBase = (fatura.status === 'ATRASADO') 
+        ? (equipe.valor_atraso || 100)
+        : (equipe.valor_prazo || 70);
+    
+    // Aplica o desconto sobre o valor base
+    return valorBase * (1 - bolsa / 100);
 }
         
-        function renderizarFaturas(faturas) {
-            const lista = document.getElementById('lista-faturas');
-            if (!lista) return;
-            let temAsaas = false;
-            if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
-                const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
-                const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
-                const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
-                if (isIsento || planosPremium.includes(plano)) temAsaas = true;
-            }
-            let faturasHTML = '';
-            faturas.forEach(fat => {
-                let mesStr = "", anoStr = "";
-                if (fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = String(fat.mes_ano).split('-'); anoStr = partes[0]; mesStr = partes[1]; }
-                const diaVenc = alunoLogado.dia_vencimento || 10;
-                let dataVencFormatada = '--/--/----';
-                if (anoStr && mesStr) dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
-                
-                let statusAtual = fat.status || 'PENDENTE';
-                if (statusAtual === 'PENDENTE') { const hoje = new Date(); hoje.setHours(0,0,0,0); const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc)); if (dataVencimento && hoje > dataVencimento) statusAtual = 'ATRASADO'; }
-                
-                const isPago = statusAtual === 'PAGO';
-                const isAtrasado = statusAtual === 'ATRASADO';
-                const isIsento = statusAtual === 'ISENTO';
-                
-                let icone = '⏳', corTexto = 'text-cyan-400', statusLabel = 'Pendente';
-                if (isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; }
-                else if (isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; }
-                else if (isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
-                
-                let btnHtml = '';
-                if (isPago) btnHtml = `<span class="text-[10px] font-bold text-emerald-500 uppercase mt-1 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">✅ Pago</span>`;
-                else if (isIsento) btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">⭐ Isento</span>`;
-                else {
-                    if (temAsaas && fat.link_pagamento) btnHtml = `<a href="${sanitizarUrl(fat.link_pagamento)}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 block text-center border border-cyan-400/50">💳 Pagar</a>`;
-                    else if (fat.chave_pix_manual || (equipeDados && equipeDados.chave_pix)) btnHtml = `<button onclick="copiarPixAluno('${fat.chave_pix_manual || equipeDados.chave_pix}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50">📄 Copiar PIX</button>`;
-                    else btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2">Detalhes</button>`;
-                }
-                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
-                faturasHTML += `<div class="p-5 flex items-start justify-between hover:bg-slate-800/50 transition-colors border-b border-slate-700/30"><div class="flex items-start gap-4"><div class="text-2xl opacity-80 mt-1" title="${statusLabel}">${icone}</div><div><p class="text-sm font-bold text-white">Mensalidade ${tituloMes}</p><p class="text-[10px] text-slate-400 uppercase mt-0.5">Venc: ${dataVencFormatada}</p></div></div><div class="flex flex-col items-end"><p class="text-lg font-black ${corTexto}">R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}</p>${btnHtml}</div></div>`;
-            });
-            lista.innerHTML = faturasHTML;
+function renderizarFaturas(faturas) {
+    const lista = document.getElementById('lista-faturas');
+    if (!lista) return;
+    let temAsaas = false;
+    if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
+        const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
+        const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
+        const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
+        if (isIsento || planosPremium.includes(plano)) temAsaas = true;
+    }
+    let faturasHTML = '';
+    faturas.forEach(fat => {
+        let mesStr = "", anoStr = "";
+        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+            const partes = String(fat.mes_ano).split('-');
+            anoStr = partes[0];
+            mesStr = partes[1];
         }
+        const diaVenc = alunoLogado.dia_vencimento || 10;
+        let dataVencFormatada = '--/--/----';
+        if (anoStr && mesStr) dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
+        
+        // Recalcula o status atual (se for PENDENTE e já venceu, vira ATRASADO)
+        let statusAtual = fat.status || 'PENDENTE';
+        if (statusAtual === 'PENDENTE') {
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
+            if (dataVencimento && hoje > dataVencimento) statusAtual = 'ATRASADO';
+        }
+        
+        const isPago = statusAtual === 'PAGO';
+        const isAtrasado = statusAtual === 'ATRASADO';
+        const isIsento = statusAtual === 'ISENTO';
+        
+        // Cria um objeto fatura temporário com o status recalculado
+        const faturaParaCalculo = { ...fat, status: statusAtual };
+        
+        // Recalcula o valor atual da fatura (para PENDENTE/ATRASADO)
+        let valorExibir = fat.valor;
+        if (!isPago && !isIsento) {
+            valorExibir = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+        }
+        
+        let icone = '⏳', corTexto = 'text-cyan-400', statusLabel = 'Pendente';
+        if (isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; }
+        else if (isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; }
+        else if (isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
+        
+        let btnHtml = '';
+        if (isPago) btnHtml = `<span class="text-[10px] font-bold text-emerald-500 uppercase mt-1 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">✅ Pago</span>`;
+        else if (isIsento) btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">⭐ Isento</span>`;
+        else {
+            if (temAsaas && fat.link_pagamento) btnHtml = `<a href="${sanitizarUrl(fat.link_pagamento)}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 block text-center border border-cyan-400/50">💳 Pagar</a>`;
+            else if (fat.chave_pix_manual || (equipeDados && equipeDados.chave_pix)) btnHtml = `<button onclick="copiarPixAluno('${fat.chave_pix_manual || equipeDados.chave_pix}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50">📄 Copiar PIX</button>`;
+            else btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2">Detalhes</button>`;
+        }
+        const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
+        faturasHTML += `<div class="p-5 flex items-start justify-between hover:bg-slate-800/50 transition-colors border-b border-slate-700/30">
+            <div class="flex items-start gap-4">
+                <div class="text-2xl opacity-80 mt-1" title="${statusLabel}">${icone}</div>
+                <div>
+                    <p class="text-sm font-bold text-white">Mensalidade ${tituloMes}</p>
+                    <p class="text-[10px] text-slate-400 uppercase mt-0.5">Venc: ${dataVencFormatada}</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-end">
+                <p class="text-lg font-black ${corTexto}">R$ ${parseFloat(valorExibir || 0).toFixed(2).replace('.', ',')}</p>
+                ${btnHtml}
+            </div>
+        </div>`;
+    });
+    lista.innerHTML = faturasHTML;
+}
 
         // ==========================================
         // 📱 NOTIFICAÇÕES PUSH (FCM)
@@ -1476,109 +1522,173 @@ async function buscarFaturasResiliente(forceRefresh = false) {
         // ==========================================
         // 💳 FINANCEIRO E MENSALIDADES
         // ==========================================
-        window.abrirPagamento = async function(faturaId) {
-            const fat = faturasCache.find(f => f.id === faturaId); 
-            if (!fat) return showToast("Fatura não encontrada.", "error"); 
-            let temAsaas = false; 
-            if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) { 
-                const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim(); 
-                const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true"; 
-                const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE']; 
-                if (isIsento || planosPremium.includes(plano)) temAsaas = true; 
-            } 
-            if (temAsaas) { 
-                if (fat.link_pagamento) { 
-                    window.open(sanitizarUrl(fat.link_pagamento), '_blank'); 
-                    return; 
-                } 
-                showToast("⏳ Gerando link de pagamento seguro...", "success"); 
-                try { 
-                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas'); 
-                    const token = localStorage.getItem('bjj_aluno_token'); 
-                    const resultado = await gerarCobranca({ alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`, _token: token }); 
-                    if (resultado.data.success) { 
-                        showToast("✅ Fatura gerada com sucesso!", "success"); 
-                        window.open(resultado.data.url, '_blank'); 
-                        buscarFaturasResiliente(); 
-                    } else { 
-                        showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); 
-                    } 
-                } catch (error) { 
-                    console.error(error); 
-                    showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); 
-                } 
-            } else { 
-                let mesStr = "", anoStr = ""; 
-                if(fat.mes_ano && String(fat.mes_ano).includes('-')) { 
-                    const partes = fat.mes_ano.split('-'); anoStr = partes[0]; mesStr = partes[1]; 
-                } 
-                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual'; 
-                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; 
-                document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`; 
-                const inputPix = document.getElementById('pix-codigo'); 
-                const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null); 
-                if(chavePix) { 
-                    inputPix.value = chavePix; 
-                    document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema."; 
-                } else { 
-                    inputPix.value = "Chave PIX não configurada pelo professor."; 
-                    document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor."; 
-                } 
-                document.getElementById('modal-pix').classList.remove('hidden'); 
-                document.getElementById('modal-pix').classList.add('flex'); 
-            } 
-        };
+window.abrirPagamento = async function(faturaId) {
+    const fat = faturasCache.find(f => f.id === faturaId);
+    if (!fat) return showToast("Fatura não encontrada.", "error");
+
+    // Recalcula o status atual (se for PENDENTE e já venceu, vira ATRASADO)
+    let statusRecalculado = fat.status;
+    if (statusRecalculado === 'PENDENTE') {
+        let mesStr = "", anoStr = "";
+        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+            const partes = String(fat.mes_ano).split('-');
+            anoStr = partes[0];
+            mesStr = partes[1];
+        }
+        const diaVenc = alunoLogado.dia_vencimento || 10;
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+        const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
+        if (dataVencimento && hoje > dataVencimento) statusRecalculado = 'ATRASADO';
+    }
+    const faturaParaCalculo = { ...fat, status: statusRecalculado };
+
+    // Recalcula o valor a ser cobrado
+    let valorCobrar = fat.valor;
+    if (statusRecalculado !== 'PAGO' && statusRecalculado !== 'ISENTO') {
+        valorCobrar = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+    }
+
+    let temAsaas = false;
+    if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
+        const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
+        const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
+        const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
+        if (isIsento || planosPremium.includes(plano)) temAsaas = true;
+    }
+
+    if (temAsaas) {
+        if (fat.link_pagamento) {
+            window.open(sanitizarUrl(fat.link_pagamento), '_blank');
+            return;
+        }
+        showToast("⏳ Gerando link de pagamento seguro...", "success");
+        try {
+            const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+            const token = localStorage.getItem('bjj_aluno_token');
+            const resultado = await gerarCobranca({
+                alunoId: alunoLogado.id,
+                valor: valorCobrar,   // ← valor recalculado
+                mesAno: fat.mes_ano,
+                descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`,
+                _token: token
+            });
+            if (resultado.data.success) {
+                showToast("✅ Fatura gerada com sucesso!", "success");
+                window.open(resultado.data.url, '_blank');
+                buscarFaturasResiliente();
+            } else {
+                showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
+        }
+    } else {
+        // Pagamento manual via PIX
+        let mesStr = "", anoStr = "";
+        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+            const partes = fat.mes_ano.split('-');
+            anoStr = partes[0];
+            mesStr = partes[1];
+        }
+        const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
+        document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`;
+        document.getElementById('pix-valor').innerText = `R$ ${parseFloat(valorCobrar || 0).toFixed(2).replace('.', ',')}`;
+        const inputPix = document.getElementById('pix-codigo');
+        const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);
+        if (chavePix) {
+            inputPix.value = chavePix;
+            document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema.";
+        } else {
+            inputPix.value = "Chave PIX não configurada pelo professor.";
+            document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor.";
+        }
+        document.getElementById('modal-pix').classList.remove('hidden');
+        document.getElementById('modal-pix').classList.add('flex');
+    }
+};
         
         window.fecharModalPix = function() { 
             document.getElementById('modal-pix').classList.add('hidden'); 
             document.getElementById('modal-pix').classList.remove('flex'); 
         };
         
-        function atualizarWidgetMensalidade() { 
-            const elValor = document.getElementById('home-proxima-fatura-valor'); 
-            const elVenc = document.getElementById('home-proxima-fatura-venc'); 
-            const btnPagar = document.getElementById('btn-home-pagar'); 
-            const cardBg = document.getElementById('card-mensalidade-home'); 
-            const iconFin = document.getElementById('home-fin-icon'); 
-            if (!elValor) return; 
-            let pendentes = faturasCache.filter(f => f.status === 'PENDENTE' || f.status === 'ATRASADO'); 
-            if(pendentes.length > 0) { 
-                pendentes.sort((a,b) => (a.mes_ano || "").localeCompare(b.mes_ano || "")); 
-                const fat = pendentes[0]; 
-                let mesStr = "", anoStr = ""; 
-                if(fat.mes_ano && String(fat.mes_ano).includes('-')) { 
-                    const partes = String(fat.mes_ano).split('-'); anoStr = partes[0]; mesStr = partes[1]; 
-                } 
-                const diaVenc = alunoLogado.dia_vencimento || 10; 
-                let dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`; 
-                elValor.innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`; 
-                if(fat.status === 'ATRASADO') { 
-                    cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-rose-500 bg-rose-900/20"; 
-                    elVenc.innerText = `Atrasada: ${dataVencFormatada}`; 
-                    elVenc.className = "text-[10px] font-bold text-rose-300 uppercase tracking-widest mb-5 bg-rose-900/60 border border-rose-500/30 px-3 py-1 rounded-md"; 
-                    iconFin.innerHTML = "🚨"; 
-                    iconFin.className = "w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-2xl mb-3 border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]"; 
-                    btnPagar.className = "w-full bg-rose-600 hover:bg-rose-500 text-white transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(244,63,94,0.4)]"; 
-                } else { 
-                    cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-amber-500 bg-amber-900/10"; 
-                    elVenc.innerText = `Vence em: ${dataVencFormatada}`; 
-                    elVenc.className = "text-[10px] font-bold text-amber-300 uppercase tracking-widest mb-5 bg-amber-900/60 border border-amber-500/30 px-3 py-1 rounded-md"; 
-                    iconFin.innerHTML = "⏳"; 
-                    iconFin.className = "w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center text-2xl mb-3 border border-amber-500/50"; 
-                    btnPagar.className = "w-full bg-amber-50 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md"; 
-                } 
-                btnPagar.classList.remove('hidden'); 
-                btnPagar.onclick = () => abrirPagamento(fat.id); 
-            } else { 
-                elValor.innerText = "Tudo em dia!"; 
-                elVenc.innerText = "Nenhuma pendência :)"; 
-                btnPagar.classList.add('hidden'); 
-                cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-emerald-500 bg-emerald-900/10"; 
-                elVenc.className = "text-[10px] font-bold text-emerald-300 uppercase tracking-widest mb-5 bg-emerald-900/60 border border-emerald-500/30 px-3 py-1 rounded-md"; 
-                iconFin.innerHTML = "✅"; 
-                iconFin.className = "w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-2xl mb-3 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]"; 
-            } 
+function atualizarWidgetMensalidade() {
+    const elValor = document.getElementById('home-proxima-fatura-valor');
+    const elVenc = document.getElementById('home-proxima-fatura-venc');
+    const btnPagar = document.getElementById('btn-home-pagar');
+    const cardBg = document.getElementById('card-mensalidade-home');
+    const iconFin = document.getElementById('home-fin-icon');
+    if (!elValor) return;
+    
+    let pendentes = faturasCache.filter(f => f.status === 'PENDENTE' || f.status === 'ATRASADO');
+    if (pendentes.length > 0) {
+        pendentes.sort((a, b) => (a.mes_ano || "").localeCompare(b.mes_ano || ""));
+        const fat = pendentes[0];
+        
+        // Recalcula o status atual (se for PENDENTE e já venceu, vira ATRASADO)
+        let statusRecalculado = fat.status;
+        if (statusRecalculado === 'PENDENTE') {
+            let mesStr = "", anoStr = "";
+            if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                const partes = String(fat.mes_ano).split('-');
+                anoStr = partes[0];
+                mesStr = partes[1];
+            }
+            const diaVenc = alunoLogado.dia_vencimento || 10;
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
+            if (dataVencimento && hoje > dataVencimento) statusRecalculado = 'ATRASADO';
         }
+        
+        const faturaParaCalculo = { ...fat, status: statusRecalculado };
+        
+        // Recalcula o valor atual
+        let valorExibir = fat.valor;
+        if (statusRecalculado !== 'PAGO' && statusRecalculado !== 'ISENTO') {
+            valorExibir = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+        }
+        
+        let mesStr = "", anoStr = "";
+        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+            const partes = String(fat.mes_ano).split('-');
+            anoStr = partes[0];
+            mesStr = partes[1];
+        }
+        const diaVenc = alunoLogado.dia_vencimento || 10;
+        let dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
+        
+        elValor.innerText = `R$ ${parseFloat(valorExibir || 0).toFixed(2).replace('.', ',')}`;
+        
+        if (statusRecalculado === 'ATRASADO') {
+            cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-rose-500 bg-rose-900/20";
+            elVenc.innerText = `Atrasada: ${dataVencFormatada}`;
+            elVenc.className = "text-[10px] font-bold text-rose-300 uppercase tracking-widest mb-5 bg-rose-900/60 border border-rose-500/30 px-3 py-1 rounded-md";
+            iconFin.innerHTML = "🚨";
+            iconFin.className = "w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-2xl mb-3 border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]";
+            btnPagar.className = "w-full bg-rose-600 hover:bg-rose-500 text-white transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(244,63,94,0.4)]";
+        } else {
+            cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-amber-500 bg-amber-900/10";
+            elVenc.innerText = `Vence em: ${dataVencFormatada}`;
+            elVenc.className = "text-[10px] font-bold text-amber-300 uppercase tracking-widest mb-5 bg-amber-900/60 border border-amber-500/30 px-3 py-1 rounded-md";
+            iconFin.innerHTML = "⏳";
+            iconFin.className = "w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center text-2xl mb-3 border border-amber-500/50";
+            btnPagar.className = "w-full bg-amber-50 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md";
+        }
+        btnPagar.classList.remove('hidden');
+        btnPagar.onclick = () => abrirPagamento(fat.id);
+    } else {
+        elValor.innerText = "Tudo em dia!";
+        elVenc.innerText = "Nenhuma pendência :)";
+        btnPagar.classList.add('hidden');
+        cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-emerald-500 bg-emerald-900/10";
+        elVenc.className = "text-[10px] font-bold text-emerald-300 uppercase tracking-widest mb-5 bg-emerald-900/60 border border-emerald-500/30 px-3 py-1 rounded-md";
+        iconFin.innerHTML = "✅";
+        iconFin.className = "w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-2xl mb-3 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
+    }
+}
         
         window.copiarPixAluno = function(chave) { 
             navigator.clipboard.writeText(chave).then(() => { 
