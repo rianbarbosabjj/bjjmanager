@@ -880,28 +880,73 @@
         let valorTotalAtrasado = 0;   // Apenas os já vencidos
         let faturasPendentes = {};
 
-            financeiro.forEach(f => {
-    // Caixa do mês (receitas pagas)
-        if (f.mes_ano === mesAnoFiltro) {
+// Função auxiliar para recalcular valor da fatura com base nas regras atuais
+        function recalcularValorFatura(fatura, aluno) {
+            if (fatura.status === 'PAGO') return fatura.valor;
+            const bolsa = aluno?.bolsa_perc || 0;
+            if (bolsa === 100) return 0;
+    
+    // Determina o status real (pode estar desatualizado no banco)
+            let statusReal = fatura.status;
+            if (statusReal === 'PENDENTE') {
+            const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
+            const ano = parseInt(fatura.mes_ano.split('-')[0]);
+            const mes = parseInt(fatura.mes_ano.split('-')[1]) - 1;
+            const dataVencimento = new Date(ano, mes, diaVenc);
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            if (hoje > dataVencimento) statusReal = 'ATRASADO';
+            }
+    
+            if (statusReal === 'ATRASADO') {
+        // Aplica desconto sobre o valor de atraso atual (valAtraso)
+        return valAtraso * (1 - bolsa / 100);
+        } else {
+        // PENDENTE: aplica desconto sobre o valor do prazo atual (valPrazo)
+        return valPrazo * (1 - bolsa / 100);
+    }
+}
+
+financeiro.forEach(f => {
+    // Caixa do mês (receitas pagas) – mantém o valor registrado
+    if (f.mes_ano === mesAnoFiltro) {
         if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) {
             caixaDoMes += parseFloat(f.valor || 0);
         } else if (f.tipo === 'DESPESA') {
             despesasDoMes += parseFloat(f.valor || 0);
         }
-     }
+    }
 
-    // Faturas pendentes/atrasadas do mês atual (consideramos apenas mensalidades)
+    // Faturas pendentes/atrasadas do mês atual – recalcula dinamicamente
     if (f.tipo === 'MENSALIDADE' && f.mes_ano === mesAnoFiltro && (f.status === 'PENDENTE' || f.status === 'ATRASADO')) {
-        const valorFatura = parseFloat(f.valor || 0);
-        valorTotalPendente += valorFatura;
+        const aluno = alunos.find(a => a.id === f.aluno_id);
+        if (!aluno) return;
         
-        // Se já está marcado como ATRASADO, soma separadamente
-        if (f.status === 'ATRASADO') {
-            valorTotalAtrasado += valorFatura;
+        // Recalcula o valor correto da fatura
+        const valorRecalculado = recalcularValorFatura(f, aluno);
+        
+        valorTotalPendente += valorRecalculado;
+        
+        // Verifica se está atrasado (pelo status original ou recalculado)
+        let statusReal = f.status;
+        if (statusReal === 'PENDENTE') {
+            const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
+            const ano = parseInt(f.mes_ano.split('-')[0]);
+            const mes = parseInt(f.mes_ano.split('-')[1]) - 1;
+            const dataVencimento = new Date(ano, mes, diaVenc);
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            if (hoje > dataVencimento) statusReal = 'ATRASADO';
         }
         
+        if (statusReal === 'ATRASADO') {
+            valorTotalAtrasado += valorRecalculado;
+        }
+        
+        // Armazena a fatura com o valor recalculado para a lista de pendências
+        const faturaCorrigida = { ...f, valor: valorRecalculado };
         if (!faturasPendentes[f.aluno_id]) faturasPendentes[f.aluno_id] = [];
-        faturasPendentes[f.aluno_id].push(f);
+        faturasPendentes[f.aluno_id].push(faturaCorrigida);
     }
 });
             
