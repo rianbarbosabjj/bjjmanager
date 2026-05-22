@@ -321,7 +321,7 @@
                 </div>
                 
                 <div class="mt-10">
-                    <button onclick="entrarDemoPortal()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-cyan-500/20 w-full sm:w-auto mx-auto lg:mx-0">
+                    <button onclick="entrarDemoPortal(event)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-cyan-500/20 w-full sm:w-auto mx-auto lg:mx-0">
                         <i class="fas fa-sign-in-alt"></i> Testar o Portal do Aluno
                     </button>
                     <p class="text-xs text-slate-500 mt-3">*Entrar como aluno de teste.</p>
@@ -582,7 +582,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -615,42 +615,33 @@
             }
         };
 
-window.entrarDemoPortal = async function() {
-    const btn = event.currentTarget;
-    const txtOriginal = btn.innerHTML;
-    btn.innerHTML = "<span>⏳ Entrando...</span>";
-    btn.disabled = true;
+        window.entrarDemoPortal = async function(event) {
+            const btn = event.currentTarget;
+            const txtOriginal = btn.innerHTML;
 
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
-        const user = userCredential.user;
-        const token = await user.getIdToken();
-        
-        // Vamos criar um objeto bem completo para passar pela validação do portal_aluno.html
-        const alunoData = {
-            uid: user.uid,
-            id: user.uid, // Algumas páginas usam 'id' em vez de 'uid'
-            email: user.email,
-            nome: "Atleta de Teste",
-            primeiro_nome: "Atleta",
-            faixa: "Azul",
-            graus: 2,
-            status: "ativo",
-            equipe_id: "demo123"
-        };
+            btn.innerHTML = "<span>⏳ Acessando...</span>";
+            btn.disabled = true;
 
-        localStorage.setItem('bjj_aluno_token', token);
-        localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoData));
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+
+                await signInWithEmailAndPassword(
+                    auth,
+                    "alunoteste1@gmail.com",
+                    "aluno01"
+                );
 
         window.location.href = "portal_aluno.html";
-        
-    } catch (error) {
-        console.error("Erro ao acessar a demo do portal:", error);
-        alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
-        btn.innerHTML = txtOriginal;
-        btn.disabled = false;
-    }
-};
+
+            } catch (error) {
+                console.error("Erro ao entrar na demo do Portal do Aluno:", error);
+
+                alert("O ambiente de demonstração do Portal do Aluno está em manutenção. Tente novamente em alguns minutos.");
+
+                btn.innerHTML = txtOriginal;
+                btn.disabled = false;
+            }
+        };
         function formatarPrecoPublico(valor, idMoeda, idPreco, idPeriodo) {
             const v = parseFloat(valor);
             if (v === 0) {
