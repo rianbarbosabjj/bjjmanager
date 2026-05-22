@@ -857,7 +857,7 @@
             } finally { hideLoading(); }
         }
 
-        function renderizarDashboardComCache(alunos, financeiro, turmas, checkins) {
+function renderizarDashboardComCache(alunos, financeiro, turmas, checkins) {
             const dataHoje = new Date();
             const mesAtual = dataHoje.getMonth() + 1;
             const mesAnoFiltro = `${dataHoje.getFullYear()}-${String(mesAtual).padStart(2, '0')}`;
@@ -875,80 +875,74 @@
                 }
             });
             
-        let caixaDoMes = 0, despesasDoMes = 0;
-        let valorTotalPendente = 0;   // Total em aberto (PENDENTE + ATRASADO) do mês atual
-        let valorTotalAtrasado = 0;   // Apenas os já vencidos
-        let faturasPendentes = {};
+            let caixaDoMes = 0, despesasDoMes = 0;
+            let valorTotalPendente = 0;   // Apenas os do mês atual (Pendente + Atrasado)
+            let valorTotalAtrasado = 0;   // Apenas os do mês atual já vencidos
+            let faturasPendentes = {};
 
-// Função auxiliar para recalcular valor da fatura com base nas regras atuais
-        function recalcularValorFatura(fatura, aluno) {
-            if (fatura.status === 'PAGO') return fatura.valor;
-            const bolsa = aluno?.bolsa_perc || 0;
-            if (bolsa === 100) return 0;
-    
-    // Determina o status real (pode estar desatualizado no banco)
-            let statusReal = fatura.status;
-            if (statusReal === 'PENDENTE') {
-            const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
-            const ano = parseInt(fatura.mes_ano.split('-')[0]);
-            const mes = parseInt(fatura.mes_ano.split('-')[1]) - 1;
-            const dataVencimento = new Date(ano, mes, diaVenc);
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
-            if (hoje > dataVencimento) statusReal = 'ATRASADO';
+            function recalcularValorFatura(fatura, aluno) {
+                if (fatura.status === 'PAGO') return parseFloat(fatura.valor) || 0;
+                const bolsa = aluno?.bolsa_perc || 0;
+                if (bolsa === 100) return 0;
+        
+                let statusReal = fatura.status;
+                if (statusReal === 'PENDENTE') {
+                    const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
+                    const ano = parseInt(fatura.mes_ano.split('-')[0]);
+                    const mes = parseInt(fatura.mes_ano.split('-')[1]) - 1;
+                    const dataVencimento = new Date(ano, mes, diaVenc);
+                    const hoje = new Date();
+                    hoje.setHours(0,0,0,0);
+                    if (hoje > dataVencimento) statusReal = 'ATRASADO';
+                }
+        
+                if (statusReal === 'ATRASADO') {
+                    return valAtraso * (1 - bolsa / 100);
+                } else {
+                    return valPrazo * (1 - bolsa / 100);
+                }
             }
-    
-            if (statusReal === 'ATRASADO') {
-        // Aplica desconto sobre o valor de atraso atual (valAtraso)
-        return valAtraso * (1 - bolsa / 100);
-        } else {
-        // PENDENTE: aplica desconto sobre o valor do prazo atual (valPrazo)
-        return valPrazo * (1 - bolsa / 100);
-    }
-}
 
-financeiro.forEach(f => {
-    // Caixa do mês (receitas pagas) – mantém o valor registrado
-    if (f.mes_ano === mesAnoFiltro) {
-        if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) {
-            caixaDoMes += parseFloat(f.valor || 0);
-        } else if (f.tipo === 'DESPESA') {
-            despesasDoMes += parseFloat(f.valor || 0);
-        }
-    }
+            financeiro.forEach(f => {
+                if (f.mes_ano === mesAnoFiltro) {
+                    if (f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && f.status === 'PAGO')) {
+                        caixaDoMes += parseFloat(f.valor || 0);
+                    } else if (f.tipo === 'DESPESA') {
+                        despesasDoMes += parseFloat(f.valor || 0);
+                    }
+                }
 
-    // Faturas pendentes/atrasadas do mês atual – recalcula dinamicamente
-    if (f.tipo === 'MENSALIDADE' && f.mes_ano === mesAnoFiltro && (f.status === 'PENDENTE' || f.status === 'ATRASADO')) {
-        const aluno = alunos.find(a => a.id === f.aluno_id);
-        if (!aluno) return;
-        
-        // Recalcula o valor correto da fatura
-        const valorRecalculado = recalcularValorFatura(f, aluno);
-        
-        valorTotalPendente += valorRecalculado;
-        
-        // Verifica se está atrasado (pelo status original ou recalculado)
-        let statusReal = f.status;
-        if (statusReal === 'PENDENTE') {
-            const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
-            const ano = parseInt(f.mes_ano.split('-')[0]);
-            const mes = parseInt(f.mes_ano.split('-')[1]) - 1;
-            const dataVencimento = new Date(ano, mes, diaVenc);
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
-            if (hoje > dataVencimento) statusReal = 'ATRASADO';
-        }
-        
-        if (statusReal === 'ATRASADO') {
-            valorTotalAtrasado += valorRecalculado;
-        }
-        
-        // Armazena a fatura com o valor recalculado para a lista de pendências
-        const faturaCorrigida = { ...f, valor: valorRecalculado };
-        if (!faturasPendentes[f.aluno_id]) faturasPendentes[f.aluno_id] = [];
-        faturasPendentes[f.aluno_id].push(faturaCorrigida);
-    }
-});
+                // Isola a soma apenas para as faturas do mês atual que não estão pagas
+                if (f.tipo === 'MENSALIDADE' && f.mes_ano === mesAnoFiltro && (f.status === 'PENDENTE' || f.status === 'ATRASADO')) {
+                    const aluno = alunos.find(a => a.id === f.aluno_id);
+                    if (!aluno) return;
+                    
+                    const valorRecalculado = recalcularValorFatura(f, aluno);
+                    
+                    // Soma no valor a receber deste mês
+                    valorTotalPendente += valorRecalculado;
+                    
+                    let statusReal = f.status;
+                    if (statusReal === 'PENDENTE') {
+                        const diaVenc = parseInt(aluno.dia_vencimento, 10) || 10;
+                        const ano = parseInt(f.mes_ano.split('-')[0]);
+                        const mes = parseInt(f.mes_ano.split('-')[1]) - 1;
+                        const dataVencimento = new Date(ano, mes, diaVenc);
+                        const hoje = new Date();
+                        hoje.setHours(0,0,0,0);
+                        if (hoje > dataVencimento) statusReal = 'ATRASADO';
+                    }
+                    
+                    // Soma no valor em atraso DESTE mês
+                    if (statusReal === 'ATRASADO') {
+                        valorTotalAtrasado += valorRecalculado;
+                    }
+                    
+                    const faturaCorrigida = { ...f, valor: valorRecalculado };
+                    if (!faturasPendentes[f.aluno_id]) faturasPendentes[f.aluno_id] = [];
+                    faturasPendentes[f.aluno_id].push(faturaCorrigida);
+                }
+            });
             
             let ativos = 0, faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
             alunos.forEach(aluno => {
@@ -965,6 +959,7 @@ financeiro.forEach(f => {
                     let turmasDoAluno = alunoParaTurmas[aluno.id] || [aluno.turma_id || "SEM TURMA DEFINIDA"];
                     if(turmasDoAluno.length === 0 || turmasDoAluno[0] === undefined) turmasDoAluno = ["SEM TURMA DEFINIDA"];
                     turmasDoAluno.forEach(nomeTurma => { if (!turmasMap[nomeTurma]) turmasMap[nomeTurma] = []; turmasMap[nomeTurma].push({ nome: aluno.nome || 'Aluno', faixa: faixa }); });
+                    
                     if (faturasPendentes[aluno.id]) {
                         faturasPendentes[aluno.id].forEach(fatura => {
                             const statusFatura = fatura.status;
@@ -974,7 +969,9 @@ financeiro.forEach(f => {
                             if (dataFaturaGerada < dataHoje && dataFaturaGerada.getDate() !== dataHoje.getDate() || statusFatura === 'ATRASADO') { msgAlerta = `Atrasado desde ${String(dataFaturaGerada.getDate()).padStart(2,'0')}/${String(dataFaturaGerada.getMonth()+1).padStart(2,'0')}`; tema = 'rose'; }
                             else { msgAlerta = `Vence dia ${diaVenc}`; tema = 'amber'; }
                             const valorDaDivida = parseFloat(fatura.valor || 0);
-                            if (tema === 'rose') valorTotalAtrasado += valorDaDivida;
+                            
+                            // REMOVIDO: A dupla soma estava aqui, ela somava tudo que entrava na tela, sem filtrar o mês!
+                            
                             const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
                             const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
                             const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
@@ -1144,15 +1141,20 @@ financeiro.forEach(f => {
                             }
                         }
                         
-                        verificarAvisoGlobal();
+          verificarAvisoGlobal();
                         await carregarDashboard();
                     } else showToast("Equipe não encontrada", "error");
                 } catch(e) { console.error("Erro na autenticação:", e); showToast("Erro de conexão ao verificar usuário.", "error"); }
-            } else { window.location.href = "index.html"; }
-        });
+            } else { 
+                window.location.href = "index.html"; 
+            } 
+        }); // <--- ESTE É O FECHAMENTO CORRETO DO onAuthStateChanged
 
-        window.sairModoSuporte = function() { sessionStorage.removeItem('admin_impersonate'); window.location.href = "super_admin.html"; };
-        window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+        window.limparBusca = () => { 
+            const buscaInput = document.getElementById('input-busca');
+            if(buscaInput) buscaInput.value = ''; 
+            window.renderizarTabela(); 
+        };
     </script>
 </body>
 </html>
