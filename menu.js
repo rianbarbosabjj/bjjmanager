@@ -366,3 +366,15 @@ if (document.readyState === 'loading') {
 } else {
     carregarMenu();
 }
+window.atualizarMenuUI = function(nome, logoUrl) {
+    const txtNome = document.getElementById('nome-equipe');
+    if (txtNome) txtNome.innerText = nome.toUpperCase();
+
+    if (logoUrl) {
+        const containerLogo = document.getElementById('container-logo');
+        if (containerLogo) {
+            containerLogo.style.background = 'transparent';
+            containerLogo.innerHTML = `<img src="${logoUrl}" class="w-full h-full object-cover" alt="Logo" crossorigin="anonymous">`;
+        }
+    }
+};
