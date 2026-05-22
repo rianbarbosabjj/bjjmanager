@@ -622,9 +622,26 @@ window.entrarDemoPortal = async function() {
     btn.disabled = true;
 
     try {
-        // Autenticação direta via Firebase Auth, idêntica ao entrarNaDemo
-        await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
+        // 1. Faz a autenticação nativa do Firebase
+        const userCredential = await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
+        const user = userCredential.user;
+        
+        // 2. Pega o token de sessão oficial do Firebase
+        const token = await user.getIdToken();
+        
+        // 3. Monta o objeto do aluno (ajuste os campos se o seu portal exigir mais dados como "nome")
+        const alunoData = {
+            uid: user.uid,
+            email: user.email
+        };
+
+        // 4. Salva no localStorage exatamente nas chaves que o portal_aluno.html espera encontrar
+        localStorage.setItem('bjj_aluno_token', token);
+        localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoData));
+
+        // 5. Redireciona
         window.location.href = "portal_aluno.html";
+        
     } catch (error) {
         console.error("Erro ao acessar a demo do portal:", error);
         alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
