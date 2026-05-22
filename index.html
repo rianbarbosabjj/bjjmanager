@@ -615,33 +615,75 @@
             }
         };
 
-        window.entrarDemoPortal = async function(event) {
-            const btn = event.currentTarget;
-            const txtOriginal = btn.innerHTML;
+window.entrarDemoPortal = async function(event) {
+    const btn = event.currentTarget;
+    const txtOriginal = btn.innerHTML;
 
-            btn.innerHTML = "<span>⏳ Acessando...</span>";
-            btn.disabled = true;
+    btn.innerHTML = "<span>⏳ Acessando...</span>";
+    btn.disabled = true;
 
-            try {
-                await setPersistence(auth, browserLocalPersistence);
+    try {
+        await setPersistence(auth, browserLocalPersistence);
 
-                await signInWithEmailAndPassword(
-                    auth,
-                    "alunoteste1@gmail.com",
-                    "aluno01"
-                );
+        const userCredential = await signInWithEmailAndPassword(
+            auth,
+            "alunoteste1@gmail.com",
+            "aluno01"
+        );
+
+        const user = userCredential.user;
+        const uid = user.uid;
+
+        let alunoDoc = null;
+        let alunoId = uid;
+
+        const docRef = doc(db, "alunos", uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            alunoDoc = docSnap;
+        } else {
+            const q = query(
+                collection(db, "alunos"),
+                where("email", "==", user.email)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                alunoDoc = querySnapshot.docs[0];
+                alunoId = alunoDoc.id;
+            }
+        }
+
+        if (!alunoDoc) {
+            alert("Aluno teste não encontrado na coleção alunos. Verifique se o e-mail alunoteste1@gmail.com está cadastrado como aluno.");
+            btn.innerHTML = txtOriginal;
+            btn.disabled = false;
+            return;
+        }
+
+        const dadosAluno = alunoDoc.data();
+
+        const alunoLogado = {
+            id: alunoId,
+            ...dadosAluno
+        };
+
+        localStorage.setItem("bjj_aluno_token", user.accessToken);
+        localStorage.setItem("bjj_aluno_auth", JSON.stringify(alunoLogado));
 
         window.location.href = "portal_aluno.html";
 
-            } catch (error) {
-                console.error("Erro ao entrar na demo do Portal do Aluno:", error);
+    } catch (error) {
+        console.error("Erro ao entrar na demo do Portal do Aluno:", error);
 
-                alert("O ambiente de demonstração do Portal do Aluno está em manutenção. Tente novamente em alguns minutos.");
+        alert("O ambiente de demonstração do Portal do Aluno está em manutenção. Tente novamente em alguns minutos.");
 
-                btn.innerHTML = txtOriginal;
-                btn.disabled = false;
-            }
-        };
+        btn.innerHTML = txtOriginal;
+        btn.disabled = false;
+    }
+};
         function formatarPrecoPublico(valor, idMoeda, idPreco, idPeriodo) {
             const v = parseFloat(valor);
             if (v === 0) {
