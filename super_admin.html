@@ -1695,7 +1695,7 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
         // ==========================================
         // 🏥 MONITOR DE SAÚDE E ACADEMIAS
         // ==========================================
-        window.carregarImperio = async function() {
+window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
                 const snapPlanos = await getDoc(doc(db, "sistema", "config_planos"));
@@ -1704,10 +1704,9 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                 }
 
                 const snapEquipes = await getDocs(collection(db, "equipes"));
-                // 🔥 O FILTRO MÁGICO AQUI: Ignorar a conta Demo
-                equipesCache = snapEquipes.docs
-                    .map(d => ({ id: d.id, ...d.data() }))
-                    .filter(eq => eq.email_responsavel !== 'bjjmanager@teste.com.br');
+                
+                // 🔥 FILTRO REMOVIDO: Agora ele mapeia 100% das equipes cadastradas no banco
+                equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 const snapAlunos = await getDocs(collection(db, "alunos"));
                 const contagemAlunosPorEquipe = new Map();
