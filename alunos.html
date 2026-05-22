@@ -2045,7 +2045,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
         };
         
         // ===================== AUTENTICAÇÃO E INICIALIZAÇÃO =====================
-        onAuthStateChanged(auth, async (user) => { 
+onAuthStateChanged(auth, async (user) => { 
             if (user) { 
                 const tentarLimpar = setInterval(() => {
                     const aside = document.querySelector('aside');
@@ -2097,50 +2097,60 @@ async function carregarFrequenciaDoAluno(idAluno) {
                             window.equipeDados.nome = window.dadosEquipeCompleto.nome_equipe || window.dadosEquipeCompleto.nome || "Sua Equipe";
                             window.equipeDados.logo = window.dadosEquipeCompleto.url_logo || "";
 
-                            if (window.equipeDados.logo) {
-                                const injetarLogo = setInterval(() => {
-                                    const aside = document.querySelector('aside');
-                                    if (aside) {
-                                        let injetou = false;
+                            // === INÍCIO DA INJEÇÃO ATUALIZADA NO MENU ===
+                            const injetarDadosMenu = setInterval(() => {
+                                const aside = document.querySelector('aside');
+                                if (aside) {
+                                    let concluiu = false;
+
+                                    const txtNomePlanoMenu = document.getElementById('nome-equipe');
+                                    if (txtNomePlanoMenu) {
+                                        txtNomePlanoMenu.innerText = window.equipeDados.nome.toUpperCase();
+                                        concluiu = true;
+                                    }
+
+                                    if (window.equipeDados.logo) {
                                         const fallbackDivs = aside.querySelectorAll('div.rounded-full');
                                         fallbackDivs.forEach(div => {
                                             if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") {
                                                 div.innerHTML = `<img src="${window.equipeDados.logo}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`;
                                                 div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50');
                                                 div.classList.add('bg-transparent');
-                                                injetou = true;
+                                                concluiu = true;
                                             }
                                         });
                                         const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo');
                                         if (elLogoMenu) {
                                             elLogoMenu.style.background = 'transparent';
                                             elLogoMenu.innerHTML = `<img src="${window.equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`;
-                                            injetou = true;
+                                            concluiu = true;
                                         }
-                                        if (injetou) clearInterval(injetarLogo);
                                     }
-                                }, 300);
-                                setTimeout(() => clearInterval(injetarLogo), 5000); 
+
+                                    if (concluiu) clearInterval(injetarDadosMenu);
+                                }
+                            }, 300);
+                            setTimeout(() => clearInterval(injetarDadosMenu), 5000); 
+                            // === FIM DA INJEÇÃO ATUALIZADA ===
+                            
+                            const anoSelect = document.getElementById('ano-grafico');
+                            if(anoSelect) {
+                                const anoAtual = new Date().getFullYear();
+                                for (let i = anoAtual - 5; i <= anoAtual + 1; i++) {
+                                    const option = document.createElement('option');
+                                    option.value = i;
+                                    option.textContent = i;
+                                    if (i === anoAtual) option.selected = true;
+                                    anoSelect.appendChild(option);
+                                }
                             }
+                            
+                            await buscarAlunosFirebase(false);
+                            window.mudarAbaDashboard('lista');
+                        } else {
+                            const tabelaAlunos = document.getElementById('tabela-alunos');
+                            if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                         }
-                        
-                        const anoSelect = document.getElementById('ano-grafico');
-                        if(anoSelect) {
-                            const anoAtual = new Date().getFullYear();
-                            for (let i = anoAtual - 5; i <= anoAtual + 1; i++) {
-                                const option = document.createElement('option');
-                                option.value = i;
-                                option.textContent = i;
-                                if (i === anoAtual) option.selected = true;
-                                anoSelect.appendChild(option);
-                            }
-                        }
-                        
-                        await buscarAlunosFirebase(false);
-                        window.mudarAbaDashboard('lista');
-                    } else {
-                        const tabelaAlunos = document.getElementById('tabela-alunos');
-                        if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                     }
                 } catch(e) {
                     console.error("Erro na autenticação:", e);
@@ -2150,6 +2160,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
             } else { 
                 window.location.href = "index.html"; 
             } 
+        });
         });
 
         window.limparBusca = () => { 
