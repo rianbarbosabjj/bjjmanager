@@ -621,30 +621,17 @@
             btn.innerHTML = "<span>⏳ Entrando...</span>";
             btn.disabled = true;
 
-            const emailAluno = "alunoteste1@gmail.com";
-            const senhaAluno = "aluno01";
-
             try {
-                // ✅ ÚNICA FORMA PERMITIDA: Cloud Function
-                const validarLogin = httpsCallable(functions, 'validarAcessoAluno');
-                const result = await validarLogin({ email: emailAluno, senha: senhaAluno });
-                
-                if (result.data && result.data.success) {
-                    localStorage.setItem('bjj_aluno_token', result.data.token);
-                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(result.data.aluno));
-                    window.location.href = "portal_aluno.html";
-                } else {
-                    alert("❌ Conta de demonstração não encontrada. Entre em contato com o suporte.");
-                }
-            } catch (error) {
-                console.error("Erro ao acessar a demo do portal:", error);
-                alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
-            } finally {
-                btn.innerHTML = txtOriginal;
-                btn.disabled = false;
+        // Autenticação direta via Firebase Auth, idêntica ao entrarNaDemo
+            await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
+        window.location.href = "portal_aluno.html";
+        } catch (error) {
+            console.error("Erro ao acessar a demo do portal:", error);
+            alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
+            btn.innerHTML = txtOriginal;
+            btn.disabled = false;
             }
         };
-
         function formatarPrecoPublico(valor, idMoeda, idPreco, idPeriodo) {
             const v = parseFloat(valor);
             if (v === 0) {
