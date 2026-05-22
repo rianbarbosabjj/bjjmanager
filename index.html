@@ -622,24 +622,26 @@ window.entrarDemoPortal = async function() {
     btn.disabled = true;
 
     try {
-        // 1. Faz a autenticação nativa do Firebase
         const userCredential = await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
         const user = userCredential.user;
-        
-        // 2. Pega o token de sessão oficial do Firebase
         const token = await user.getIdToken();
         
-        // 3. Monta o objeto do aluno (ajuste os campos se o seu portal exigir mais dados como "nome")
+        // Vamos criar um objeto bem completo para passar pela validação do portal_aluno.html
         const alunoData = {
             uid: user.uid,
-            email: user.email
+            id: user.uid, // Algumas páginas usam 'id' em vez de 'uid'
+            email: user.email,
+            nome: "Atleta de Teste",
+            primeiro_nome: "Atleta",
+            faixa: "Azul",
+            graus: 2,
+            status: "ativo",
+            equipe_id: "demo123"
         };
 
-        // 4. Salva no localStorage exatamente nas chaves que o portal_aluno.html espera encontrar
         localStorage.setItem('bjj_aluno_token', token);
         localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoData));
 
-        // 5. Redireciona
         window.location.href = "portal_aluno.html";
         
     } catch (error) {
