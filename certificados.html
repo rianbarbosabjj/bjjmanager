@@ -888,8 +888,8 @@
             nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "SUA EQUIPE";
             cidadeEquipeLogada = dadosEquipe.endereco_cidade || dadosEquipe.cidade || "RIO DE JANEIRO";
 
-            if (typeof window.atualizarMenuUI === "function") {
-                window.atualizarMenuUI(nomeEquipeLogada, dadosEquipe.url_logo || "");
+            if (typeof window.atualizarMenuSeguro === "function") {
+                window.atualizarMenuSeguro(window.funcionalidadesEquipe || []);
             }
 
             const elNome = document.getElementById('nome-equipe');
