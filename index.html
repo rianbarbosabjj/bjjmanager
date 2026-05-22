@@ -615,23 +615,23 @@
             }
         };
 
-        window.entrarDemoPortal = async function() {
-            const btn = event.currentTarget;
-            const txtOriginal = btn.innerHTML;
-            btn.innerHTML = "<span>⏳ Entrando...</span>";
-            btn.disabled = true;
+window.entrarDemoPortal = async function() {
+    const btn = event.currentTarget;
+    const txtOriginal = btn.innerHTML;
+    btn.innerHTML = "<span>⏳ Entrando...</span>";
+    btn.disabled = true;
 
-            try {
+    try {
         // Autenticação direta via Firebase Auth, idêntica ao entrarNaDemo
-            await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
+        await signInWithEmailAndPassword(auth, "alunoteste1@gmail.com", "aluno01");
         window.location.href = "portal_aluno.html";
-        } catch (error) {
-            console.error("Erro ao acessar a demo do portal:", error);
-            alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
-            btn.innerHTML = txtOriginal;
-            btn.disabled = false;
-            }
-        };
+    } catch (error) {
+        console.error("Erro ao acessar a demo do portal:", error);
+        alert("Não foi possível acessar a demonstração do Portal do Aluno no momento.\nTente novamente mais tarde ou contate o suporte.");
+        btn.innerHTML = txtOriginal;
+        btn.disabled = false;
+    }
+};
         function formatarPrecoPublico(valor, idMoeda, idPreco, idPeriodo) {
             const v = parseFloat(valor);
             if (v === 0) {
