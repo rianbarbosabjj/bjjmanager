@@ -687,18 +687,13 @@
     <div id="wrapper-render" class="absolute top-[-9999px] left-[-9999px] opacity-0 pointer-events-none"></div>
 
     <script src="menu.js"></script>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function escapeHtml(texto) {
-            if (!texto) return '';
-            const div = document.createElement('div');
-            div.textContent = texto;
-            return div.innerHTML;
-        }
-
+        // ---------- CONFIGURAÇÃO FIREBASE ----------
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
             authDomain: "bjj-maneger.firebaseapp.com",
@@ -712,83 +707,60 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // ---------- VARIÁVEIS GLOBAIS DO MÓDULO ----------
         let uid = null;
         let alunosCache = [];
-        let serialEquipeAtual = 427; 
+        let serialEquipeAtual = 427;
         let qrcodeObj = null;
-
         let nomeEquipeLogada = "SUA EQUIPE";
-        let cidadeEquipeLogada = "RIO DE JANEIRO"; 
-        let logoBase64Global = null; 
+        let cidadeEquipeLogada = "RIO DE JANEIRO";
+        let logoBase64Global = null;
         let customLogoBase64 = null;
         let customSeloBase64 = null;
         let fichasDisponiveis = 0;
         let isLoading = false;
 
         const CACHE_KEYS = { ALUNOS: 'bjj_cert_alunos_cache', EQUIPE: 'bjj_cert_equipe_cache' };
-        const CACHE_TTL = 5 * 60 * 1000;
+        const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
-        function saveToCache(key, data) {
-            try { localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: CACHE_TTL })); } catch(e) {}
+        // ---------- FUNÇÕES AUXILIARES ----------
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            const div = document.createElement('div');
+            div.textContent = texto;
+            return div.innerHTML;
         }
 
-        function getFromCache(key) {
-            try {
-                const cached = localStorage.getItem(key);
-                if (!cached) return null;
-                const { data, timestamp, ttl } = JSON.parse(cached);
-                if (Date.now() - timestamp > ttl) { localStorage.removeItem(key); return null; }
-                return data;
-            } catch(e) { return null; }
-        }
-
-        function clearCache() { 
-            localStorage.removeItem(CACHE_KEYS.ALUNOS); 
-            localStorage.removeItem(CACHE_KEYS.EQUIPE); 
-        }
-
-        function showLoading() { 
-            const overlay = document.getElementById('loading-overlay'); 
+        function showLoading() {
+            const overlay = document.getElementById('loading-overlay');
             if (overlay) {
-                overlay.classList.remove('hidden'); 
-                overlay.classList.add('flex'); 
-            }
-        }
-        function hideLoading() { 
-            const overlay = document.getElementById('loading-overlay'); 
-            if (overlay) {
-                overlay.classList.add('hidden'); 
-                overlay.classList.remove('flex'); 
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
             }
         }
 
-        window.showToast = function(message, type = 'error') {
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }
+        }
+
+        function showToast(message, type = 'error') {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : (type === 'warning' ? 'bg-amber-500' : 'bg-slate-800'));
-            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : (type === 'warning' ? '⚠️' : 'ℹ️'));
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
-            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : '🚨'}</span> <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
-            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
         }
-
-        window.manualRefreshCertificados = async function() {
-            if (isLoading) return;
-            isLoading = true;
-            showLoading();
-            clearCache();
-            try {
-                await Promise.all([carregarInfoEquipe(true), carregarAlunos(true)]);
-                showToast("Dados atualizados com sucesso!", "success");
-            } catch (error) {
-                showToast("Erro ao atualizar dados", "error");
-            } finally {
-                hideLoading();
-                isLoading = false;
-            }
-        };
 
         function ajustarTamanhoTexto(elemento, tamanhoMaximo, larguraMaxima, tamanhoMinimo = 15) {
             if (!elemento) return;
@@ -805,16 +777,16 @@
 
         function formatarNome(nome, isCursive) {
             if (!nome) return "";
-            if (!isCursive) return nome.toUpperCase(); 
+            if (!isCursive) return nome.toUpperCase();
             const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
             return nome.toLowerCase().split(/\s+/).map((palavra, index) => {
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
-                return palavra; 
+                return palavra;
             }).join(' ');
         }
-        
+
         function formatarNomeInteligente(nome) {
             if (!nome) return "";
             const excecoes = ['da', 'de', 'do', 'das', 'dos', 'e'];
@@ -822,62 +794,74 @@
                 if (index === 0 || !excecoes.includes(palavra)) {
                     return palavra.charAt(0).toUpperCase() + palavra.slice(1);
                 }
-                return palavra; 
+                return palavra;
             }).join(' ');
         }
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const tentarLimpar = setInterval(() => {
-                    const aside = document.querySelector('aside');
-                    if (aside) {
-                        const elementos = aside.querySelectorAll('p, span, h4');
-                        elementos.forEach(el => {
-                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
-                            if (el.innerText.includes('ACESSANDO')) {
-                                el.innerText = 'ADMINISTRADOR';
-                                el.classList.remove('animate-pulse');
-                                el.style.opacity = "1";
-                            }
-                        });
-                        clearInterval(tentarLimpar);
-                    }
-                }, 300);
-                setTimeout(() => clearInterval(tentarLimpar), 5000);
+        function saveToCache(key, data) {
+            try { localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: CACHE_TTL })); } catch(e) {}
+        }
 
-                let isSuper = false;
-                try { const superSnap = await getDoc(doc(db, "super_admins", user.uid)); if (superSnap.exists()) isSuper = true; } catch(e) {}
+        function getFromCache(key) {
+            try {
+                const cached = localStorage.getItem(key);
+                if (!cached) return null;
+                const { data, timestamp, ttl } = JSON.parse(cached);
+                if (Date.now() - timestamp > ttl) {
+                    localStorage.removeItem(key);
+                    return null;
+                }
+                return data;
+            } catch(e) { return null; }
+        }
 
-                try {
-                    if (isSuper) {
-                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                        if (equipeImpersonada) uid = equipeImpersonada; else { window.location.href = "super_admin.html"; return; }
-                    } else {
-                        uid = user.uid;
-                        const docMestre = await getDoc(doc(db, "equipes", uid));
-                        if (!docMestre.exists()) {
-                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                            if(colabSnap.exists()) uid = colabSnap.data().equipe_id;
-                        }
-                    }
+        function clearCache() {
+            localStorage.removeItem(CACHE_KEYS.ALUNOS);
+            localStorage.removeItem(CACHE_KEYS.EQUIPE);
+        }
 
-                    await carregarInfoEquipe();
-                    await carregarAlunos();
-                    carregarPadroes();
-                    document.getElementById('entry-data').valueAsDate = new Date();
-                    
-                    if (!qrcodeObj) {
-                        qrcodeObj = new QRCode(document.getElementById("cert-qr-container"), { width: 60, height: 60, colorDark : "#1E293B", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
-                    }
+        function getImagemEscolhida(valor) {
+            if (valor === 'equipe') return logoBase64Global;
+            if (valor === 'extra') return customLogoBase64;
+            return null;
+        }
 
-                    window.atualizarPreviewLive();
+        function getCoresFaixa(faixaStr) {
+            const f = faixaStr.toLowerCase();
+            const cores = {
+                branca: '#FFFFFF',
+                cinza: '#64748B',
+                amarela: '#FFD700',
+                laranja: '#EA580C',
+                verde: '#15803D',
+                azul: '#1D4ED8',
+                roxa: '#6B21A8',
+                marrom: '#5C4033',
+                preta: '#0F172A'
+            };
 
-                } catch (error) { console.log(error); }
-            } else {
-                window.location.href = "index.html";
-            }
-        });
+            if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza };
+            if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza };
+            if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela };
+            if (f.includes('amarela e preta')) return { fill: cores.preta, stroke: cores.amarela };
+            if (f.includes('laranja e branca')) return { fill: cores.branca, stroke: cores.laranja };
+            if (f.includes('laranja e preta')) return { fill: cores.preta, stroke: cores.laranja };
+            if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde };
+            if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde };
 
+            if (f.includes('preta')) return { fill: cores.preta, stroke: null };
+            if (f.includes('marrom')) return { fill: cores.marrom, stroke: null };
+            if (f.includes('roxa')) return { fill: cores.roxa, stroke: null };
+            if (f.includes('azul')) return { fill: cores.azul, stroke: null };
+            if (f.includes('verde')) return { fill: cores.verde, stroke: null };
+            if (f.includes('laranja')) return { fill: cores.laranja, stroke: null };
+            if (f.includes('amarela')) return { fill: cores.amarela, stroke: null };
+            if (f.includes('cinza')) return { fill: cores.cinza, stroke: null };
+            if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8' };
+            return { fill: '#B38728', stroke: null };
+        }
+
+        // ---------- CARREGAMENTO DE DADOS ----------
         async function carregarInfoEquipe(forceRefresh = false) {
             if (!forceRefresh) {
                 const cached = getFromCache(CACHE_KEYS.EQUIPE);
@@ -886,7 +870,6 @@
                     return;
                 }
             }
-            
             try {
                 const docSnap = await getDoc(doc(db, "equipes", uid));
                 if (docSnap.exists()) {
@@ -894,7 +877,7 @@
                     aplicarDadosEquipe(dadosEquipe);
                     saveToCache(CACHE_KEYS.EQUIPE, dadosEquipe);
                 }
-            } catch (error) { console.log(error); }
+            } catch (error) { console.error("Erro ao carregar equipe:", error); }
         }
 
         function aplicarDadosEquipe(dadosEquipe) {
@@ -902,19 +885,19 @@
             fichasDisponiveis = parseInt(dadosEquipe.creditos_certificados) || 0;
             document.getElementById('display-fichas').innerText = `${fichasDisponiveis}`;
 
-            nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || dadosEquipe.equipe || "SUA EQUIPE";
-            
-            if (dadosEquipe.endereco_cidade) cidadeEquipeLogada = dadosEquipe.endereco_cidade;
-            else if (dadosEquipe.cidade) cidadeEquipeLogada = dadosEquipe.cidade;
-            else if (dadosEquipe.cidade_equipe) cidadeEquipeLogada = dadosEquipe.cidade_equipe;
-            else if (dadosEquipe.municipio) cidadeEquipeLogada = dadosEquipe.municipio;
-            else if (dadosEquipe.localidade) cidadeEquipeLogada = dadosEquipe.localidade;
-            else cidadeEquipeLogada = "RIO DE JANEIRO";
+            nomeEquipeLogada = dadosEquipe.nome_equipe || dadosEquipe.nome || "SUA EQUIPE";
+            cidadeEquipeLogada = dadosEquipe.endereco_cidade || dadosEquipe.cidade || "RIO DE JANEIRO";
 
-            const logoEquipeOficial = dadosEquipe.url_logo || dadosEquipe.logo || dadosEquipe.foto_equipe || null;
+            if (typeof window.atualizarMenuUI === "function") {
+                window.atualizarMenuUI(nomeEquipeLogada, dadosEquipe.url_logo || "");
+            }
 
+            const elNome = document.getElementById('nome-equipe');
+            if(elNome) elNome.innerText = nomeEquipeLogada.toUpperCase();
+
+            // Carregar logo oficial como base64
+            const logoEquipeOficial = dadosEquipe.url_logo || null;
             if (logoEquipeOficial) {
-                logoBase64Global = logoEquipeOficial; 
                 (async () => {
                     try {
                         const respLogo = await fetch(logoEquipeOficial);
@@ -928,28 +911,9 @@
                         }
                     } catch(e) {}
                 })();
+            } else {
+                logoBase64Global = null;
             }
-
-            setTimeout(() => {
-                try {
-                    const elementosTexto = document.querySelectorAll('span, p, div, h1, h2, h3, h4, h5, h6');
-                    elementosTexto.forEach(el => {
-                        if (el.childNodes.length === 1 && el.innerText && el.innerText.trim().toUpperCase() === 'SUA EQUIPE') {
-                            el.innerText = nomeEquipeLogada.toUpperCase();
-                        }
-                    });
-
-                    if (logoEquipeOficial) {
-                        elementosTexto.forEach(el => {
-                            if (el.childNodes.length === 1 && el.innerText && el.innerText.trim() === 'S') {
-                                el.innerHTML = `<img src="${escapeHtml(logoEquipeOficial)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" alt="Logo da Equipe">`;
-                                el.style.padding = '0';
-                                el.style.backgroundColor = 'transparent';
-                            }
-                        });
-                    }
-                } catch(err) { console.log("Erro ao atualizar menu lateral:", err); }
-            }, 800);
         }
 
         async function carregarAlunos(forceRefresh = false) {
@@ -961,92 +925,118 @@
                     return;
                 }
             }
-            
             try {
                 const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
                 const snap = await getDocs(q);
-                alunosCache = [];
-                snap.forEach(docSnap => { alunosCache.push({ id: docSnap.id, ...docSnap.data() }); });
+                alunosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
                 saveToCache(CACHE_KEYS.ALUNOS, alunosCache);
                 atualizarComboAlunos();
-            } catch (err) {}
+            } catch (error) { console.error("Erro ao carregar alunos:", error); }
         }
 
         function atualizarComboAlunos() {
             const combo = document.getElementById('combo-aluno');
+            if (!combo) return;
             combo.innerHTML = '<option value="">Selecione um atleta...</option>';
             alunosCache.forEach(a => {
                 const opt = document.createElement('option');
-                opt.value = a.id; opt.text = a.nome; combo.appendChild(opt);
+                opt.value = a.id;
+                opt.text = a.nome;
+                combo.appendChild(opt);
             });
         }
 
-        window.aoSelecionarAluno = function() {
+        // ---------- EVENTOS DE UI ----------
+        function aoSelecionarAluno() {
             const id = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === id);
-            if(aluno) {
+            if (aluno) {
                 const selectFaixa = document.getElementById('combo-faixa');
                 Array.from(selectFaixa.options).forEach(opt => {
-                    if(opt.value.toLowerCase() === (aluno.faixa||'').toLowerCase()) opt.selected = true;
+                    if (opt.value.toLowerCase() === (aluno.faixa || '').toLowerCase()) opt.selected = true;
                 });
             }
-            window.atualizarPreviewLive();
+            atualizarPreviewLive();
         }
 
+        function carregarLogoCustomizada(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customLogoBase64 = e.target.result;
+                    atualizarPreviewLive();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                customLogoBase64 = null;
+                atualizarPreviewLive();
+            }
+        }
+
+        function carregarSeloCustomizado(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customSeloBase64 = e.target.result;
+                    atualizarPreviewLive();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                customSeloBase64 = null;
+                atualizarPreviewLive();
+            }
+        }
+
+        // ---------- PADRÕES E PREVIEW ----------
         function carregarPadroes() {
             const memoria = localStorage.getItem("bjj_cert_padroes_v33");
             
             let prefixo = "";
             let nLimpo = nomeEquipeLogada.toUpperCase();
-            if(!nLimpo.includes("EQUIPE") && !nLimpo.includes("TEAM") && !nLimpo.includes("ACADEMIA") && !nLimpo.includes("PROJETO") && !nLimpo.includes("ASSOCIAÇÃO")) {
+            if (!nLimpo.includes("EQUIPE") && !nLimpo.includes("TEAM") && !nLimpo.includes("ACADEMIA") && !nLimpo.includes("PROJETO") && !nLimpo.includes("ASSOCIAÇÃO")) {
                 prefixo = "A EQUIPE ";
             } else if (!nLimpo.startsWith("A ") && !nLimpo.startsWith("O ")) {
                 prefixo = "A ";
             }
             const textoPadraoDinamico = `${prefixo}${nLimpo} RECONHECE QUE`;
 
-            if(memoria) {
+            if (memoria) {
                 try {
                     const p = JSON.parse(memoria);
-                    if(p.resp_n) document.getElementById('resp-nome').value = p.resp_n;
-                    if(p.resp_g) document.getElementById('resp-grad').value = p.resp_g;
-                    if(p.prof_n) document.getElementById('prof-nome').value = p.prof_n;
-                    if(p.prof_g) document.getElementById('prof-grad').value = p.prof_g;
+                    document.getElementById('resp-nome').value = p.resp_n || '';
+                    document.getElementById('resp-grad').value = p.resp_g || '';
+                    document.getElementById('prof-nome').value = p.prof_n || '';
+                    document.getElementById('prof-grad').value = p.prof_g || '';
                     
-                    if (p.txt1 && !p.txt1.includes("SUA EQUIPE") && !p.txt1.includes("BJJ manager") && !p.txt1.includes("EQUIPE EQUIPE")) {
-                        document.getElementById('cfg-texto1').value = p.txt1;
-                    } else {
-                        document.getElementById('cfg-texto1').value = textoPadraoDinamico;
-                    }
-                    
-                    document.getElementById('cfg-texto2').value = p.txt2 ? p.txt2 : "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
-                    document.getElementById('cfg-texto3').value = p.txt3 ? p.txt3 : "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
-                    
-                    if(p.tema) {
+                    document.getElementById('cfg-texto1').value = (p.txt1 && !p.txt1.includes("SUA EQUIPE") && !p.txt1.includes("BJJ manager")) ? p.txt1 : textoPadraoDinamico;
+                    document.getElementById('cfg-texto2').value = p.txt2 || "APÓS TER CUMPRIDO TODOS OS REQUISITOS E DEMONSTRADO A PROFICIÊNCIA EXIGIDA";
+                    document.getElementById('cfg-texto3').value = p.txt3 || "COM TODOS OS DIREITOS, HONRAS E PRIVILÉGIOS INERENTES A ESSA GRADUAÇÃO";
+
+                    if (p.tema) {
                         document.getElementById('cfg-tema').value = p.tema;
-                        if(p.tema === 'custom' && p.corCustom) {
+                        if (p.tema === 'custom' && p.corCustom) {
                             document.getElementById('cfg-cor-custom').value = p.corCustom;
                         }
                     }
-                    if(p.estiloBorda) document.getElementById('cfg-estilo-borda').value = p.estiloBorda;
-                    if(p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
-                    if(p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
-                    if(p.fonteNome) document.getElementById('cfg-fonte-nome').value = p.fonteNome;
-                    
-                    if(p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
-                    if(p.posDir) document.getElementById('pos-dir').value = p.posDir;
-                    if(p.posWater) document.getElementById('pos-water').value = p.posWater;
-                    
-                    if(p.textura) document.getElementById('cfg-textura').value = p.textura;
-                    if(p.sombraTitulo) document.getElementById('cfg-sombra-titulo').value = p.sombraTitulo;
+                    if (p.estiloBorda) document.getElementById('cfg-estilo-borda').value = p.estiloBorda;
+                    if (p.fonteTitulo) document.getElementById('cfg-fonte-titulo').value = p.fonteTitulo;
+                    if (p.fonteTexto) document.getElementById('cfg-fonte-texto').value = p.fonteTexto;
+                    if (p.fonteNome) document.getElementById('cfg-fonte-nome').value = p.fonteNome;
+                    if (p.posEsq) document.getElementById('pos-esq').value = p.posEsq;
+                    if (p.posDir) document.getElementById('pos-dir').value = p.posDir;
+                    if (p.posWater) document.getElementById('pos-water').value = p.posWater;
+                    if (p.textura) document.getElementById('cfg-textura').value = p.textura;
+                    if (p.sombraTitulo) document.getElementById('cfg-sombra-titulo').value = p.sombraTitulo;
                 } catch(e) {}
             } else {
                 document.getElementById('cfg-texto1').value = textoPadraoDinamico;
-            }     
+            }
         }
 
-        window.salvarPadroes = function() {
+        function salvarPadroes() {
             const padroes = {
                 resp_n: document.getElementById('resp-nome').value,
                 resp_g: document.getElementById('resp-grad').value,
@@ -1071,83 +1061,14 @@
             showToast("Padrões salvos com sucesso!", "success");
         }
 
-        window.carregarLogoCustomizada = function(event) {
-            const file = event.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    customLogoBase64 = e.target.result;
-                    window.atualizarPreviewLive();
-                }
-                reader.readAsDataURL(file);
-            } else {
-                customLogoBase64 = null;
-                window.atualizarPreviewLive();
-            }
-        }
-
-        window.carregarSeloCustomizado = function(event) {
-            const file = event.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    customSeloBase64 = e.target.result;
-                    window.atualizarPreviewLive();
-                }
-                reader.readAsDataURL(file);
-            } else {
-                customSeloBase64 = null;
-                window.atualizarPreviewLive();
-            }
-        }
-
-        function getImagemEscolhida(valor) {
-            if (valor === 'equipe') return logoBase64Global;
-            if (valor === 'extra') return customLogoBase64;
-            return null;
-        }
-
-        function getCoresFaixa(faixaStr) {
-            const f = faixaStr.toLowerCase();
-            const cores = {
-                branca: '#FFFFFF',
-                cinza: '#64748B', 
-                amarela: '#FFD700', 
-                laranja: '#EA580C', 
-                verde: '#15803D', 
-                azul: '#1D4ED8', 
-                roxa: '#6B21A8', 
-                marrom: '#5C4033', 
-                preta: '#0F172A' 
-            };
-
-            if (f.includes('cinza e branca')) return { fill: cores.branca, stroke: cores.cinza };
-            if (f.includes('cinza e preta')) return { fill: cores.preta, stroke: cores.cinza };
-            if (f.includes('amarela e branca')) return { fill: cores.branca, stroke: cores.amarela };
-            if (f.includes('amarela e preta')) return { fill: cores.preta, stroke: cores.amarela };
-            if (f.includes('laranja e branca')) return { fill: cores.branca, stroke: cores.laranja };
-            if (f.includes('laranja e preta')) return { fill: cores.preta, stroke: cores.laranja };
-            if (f.includes('verde e branca')) return { fill: cores.branca, stroke: cores.verde };
-            if (f.includes('verde e preta')) return { fill: cores.preta, stroke: cores.verde };
-
-            if (f.includes('preta')) return { fill: cores.preta, stroke: null };
-            if (f.includes('marrom')) return { fill: cores.marrom, stroke: null };
-            if (f.includes('roxa')) return { fill: cores.roxa, stroke: null };
-            if (f.includes('azul')) return { fill: cores.azul, stroke: null };
-            if (f.includes('verde')) return { fill: cores.verde, stroke: null };
-            if (f.includes('laranja')) return { fill: cores.laranja, stroke: null };
-            if (f.includes('amarela')) return { fill: cores.amarela, stroke: null };
-            if (f.includes('cinza')) return { fill: cores.cinza, stroke: null };
-            if (f.includes('branca')) return { fill: cores.branca, stroke: '#94A3B8' }; 
-            return { fill: '#B38728', stroke: null }; 
-        }
-
-        window.atualizarPreviewLive = function() {
+        function atualizarPreviewLive() {
             const certRender = document.getElementById('certificado-render');
-            
+            if (!certRender) return;
+
+            // Tema e cor
             const tema = document.getElementById('cfg-tema').value;
             const inputCorCustom = document.getElementById('cfg-cor-custom');
-            let corDestaque = "#D4AF37"; 
+            let corDestaque = "#D4AF37";
             let gradMetalico = "linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)";
 
             if (tema === 'custom') {
@@ -1167,10 +1088,11 @@
                     gradMetalico = "linear-gradient(135deg, #0F172A, #334155, #0F172A, #475569, #0F172A)";
                 }
             }
-            
+
             certRender.style.setProperty('--cor-destaque', corDestaque);
             certRender.style.setProperty('--grad-metalico', gradMetalico);
 
+            // Borda
             const estiloBorda = document.getElementById('cfg-estilo-borda').value;
             const cantos = document.querySelectorAll('.cert-corner');
             const metalBorder = document.getElementById('render-border-metal');
@@ -1183,7 +1105,7 @@
                 innerBorder.style.boxShadow = 'inset 0 0 0 8px var(--fundo-inner), inset 0 0 0 9px var(--cor-destaque)';
             } else if (estiloBorda === 'moderna') {
                 cantos.forEach(c => c.style.display = 'none');
-                metalBorder.style.padding = '8px'; 
+                metalBorder.style.padding = '8px';
                 innerBorder.style.border = 'none';
                 innerBorder.style.boxShadow = 'none';
             } else if (estiloBorda === 'dupla') {
@@ -1198,6 +1120,7 @@
                 innerBorder.style.boxShadow = 'none';
             }
 
+            // Textura
             const texturasMap = {
                 'aged-paper': 'https://www.transparenttextures.com/patterns/cream-paper.png',
                 'cream-paper': 'https://www.transparenttextures.com/patterns/white-paper.png',
@@ -1207,176 +1130,146 @@
 
             const texturaSel = document.getElementById('cfg-textura').value;
             const divTextura = document.getElementById('render-textura');
-            
             let fundoOuter = "#FFFFFF";
             let fundoInner = "#FFFFFF";
             let opacidadeManchas = "0";
 
             if (texturaSel === 'none') {
                 divTextura.style.backgroundImage = 'none';
-                fundoOuter = "#FFFFFF";
-                fundoInner = "#FFFFFF";
             } else {
                 divTextura.style.backgroundImage = `url('${texturasMap[texturaSel]}')`;
-                
                 if (texturaSel === 'aged-paper') {
-                    fundoOuter = "#E8E5DF"; 
-                    fundoInner = "#FCFAF2"; 
-                    opacidadeManchas = "0.75"; 
-                    divTextura.style.opacity = '0.5';
-                    divTextura.style.mixBlendMode = 'multiply';
-                    divTextura.style.backgroundSize = 'auto';
+                    fundoOuter = "#E8E5DF"; fundoInner = "#FCFAF2"; opacidadeManchas = "0.75";
+                    divTextura.style.opacity = '0.5'; divTextura.style.mixBlendMode = 'multiply'; divTextura.style.backgroundSize = 'auto';
                 } else if (texturaSel === 'cream-paper') {
-                    fundoOuter = "#F0EBE1";
-                    fundoInner = "#FDFBF7"; 
-                    divTextura.style.opacity = '0.5';
-                    divTextura.style.mixBlendMode = 'multiply';
-                    divTextura.style.backgroundSize = 'auto';
+                    fundoOuter = "#F0EBE1"; fundoInner = "#FDFBF7";
+                    divTextura.style.opacity = '0.5'; divTextura.style.mixBlendMode = 'multiply'; divTextura.style.backgroundSize = 'auto';
                 } else if (texturaSel === 'white-wall') {
-                    fundoOuter = "#E2E8F0";
-                    fundoInner = "#F8FAFC"; 
-                    divTextura.style.opacity = '0.35'; 
-                    divTextura.style.mixBlendMode = 'multiply';
-                    divTextura.style.filter = 'contrast(250%) brightness(0.9)'; 
-                    divTextura.style.backgroundSize = '400px'; 
+                    fundoOuter = "#E2E8F0"; fundoInner = "#F8FAFC";
+                    divTextura.style.opacity = '0.35'; divTextura.style.mixBlendMode = 'multiply'; divTextura.style.filter = 'contrast(250%) brightness(0.9)'; divTextura.style.backgroundSize = '400px';
                 } else if (texturaSel === 'woven') {
-                    fundoOuter = "#FFFFFF";
-                    fundoInner = "#FFFFFF"; 
-                    divTextura.style.opacity = '0.04'; 
-                    divTextura.style.mixBlendMode = 'normal'; 
-                    divTextura.style.backgroundSize = 'auto';
+                    fundoOuter = "#FFFFFF"; fundoInner = "#FFFFFF";
+                    divTextura.style.opacity = '0.04'; divTextura.style.mixBlendMode = 'normal'; divTextura.style.backgroundSize = 'auto';
                 }
             }
-            
+
             certRender.style.setProperty('--fundo-outer', fundoOuter);
             certRender.style.setProperty('--fundo-inner', fundoInner);
             certRender.style.setProperty('--opacidade-manchas', opacidadeManchas);
 
+            // Aluno
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
-            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta"; 
-            
+            const nomeAtleta = aluno ? aluno.nome : "Nome do Atleta";
+
             const faixaBase = document.getElementById('combo-faixa').value;
             const grauAdd = document.getElementById('combo-grau').value;
             const faixaTexto = grauAdd ? `${faixaBase} - ${grauAdd.toUpperCase()}` : faixaBase.toUpperCase();
 
             const dataRaw = document.getElementById('entry-data').value;
-            
             let dt;
-            if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }
+            if (dataRaw && dataRaw.includes('-')) {
+                const p = dataRaw.split('-'); dt = new Date(p[0], p[1] - 1, p[2]);
+            } else { dt = new Date(); }
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
             const dataExtenso = `${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            document.getElementById('render-data').innerText = `${cidadeEquipeLogada ? cidadeEquipeLogada.toUpperCase() : 'RIO DE JANEIRO'}, ${dataExtenso}`;
-            
-            const corDaFaixa = getCoresFaixa(faixaBase); 
+            document.getElementById('render-data').innerText = `${cidadeEquipeLogada.toUpperCase()}, ${dataExtenso}`;
+
+            const corDaFaixa = getCoresFaixa(faixaBase);
             const elFaixaCor = document.getElementById('render-faixa-cor');
             elFaixaCor.innerText = faixaTexto;
             elFaixaCor.style.color = corDaFaixa.fill;
-            
             if (corDaFaixa.stroke) {
                 const s = corDaFaixa.stroke;
-                elFaixaCor.style.textShadow = `
-                    -1.5px -1.5px 0 ${s}, 1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 1.5px 1.5px 0 ${s}, 
-                    -2px 0 0 ${s}, 2px 0 0 ${s}, 0 -2px 0 ${s}, 0 2px 0 ${s},
-                    0px 3px 5px rgba(0,0,0,0.15)
-                `;
+                elFaixaCor.style.textShadow = `-1.5px -1.5px 0 ${s}, 1.5px -1.5px 0 ${s}, -1.5px 1.5px 0 ${s}, 1.5px 1.5px 0 ${s}, -2px 0 0 ${s}, 2px 0 0 ${s}, 0 -2px 0 ${s}, 0 2px 0 ${s}, 0px 3px 5px rgba(0,0,0,0.15)`;
             } else {
                 elFaixaCor.style.textShadow = 'none';
             }
 
-            const textoInput1 = document.getElementById('cfg-texto1').value;
-            document.getElementById('render-texto1').innerText = textoInput1.toUpperCase();
-            
+            document.getElementById('render-texto1').innerText = (document.getElementById('cfg-texto1').value || "").toUpperCase();
             document.getElementById('render-texto2').innerText = (document.getElementById('cfg-texto2').value || "").toUpperCase();
             document.getElementById('render-texto3').innerText = (document.getElementById('cfg-texto3').value || "").toUpperCase();
-            
+
             const ass1Nome = formatarNomeInteligente(document.getElementById('resp-nome').value) || "Professor Responsável";
             const ass2Nome = formatarNomeInteligente(document.getElementById('prof-nome').value) || "Professor";
-            
             document.getElementById('render-ass1-nome').innerText = ass1Nome;
             document.getElementById('render-ass1-grad').innerText = (document.getElementById('resp-grad').value || "Grau").toUpperCase();
-            
             document.getElementById('render-ass2-nome').innerText = ass2Nome;
             document.getElementById('render-ass2-grad').innerText = (document.getElementById('prof-grad').value || "Grau").toUpperCase();
 
+            // Logos
             const valEsq = document.getElementById('pos-esq').value;
             const srcEsq = getImagemEscolhida(valEsq);
-            const elEsq = document.getElementById('render-logo-esq');
-            if (srcEsq) elEsq.src = escapeHtml(srcEsq);
-            document.getElementById('wrapper-logo-esq').style.display = 'flex'; 
+            document.getElementById('render-logo-esq').src = srcEsq || '';
             document.getElementById('wrapper-logo-esq').style.visibility = (srcEsq && valEsq !== 'nenhuma') ? 'visible' : 'hidden';
 
             const valDir = document.getElementById('pos-dir').value;
             const srcDir = getImagemEscolhida(valDir);
-            const elDir = document.getElementById('render-logo-dir');
-            if (srcDir) elDir.src = escapeHtml(srcDir);
-            document.getElementById('wrapper-logo-dir').style.display = 'flex'; 
+            document.getElementById('render-logo-dir').src = srcDir || '';
             document.getElementById('wrapper-logo-dir').style.visibility = (srcDir && valDir !== 'nenhuma') ? 'visible' : 'hidden';
 
+            // Marca d'água
             const imgWater = document.getElementById('render-watermark');
-            const valWater = document.getElementById('pos-water') ? document.getElementById('pos-water').value : 'equipe';
+            const valWater = document.getElementById('pos-water')?.value || 'equipe';
             const srcWater = getImagemEscolhida(valWater);
             if (srcWater && valWater !== 'nenhuma') {
-                imgWater.src = escapeHtml(srcWater);
+                imgWater.src = srcWater;
                 imgWater.classList.remove('hidden');
             } else {
                 imgWater.classList.add('hidden');
             }
 
+            // Selo
             const elSelo = document.getElementById('render-selo-img');
             if (customSeloBase64) {
-                elSelo.src = escapeHtml(customSeloBase64);
+                elSelo.src = customSeloBase64;
                 elSelo.classList.remove('hidden');
             } else {
                 elSelo.classList.add('hidden');
             }
 
+            // Fontes
             const fonteTitulo = document.getElementById('cfg-fonte-titulo').value;
             const fonteNome = document.getElementById('cfg-fonte-nome').value;
             const fonteTexto = document.getElementById('cfg-fonte-texto').value;
             const sombraTitulo = document.getElementById('cfg-sombra-titulo').value;
-            
+
             const elTitulo = document.getElementById('render-titulo');
             elTitulo.style.fontFamily = fonteTitulo;
-            
-            let maxFontSizeTitulo = 55; 
+            let maxFontSizeTitulo = 55;
             if (fonteTitulo.includes('cursive') || fonteTitulo.includes('Pinyon') || fonteTitulo.includes('Parisienne') || fonteTitulo.includes('Alex Brush') || fonteTitulo.includes('Dancing') || fonteTitulo.includes('Great Vibes') || fonteTitulo.includes('Tangerine')) {
-                elTitulo.style.textTransform = 'none'; 
-                elTitulo.style.letterSpacing = '1px';
-                if (fonteTitulo.includes('Pinyon')) maxFontSizeTitulo = 130; 
+                elTitulo.style.textTransform = 'none'; elTitulo.style.letterSpacing = '1px';
+                if (fonteTitulo.includes('Pinyon')) maxFontSizeTitulo = 130;
                 else if (fonteTitulo.includes('Tangerine')) maxFontSizeTitulo = 110;
                 else maxFontSizeTitulo = 95;
             } else {
-                elTitulo.style.textTransform = 'uppercase';
-                elTitulo.style.letterSpacing = '5px';
-                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) maxFontSizeTitulo = 55; 
-                else maxFontSizeTitulo = 60; 
+                elTitulo.style.textTransform = 'uppercase'; elTitulo.style.letterSpacing = '5px';
+                if (fonteTitulo.includes('Playfair') || fonteTitulo.includes('Oswald')) maxFontSizeTitulo = 55;
+                else maxFontSizeTitulo = 60;
             }
 
             if (sombraTitulo === 'leve') elTitulo.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
             else if (sombraTitulo === 'forte') elTitulo.style.textShadow = '4px 4px 6px rgba(0,0,0,0.6)';
             else if (sombraTitulo === 'brilho') elTitulo.style.textShadow = `0 0 10px ${corDestaque}, 0 0 20px ${corDestaque}`;
             else elTitulo.style.textShadow = 'none';
-            
+
             const elNome = document.getElementById('render-nome');
             elNome.style.fontFamily = fonteNome;
             let maxFontSizeNome = 65;
-            
             const isCursive = fonteNome.includes('cursive') || fonteNome.includes('Pinyon') || fonteNome.includes('Parisienne') || fonteNome.includes('Alex Brush') || fonteNome.includes('Dancing') || fonteNome.includes('Great Vibes') || fonteNome.includes('Tangerine');
-            
             elNome.style.textTransform = 'none';
             elNome.innerText = formatarNome(nomeAtleta, isCursive);
 
             if (isCursive) {
                 elNome.style.letterSpacing = '1px';
                 if (fonteNome.includes('Pinyon')) maxFontSizeNome = 160;
-                else if (fonteNome.includes('Tangerine')) maxFontSizeNome = 130; 
-                else maxFontSizeNome = 100; 
+                else if (fonteNome.includes('Tangerine')) maxFontSizeNome = 130;
+                else maxFontSizeNome = 100;
             } else {
                 elNome.style.letterSpacing = '4px';
-                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) maxFontSizeNome = 65; 
-                else maxFontSizeNome = 70; 
+                if (fonteNome.includes('Playfair') || fonteNome.includes('Oswald')) maxFontSizeNome = 65;
+                else maxFontSizeNome = 70;
             }
 
             let baseTextSize = 24;
@@ -1390,45 +1283,40 @@
                 document.getElementById('render-texto3'),
                 document.getElementById('render-faixa-prefixo')
             ];
-            elsTextosCorpo.forEach(el => { 
-                if(el) {
-                    el.style.fontFamily = fonteTexto; 
-                    el.style.fontSize = baseTextSize + 'px';
-                }
+            elsTextosCorpo.forEach(el => {
+                if (el) { el.style.fontFamily = fonteTexto; el.style.fontSize = baseTextSize + 'px'; }
             });
 
+            // Ajuste de tamanho
             document.fonts.ready.then(() => {
                 setTimeout(() => {
                     const wrapperTitulo = document.getElementById('wrapper-titulo');
                     elTitulo.style.fontSize = '10px';
-                    const espaçoLivreTitulo = wrapperTitulo.clientWidth - 20; 
-                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, espaçoLivreTitulo, 25); 
-                    
+                    ajustarTamanhoTexto(elTitulo, maxFontSizeTitulo, wrapperTitulo.clientWidth - 20, 25);
+
                     const containerNome = document.getElementById('render-nome-container');
                     elNome.style.fontSize = '10px';
-                    const espaçoLivreNome = containerNome.clientWidth - 30;
-                    ajustarTamanhoTexto(elNome, maxFontSizeNome, espaçoLivreNome, 20); 
-                    
+                    ajustarTamanhoTexto(elNome, maxFontSizeNome, containerNome.clientWidth - 30, 20);
+
                     const caixaAssinatura = document.querySelector('.cert-assinatura-box');
                     if (caixaAssinatura) {
-                        const espaçoAssinatura = caixaAssinatura.clientWidth - 10;
-                        const elAss1 = document.getElementById('render-ass1-nome');
-                        const elAss2 = document.getElementById('render-ass2-nome');
-                        ajustarTamanhoTexto(elAss1, 18, espaçoAssinatura, 9);
-                        ajustarTamanhoTexto(elAss2, 18, espaçoAssinatura, 9);
+                        const espacoAssinatura = caixaAssinatura.clientWidth - 10;
+                        ajustarTamanhoTexto(document.getElementById('render-ass1-nome'), 18, espacoAssinatura, 9);
+                        ajustarTamanhoTexto(document.getElementById('render-ass2-nome'), 18, espacoAssinatura, 9);
                     }
                 }, 150);
             });
         }
 
-        window.gerarCertificado = async function() {
+        // ---------- GERAÇÃO DO CERTIFICADO ----------
+        async function gerarCertificado() {
             if (fichasDisponiveis <= 0) {
                 return showToast("❌ Você não possui Fichas suficientes. Adquira mais créditos no menu 'Planos'!", "error");
             }
 
             const alunoId = document.getElementById('combo-aluno').value;
             const aluno = alunosCache.find(a => a.id === alunoId);
-            if(!aluno) return showToast("Selecione um Atleta na lista primeiro!", "error");
+            if (!aluno) return showToast("Selecione um Atleta na lista primeiro!", "error");
 
             const btn = document.getElementById('btn-gerar');
             const originalText = btn.innerHTML;
@@ -1439,123 +1327,160 @@
             const faixaBase = document.getElementById('combo-faixa').value;
             const grauAdd = document.getElementById('combo-grau').value;
             const faixaTexto = grauAdd ? `${faixaBase} - ${grauAdd}`.toUpperCase() : faixaBase.toUpperCase();
-            
             const dataRaw = document.getElementById('entry-data').value;
             const respNome = document.getElementById('resp-nome').value.trim();
             const profNome = document.getElementById('prof-nome').value.trim();
 
-            if(!dataRaw) {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                hideLoading();
+            if (!dataRaw) {
+                btn.innerHTML = originalText; btn.disabled = false; hideLoading();
                 return showToast("Escolha a Data da Cerimônia!", "error");
             }
 
             let dt;
-            if(dataRaw && dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1]-1, p[2]); } else { dt = new Date(); }
-            
+            if (dataRaw.includes('-')) { const p = dataRaw.split('-'); dt = new Date(p[0], p[1] - 1, p[2]); }
+            else { dt = new Date(); }
+
             const mesStr = String(dt.getMonth() + 1).padStart(2, '0');
             const anoStr = dt.getFullYear().toString().slice(-2);
             const seqStr = String(serialEquipeAtual).padStart(3, '0');
             const numeroSerieStr = `${mesStr}${anoStr}${seqStr}`;
             serialEquipeAtual += 1;
-            
             fichasDisponiveis -= 1;
 
-            try { 
-                await updateDoc(doc(db, "equipes", uid), { 
+            try {
+                await updateDoc(doc(db, "equipes", uid), {
                     contador_certificados: serialEquipeAtual,
                     creditos_certificados: fichasDisponiveis
-                }); 
-                
+                });
                 document.getElementById('display-fichas').innerText = `${fichasDisponiveis}`;
-            } catch(e) { }
+            } catch (e) {}
 
             const idHash = Math.random().toString(36).substring(2, 10).toUpperCase();
             const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
 
             try {
                 await addDoc(collection(db, "certificados"), {
-                    equipe_id: uid, 
-                    aluno_id: aluno.id, 
-                    nome_aluno: formatarNomeInteligente(aluno.nome), 
-                    faixa: faixaTexto,
-                    numero_serie: numeroSerieStr, 
-                    hash_validador: idHash, 
-                    data_cerimonia: dataRaw,
-                    prof_responsavel: formatarNomeInteligente(respNome), 
-                    prof_direto: formatarNomeInteligente(profNome), 
-                    cidade_equipe: cidadeEquipeLogada.toUpperCase(), 
+                    equipe_id: uid, aluno_id: aluno.id, nome_aluno: formatarNomeInteligente(aluno.nome),
+                    faixa: faixaTexto, numero_serie: numeroSerieStr, hash_validador: idHash,
+                    data_cerimonia: dataRaw, prof_responsavel: formatarNomeInteligente(respNome),
+                    prof_direto: formatarNomeInteligente(profNome), cidade_equipe: cidadeEquipeLogada.toUpperCase(),
                     data_emissao: new Date().toISOString()
                 });
-
                 await addDoc(collection(db, "historico_faixas"), {
-                    equipe_id: uid,
-                    aluno_id: aluno.id,
-                    faixa: faixaTexto,
-                    data_promocao: dataRaw,
-                    status: "AGENDADO",
-                    certificado_url: urlValidador
+                    equipe_id: uid, aluno_id: aluno.id, faixa: faixaTexto,
+                    data_promocao: dataRaw, status: "AGENDADO", certificado_url: urlValidador
                 });
-
-            } catch (e) {
-                console.error("Erro ao salvar no banco", e);
-            }
+            } catch (e) { console.error(e); }
 
             document.getElementById('render-serial').innerText = `VALIDADOR: ${numeroSerieStr}`;
-            if (qrcodeObj) {
-                qrcodeObj.clear();
-                qrcodeObj.makeCode(urlValidador);
-            }
+            if (qrcodeObj) { qrcodeObj.clear(); qrcodeObj.makeCode(urlValidador); }
 
             setTimeout(() => {
-                const valEsq = document.getElementById('pos-esq').value;
-                const srcEsq = getImagemEscolhida(valEsq);
-                document.getElementById('wrapper-logo-esq').style.display = 'flex';
-                document.getElementById('wrapper-logo-esq').style.visibility = (srcEsq && valEsq !== 'nenhuma') ? 'visible' : 'hidden';
-
-                const valDir = document.getElementById('pos-dir').value;
-                const srcDir = getImagemEscolhida(valDir);
-                document.getElementById('wrapper-logo-dir').style.display = 'flex';
-                document.getElementById('wrapper-logo-dir').style.visibility = (srcDir && valDir !== 'nenhuma') ? 'visible' : 'hidden';
-
                 const certificadoReal = document.getElementById('certificado-render');
                 const wrapperParaPDF = document.getElementById('wrapper-render');
-                
                 wrapperParaPDF.innerHTML = '';
                 const clone = certificadoReal.cloneNode(true);
                 clone.style.transform = 'none';
-
                 const marcaPreview = clone.querySelector('#preview-watermark');
                 if (marcaPreview) marcaPreview.remove();
-
                 wrapperParaPDF.appendChild(clone);
 
                 const opt = {
-                    margin:       0,
-                    filename:     `Diploma_${numeroSerieStr}_${aluno.nome.replace(/\s+/g, '_')}.pdf`,
-                    image:        { type: 'jpeg', quality: 1.0 },
-                    html2canvas:  { scale: 2, useCORS: true, logging: false },
-                    jsPDF:        { unit: 'px', format: [1123, 794], orientation: 'landscape' }
+                    margin: 0,
+                    filename: `Diploma_${numeroSerieStr}_${aluno.nome.replace(/\s+/g, '_')}.pdf`,
+                    image: { type: 'jpeg', quality: 1.0 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'px', format: [1123, 794], orientation: 'landscape' }
                 };
 
                 html2pdf().set(opt).from(clone).save().then(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                    btn.innerHTML = originalText; btn.disabled = false;
                     document.getElementById('combo-aluno').value = "";
-                    window.atualizarPreviewLive();
-                    hideLoading();
+                    atualizarPreviewLive(); hideLoading();
                     showToast("🎓 Diploma gerado e Graduação Agendada com sucesso!", "success");
                 }).catch(err => {
                     showToast("Erro ao gerar PDF.", "error");
-                    btn.disabled = false;
-                    hideLoading();
+                    btn.disabled = false; hideLoading();
                 });
             }, 800);
         }
 
-        window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+        // ---------- ATUALIZAÇÃO MANUAL ----------
+        async function manualRefreshCertificados() {
+            if (isLoading) return;
+            isLoading = true; showLoading(); clearCache();
+            try {
+                await Promise.all([carregarInfoEquipe(true), carregarAlunos(true)]);
+                showToast("Dados atualizados com sucesso!", "success");
+            } catch (error) {
+                showToast("Erro ao atualizar dados", "error");
+            } finally {
+                hideLoading(); isLoading = false;
+            }
+        }
 
+        // ---------- LOGOUT ----------
+        function sairDoSistema() {
+            signOut(auth).then(() => window.location.href = "index.html");
+        }
+
+        // ---------- EXPOSIÇÃO PARA O ESCOPO GLOBAL (EVENTOS INLINE) ----------
+        window.gerarCertificado = gerarCertificado;
+        window.atualizarPreviewLive = atualizarPreviewLive;
+        window.aoSelecionarAluno = aoSelecionarAluno;
+        window.carregarLogoCustomizada = carregarLogoCustomizada;
+        window.carregarSeloCustomizado = carregarSeloCustomizado;
+        window.salvarPadroes = salvarPadroes;
+        window.manualRefreshCertificados = manualRefreshCertificados;
+        window.sairDoSistema = sairDoSistema;
+        window.showLoading = showLoading;
+        window.hideLoading = hideLoading;
+        window.showToast = showToast;
+
+        // ---------- OBSERVER DE AUTENTICAÇÃO ----------
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    uid = user.uid;
+                    let isSuper = false;
+                    try {
+                        const superSnap = await getDoc(doc(db, "super_admins", uid));
+                        if (superSnap.exists()) isSuper = true;
+                    } catch(e) {}
+
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) uid = equipeImpersonada;
+                        else { window.location.href = "super_admin.html"; return; }
+                    } else {
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) uid = colabSnap.data().equipe_id;
+                        }
+                    }
+
+                    await carregarInfoEquipe();
+                    await carregarAlunos();
+                    carregarPadroes();
+                    document.getElementById('entry-data').valueAsDate = new Date();
+                    if (!qrcodeObj) {
+                        qrcodeObj = new QRCode(document.getElementById("cert-qr-container"), {
+                            width: 60, height: 60, colorDark: "#1E293B", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
+                        });
+                    }
+                    atualizarPreviewLive();
+                } catch (error) { console.error("Erro na inicialização:", error); }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // ---------- INICIALIZAÇÃO DA PÁGINA ----------
+        window.onload = () => {
+            if (typeof carregarMenu === "function") carregarMenu();
+            if (typeof mudarAba === "function") mudarAba('aba-pessoal');
+        };
     </script>
 </body>
 </html>
