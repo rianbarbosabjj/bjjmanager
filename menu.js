@@ -366,3 +366,16 @@ if (document.readyState === 'loading') {
 } else {
     carregarMenu();
 }
+window.sairDoSistema = async function () {
+    try {
+        sessionStorage.clear();
+        localStorage.removeItem("bjj_features");
+        localStorage.removeItem("bjj_equipe_nome");
+        localStorage.removeItem("bjj_equipe_logo");
+
+        window.location.href = "index.html";
+    } catch (error) {
+        console.error("Erro ao sair do sistema:", error);
+        window.location.href = "index.html";
+    }
+};
