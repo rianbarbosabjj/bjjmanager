@@ -2145,27 +2145,28 @@ onAuthStateChanged(auth, async (user) => {
                                 }
                             }
                             
-                        await buscarAlunosFirebase(false);
-                        window.mudarAbaDashboard('lista');
+                            await buscarAlunosFirebase(false);
+                            window.mudarAbaDashboard('lista');
                     } else {
                         const tabelaAlunos = document.getElementById('tabela-alunos');
                         if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Equipe não encontrada.</td></tr>';
                     }
-                } catch(e) {
-                    console.error("Erro na autenticação:", e);
-                    const tabelaAlunos = document.getElementById('tabela-alunos');
-                    if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro de conexão ao verificar usuário.</td></tr>';
                 }
-            } else { 
-                window.location.href = "index.html"; 
-            } 
-        }); // FECHAMENTO ÚNICO DO onAuthStateChanged
+            } catch(e) {
+                console.error("Erro na autenticação:", e);
+                const tabelaAlunos = document.getElementById('tabela-alunos');
+                if(tabelaAlunos) tabelaAlunos.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-rose-500 font-bold">Erro de conexão ao verificar usuário.</td></tr>';
+            }
+        } else { 
+            window.location.href = "index.html"; 
+        } 
+    }); // <-- APENAS UM FECHAMENTO AQUI!
 
-        window.limparBusca = () => { 
-            const buscaInput = document.getElementById('input-busca');
-            if(buscaInput) buscaInput.value = ''; 
-            window.renderizarTabela(); 
-        };
+    window.limparBusca = () => { 
+        const buscaInput = document.getElementById('input-busca');
+        if(buscaInput) buscaInput.value = ''; 
+        window.renderizarTabela(); 
+    };
     </script>
 </body>
 </html>
