@@ -1111,17 +1111,35 @@ financeiro.forEach(f => {
                             if (logoEquipeAnterior) { 
                                 const imgTopo = document.getElementById('img-topo-equipe'); 
                                 if (imgTopo) { imgTopo.src = logoEquipeAnterior; imgTopo.style.display = 'block'; } 
-                                const injetarLogo = setInterval(() => { 
-                                    const aside = document.querySelector('aside'); 
-                                    if (aside) { 
-                                        let injetou = false; 
-                                        const fallbackDivs = aside.querySelectorAll('div.rounded-full'); 
-                                        fallbackDivs.forEach(div => { if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { div.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); div.classList.add('bg-transparent'); injetou = true; } }); 
-                                        const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo'); 
-                                        if (elLogoMenu) { elLogoMenu.style.background = 'transparent'; elLogoMenu.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`; injetou = true; } 
-                                        if (injetou) clearInterval(injetarLogo); 
+                            const injetarLogo = setInterval(() => { 
+                                const aside = document.querySelector('aside'); 
+                                if (aside) { 
+                                let injetou = false; 
+        
+                            // --- ADICIONE ESTAS TRÊS LINHAS AQUI ---
+                                const txtNomePlanoMenu = document.getElementById('nome-equipe');
+                                if (txtNomePlanoMenu) {
+                                txtNomePlanoMenu.innerText = nomeEquipeAtual.toUpperCase();
+                                }
+                              
+                                const fallbackDivs = aside.querySelectorAll('div.rounded-full'); 
+                                fallbackDivs.forEach(div => { 
+                                    if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { 
+                                        div.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; 
+                                        div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); 
+                                        div.classList.add('bg-transparent'); 
+                                        injetou = true; 
                                     } 
-                                }, 300); 
+                                }); 
+                                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo'); 
+                                if (elLogoMenu) { 
+                                    elLogoMenu.style.background = 'transparent'; 
+                                    elLogoMenu.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`; 
+                                    injetou = true; 
+                                } 
+                                if (injetou) clearInterval(injetarLogo); 
+                                } 
+                            }, 300);
                                 setTimeout(() => clearInterval(injetarLogo), 5000); 
                             }
                         }
