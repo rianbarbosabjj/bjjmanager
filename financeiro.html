@@ -184,9 +184,11 @@
             <div class="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 overflow-x-auto hide-scrollbar transition-colors">
                 <div class="max-w-7xl mx-auto flex gap-8">
                     <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap">👥 Mensalidades</button>
+                    
                     <button onclick="if(verificarAcesso('asaas')) mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 px-3 rounded-t-xl transition-all whitespace-nowrap flex items-center gap-1.5">
                         <span class="text-sm">💲</span> Conta Digital
                     </button>
+                    
                     <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">📊 Resumo Mês</button>
                     <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">📋 Despesas / Extras</button>
                     <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">📈 Análise Anual</button>
@@ -197,6 +199,7 @@
                 <div class="max-w-7xl mx-auto space-y-6">
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
+                        
                         <div class="flex flex-col sm:flex-row justify-between items-start gap-6 bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800">
                             <div class="flex gap-8 mt-2">
                                 <div>
@@ -288,8 +291,11 @@
                                     <h4 class="font-black text-slate-800 dark:text-white text-sm mb-2 flex items-center gap-2">
                                         <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg">🔐</span> Segurança
                                     </h4>
-                                    <p class="text-[10px] text-slate-500 mb-4 font-bold">Defina a senha necessária para autorizar transferências.</p>
-                                    <input type="password" id="nova-senha-saque" placeholder="Nova senha (mín. 6)" class="w-full p-3 mb-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-indigo-500 dark:text-white">
+                                    <p class="text-[10px] text-slate-500 mb-4 font-bold">Defina ou altere a senha para transferências.</p>
+                                    
+                                    <input type="password" id="senha-atual-saque" placeholder="Senha Atual (vazio se for a 1ª vez)" class="w-full p-3 mb-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-indigo-500 dark:text-white">
+                                    <input type="password" id="nova-senha-saque" placeholder="Nova Senha (mín. 6)" class="w-full p-3 mb-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-indigo-500 dark:text-white">
+                                    
                                     <button onclick="configurarSenhaSaque()" id="btn-config-senha" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-md">Salvar Senha</button>
                                 </div>
                             </div>
@@ -329,7 +335,7 @@
                                     <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento
                                     </h4>
-                                    <p class="text-[10px] text-slate-500 font-bold mb-4">Escolha como seus alunos poderão pagar através do link automático.</p>
+                                    <p class="text-[11px] text-slate-500 font-bold mb-4">Escolha como seus alunos poderão pagar através do link automático.</p>
                                     
                                     <div class="space-y-3 relative z-10 flex-1">
                                         <label class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border border-slate-200 dark:border-slate-800 opacity-70 cursor-not-allowed">
@@ -986,73 +992,76 @@
             document.getElementById('saque-valor').value = textoSaldo.replace('R$', '').trim();
         }
 
-window.solicitarSaque = async function() {
-    const valorInput = document.getElementById('saque-valor');
-    const valorNum = strToFloat(valorInput.value);
-    const tipo = document.getElementById('saque-tipo-pix').value;
-    const chave = document.getElementById('saque-chave-pix').value.trim();
-    
-    if(valorNum <= 0) return showToast("Valor inválido!", "error");
-    if(!chave) return showToast("Chave PIX obrigatória!", "error");
+        window.solicitarSaque = async function() {
+            const valorInput = document.getElementById('saque-valor');
+            const valorNum = strToFloat(valorInput.value);
+            const tipo = document.getElementById('saque-tipo-pix').value;
+            const chave = document.getElementById('saque-chave-pix').value.trim();
+            
+            if(valorNum <= 0) return showToast("Valor inválido!", "error");
+            if(!chave) return showToast("Chave PIX obrigatória!", "error");
 
-    // Pedimos a senha criada via função 'definirSenhaSaque'
-    const senha = prompt("🔒 Confirme sua senha de saque para autorizar:");
-    if(!senha) return;
+            // Pedimos a senha criada via função 'definirSenhaSaque'
+            const senha = prompt("🔒 Confirme sua senha de saque para autorizar:");
+            if(!senha) return;
 
-    const btn = document.getElementById('btn-sacar-asaas');
-    btn.innerHTML = "⏳ Autorizando..."; btn.disabled = true;
+            const btn = document.getElementById('btn-sacar-asaas');
+            btn.innerHTML = "⏳ Autorizando..."; btn.disabled = true;
 
-    try {
-        const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-        // Envia a senha para o back-end, onde ela será verificada com o bcrypt
-        const res = await fazerSaque({ 
-            valor: valorNum, 
-            chavePix: chave, 
-            tipoChave: tipo, 
-            senhaDigitada: senha 
-        });
+            try {
+                const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
+                const res = await fazerSaque({ 
+                    valor: valorNum, 
+                    chavePix: chave, 
+                    tipoChave: tipo, 
+                    senhaDigitada: senha 
+                });
 
-        if(res.data.success) {
-            showToast("Saque autorizado e processado!", "success");
-            valorInput.value = "";
-            carregarHistoricoSaques();
-            carregarSaldoAsaas(); 
-        } else {
-            // Se a senha estiver errada ou saldo insuficiente, o back-end retorna o erro
-            showToast(res.data.error || "Erro ao processar saque", "error");
+                if(res.data.success) {
+                    showToast("Saque autorizado e processado!", "success");
+                    valorInput.value = "";
+                    carregarHistoricoSaques();
+                    carregarSaldoAsaas(); 
+                } else {
+                    showToast(res.data.error || "Erro ao processar saque", "error");
+                }
+            } catch(e) {
+                showToast("Erro na conexão com o servidor", "error");
+            } finally {
+                btn.innerHTML = "Efetuar Transferência PIX";
+                btn.disabled = false;
+            }
         }
-    } catch(e) {
-        showToast("Erro na conexão com o servidor", "error");
-    } finally {
-        btn.innerHTML = "Efetuar Transferência PIX";
-        btn.disabled = false;
-    }
-}
 
-window.configurarSenhaSaque = async function() {
-    const senha = document.getElementById('nova-senha-saque').value;
-    if(senha.length < 6) return showToast("A senha precisa ter pelo menos 6 caracteres.", "error");
+        window.configurarSenhaSaque = async function() {
+            const senhaAtual = document.getElementById('senha-atual-saque').value;
+            const novaSenha = document.getElementById('nova-senha-saque').value;
+            
+            if(novaSenha.length < 6) return showToast("A nova senha precisa ter pelo menos 6 caracteres.", "error");
 
-    const btn = document.getElementById('btn-config-senha');
-    const origTxt = btn.innerText;
-    btn.innerText = "Salvando..."; btn.disabled = true;
+            const btn = document.getElementById('btn-config-senha');
+            const origTxt = btn.innerText;
+            btn.innerText = "Salvando..."; btn.disabled = true;
 
-    try {
-        const definirSenha = httpsCallable(functions, 'definirSenhaSaque');
-        const res = await definirSenha({ novaSenha: senha });
-        
-        if(res.data.success) {
-            showToast("Senha de saque configurada com sucesso!", "success");
-            document.getElementById('nova-senha-saque').value = "";
-        } else {
-            showToast("Erro: " + res.data.error, "error");
+            try {
+                const definirSenha = httpsCallable(functions, 'definirSenhaSaque');
+                // Envia as duas senhas para o back-end
+                const res = await definirSenha({ senhaAtual: senhaAtual, novaSenha: novaSenha });
+                
+                if(res.data.success) {
+                    showToast("Senha de saque configurada com segurança!", "success");
+                    document.getElementById('senha-atual-saque').value = "";
+                    document.getElementById('nova-senha-saque').value = "";
+                } else {
+                    showToast("Erro: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Falha na conexão com o servidor.", "error");
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         }
-    } catch(e) {
-        showToast("Falha na conexão.", "error");
-    } finally {
-        btn.innerText = origTxt; btn.disabled = false;
-    }
-}
+
         window.gerarFaturas = async function() {
             // --- TRAVA DE SEGURANÇA: Bloqueia se o valor base estiver zerado ---
             if (equipeBaseConfig.prazo <= 0) {
