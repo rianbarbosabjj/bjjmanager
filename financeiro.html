@@ -199,7 +199,6 @@
                 <div class="max-w-7xl mx-auto space-y-6">
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
-                        
                         <div class="flex flex-col sm:flex-row justify-between items-start gap-6 bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800">
                             <div class="flex gap-8 mt-2">
                                 <div>
@@ -384,7 +383,7 @@
                                 </div>
                             </div>
 
-                            <div class="mt-2 w-full flex justify-center opacity-70 hover:opacity-100 transition-opacity">
+                            <div class="mt-4 w-full flex justify-center opacity-70 hover:opacity-100 transition-opacity">
                                 <p class="text-[10px] text-slate-400 font-medium m-0">
                                     Processado com segurança por <a href="https://www.asaas.com/" target="_blank" rel="noopener noreferrer" class="text-cyan-600 dark:text-cyan-500 font-bold hover:underline">Asaas IP S.A.</a>
                                 </p>
@@ -495,6 +494,21 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <div id="modal-senha-saque-wrapper" class="fixed inset-0 z-[400] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 p-8 card-premium border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-sm relative flex flex-col text-center border-t-4 border-cyan-500">
+            <div class="w-16 h-16 bg-cyan-100 dark:bg-cyan-900/20 text-cyan-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">🔒</div>
+            <h3 class="font-black text-slate-800 dark:text-white text-xl uppercase tracking-tight mb-2">Autorizar Saque</h3>
+            <p class="text-xs text-slate-500 font-medium leading-relaxed mb-6">Por segurança, confirme sua senha de saque para efetuar a transferência.</p>
+            
+            <input type="password" id="senha-saque-modal" placeholder="Sua senha..." class="w-full p-4 mb-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-bold outline-none focus:border-cyan-500 dark:text-white text-lg tracking-widest" autocomplete="new-password">
+            
+            <div class="flex gap-3">
+                <button onclick="fecharModalSenhaSaque()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Cancelar</button>
+                <button onclick="confirmarSaqueComSenha()" class="flex-1 py-3.5 bg-cyan-600 hover:bg-cyan-700 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg transition-all">Confirmar</button>
+            </div>
+        </div>
     </div>
 
     <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
@@ -634,6 +648,9 @@
         window.financeiroMesCache = [];
         window.financeiroAnoCache = []; 
         window.alunoSelecionadoMens = null;
+
+        // Controle do modal de saque
+        window.dadosSaquePendente = null;
 
         window.chartBalancoMes = null;
         window.chartOrigemMes = null;
@@ -992,7 +1009,17 @@
             document.getElementById('saque-valor').value = textoSaldo.replace('R$', '').trim();
         }
 
-        window.solicitarSaque = async function() {
+        // ==========================================
+        // 🔥 LÓGICA DE SAQUE COM NOVO MODAL PREMIUM
+        // ==========================================
+
+        window.fecharModalSenhaSaque = function() {
+            document.getElementById('modal-senha-saque-wrapper').classList.replace('flex', 'hidden');
+            document.getElementById('senha-saque-modal').value = '';
+            dadosSaquePendente = null;
+        }
+
+        window.solicitarSaque = function() {
             const valorInput = document.getElementById('saque-valor');
             const valorNum = strToFloat(valorInput.value);
             const tipo = document.getElementById('saque-tipo-pix').value;
@@ -1001,34 +1028,46 @@
             if(valorNum <= 0) return showToast("Valor inválido!", "error");
             if(!chave) return showToast("Chave PIX obrigatória!", "error");
 
-            // Pedimos a senha criada via função 'definirSenhaSaque'
-            const senha = prompt("🔒 Confirme sua senha de saque para autorizar:");
-            if(!senha) return;
+            // Guarda os dados para processar no próximo passo
+            dadosSaquePendente = { valorNum, tipo, chave };
+            
+            // Abre o modal em vez do alert
+            document.getElementById('modal-senha-saque-wrapper').classList.replace('hidden', 'flex');
+            setTimeout(() => document.getElementById('senha-saque-modal').focus(), 100);
+        }
+
+        window.confirmarSaqueComSenha = async function() {
+            const senha = document.getElementById('senha-saque-modal').value;
+            if(!senha) return showToast("A senha é obrigatória para autorizar.", "error");
+
+            fecharModalSenhaSaque();
 
             const btn = document.getElementById('btn-sacar-asaas');
+            const origTxt = btn.innerHTML;
             btn.innerHTML = "⏳ Autorizando..."; btn.disabled = true;
 
             try {
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
                 const res = await fazerSaque({ 
-                    valor: valorNum, 
-                    chavePix: chave, 
-                    tipoChave: tipo, 
+                    valor: dadosSaquePendente.valorNum, 
+                    chavePix: dadosSaquePendente.chave, 
+                    tipoChave: dadosSaquePendente.tipo, 
                     senhaDigitada: senha 
                 });
 
                 if(res.data.success) {
                     showToast("Saque autorizado e processado!", "success");
-                    valorInput.value = "";
+                    document.getElementById('saque-valor').value = "";
                     carregarHistoricoSaques();
                     carregarSaldoAsaas(); 
                 } else {
                     showToast(res.data.error || "Erro ao processar saque", "error");
                 }
             } catch(e) {
-                showToast("Erro na conexão com o servidor", "error");
+                console.error(e);
+                showToast("Erro do servidor: " + e.message, "error");
             } finally {
-                btn.innerHTML = "Efetuar Transferência PIX";
+                btn.innerHTML = origTxt;
                 btn.disabled = false;
             }
         }
@@ -1056,6 +1095,7 @@
                     showToast("Erro: " + res.data.error, "error");
                 }
             } catch(e) {
+                console.error(e);
                 showToast("Falha na conexão com o servidor.", "error");
             } finally {
                 btn.innerText = origTxt; btn.disabled = false;
