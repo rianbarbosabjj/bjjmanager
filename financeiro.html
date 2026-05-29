@@ -1036,7 +1036,7 @@
             setTimeout(() => document.getElementById('senha-saque-modal').focus(), 100);
         }
 
-        window.confirmarSaqueComSenha = async function() {
+window.confirmarSaqueComSenha = async function() {
             const senha = document.getElementById('senha-saque-modal').value;
             if(!senha) return showToast("A senha é obrigatória para autorizar.", "error");
 
@@ -1052,7 +1052,8 @@
                     valor: dadosSaquePendente.valorNum, 
                     chavePix: dadosSaquePendente.chave, 
                     tipoChave: dadosSaquePendente.tipo, 
-                    senhaDigitada: senha 
+                    senhaDigitada: senha,
+                    uid: window.uid // 🔥 AGORA O FIREBASE SABE QUEM VOCÊ É
                 });
 
                 if(res.data.success) {
@@ -1084,8 +1085,11 @@
 
             try {
                 const definirSenha = httpsCallable(functions, 'definirSenhaSaque');
-                // Envia as duas senhas para o back-end
-                const res = await definirSenha({ senhaAtual: senhaAtual, novaSenha: novaSenha });
+                const res = await definirSenha({ 
+                    senhaAtual: senhaAtual, 
+                    novaSenha: novaSenha,
+                    uid: window.uid // 🔥 AGORA O FIREBASE SABE QUEM VOCÊ É
+                });
                 
                 if(res.data.success) {
                     showToast("Senha de saque configurada com segurança!", "success");
@@ -1098,10 +1102,10 @@
                 console.error(e);
                 showToast("Falha na conexão com o servidor.", "error");
             } finally {
-                btn.innerText = origTxt; btn.disabled = false;
+                btn.innerText = origTxt;
+                btn.disabled = false;
             }
         }
-
         window.gerarFaturas = async function() {
             // --- TRAVA DE SEGURANÇA: Bloqueia se o valor base estiver zerado ---
             if (equipeBaseConfig.prazo <= 0) {
