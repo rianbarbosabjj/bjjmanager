@@ -1036,10 +1036,20 @@
             setTimeout(() => document.getElementById('senha-saque-modal').focus(), 100);
         }
 
-window.confirmarSaqueComSenha = async function() {
+        window.confirmarSaqueComSenha = async function() {
             const senha = document.getElementById('senha-saque-modal').value;
             if(!senha) return showToast("A senha é obrigatória para autorizar.", "error");
 
+            // 🔥 CORREÇÃO: Salvar os dados na memória ANTES de fechar o modal
+            const payloadSaque = {
+                valor: dadosSaquePendente.valorNum,
+                chavePix: dadosSaquePendente.chave,
+                tipoChave: dadosSaquePendente.tipo,
+                senhaDigitada: senha,
+                uid: window.uid
+            };
+
+            // Agora sim podemos fechar o modal e limpar a tela
             fecharModalSenhaSaque();
 
             const btn = document.getElementById('btn-sacar-asaas');
@@ -1048,13 +1058,8 @@ window.confirmarSaqueComSenha = async function() {
 
             try {
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-                const res = await fazerSaque({ 
-                    valor: dadosSaquePendente.valorNum, 
-                    chavePix: dadosSaquePendente.chave, 
-                    tipoChave: dadosSaquePendente.tipo, 
-                    senhaDigitada: senha,
-                    uid: window.uid // 🔥 AGORA O FIREBASE SABE QUEM VOCÊ É
-                });
+                // Enviamos o payload salvo para o back-end
+                const res = await fazerSaque(payloadSaque);
 
                 if(res.data.success) {
                     showToast("Saque autorizado e processado!", "success");
