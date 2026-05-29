@@ -1832,12 +1832,26 @@
                     return;
                 }
 
-                saques.sort((a,b) => new Date(b.data) - new Date(a.data));
+                // CORREÇÃO: Transforma as strings em objetos Date antes de subtrair para ordenação
+                saques.sort((a,b) => {
+                    const dataA = new Date(a.data);
+                    const dataB = new Date(b.data);
+                    return dataB.getTime() - dataA.getTime(); // Ordena do mais recente para o mais antigo
+                });
+                
                 cont.innerHTML = '';
 
                 saques.forEach(s => {
-                    const dataObj = new Date(s.data);
-                    const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    // Tratamento seguro de datas para evitar erros de 'Invalid Date'
+                    let dataFormatada = "--/--/----";
+                    try {
+                        if (s.data) {
+                            const dataObj = new Date(s.data);
+                            if (!isNaN(dataObj.getTime())) {
+                                dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                            }
+                        }
+                    } catch (err) {}
                     
                     let corStatus = 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800';
                     if(s.status === 'CONCLUÍDO') corStatus = 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800';
