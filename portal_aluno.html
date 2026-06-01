@@ -1131,7 +1131,12 @@ async function buscarFaturasResiliente(forceRefresh = false) {
     if (!lista) return;
     if (!forceRefresh && isOnline) {
         const cached = getFromCache(CACHE_KEYS.FATURAS);
-        if (cached) { renderizarFaturas(cached); atualizarWidgetMensalidade(); return; }
+        if (cached) { 
+            faturasCache = cached; // <-- ESSA É A LINHA QUE FALTAVA
+            renderizarFaturas(cached); 
+            atualizarWidgetMensalidade(); 
+            return; 
+        }
     }
     try {
         const qAluno = query(
