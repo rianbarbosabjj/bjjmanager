@@ -1168,7 +1168,7 @@ async function buscarFaturasResiliente(forceRefresh = false) {
     }
 }       
 function calcularValorFatura(fatura, aluno, equipe) {
-        // Se já paga, mantém o valor original
+    // Se já paga, mantém o valor original
     if (fatura.status === 'PAGO') return fatura.valor;
     
     const bolsa = aluno.bolsa_perc || 0;
@@ -1180,7 +1180,15 @@ function calcularValorFatura(fatura, aluno, equipe) {
         : (equipe.valor_prazo || 70);
     
     // Aplica o desconto sobre o valor base
-    return valorBase * (1 - bolsa / 100);
+    let valorCalculado = valorBase * (1 - bolsa / 100);
+
+    // --- ADIÇÃO DA TAXA DO ASAAS PARA EXIBIÇÃO ---
+    const repassarTaxa = equipe.asaas_repassar_taxa === true || String(equipe.asaas_repassar_taxa) === "true";
+    if (repassarTaxa && equipe.asaas_valor_taxa > 0) {
+        valorCalculado += parseFloat(equipe.asaas_valor_taxa);
+    }
+
+    return valorCalculado;
 }
         
 function renderizarFaturas(faturas) {
