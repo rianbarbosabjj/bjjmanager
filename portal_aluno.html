@@ -1186,7 +1186,7 @@ function calcularValorFatura(fatura, aluno, equipe) {
 function renderizarFaturas(faturas) {
     const lista = document.getElementById('lista-faturas');
     if (!lista) return;
-    let temAsaas = false;
+    let temAsaas = true;
     if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
         const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
         const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
