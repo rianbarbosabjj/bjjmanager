@@ -1129,15 +1129,16 @@
 async function buscarFaturasResiliente(forceRefresh = false) {
     const lista = document.getElementById('lista-faturas');
     if (!lista) return;
-    if (!forceRefresh && isOnline) {
+if (!forceRefresh && isOnline) {
         const cached = getFromCache(CACHE_KEYS.FATURAS);
         if (cached) { 
-            faturasCache = cached; // <-- ESSA É A LINHA QUE FALTAVA
+            faturasCache = cached; 
             renderizarFaturas(cached); 
             atualizarWidgetMensalidade(); 
-            return; 
+            // APAGUE O 'return;' QUE FICAVA AQUI!
         }
     }
+    
     try {
         const qAluno = query(
             collection(db, "financeiro"),
