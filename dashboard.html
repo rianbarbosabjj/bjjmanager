@@ -234,7 +234,6 @@
         </main>
     </div>
 
-    <!-- MODAL DE MENSAGENS -->
     <div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh] animate-fade-in">
             <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
@@ -291,7 +290,6 @@
         </div>
     </div>
     
-    <!-- MODAL CONFIG EQUIPE -->
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in">
             <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
@@ -417,7 +415,6 @@
         </div>
     </div>
 
-    <!-- MODAL PAGAMENTO RÁPIDO -->
     <div id="modal-pagamento-rapido" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col animate-fade-in">
             <div class="bg-emerald-500 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
@@ -428,8 +425,17 @@
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
                     <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Atleta</p>
                     <h3 id="lbl-pag-rapido-nome" class="font-black text-slate-800 text-lg truncate">--</h3>
-                    <p class="text-[10px] text-slate-400 mt-2 uppercase">Valor da Mensalidade</p>
-                    <p id="lbl-pag-rapido-valor" class="font-black text-emerald-600 text-xl">R$ 0,00</p>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-4 text-left">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor Pago (R$)</label>
+                            <input type="number" step="0.01" id="input-pag-rapido-valor" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-black text-emerald-600 text-base focus:border-emerald-500 outline-none transition-all shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data do Pagto</label>
+                            <input type="date" id="input-pag-rapido-data" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 outline-none transition-all shadow-sm">
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Como foi pago?</label>
@@ -795,21 +801,70 @@
             } catch (error) { showToast("Erro ao salvar: " + error.message, "error"); btn.disabled = false; btn.innerHTML = "Salvar Dados"; } finally { hideLoading(); }
         };
 
-        window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) { pagRapidoDados = { alunoId, nomeAluno, valor, faturaId }; document.getElementById('lbl-pag-rapido-nome').innerText = escapeHtml(nomeAluno); document.getElementById('lbl-pag-rapido-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`; document.getElementById('select-pag-rapido-forma').value = "PIX"; document.getElementById('modal-pagamento-rapido').classList.remove('hidden'); document.getElementById('modal-pagamento-rapido').classList.add('flex'); };
-        window.fecharModalPagamentoRapido = function() { pagRapidoDados = null; document.getElementById('modal-pagamento-rapido').classList.add('hidden'); document.getElementById('modal-pagamento-rapido').classList.remove('flex'); };
+        // --- MUDANÇAS AQUI: FUNÇÕES DO PAGAMENTO RÁPIDO ---
+        window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) { 
+            pagRapidoDados = { alunoId, nomeAluno, valor, faturaId }; 
+            document.getElementById('lbl-pag-rapido-nome').innerText = escapeHtml(nomeAluno); 
+            
+            // Popula os novos inputs com o valor padrão e a data de hoje
+            document.getElementById('input-pag-rapido-valor').value = valor.toFixed(2);
+            document.getElementById('input-pag-rapido-data').value = new Date().toISOString().split('T')[0];
+            
+            document.getElementById('select-pag-rapido-forma').value = "PIX"; 
+            document.getElementById('modal-pagamento-rapido').classList.remove('hidden'); 
+            document.getElementById('modal-pagamento-rapido').classList.add('flex'); 
+        };
+        
+        window.fecharModalPagamentoRapido = function() { 
+            pagRapidoDados = null; 
+            document.getElementById('modal-pagamento-rapido').classList.add('hidden'); 
+            document.getElementById('modal-pagamento-rapido').classList.remove('flex'); 
+        };
         
         window.confirmarPagamentoRapido = async function() {
             if (!pagRapidoDados) return;
+            
             const formaEscolhida = document.getElementById('select-pag-rapido-forma').value;
-            const { alunoId, nomeAluno, valor, faturaId } = pagRapidoDados;
+            const valorDigitado = parseFloat(document.getElementById('input-pag-rapido-valor').value);
+            const dataPagamentoEscolhida = document.getElementById('input-pag-rapido-data').value;
+            
+            if (isNaN(valorDigitado) || valorDigitado < 0) return showToast("Por favor, insira um valor válido.", "error");
+            if (!dataPagamentoEscolhida) return showToast("Por favor, selecione a data do pagamento.", "error");
+
+            const { alunoId, nomeAluno, faturaId } = pagRapidoDados;
             const btn = document.getElementById('btn-confirma-pag-rapido');
             btn.disabled = true; btn.innerHTML = "⏳ Processando..."; showLoading();
-            const dataHoje = new Date().toISOString().split('T')[0];
+            
             const dataHojeCompleta = new Date();
             const mesAno = `${dataHojeCompleta.getFullYear()}-${String(dataHojeCompleta.getMonth() + 1).padStart(2, '0')}`;
+            
+            // Força a ISO String da data de pagamento com as 12:00 para evitar erro de fuso horário
+            const dataPagamentoISO = new Date(dataPagamentoEscolhida + 'T12:00:00').toISOString();
+
             try {
-                if (faturaId) await updateDoc(doc(db, "financeiro", faturaId), { status: 'PAGO', data: dataHoje, forma_pagamento: formaEscolhida, valor: valor, data_pagamento: new Date().toISOString() });
-                else await addDoc(collection(db, "financeiro"), { equipe_id: uid, aluno_id: alunoId, tipo: 'MENSALIDADE', status: 'PAGO', valor: valor, mes_ano: mesAno, descricao: `Mensalidade - ${nomeAluno}`, data_criacao: new Date().toISOString(), data: dataHoje, forma_pagamento: formaEscolhida, data_pagamento: new Date().toISOString() });
+                if (faturaId) {
+                    await updateDoc(doc(db, "financeiro", faturaId), { 
+                        status: 'PAGO', 
+                        data: dataPagamentoEscolhida, // Altera também a data base caso deseje atrelar à competência 
+                        forma_pagamento: formaEscolhida, 
+                        valor: valorDigitado, 
+                        data_pagamento: dataPagamentoISO // Este é o campo "pago em"
+                    });
+                } else {
+                    await addDoc(collection(db, "financeiro"), { 
+                        equipe_id: uid, 
+                        aluno_id: alunoId, 
+                        tipo: 'MENSALIDADE', 
+                        status: 'PAGO', 
+                        valor: valorDigitado, 
+                        mes_ano: mesAno, 
+                        descricao: `Mensalidade - ${nomeAluno}`, 
+                        data_criacao: new Date().toISOString(), 
+                        data: dataPagamentoEscolhida, 
+                        forma_pagamento: formaEscolhida, 
+                        data_pagamento: dataPagamentoISO 
+                    });
+                }
                 window.fecharModalPagamentoRapido(); showToast("Pagamento registrado com sucesso!", "success"); 
                 clearCache(); await carregarDashboard(true);
             } catch (e) { showToast("Erro ao registrar pagamento.", "error"); } finally { btn.disabled = false; btn.innerHTML = "Confirmar"; hideLoading(); }
