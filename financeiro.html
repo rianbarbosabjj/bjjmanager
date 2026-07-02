@@ -533,6 +533,10 @@
                         <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">PIX (Automático)</option><option value="CREDIT_CARD">Cartão de Crédito</option><option value="BOLETO">Boleto Bancário</option>
                     </select>
                 </div>
+                <div class="relative w-full mb-2">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-sm font-bold text-slate-400">R$</span>
+                        <input type="text" id="acao-valor-pag" oninput="mascaraMoeda(this)" class="w-full p-3.5 pl-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-black text-emerald-600 dark:text-emerald-400 outline-none focus:border-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed" placeholder="0,00" title="Editar Valor Cobrado">
+                </div>
                 <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
                 
                 <button id="btn-gerar-asaas" class="hidden w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600">💳 Gerar Link Digital</button>
