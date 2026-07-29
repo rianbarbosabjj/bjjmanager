@@ -791,7 +791,7 @@
 
             try {
                 const uploadDocs = httpsCallable(functions, 'uploadDocumentosAsaas');
-                const res = await uploadDocs({ front: fFront, back: fBack, selfie: fSelfie });
+                const res = await uploadDocs({ uid: uid, front: fFront, back: fBack, selfie: fSelfie });
 
                 if (res.data.success) {
                     showToast("Documentos enviados com sucesso! Aguarde a análise do banco.", "success");
@@ -1128,7 +1128,7 @@
             
             try {
                 const consultarSaldo = httpsCallable(functions, 'consultarSaldoAsaas');
-                const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
+                const res = await consultarSaldo({ uid: uid, apiKey: equipeDados.asaas_api_key });
                 
                 if(res.data.success) {
                     document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
@@ -1162,7 +1162,7 @@
 
             try {
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-                const res = await fazerSaque({ apiKey: equipeDados.asaas_api_key, valor: valorNum, chavePix: chave, tipoChave: tipo });
+                const res = await fazerSaque({ uid: uid, apiKey: equipeDados.asaas_api_key, valor: valorNum, chavePix: chave, tipoChave: tipo });
 
                 if(res.data.success) {
                     showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
@@ -1200,7 +1200,7 @@
 
             try {
                 const criarSubconta = httpsCallable(functions, 'criarSubcontaAsaas');
-                const res = await criarSubconta({ equipeId: uid, nome, cpfCnpj, dataNascimento, email, telefone: celular, cep, endereco, numero, bairro, renda });
+                const res = await criarSubconta({ uid: uid, equipeId: uid, nome, cpfCnpj, dataNascimento, email, telefone: celular, cep, endereco, numero, bairro, renda });
                 
                 if(res.data.success) {
                     showToast("Conta Asaas ativada com sucesso!", "success");
