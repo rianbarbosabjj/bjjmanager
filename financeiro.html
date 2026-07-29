@@ -15,8 +15,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Centro de Controle Financeiro | BJJ Manager</title>
     
-    <link rel="icon" type="image/png" href="logo_bjj_manager.png">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -50,7 +48,7 @@
             font-weight: 800; 
         }
 
-        input[type="text"], input[type="email"], input[type="password"], input[type="date"], select {
+        input[type="text"], input[type="email"], input[type="date"], select {
             border: 1px solid #E2E8F0;
             border-radius: 12px;
             transition: all 0.2s ease;
@@ -107,7 +105,6 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
         }
 
-        /* Adaptação dos Cartões dos Gráficos para o Modo Escuro */
         html.dark .chart-wrapper {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             border: 1px solid #334155;
@@ -198,6 +195,7 @@
             <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10 transition-colors">
                 <div class="max-w-7xl mx-auto space-y-6">
 
+                    <!-- TAB MENSALIDADES -->
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
                         <div class="flex flex-col sm:flex-row justify-between items-start gap-6 bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800">
                             <div class="flex gap-8 mt-2">
@@ -262,136 +260,225 @@
                         </div>
                     </div>
 
+                    <!-- TAB CONTA DIGITAL (ASAAS) -->
                     <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
-                        <div class="max-w-5xl mx-auto w-full">
-                            <h2 class="text-2xl font-black text-slate-800 dark:text-white mb-6">Conta Digital (Master)</h2>
+                        <div class="max-w-5xl mx-auto w-full space-y-6">
                             
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <div class="lg:col-span-2 card-premium p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col justify-center relative overflow-hidden">
-                                    <div class="relative z-10">
-                                        <p class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Saldo Disponível na Conta Master</p>
-                                        <h3 class="text-5xl font-black tracking-tighter mb-6" id="asaas-saldo-display">R$ 0,00</h3>
+                            <div class="flex items-center gap-4 px-2">
+                                <div>
+                                    <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Recebimento Digital</h2>
+                                    <p class="text-slate-500 font-medium mt-1">Gestão inteligente de PIX, Cartão e Boletos via Asaas.</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-2xl flex items-start gap-4 shadow-sm mb-2">
+                               <div class="text-2xl mt-1">🔒</div>
+                                <div>
+                                    <h4 class="text-xs font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest mb-1">Ambiente Transacional Homologado</h4>
+                                    <p class="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed font-medium">
+                                        As subcontas e transações financeiras desta plataforma são operadas através da infraestrutura de BaaS (Banking as a Service) do <strong class="font-black">Asaas Instituição de Pagamento S.A.</strong>, autorizado pelo Banco Central do Brasil.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- PAINEL CONTA ATIVA -->
+                            <div id="asaas-ativo-panel" class="hidden flex-col gap-6">
+                                
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="card-premium p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between border-slate-700">
+                                        <div class="relative z-10">
+                                            <p class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Saldo Disponível na Subconta</p>
+                                            <h3 class="text-5xl font-black tracking-tighter mb-6" id="asaas-saldo-display">R$ 0,00</h3>
+                                            
+                                            <div class="flex items-center gap-6">
+                                                <div>
+                                                    <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">A Compensar</p>
+                                                    <p class="text-sm font-bold text-slate-200" id="asaas-saldo-previsto">R$ 0,00</p>
+                                                </div>
+                                                <div class="h-8 w-[1px] bg-slate-700"></div>
+                                                <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all backdrop-blur-md border border-white/10 flex items-center gap-2">
+                                                    <span>🔄</span> Atualizar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mt-8 pt-4 border-t border-slate-700 relative z-10 flex justify-between items-center">
+                                            <div>
+                                                <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Código Wallet ID</p>
+                                                <p class="font-mono text-xs font-bold text-slate-400 truncate" id="asaas-wallet-display">---</p>
+                                            </div>
+                                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Ativo</span>
+                                        </div>
+                                        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl font-black pointer-events-none"></div>
+                                    </div>
+
+                                    <div class="card-premium p-8 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 border-t-4 border-t-purple-500 flex flex-col">
+                                        <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                                            <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento
+                                        </h4>
+                                        <p class="text-[11px] text-slate-500 font-bold mb-4">Escolha como seus alunos poderão pagar através do link automático.</p>
+
+                                        <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 p-4 rounded-2xl mb-6 shadow-sm">
+                                            <p class="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Prazos de Compensação</p>
+                                            <p class="text-[10px] text-amber-600 dark:text-amber-500/80 font-medium leading-relaxed">
+                                                O <b>PIX</b> é creditado instantaneamente. O <b>Boleto Bancário</b> leva até <b>3 dias úteis</b>. Pagamentos via <b>Cartão de Crédito</b> levam <b>30 dias</b> para compor o seu saldo disponível.
+                                            </p>
+                                        </div>
                                         
-                                        <div class="flex items-center gap-6">
-                                            <div>
-                                                <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">A Compensar</p>
-                                                <p class="text-sm font-bold text-slate-200" id="asaas-saldo-previsto">R$ 0,00</p>
-                                            </div>
-                                            <div class="h-8 w-[1px] bg-slate-700"></div>
-                                            <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all backdrop-blur-md flex items-center gap-2">
-                                                <span>🔄</span> Atualizar
-                                            </button>
+                                        <div class="space-y-3 relative z-10 flex-1">
+                                            <label class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border border-slate-200 dark:border-slate-800 opacity-70 cursor-not-allowed">
+                                                <div class="flex items-center gap-3"><span class="text-xl">⚡</span><div><p class="text-xs font-black text-slate-700 dark:text-slate-300">PIX (Obrigatório)</p><p class="text-[9px] font-bold text-emerald-500">Liberação Imediata</p></div></div>
+                                                <input type="checkbox" checked disabled class="w-5 h-5 text-cyan-600 rounded border-none shadow-sm cursor-not-allowed dark:bg-slate-800">
+                                            </label>
+                                            <label class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                                                <div class="flex items-center gap-3"><span class="text-xl">🏦</span><div><p class="text-xs font-black text-slate-700 dark:text-slate-300">Boleto Bancário</p><p class="text-[9px] font-bold text-amber-500">Compensa em até 3 dias</p></div></div>
+                                                <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 text-cyan-600 rounded border-slate-300 dark:border-slate-600 focus:ring-cyan-500 dark:bg-slate-950">
+                                            </label>
+                                            <label class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                                                <div class="flex items-center gap-3"><span class="text-xl">💳</span><div><p class="text-xs font-black text-slate-700 dark:text-slate-300">Cartão de Crédito</p><p class="text-[9px] font-bold text-rose-500">Compensa em 30 dias</p></div></div>
+                                                <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 dark:border-slate-600 focus:ring-cyan-500 dark:bg-slate-950">
+                                            </label>
                                         </div>
-                                    </div>
-                                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl font-black pointer-events-none"></div>
-                                </div>
 
-                                <div class="card-premium p-6 border-t-4 border-t-indigo-500 flex flex-col justify-center bg-white dark:bg-slate-900">
-                                    <h4 class="font-black text-slate-800 dark:text-white text-sm mb-2 flex items-center gap-2">
-                                        <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg">🔐</span> Segurança
-                                    </h4>
-                                    <p class="text-[10px] text-slate-500 mb-4 font-bold">Defina ou altere a senha para transferências.</p>
-                                    
-                                    <input type="password" id="senha-atual-saque" placeholder="Senha Atual (vazio se for a 1ª vez)" class="w-full p-3 mb-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-indigo-500 dark:text-white">
-                                    <input type="password" id="nova-senha-saque" placeholder="Nova Senha (mín. 6)" class="w-full p-3 mb-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-indigo-500 dark:text-white">
-                                    
-                                    <button onclick="configurarSenhaSaque()" id="btn-config-senha" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-md">Salvar Senha</button>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                                <div class="card-premium p-8 bg-white dark:bg-slate-900 border-t-4 border-t-cyan-500 flex flex-col">
-                                    <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                                        <span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg">💸</span> Transferir / Sacar
-                                    </h4>
-                                    <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-4 flex-1 flex flex-col">
-                                        <div>
-                                            <div class="flex justify-between items-center mb-1">
-                                                <label class="block text-[10px] font-black text-slate-400 uppercase ml-1">Valor (R$)</label>
-                                                <button type="button" onclick="preencherSaldoTotal()" class="text-[9px] text-cyan-600 dark:text-cyan-400 font-bold hover:underline">Puxar Total 👇</button>
-                                            </div>
-                                            <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-black text-cyan-600 text-xl shadow-inner placeholder:text-slate-300 dark:placeholder:text-slate-600" placeholder="0,00">
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Tipo de Chave</label>
-                                                <select id="saque-tipo-pix" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-slate-300 cursor-pointer text-sm">
-                                                    <option value="CPF">CPF</option><option value="CNPJ">CNPJ</option><option value="EMAIL">E-mail</option><option value="PHONE">Celular</option><option value="EVP">Chave Aleatória</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Chave PIX</label>
-                                                <input type="text" id="saque-chave-pix" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white text-sm" placeholder="Destino...">
-                                            </div>
-                                        </div>
-                                        <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all text-xs border border-slate-900 dark:border-white">
-                                            Efetuar Transferência PIX
+                                        <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-black px-6 py-4 rounded-2xl transition-colors uppercase tracking-widest w-full shadow-md">
+                                            💾 Salvar Preferências
                                         </button>
-                                    </form>
+                                    </div>
                                 </div>
 
-                                <div class="card-premium p-8 bg-white dark:bg-slate-900 border-t-4 border-t-purple-500 flex flex-col">
-                                    <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento
-                                    </h4>
-                                    <p class="text-[11px] text-slate-500 font-bold mb-4">Escolha como seus alunos poderão pagar através do link automático.</p>
-                                    
-                                    <div class="space-y-3 relative z-10 flex-1">
-                                        <label class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border border-slate-200 dark:border-slate-800 opacity-70 cursor-not-allowed">
-                                            <div class="flex items-center gap-3"><span class="text-xl">⚡</span><div><p class="text-xs font-black text-slate-700 dark:text-slate-300">PIX (Obrigatório)</p><p class="text-[9px] font-bold text-emerald-500">Liberação Imediata</p></div></div>
-                                            <input type="checkbox" checked disabled class="w-5 h-5 text-cyan-600 rounded border-none shadow-sm cursor-not-allowed dark:bg-slate-800">
-                                        </label>
-                                        <label class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
-                                            <div class="flex items-center gap-3"><span class="text-xl">🏦</span><div><p class="text-xs font-black text-slate-700 dark:text-slate-300">Boleto Bancário</p><p class="text-[9px] font-bold text-amber-500">Compensa em até 3 dias</p></div></div>
-                                            <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 text-cyan-600 rounded border-slate-300 dark:border-slate-600 focus:ring-cyan-500 dark:bg-slate-950">
-                                        </label>
-                                        <label class="flex items-center justify-between p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
-                                            <div class="flex items-center gap-3"><span class="text-xl">💳</span><div><p class="text-xs font-black text-slate-700 dark:text-slate-300">Cartão de Crédito</p><p class="text-[9px] font-bold text-rose-500">Compensa em 30 dias</p></div></div>
-                                            <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 dark:border-slate-600 focus:ring-cyan-500 dark:bg-slate-950">
-                                        </label>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="card-premium p-8 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 flex flex-col border-t-4 border-t-cyan-500">
+                                        <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg">💸</span> Transferir / Sacar
+                                        </h4>
+                                        <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-5 flex-1 flex flex-col">
+                                            <div>
+                                                <div class="flex justify-between items-center mb-2">
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase ml-1">Valor do Saque (R$)</label>
+                                                    <button type="button" onclick="preencherSaldoTotal()" class="text-[10px] bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl hover:bg-cyan-200 dark:hover:bg-cyan-900/50 transition-all shadow-sm flex items-center gap-1 border border-cyan-300 dark:border-cyan-800">
+                                                        <span class="text-sm">👇</span> Puxar Total
+                                                    </button>
+                                                </div>
+                                                <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:border-cyan-500 font-black text-cyan-600 text-2xl shadow-inner placeholder:text-slate-300 dark:placeholder:text-slate-600" placeholder="0,00">
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Tipo de Chave</label>
+                                                    <select id="saque-tipo-pix" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-slate-300 cursor-pointer shadow-sm">
+                                                        <option value="CPF">CPF</option><option value="CNPJ">CNPJ</option><option value="EMAIL">E-mail</option><option value="PHONE">Celular</option><option value="EVP">Chave Aleatória</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Sua Chave PIX</label>
+                                                    <input type="text" id="saque-chave-pix" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white shadow-sm" placeholder="Chave de destino...">
+                                                </div>
+                                            </div>
+                                            <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 font-black py-5 rounded-2xl shadow-lg uppercase tracking-widest transition-all text-xs border border-slate-900 dark:border-white">
+                                                Efetuar Transferência PIX
+                                            </button>
+                                        </form>
                                     </div>
 
-                                    <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-black px-6 py-4 rounded-2xl transition-colors uppercase tracking-widest w-full shadow-md">
-                                        💾 Salvar Preferências
-                                    </button>
-                                </div>
-                            </div>
+                                    <!-- KYC PANEL -->
+                                    <div id="asaas-verificacao-panel" class="hidden card-premium p-8 border-slate-200 dark:border-slate-800 border-t-4 border-t-slate-500 bg-white dark:bg-slate-900 flex flex-col justify-between">
+                                        <div class="flex items-start justify-between mb-6">
+                                            <div>
+                                                <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">Identidade (KYC)</h4>
+                                                <p class="text-[11px] text-slate-500 font-bold mt-1">Obrigatório para habilitar saques e PIX automático.</p>
+                                            </div>
+                                            <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 p-3 rounded-2xl text-xl">🛡️</span>
+                                        </div>
 
-                            <div class="card-premium p-8 mt-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 border-t-4 border-t-emerald-500 flex flex-col">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                                        <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">📜</span> Histórico de Saques
-                                    </h4>
-                                    <button onclick="carregarHistoricoSaques()" class="text-xs font-bold text-slate-400 hover:text-emerald-500 transition-colors flex items-center gap-1">
-                                        <span>🔄</span> Atualizar
-                                    </button>
+                                        <div class="grid grid-cols-3 gap-3 mb-6">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Frente</label>
+                                                <div class="relative group">
+                                                    <input type="file" id="file-document-front" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-front')">
+                                                    <label for="file-document-front" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 transition-all overflow-hidden bg-slate-50 dark:bg-slate-950/50">
+                                                        <div id="preview-front" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
+                                                            <span class="text-2xl mb-1">📇</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Verso</label>
+                                                <div class="relative group">
+                                                    <input type="file" id="file-document-back" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-back')">
+                                                    <label for="file-document-back" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 transition-all overflow-hidden bg-slate-50 dark:bg-slate-950/50">
+                                                        <div id="preview-back" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
+                                                            <span class="text-2xl mb-1">📑</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Selfie</label>
+                                                <div class="relative group">
+                                                    <input type="file" id="file-selfie" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-selfie')">
+                                                    <label for="file-selfie" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 transition-all overflow-hidden bg-slate-50 dark:bg-slate-950/50">
+                                                        <div id="preview-selfie" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
+                                                            <span class="text-2xl mb-1">🤳</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button onclick="enviarDocumentosAsaas()" id="btn-enviar-docs" class="mt-auto bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 text-[10px] font-black px-8 py-4 rounded-2xl transition-all uppercase tracking-widest w-full shadow-lg">
+                                            📤 Enviar para Análise do Banco
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="overflow-x-auto w-full">
-                                    <table class="w-full text-left border-collapse whitespace-nowrap">
-                                        <thead>
-                                            <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                                <th class="px-6 py-4 rounded-tl-xl">Data / Hora</th>
-                                                <th class="px-6 py-4 text-right">Valor Solicitado</th>
-                                                <th class="px-6 py-4 text-center">Chave de Destino</th>
-                                                <th class="px-6 py-4 text-center rounded-tr-xl">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tabela-historico-saques" class="divide-y divide-slate-50 dark:divide-slate-800/50 text-sm">
-                                            <tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">Carregando histórico...</td></tr>
-                                        </tbody>
-                                    </table>
+                                
+                                <div class="card-premium p-8 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 border-t-4 border-t-emerald-500 flex flex-col">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                            <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">📜</span> Histórico de Saques
+                                        </h4>
+                                        <button onclick="carregarHistoricoSaques()" class="text-xs font-bold text-slate-400 hover:text-emerald-500 transition-colors flex items-center gap-1">
+                                            <span>🔄</span> Atualizar
+                                        </button>
+                                    </div>
+                                    <div class="overflow-x-auto w-full">
+                                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                                            <thead>
+                                                <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                    <th class="px-6 py-4 rounded-tl-xl">Data / Hora</th>
+                                                    <th class="px-6 py-4 text-right">Valor Solicitado</th>
+                                                    <th class="px-6 py-4 text-center">Chave de Destino</th>
+                                                    <th class="px-6 py-4 text-center rounded-tr-xl">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabela-historico-saques" class="divide-y divide-slate-50 dark:divide-slate-800/50 text-sm">
+                                                <tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">Carregando histórico...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="mt-8 w-full flex flex-col items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider m-0">
-                                    Ambiente Financeiro Integrado
-                                </p>
-                                <a href="https://www.asaas.com/" target="_blank" rel="noopener noreferrer" class="block max-w-[140px] transition-transform hover:scale-105">
-                                <img src="https://baas.asaas.com/selos/Servicos_financeiros_Asaas-Reduzida-Negativo-Branco.svg?id=367e0c81-f374-4a9f-b6e1-be7cd7f89820" 
-                                     alt="Serviços financeiros processados por Asaas" 
-                                     class="w-full h-auto bg-slate-900 dark:bg-slate-950 p-2 rounded-xl border border-slate-800 shadow-sm">
-                                </a>
-                            </div>                           
+                            </div> 
+
+                            <!-- PAINEL DE CRIAÇÃO DA SUBCONTA -->
+                            <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
+                                <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-xl">
+                                    <p class="text-xs font-bold text-amber-700 dark:text-amber-400">⚠️ Para garantir a sua segurança e obedecer às regras do Banco Central, preencha os dados do responsável financeiro da equipe para habilitarmos a emissão de cobranças e baixa de pagamentos automáticos.</p>
+                                </div>
+                                <h4 class="text-lg font-black text-slate-800 dark:text-white">Ativação da Conta Digital</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Nome Completo / Razão Social</label><input type="text" id="asaas-nome" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">CPF ou CNPJ</label><input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Data de Nascimento</label><input type="date" id="asaas-nascimento" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">E-mail de Contato</label><input type="email" id="asaas-email" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Celular (DDD)</label><input type="text" id="asaas-celular" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Renda Mensal Estimada (R$)</label><input type="text" id="asaas-renda" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 border-t border-slate-100 dark:border-slate-800 pt-6">
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">CEP</label><input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="mascaraCEP(this)" required maxlength="9" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Endereço (Rua/Avenida)</label><input type="text" id="asaas-end" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Número</label><input type="text" id="asaas-num" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Bairro</label><input type="text" id="asaas-bairro" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white"></div>
+                                </div>
+                                <button type="submit" id="btn-ativar-asaas-form" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-4 rounded-2xl shadow-lg uppercase tracking-widest text-xs mt-4 transition-all">🚀 Ativar Minha Conta Digital</button>
+                            </form>
                         </div>
                     </div>
 
@@ -493,25 +580,9 @@
                             </div>
                         </div>
                     </div>
-
-                </div>
+                    </div>
             </div>
         </main>
-    </div>
-
-    <div id="modal-senha-saque-wrapper" class="fixed inset-0 z-[400] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
-        <div class="bg-white dark:bg-slate-900 p-8 card-premium border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-sm relative flex flex-col text-center border-t-4 border-cyan-500">
-            <div class="w-16 h-16 bg-cyan-100 dark:bg-cyan-900/20 text-cyan-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">🔒</div>
-            <h3 class="font-black text-slate-800 dark:text-white text-xl uppercase tracking-tight mb-2">Autorizar Saque</h3>
-            <p class="text-xs text-slate-500 font-medium leading-relaxed mb-6">Por segurança, confirme sua senha de saque para efetuar a transferência.</p>
-            
-            <input type="password" id="senha-saque-modal" placeholder="Sua senha..." class="w-full p-4 mb-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-bold outline-none focus:border-cyan-500 dark:text-white text-lg tracking-widest" autocomplete="new-password">
-            
-            <div class="flex gap-3">
-                <button onclick="fecharModalSenhaSaque()" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Cancelar</button>
-                <button onclick="confirmarSaqueComSenha()" class="flex-1 py-3.5 bg-cyan-600 hover:bg-cyan-700 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg transition-all">Confirmar</button>
-            </div>
-        </div>
     </div>
 
     <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
@@ -532,10 +603,6 @@
                     <select id="acao-forma-pag" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-white outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                         <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">PIX (Automático)</option><option value="CREDIT_CARD">Cartão de Crédito</option><option value="BOLETO">Boleto Bancário</option>
                     </select>
-                </div>
-                <div class="relative w-full mb-2">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-sm font-bold text-slate-400">R$</span>
-                        <input type="text" id="acao-valor-pag" oninput="mascaraMoeda(this)" class="w-full p-3.5 pl-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-black text-emerald-600 dark:text-emerald-400 outline-none focus:border-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed" placeholder="0,00" title="Editar Valor Cobrado">
                 </div>
                 <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
                 
@@ -656,9 +723,6 @@
         window.financeiroAnoCache = []; 
         window.alunoSelecionadoMens = null;
 
-        // Controle do modal de saque
-        window.dadosSaquePendente = null;
-
         window.chartBalancoMes = null;
         window.chartOrigemMes = null;
         window.chartEvolucaoAno = null;
@@ -690,6 +754,58 @@
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
+        }
+
+        // ==========================================
+        // KYC - UPLOAD AS BASE64 E CHAMADA API
+        // ==========================================
+        window.previewFile = function(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewDiv = document.getElementById(previewId);
+                previewDiv.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-2xl shadow-md">`;
+                input.setAttribute('data-b64', e.target.result.split(',')[1]);
+            }
+            reader.readAsDataURL(file);
+        }
+
+        window.enviarDocumentosAsaas = async function() {
+            const frontEl = document.getElementById('file-document-front');
+            const backEl = document.getElementById('file-document-back');
+            const selfieEl = document.getElementById('file-selfie');
+
+            const fFront = frontEl.getAttribute('data-b64');
+            const fBack = backEl.getAttribute('data-b64');
+            const fSelfie = selfieEl.getAttribute('data-b64');
+
+            if (!fFront || !fBack || !fSelfie) {
+                return showToast("Por favor, anexe a foto da Frente, Verso e a sua Selfie.", "error");
+            }
+
+            const btn = document.getElementById('btn-enviar-docs');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Enviando arquivos seguros...";
+            btn.disabled = true;
+
+            try {
+                const uploadDocs = httpsCallable(functions, 'uploadDocumentosAsaas');
+                const res = await uploadDocs({ front: fFront, back: fBack, selfie: fSelfie });
+
+                if (res.data.success) {
+                    showToast("Documentos enviados com sucesso! Aguarde a análise do banco.", "success");
+                    registrarLogAuditoria("ENVIO_KYC", "Enviou documentos de identidade para verificação no Asaas.");
+                    document.getElementById('asaas-verificacao-panel').classList.add('hidden');
+                } else {
+                    showToast("Erro do Banco: " + res.data.error, "error");
+                }
+            } catch (e) {
+                showToast("Erro na conexão ao enviar documentos.", "error");
+            } finally {
+                btn.innerHTML = origTxt;
+                btn.disabled = false;
+            }
         }
 
         // ==========================================
@@ -872,77 +988,90 @@
             } else window.location.href = "index.html";
         });
 
-    async function carregarInfoEquipe(user) {
-        const elEmailLogado = document.getElementById('email-logado');
-        if (elEmailLogado) elEmailLogado.innerText = user.email;
+        async function carregarInfoEquipe(user) {
+            const elEmailLogado = document.getElementById('email-logado');
+            if (elEmailLogado) elEmailLogado.innerText = user.email;
 
-        try {
-            const docSnap = await getDoc(doc(db, "equipes", uid));
-        
-        if (docSnap.exists()) {
-            const lblCargo = document.getElementById('lbl-cargo');
-            if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
-            equipeDados = docSnap.data();
-        } else {
-            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-            if(colabSnap.exists()) {
-                uid = colabSnap.data().equipe_id; 
-                const lblCargo = document.getElementById('lbl-cargo');
-                if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                if(equipeMestreSnap.exists()) equipeDados = equipeMestreSnap.data();
-            }
-        }
-
-        if (equipeDados) {
-            equipeNomeGlobal = equipeDados.nome_equipe;
-            equipeLogoGlobal = equipeDados.url_logo;
+            try {
+                const docSnap = await getDoc(doc(db, "equipes", uid));
             
-            const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
-            if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
-
-            const elLogo = document.getElementById('container-logo');
-            if (elLogo) {
-                if (equipeLogoGlobal) {
-                    elLogo.style.background = 'transparent';
-                    elLogo.innerHTML = `<img src="${equipeLogoGlobal}" class="w-full h-full object-cover" alt="Logo">`;
+                if (docSnap.exists()) {
+                    const lblCargo = document.getElementById('lbl-cargo');
+                    if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
+                    equipeDados = docSnap.data();
                 } else {
-                    elLogo.style.background = ''; 
-                    elLogo.innerHTML = equipeNomeGlobal.charAt(0).toUpperCase();
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id; 
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                        const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                        if(equipeMestreSnap.exists()) equipeDados = equipeMestreSnap.data();
+                    }
                 }
-            }
 
-            // CORREÇÃO: Verificamos se o valor é diferente de undefined para aceitar o número 0
-            if(equipeDados.valor_prazo !== undefined) equipeBaseConfig.prazo = parseFloat(equipeDados.valor_prazo);
-            if(equipeDados.valor_atraso !== undefined) equipeBaseConfig.atraso = parseFloat(equipeDados.valor_atraso);
-            
-            if(equipeDados.chave_pix) {
-                equipeBaseConfig.chave_pix = equipeDados.chave_pix;
-                document.getElementById('config-pix').value = equipeDados.chave_pix;
-            }
+                if (equipeDados) {
+                    equipeNomeGlobal = equipeDados.nome_equipe;
+                    equipeLogoGlobal = equipeDados.url_logo;
+                    
+                    const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
 
-            // CARREGA AS CONFIGURAÇÕES DE PAGAMENTO SALVAS
-            document.getElementById('asaas-aceita-boleto').checked = equipeDados.asaas_aceita_boleto === true;
-            document.getElementById('asaas-aceita-cartao').checked = equipeDados.asaas_aceita_cartao === true;
-            
-            document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
-            document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
-            window.toggleTaxaInput();
+                    const elLogo = document.getElementById('container-logo');
+                    if (elLogo) {
+                        if (equipeLogoGlobal) {
+                            elLogo.style.background = 'transparent';
+                            elLogo.innerHTML = `<img src="${equipeLogoGlobal}" class="w-full h-full object-cover" alt="Logo">`;
+                        } else {
+                            elLogo.style.background = ''; 
+                            elLogo.innerHTML = equipeNomeGlobal.charAt(0).toUpperCase();
+                        }
+                    }
 
-            // EXIBE DIRETAMENTE O PAINEL DE CONTA ATIVA PARA A CONTA MASTER
-            document.getElementById('asaas-ativo-panel').classList.remove('hidden');
-            document.getElementById('asaas-wallet-display').innerText = "Conta Master (BJJ Digital)";
-            
-            if(equipeDados.pix_saque_chave) {
-                document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
-                if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
-            }
+                    if(equipeDados.valor_prazo !== undefined) equipeBaseConfig.prazo = parseFloat(equipeDados.valor_prazo);
+                    if(equipeDados.valor_atraso !== undefined) equipeBaseConfig.atraso = parseFloat(equipeDados.valor_atraso);
+                    
+                    if(equipeDados.chave_pix) {
+                        equipeBaseConfig.chave_pix = equipeDados.chave_pix;
+                        document.getElementById('config-pix').value = equipeDados.chave_pix;
+                    }
 
-            carregarSaldoAsaas();
-            carregarHistoricoSaques();
+                    document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
+                    document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
+                    document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
+                    document.getElementById('asaas-celular').value = equipeDados.telefone || equipeDados.celular || "";
+
+                    document.getElementById('asaas-aceita-boleto').checked = equipeDados.asaas_aceita_boleto === true;
+                    document.getElementById('asaas-aceita-cartao').checked = equipeDados.asaas_aceita_cartao === true;
+                    
+                    document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
+                    document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
+                    window.toggleTaxaInput();
+
+                    // Considera ambas as variáveis para compatibilidade
+                    const isAsaasAtivo = equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA';
+
+                    if(isAsaasAtivo) {
+                        document.getElementById('asaas-ativo-panel').classList.remove('hidden');
+                        document.getElementById('asaas-verificacao-panel').classList.remove('hidden'); // Mostra o painel KYC por padrão para contas recém criadas
+                        document.getElementById('asaas-form-panel').classList.add('hidden');
+                        document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
+                        
+                        if(equipeDados.pix_saque_chave) {
+                            document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
+                            if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
+                        }
+
+                        carregarSaldoAsaas();
+                        carregarHistoricoSaques();
+                    } else {
+                        document.getElementById('asaas-ativo-panel').classList.add('hidden');
+                        document.getElementById('asaas-verificacao-panel').classList.add('hidden');
+                        document.getElementById('asaas-form-panel').classList.remove('hidden');
+                    }
+                }
+            } catch (error) { console.log(error); }
         }
-        } catch (error) { console.log(error); }
-    }
 
         window.salvarConfiguracaoGeral = async function() {
             const p = strToFloat(document.getElementById('config-prazo').value);
@@ -991,13 +1120,15 @@
         }
 
         window.carregarSaldoAsaas = async function() {
+            if(!equipeDados || !equipeDados.asaas_api_key) return;
+            
             const btn = document.getElementById('btn-atualizar-saldo');
             const origTxt = btn.innerHTML;
             btn.innerHTML = "🔄 ..."; btn.disabled = true;
             
             try {
                 const consultarSaldo = httpsCallable(functions, 'consultarSaldoAsaas');
-                const res = await consultarSaldo(); // Já bate direto na chave Master pelo back-end
+                const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
                 
                 if(res.data.success) {
                     document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
@@ -1016,115 +1147,75 @@
             document.getElementById('saque-valor').value = textoSaldo.replace('R$', '').trim();
         }
 
-        // ==========================================
-        // 🔥 LÓGICA DE SAQUE COM NOVO MODAL PREMIUM
-        // ==========================================
-
-        window.fecharModalSenhaSaque = function() {
-            document.getElementById('modal-senha-saque-wrapper').classList.replace('flex', 'hidden');
-            document.getElementById('senha-saque-modal').value = '';
-            dadosSaquePendente = null;
-        }
-
-        window.solicitarSaque = function() {
-            const valorInput = document.getElementById('saque-valor');
-            const valorNum = strToFloat(valorInput.value);
+        window.solicitarSaque = async function() {
+            const valorNum = strToFloat(document.getElementById('saque-valor').value);
             const tipo = document.getElementById('saque-tipo-pix').value;
             const chave = document.getElementById('saque-chave-pix').value.trim();
             
-            if(valorNum <= 0) return showToast("Valor inválido!", "error");
-            if(!chave) return showToast("Chave PIX obrigatória!", "error");
-
-            // Guarda os dados para processar no próximo passo
-            dadosSaquePendente = { valorNum, tipo, chave };
-            
-            // Abre o modal em vez do alert
-            document.getElementById('modal-senha-saque-wrapper').classList.replace('hidden', 'flex');
-            setTimeout(() => document.getElementById('senha-saque-modal').focus(), 100);
-        }
-
-        window.confirmarSaqueComSenha = async function() {
-            const senha = document.getElementById('senha-saque-modal').value;
-            if(!senha) return showToast("A senha é obrigatória para autorizar.", "error");
-
-            // 🔥 CORREÇÃO: Salvar os dados na memória ANTES de fechar o modal
-            const payloadSaque = {
-                valor: dadosSaquePendente.valorNum,
-                chavePix: dadosSaquePendente.chave,
-                tipoChave: dadosSaquePendente.tipo,
-                senhaDigitada: senha,
-                uid: window.uid
-            };
-
-            // Agora sim podemos fechar o modal e limpar a tela
-            fecharModalSenhaSaque();
+            if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
+            if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
+            if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
 
             const btn = document.getElementById('btn-sacar-asaas');
             const origTxt = btn.innerHTML;
-            btn.innerHTML = "⏳ Autorizando..."; btn.disabled = true;
+            btn.innerHTML = "⏳ Processando Transferência..."; btn.disabled = true;
 
             try {
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-                // Enviamos o payload salvo para o back-end
-                const res = await fazerSaque(payloadSaque);
+                const res = await fazerSaque({ apiKey: equipeDados.asaas_api_key, valor: valorNum, chavePix: chave, tipoChave: tipo });
 
                 if(res.data.success) {
-                    showToast("Saque autorizado e processado!", "success");
+                    showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
                     document.getElementById('saque-valor').value = "";
+                    await updateDoc(doc(db, "equipes", uid), { pix_saque_chave: chave, pix_saque_tipo: tipo });
+                    await addDoc(collection(db, "saques"), { equipe_id: uid, valor: valorNum, chave_pix: chave, tipo_chave: tipo, data: new Date().toISOString(), status: 'SOLICITADO' });
                     carregarHistoricoSaques();
+                    registrarLogAuditoria("SAQUE_ASAAS", `Saque Asaas de R$ ${valorNum} solicitado via PIX: ${chave}`);
                     carregarSaldoAsaas(); 
-                } else {
-                    showToast(res.data.error || "Erro ao processar saque", "error");
-                }
-            } catch(e) {
-                console.error(e);
-                showToast("Erro do servidor: " + e.message, "error");
-            } finally {
-                btn.innerHTML = origTxt;
-                btn.disabled = false;
-            }
+                } else { showToast("Erro do Banco: " + res.data.error, "error"); }
+            } catch(e) { showToast("Falha na comunicação com o banco.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
         }
 
-        window.configurarSenhaSaque = async function() {
-            const senhaAtual = document.getElementById('senha-atual-saque').value;
-            const novaSenha = document.getElementById('nova-senha-saque').value;
-            
-            if(novaSenha.length < 6) return showToast("A nova senha precisa ter pelo menos 6 caracteres.", "error");
+        window.buscarCEPAsaas = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            document.getElementById('asaas-end').value = "Buscando..."; document.getElementById('asaas-bairro').value = "Buscando...";
+            try {
+                const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+                if (!r.erro) { document.getElementById('asaas-end').value = r.logradouro || ""; document.getElementById('asaas-bairro').value = r.bairro || ""; document.getElementById('asaas-num').focus(); } 
+                else { document.getElementById('asaas-end').value = ""; document.getElementById('asaas-bairro').value = ""; showToast("CEP não encontrado.", "error"); }
+            } catch(e) { document.getElementById('asaas-end').value = ""; document.getElementById('asaas-bairro').value = ""; showToast("Erro ao buscar CEP.", "error"); }
+        };
 
-            const btn = document.getElementById('btn-config-senha');
-            const origTxt = btn.innerText;
-            btn.innerText = "Salvando..."; btn.disabled = true;
+        window.criarSubcontaAsaas = async function() {
+            const nome = document.getElementById('asaas-nome').value.trim(); const cpfCnpj = document.getElementById('asaas-cpf').value.trim(); const dataNascimento = document.getElementById('asaas-nascimento').value;
+            const email = document.getElementById('asaas-email').value.trim(); const celular = document.getElementById('asaas-celular').value.trim(); const cep = document.getElementById('asaas-cep').value.trim();
+            const endereco = document.getElementById('asaas-end').value.trim(); const numero = document.getElementById('asaas-num').value.trim(); const bairro = document.getElementById('asaas-bairro').value.trim(); const renda = document.getElementById('asaas-renda').value.trim();
+
+            if(!nome || !cpfCnpj || !email || !celular || !cep || !endereco || !numero || !bairro || !renda) return showToast("Preencha todos os campos obrigatórios!", "error");
+            if (cpfCnpj.length === 11 && !dataNascimento) return showToast("A Data de Nascimento é obrigatória para CPF.", "error");
+
+            const btn = document.getElementById('btn-ativar-asaas-form'); const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Criando sua conta no banco..."; btn.disabled = true;
 
             try {
-                const definirSenha = httpsCallable(functions, 'definirSenhaSaque');
-                const res = await definirSenha({ 
-                    senhaAtual: senhaAtual, 
-                    novaSenha: novaSenha,
-                    uid: window.uid // 🔥 AGORA O FIREBASE SABE QUEM VOCÊ É
-                });
+                const criarSubconta = httpsCallable(functions, 'criarSubcontaAsaas');
+                const res = await criarSubconta({ equipeId: uid, nome, cpfCnpj, dataNascimento, email, telefone: celular, cep, endereco, numero, bairro, renda });
                 
                 if(res.data.success) {
-                    showToast("Senha de saque configurada com segurança!", "success");
-                    document.getElementById('senha-atual-saque').value = "";
-                    document.getElementById('nova-senha-saque').value = "";
-                } else {
-                    showToast("Erro: " + res.data.error, "error");
-                }
-            } catch(e) {
-                console.error(e);
-                showToast("Falha na conexão com o servidor.", "error");
-            } finally {
-                btn.innerText = origTxt;
-                btn.disabled = false;
-            }
+                    showToast("Conta Asaas ativada com sucesso!", "success");
+                    equipeDados.status_baas = "ATIVA";
+                    registrarLogAuditoria("CONTA_ASAAS_CRIADA", `Cadastro Asaas criado para ${nome} (${cpfCnpj})`);
+                    carregarInfoEquipe({email: document.getElementById('email-logado') ? document.getElementById('email-logado').innerText : ''});
+                } else { showToast("Erro Asaas: " + res.data.error, "error"); }
+            } catch(e) { showToast("Falha de conexão ao criar conta.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
         }
+
         window.gerarFaturas = async function() {
-            // --- TRAVA DE SEGURANÇA: Bloqueia se o valor base estiver zerado ---
             if (equipeBaseConfig.prazo <= 0) {
                 showToast("Atenção: O valor da mensalidade (No Prazo) está zerado. Geração bloqueada.", "error");
                 return;
             }
-            // -------------------------------------------------------------------
 
             const btn = document.getElementById('btn-gerar-faturas'); if(!btn) return;
             const originalTxt = btn.innerHTML; btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando..."; btn.disabled = true;
@@ -1145,7 +1236,7 @@
                             descricao: `Mensalidade - ${aluno.nome}`, data_criacao: new Date().toISOString() 
                         };
 
-                        const temAsaas = true; // Forçado ativo para Conta Master
+                        const temAsaas = equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true);
                         if (!temAsaas && status !== 'ISENTO') faturaData.chave_pix_manual = chavePixAtual;
 
                         await addDoc(collection(db, "financeiro"), faturaData);
@@ -1338,14 +1429,22 @@
 
                 inputData.valueAsDate = new Date(); inputData.disabled = false; selectForma.value = 'PIX'; selectForma.disabled = false;
 
-                // Como a conta é sempre Master, mostramos sempre o botão de gerar link
-                btnAsaas.classList.remove('hidden'); btnAsaas.onclick = gerarLinkAsaasAdmin; 
-                if (calcData.reg.link_pagamento) {
-                    btnAsaas.innerHTML = "💳 Ver Link Gerado";
-                    btnAsaas.className = "w-full bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 font-black py-3.5 rounded-xl transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-200 dark:border-blue-800";
+                if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true)) {
+                    btnAsaas.classList.remove('hidden'); btnAsaas.onclick = gerarLinkAsaasAdmin; 
+                    if (calcData.reg.link_pagamento) {
+                        btnAsaas.innerHTML = "💳 Ver Link Gerado";
+                        btnAsaas.className = "w-full bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 font-black py-3.5 rounded-xl transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-200 dark:border-blue-800";
+                    } else {
+                        btnAsaas.innerHTML = "💳 Gerar Link de Cobrança";
+                        btnAsaas.className = "w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600";
+                    }
                 } else {
-                    btnAsaas.innerHTML = "💳 Gerar Link de Cobrança";
-                    btnAsaas.className = "w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600";
+                    const chavePixFatura = calcData.reg.chave_pix_manual || equipeBaseConfig.chave_pix;
+                    if (chavePixFatura) {
+                        btnAsaas.classList.remove('hidden'); btnAsaas.innerHTML = "📄 Copiar Chave PIX";
+                        btnAsaas.className = "w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black py-3.5 rounded-xl shadow-sm transition-all text-xs uppercase tracking-widest cursor-pointer border border-slate-300 dark:border-slate-700";
+                        btnAsaas.onclick = function() { navigator.clipboard.writeText(chavePixFatura); showToast("Chave PIX copiada para a área de transferência!", "success"); };
+                    } else { btnAsaas.classList.add('hidden'); }
                 }
             }
 
@@ -1372,7 +1471,7 @@
                 const resultado = await gerarCobranca({
                     alunoId: alunoSelecionadoMens.id, valor: valorCobrarAsaas, mesAno: fatura.mes_ano,
                     descricao: `Mensalidade Jiu-Jitsu - Ref: ${fatura.mes_ano}`,
-                    aceitaCartao: equipeDados.asaas_aceita_cartao === true
+                    aceitaBoleto: equipeDados.asaas_aceita_boleto === true, aceitaCartao: equipeDados.asaas_aceita_cartao === true
                 });
 
                 if(resultado.data.success) {
@@ -1839,26 +1938,12 @@
                     return;
                 }
 
-                // CORREÇÃO: Transforma as strings em objetos Date antes de subtrair para ordenação
-                saques.sort((a,b) => {
-                    const dataA = new Date(a.data);
-                    const dataB = new Date(b.data);
-                    return dataB.getTime() - dataA.getTime(); // Ordena do mais recente para o mais antigo
-                });
-                
+                saques.sort((a,b) => new Date(b.data) - new Date(a.data));
                 cont.innerHTML = '';
 
                 saques.forEach(s => {
-                    // Tratamento seguro de datas para evitar erros de 'Invalid Date'
-                    let dataFormatada = "--/--/----";
-                    try {
-                        if (s.data) {
-                            const dataObj = new Date(s.data);
-                            if (!isNaN(dataObj.getTime())) {
-                                dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                            }
-                        }
-                    } catch (err) {}
+                    const dataObj = new Date(s.data);
+                    const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
                     
                     let corStatus = 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800';
                     if(s.status === 'CONCLUÍDO') corStatus = 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800';
