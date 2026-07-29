@@ -971,35 +971,37 @@
             }
         }
 
-        window.alternarAmbienteSistema = async function() {
-            const btn = document.getElementById('btn-switch-ambiente');
-            btn.classList.add('opacity-50', 'cursor-wait');
-            
-            const novoModo = !isModoProducao;
-            
-            if (novoModo === true) {
-                if (!confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a mudar o sistema inteiro para PRODUÇÃO.\nO Asaas passará a cobrar dinheiro REAL de todas as academias e alunos.\n\nTem certeza absoluta?")) {
-                    btn.classList.remove('opacity-50', 'cursor-wait');
-                    return;
-                }
-            }
-
-            try {
-                await updateDoc(doc(db, "sistema", "config_ambiente"), {
-                    modo_producao: novoModo
-                });
-                
-                isModoProducao = novoModo;
-                atualizarVisualDoSwitch();
-                
-                showToast(`Sistema alterado para ${novoModo ? 'PRODUÇÃO' : 'SANDBOX'}!`, "success");
-            } catch (error) {
-                console.error(error);
-                showToast("Erro ao mudar ambiente.", "error");
-            } finally {
-                btn.classList.remove('opacity-50', 'cursor-wait');
-            }
+window.alternarAmbienteSistema = async function() {
+    const btn = document.getElementById('btn-switch-ambiente');
+    btn.classList.add('opacity-50', 'cursor-wait');
+    
+    const novoModo = !isModoProducao;
+    
+    if (novoModo === true) {
+        if (!confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a mudar o sistema inteiro para PRODUÇÃO.\nO Asaas passará a cobrar dinheiro REAL de todas as academias e alunos.\n\nTem certeza absoluta?")) {
+            btn.classList.remove('opacity-50', 'cursor-wait');
+            return;
         }
+    }
+
+    try {
+        // 🔥 CORREÇÃO: Usando setDoc com merge garante que o documento seja criado caso não exista
+        await setDoc(doc(db, "sistema", "config_ambiente"), {
+            modo_producao: novoModo,
+            data_atualizacao: new Date().toISOString()
+        }, { merge: true });
+        
+        isModoProducao = novoModo;
+        atualizarVisualDoSwitch();
+        
+        showToast(`Sistema alterado para ${novoModo ? 'PRODUÇÃO' : 'SANDBOX'}!`, "success");
+    } catch (error) {
+        console.error("Erro Crítico ao mudar ambiente:", error);
+        showToast("Erro de permissão ou conexão ao mudar o ambiente.", "error");
+    } finally {
+        btn.classList.remove('opacity-50', 'cursor-wait');
+    }
+}
 
         function atualizarVisualDoSwitch() {
             const thumb = document.getElementById('thumb-switch');
