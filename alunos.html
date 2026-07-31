@@ -465,7 +465,16 @@
                 <!-- ABA FINANCEIRO -->
                 <div id="aba-financeiro" class="aba-content hidden space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <div><label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label><select id="aluno-bolsa" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl font-bold outline-none text-cyan-700 focus:ring-2 focus:ring-cyan-200"><option value="0">0% (Integral)</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100% (Isento)</option></select></div>
+                        <div>
+                            <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label>
+                            <div class="relative flex items-center">
+                            <input type="number" id="aluno-bolsa" oninput="window.validarBolsa(this)" placeholder="Ex: 15" min="0" max="100" class="w-full p-3 pr-16 bg-cyan-50 border border-cyan-200 rounded-xl font-black outline-none text-cyan-800 focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all placeholder:text-cyan-300">
+                            <div class="absolute right-3 pointer-events-none flex items-center gap-2">
+                            <span id="badge-isento" class="hidden text-[9px] font-black text-white bg-cyan-500 px-2 py-1 rounded shadow-sm uppercase tracking-widest">Isento</span>
+                            <span class="text-cyan-600 font-black">%</span>
+                        </div>
+                    </div>
+                </div>
                         <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label>
@@ -1299,7 +1308,10 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
                 const bolsaEl = document.getElementById('aluno-bolsa');
                 const vencimentoEl = document.getElementById('aluno-vencimento');
                 const statusEl = document.getElementById('aluno-status');
-                if(bolsaEl) bolsaEl.value = aluno.bolsa_perc || '0';
+                if(bolsaEl) { 
+                bolsaEl.value = aluno.bolsa_perc || '0';
+                window.validarBolsa(bolsaEl); // Atualiza o layout visual da isenção
+                }
                 if(vencimentoEl) vencimentoEl.value = aluno.dia_vencimento || '10';
                 if(statusEl) statusEl.value = aluno.status || 'ATIVO';
                 
@@ -2167,6 +2179,23 @@ onAuthStateChanged(auth, async (user) => {
         if(buscaInput) buscaInput.value = ''; 
         window.renderizarTabela(); 
     };
+    window.validarBolsa = function(input) {
+    let valor = parseInt(input.value);
+    
+    // Evita valores absurdos
+    if (valor < 0) input.value = 0;
+    if (valor > 100) input.value = 100;
+    
+    // Exibe o badge de "Isento" se for 100%
+    const badge = document.getElementById('badge-isento');
+    if (badge) {
+        if (parseInt(input.value) === 100) {
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+}   
     </script>
 </body>
 </html>
