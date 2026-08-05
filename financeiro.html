@@ -383,22 +383,22 @@
                                             <div>
                                                 <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">Identidade (KYC)</h4>
                                                 <p class="text-[11px] text-slate-500 font-bold mt-1">Obrigatório para habilitar saques e PIX automático.</p>
-                                            </div>
-                                            <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 p-3 rounded-2xl text-xl">🛡️</span>
+                                        </div>
+                                        <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 p-3 rounded-2xl text-xl">🛡️</span>
                                         </div>
 
-                                        <div class="grid grid-cols-3 gap-3 mb-6">
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Frente</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-document-front" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-front')">
-                                                    <label for="file-document-front" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 transition-all overflow-hidden bg-slate-50 dark:bg-slate-950/50">
-                                                        <div id="preview-front" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
-                                                            <span class="text-2xl mb-1">📇</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-6 rounded-2xl text-center mb-6">
+                                            <span class="text-3xl mb-3 block">📱</span>
+                                            <h5 class="text-xs font-black text-blue-800 dark:text-blue-400 uppercase tracking-widest mb-2">Validação de Segurança</h5>
+                                            <p class="text-[11px] text-blue-700 dark:text-blue-300 font-medium leading-relaxed">
+                                            Por exigência do Banco Central, a validação de identidade requer uma <b>prova de vida (selfie ao vivo)</b>. Clique no botão abaixo para abrir o ambiente seguro do banco e concluir o envio dos seus documentos.
+                                            </p>
+                                        </div>
+
+                                        <button onclick="abrirLinkOnboarding()" id="btn-onboarding-docs" class="mt-auto bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 text-[10px] font-black px-8 py-4 rounded-2xl transition-all uppercase tracking-widest w-full shadow-lg">
+                                        🚀 Acesse aqui para concluir o envio
+                                        </button>
+                                  </div>
 
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-[9px] font-black text-slate-400 uppercase text-center">Verso</label>
@@ -765,58 +765,36 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-        // ==========================================
-        // KYC - UPLOAD AS BASE64 E CHAMADA API
-        // ==========================================
-        window.previewFile = function(input, previewId) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewDiv = document.getElementById(previewId);
-                previewDiv.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-2xl shadow-md">`;
-                input.setAttribute('data-b64', e.target.result.split(',')[1]);
-            }
-            reader.readAsDataURL(file);
+// ==========================================
+// KYC - REDIRECIONAMENTO PARA ONBOARDING ASAAS
+// ==========================================
+window.abrirLinkOnboarding = async function() {
+    const btn = document.getElementById('btn-onboarding-docs');
+    const origTxt = btn.innerHTML;
+    btn.innerHTML = "⏳ GERANDO LINK SEGURO...";
+    btn.disabled = true;
+
+    try {
+        const obterLink = httpsCallable(functions, 'obterLinkOnboardingAsaas');
+        // Mandamos o UID da mesma forma blindada que já ajustamos antes
+        const res = await obterLink({ uid: uid });
+
+        if (res.data.success) {
+            showToast("Link gerado! Redirecionando...", "success");
+            registrarLogAuditoria("ACESSO_ONBOARDING", "Acessou o link de validação de identidade (KYC) do Asaas.");
+            
+            // Abre o link oficial do Asaas em uma nova aba para o cliente bater a foto
+            window.open(res.data.url, '_blank');
+        } else {
+            showToast("Erro do Banco: " + res.data.error, "error");
         }
-
-        window.enviarDocumentosAsaas = async function() {
-            const frontEl = document.getElementById('file-document-front');
-            const backEl = document.getElementById('file-document-back');
-            const selfieEl = document.getElementById('file-selfie');
-
-            const fFront = frontEl.getAttribute('data-b64');
-            const fBack = backEl.getAttribute('data-b64');
-            const fSelfie = selfieEl.getAttribute('data-b64');
-
-            if (!fFront || !fBack || !fSelfie) {
-                return showToast("Por favor, anexe a foto da Frente, Verso e a sua Selfie.", "error");
-            }
-
-            const btn = document.getElementById('btn-enviar-docs');
-            const origTxt = btn.innerHTML;
-            btn.innerHTML = "⏳ Enviando arquivos seguros...";
-            btn.disabled = true;
-
-            try {
-                const uploadDocs = httpsCallable(functions, 'uploadDocumentosAsaas');
-                const res = await uploadDocs({ uid: uid, front: fFront, back: fBack, selfie: fSelfie });
-
-                if (res.data.success) {
-                    showToast("Documentos enviados com sucesso! Aguarde a análise do banco.", "success");
-                    registrarLogAuditoria("ENVIO_KYC", "Enviou documentos de identidade para verificação no Asaas.");
-                    document.getElementById('asaas-verificacao-panel').classList.add('hidden');
-                } else {
-                    showToast("Erro do Banco: " + res.data.error, "error");
-                }
-            } catch (e) {
-                showToast("Erro na conexão ao enviar documentos.", "error");
-            } finally {
-                btn.innerHTML = origTxt;
-                btn.disabled = false;
-            }
-        }
-
+    } catch (e) {
+        showToast("Erro na conexão ao buscar o link seguro.", "error");
+    } finally {
+        btn.innerHTML = origTxt;
+        btn.disabled = false;
+    }
+}
         // ==========================================
         // 🔒 MOTOR DE PERMISSÕES E PAYWALL
         // ==========================================
