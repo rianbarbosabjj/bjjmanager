@@ -449,18 +449,7 @@
                                         <div>
                                             <label class="block text-[10px] font-black text-slate-400 uppercase ml-1 mb-1">Instituição Bancária</label>
                                             <select id="bank-code" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white outline-none cursor-pointer shadow-inner">
-                                                <option value="">Selecione o Banco...</option>
-                                                <option value="260">Nubank (260)</option>
-                                                <option value="033">Santander (033)</option>
-                                                <option value="341">Itaú (341)</option>
-                                                <option value="001">Banco do Brasil (001)</option>
-                                                <option value="104">Caixa Econômica (104)</option>
-                                                <option value="237">Bradesco (237)</option>
-                                                <option value="077">Banco Inter (077)</option>
-                                                <option value="336">C6 Bank (336)</option>
-                                                <option value="380">PicPay (380)</option>
-                                                <option value="323">Mercado Pago (323)</option>
-                                                <option value="212">Banco Original (212)</option>
+                                                <option value="">Carregando lista de bancos do Banco Central...</option>
                                             </select>
                                         </div>
                                         
@@ -805,36 +794,84 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-// ==========================================
-// KYC - REDIRECIONAMENTO PARA ONBOARDING ASAAS
-// ==========================================
-window.abrirLinkOnboarding = async function() {
-    const btn = document.getElementById('btn-onboarding-docs');
-    const origTxt = btn.innerHTML;
-    btn.innerHTML = "⏳ GERANDO LINK SEGURO...";
-    btn.disabled = true;
+        // ==========================================
+        // CARREGAR LISTA COMPLETA DE BANCOS DO BACEN
+        // ==========================================
+        window.carregarListaBancosBACEN = async function() {
+            const select = document.getElementById('bank-code');
+            if (!select) return;
 
-    try {
-        const obterLink = httpsCallable(functions, 'obterLinkOnboardingAsaas');
-        // Mandamos o UID da mesma forma blindada que já ajustamos antes
-        const res = await obterLink({ uid: uid });
+            try {
+                // Busca a lista oficial e atualizada do Banco Central via BrasilAPI
+                const response = await fetch('https://brasilapi.com.br/api/banks/v1');
+                const bancos = await response.json();
 
-        if (res.data.success) {
-            showToast("Link gerado! Redirecionando...", "success");
-            registrarLogAuditoria("ACESSO_ONBOARDING", "Acessou o link de validação de identidade (KYC) do Asaas.");
-            
-            // Abre o link oficial do Asaas em uma nova aba para o cliente bater a foto
-            window.open(res.data.url, '_blank');
-        } else {
-            showToast("Erro do Banco: " + res.data.error, "error");
+                // Filtra apenas instituições que possuem código COMPE de compensação ativo e ordena de A-Z
+                const bancosValidos = bancos
+                    .filter(b => b.code != null)
+                    .sort((a, b) => a.name.localeCompare(b.name));
+
+                select.innerHTML = '<option value="">Selecione o Banco...</option>';
+
+                bancosValidos.forEach(banco => {
+                    const codigoFormatado = String(banco.code).padStart(3, '0');
+                    const option = document.createElement('option');
+                    option.value = codigoFormatado;
+                    option.textContent = `${banco.name} (${codigoFormatado})`;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Erro ao buscar bancos do BACEN, aplicando fallback:", error);
+                // Fallback de emergência caso a API externa oscile
+                select.innerHTML = `
+                    <option value="">Selecione o Banco...</option>
+                    <option value="260">Nubank (260)</option>
+                    <option value="001">Banco do Brasil (001)</option>
+                    <option value="237">Bradesco (237)</option>
+                    <option value="104">Caixa Econômica (104)</option>
+                    <option value="341">Itaú (341)</option>
+                    <option value="033">Santander (033)</option>
+                    <option value="077">Banco Inter (077)</option>
+                    <option value="756">Sicoob (756)</option>
+                    <option value="748">Sicredi (748)</option>
+                    <option value="290">PagBank (290)</option>
+                    <option value="336">C6 Bank (336)</option>
+                `;
+            }
         }
-    } catch (e) {
-        showToast("Erro na conexão ao buscar o link seguro.", "error");
-    } finally {
-        btn.innerHTML = origTxt;
-        btn.disabled = false;
-    }
-}
+
+        // Executa a busca ao abrir a página
+        window.carregarListaBancosBACEN();
+
+        // ==========================================
+        // KYC - REDIRECIONAMENTO PARA ONBOARDING ASAAS
+        // ==========================================
+        window.abrirLinkOnboarding = async function() {
+            const btn = document.getElementById('btn-onboarding-docs');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ GERANDO LINK SEGURO...";
+            btn.disabled = true;
+
+            try {
+                const obterLink = httpsCallable(functions, 'obterLinkOnboardingAsaas');
+                const res = await obterLink({ uid: uid });
+
+                if (res.data.success) {
+                    showToast("Link gerado! Redirecionando...", "success");
+                    registrarLogAuditoria("ACESSO_ONBOARDING", "Acessou o link de validação de identidade (KYC) do Asaas.");
+                    window.open(res.data.url, '_blank');
+                } else {
+                    showToast("Erro do Banco: " + res.data.error, "error");
+                }
+            } catch (e) {
+                showToast("Erro na conexão ao buscar o link seguro.", "error");
+            } finally {
+                btn.innerHTML = origTxt;
+                btn.disabled = false;
+            }
+        }
+        
         // ==========================================
         // 🔒 MOTOR DE PERMISSÕES E PAYWALL
         // ==========================================
@@ -1119,105 +1156,106 @@ window.abrirLinkOnboarding = async function() {
             } catch (error) { console.log(error); }
         }
 
-// ==========================================
-// FUNÇÃO PARA OCULTAR PAINÉIS MANUALMENTE
-// ==========================================
-window.ocultarPainelAsaas = async function(idPainel, nomeVariavelBD) {
-    const painel = document.getElementById(idPainel);
-    if(painel) painel.classList.add('hidden');
-    
-    try {
-        await updateDoc(doc(db, "equipes", uid), { [nomeVariavelBD]: true });
-        if (equipeDados) equipeDados[nomeVariavelBD] = true;
-        showToast("Painel ocultado com sucesso.", "info");
-    } catch(e) {
-        console.error("Erro ao ocultar painel:", e);
-    }
-}
-
-// ==========================================
-// CADASTRAR / ATUALIZAR CONTA BANCÁRIA
-// ==========================================
-window.salvarContaBancariaAsaas = async function() {
-    const bankCode = document.getElementById('bank-code').value;
-    const bankType = document.getElementById('bank-type').value;
-    const bankAgency = document.getElementById('bank-agency').value;
-    const bankAccount = document.getElementById('bank-account').value;
-    const bankDigit = document.getElementById('bank-digit').value;
-
-    const btn = document.getElementById('btn-salvar-banco');
-    const origTxt = btn.innerHTML;
-    btn.innerHTML = "⏳ ENVIANDO AO BANCO CENTRAL...";
-    btn.disabled = true;
-
-    try {
-        const cadastrarBanco = httpsCallable(functions, 'cadastrarContaBancariaAsaas');
-        const res = await cadastrarBanco({ 
-            uid: uid,
-            bankCode: bankCode,
-            bankAccountType: bankType,
-            agency: bankAgency,
-            account: bankAccount,
-            accountDigit: bankDigit
-        });
-
-        if (res.data.success) {
-            showToast("Dados bancários enviados para análise com sucesso!", "success");
-            registrarLogAuditoria("DADOS_BANCARIOS", `Enviou dados bancários do banco ${bankCode} para aprovação no Asaas.`);
+        // ==========================================
+        // FUNÇÃO PARA OCULTAR PAINÉIS MANUALMENTE
+        // ==========================================
+        window.ocultarPainelAsaas = async function(idPainel, nomeVariavelBD) {
+            const painel = document.getElementById(idPainel);
+            if(painel) painel.classList.add('hidden');
             
-            document.getElementById('form-conta-bancaria').reset();
-            
-            // Oculta automaticamente o painel de dados bancários assim que der sucesso!
-            window.ocultarPainelAsaas('painel-dados-bancarios', 'asaas_banco_oculto');
-        } else {
-            showToast("Erro do Banco: " + res.data.error, "error");
-        }
-    } catch (e) {
-        showToast("Erro na conexão ao enviar os dados.", "error");
-    } finally {
-        btn.innerHTML = origTxt;
-        btn.disabled = false;
-    }
-}
-
-window.salvarConfiguracaoGeral = async function() {
-    const p = strToFloat(document.getElementById('config-prazo').value);
-    const a = strToFloat(document.getElementById('config-atraso').value);
-    const pix = document.getElementById('config-pix').value.trim();
-    
-    const btn = document.getElementById('btn-salvar-valores');
-    const origHTML = btn.innerHTML;
-    btn.innerHTML = "⏳"; btn.disabled = true;
-
-    try {
-        await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a, chave_pix: pix });
-        
-        // 1. Atualiza o cache local imediatamente para a página não reverter
-        equipeBaseConfig.prazo = p; 
-        equipeBaseConfig.atraso = a; 
-        equipeBaseConfig.chave_pix = pix;
-        
-        if (equipeDados) {
-            equipeDados.valor_prazo = p;
-            equipeDados.valor_atraso = a;
-            equipeDados.chave_pix = pix;
+            try {
+                await updateDoc(doc(db, "equipes", uid), { [nomeVariavelBD]: true });
+                if (equipeDados) equipeDados[nomeVariavelBD] = true;
+                showToast("Painel ocultado com sucesso.", "info");
+            } catch(e) {
+                console.error("Erro ao ocultar painel:", e);
+            }
         }
 
-        // 2. Garante visualmente os campos atualizados
-        document.getElementById('config-prazo').value = floatToStr(p);
-        document.getElementById('config-atraso').value = floatToStr(a);
+        // ==========================================
+        // CADASTRAR / ATUALIZAR CONTA BANCÁRIA
+        // ==========================================
+        window.salvarContaBancariaAsaas = async function() {
+            const bankCode = document.getElementById('bank-code').value;
+            const bankType = document.getElementById('bank-type').value;
+            const bankAgency = document.getElementById('bank-agency').value;
+            const bankAccount = document.getElementById('bank-account').value;
+            const bankDigit = document.getElementById('bank-digit').value;
 
-        showToast("Configuração salva com sucesso!", "success");
-        registrarLogAuditoria("CONFIG_PRECOS", `Alterou as mensalidades base: Prazo (R$ ${p}), Atraso (R$ ${a}). Chave PIX: ${pix}`);
+            const btn = document.getElementById('btn-salvar-banco');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ ENVIANDO AO BANCO CENTRAL...";
+            btn.disabled = true;
+
+            try {
+                const cadastrarBanco = httpsCallable(functions, 'cadastrarContaBancariaAsaas');
+                const res = await cadastrarBanco({ 
+                    uid: uid,
+                    bankCode: bankCode,
+                    bankAccountType: bankType,
+                    agency: bankAgency,
+                    account: bankAccount,
+                    accountDigit: bankDigit
+                });
+
+                if (res.data.success) {
+                    showToast("Dados bancários enviados para análise com sucesso!", "success");
+                    registrarLogAuditoria("DADOS_BANCARIOS", `Enviou dados bancários do banco ${bankCode} para aprovação no Asaas.`);
+                    
+                    document.getElementById('form-conta-bancaria').reset();
+                    
+                    // Oculta automaticamente o painel de dados bancários assim que der sucesso!
+                    window.ocultarPainelAsaas('painel-dados-bancarios', 'asaas_banco_oculto');
+                } else {
+                    showToast("Erro do Banco: " + res.data.error, "error");
+                }
+            } catch (e) {
+                showToast("Erro na conexão ao enviar os dados.", "error");
+            } finally {
+                btn.innerHTML = origTxt;
+                btn.disabled = false;
+            }
+        }
+
+        window.salvarConfiguracaoGeral = async function() {
+            const p = strToFloat(document.getElementById('config-prazo').value);
+            const a = strToFloat(document.getElementById('config-atraso').value);
+            const pix = document.getElementById('config-pix').value.trim();
+            
+            const btn = document.getElementById('btn-salvar-valores');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = "⏳"; btn.disabled = true;
+
+            try {
+                await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a, chave_pix: pix });
+                
+                // 1. Atualiza o cache local imediatamente para a página não reverter
+                equipeBaseConfig.prazo = p; 
+                equipeBaseConfig.atraso = a; 
+                equipeBaseConfig.chave_pix = pix;
+                
+                if (equipeDados) {
+                    equipeDados.valor_prazo = p;
+                    equipeDados.valor_atraso = a;
+                    equipeDados.chave_pix = pix;
+                }
+
+                // 2. Garante visualmente os campos atualizados
+                document.getElementById('config-prazo').value = floatToStr(p);
+                document.getElementById('config-atraso').value = floatToStr(a);
+
+                showToast("Configuração salva com sucesso!", "success");
+                registrarLogAuditoria("CONFIG_PRECOS", `Alterou as mensalidades base: Prazo (R$ ${p}), Atraso (R$ ${a}). Chave PIX: ${pix}`);
+                
+                // 3. Recarrega as tabelas para recalcular todas as faturas pendentes com o novo valor
+                await carregarDados(); 
+            } catch (e) { 
+                showToast("Erro ao salvar config.", "error"); 
+            } finally { 
+                btn.innerHTML = origHTML; btn.disabled = false; 
+            }
+        }
         
-        // 3. Recarrega as tabelas para recalcular todas as faturas pendentes com o novo valor
-        await carregarDados(); 
-    } catch (e) { 
-        showToast("Erro ao salvar config.", "error"); 
-    } finally { 
-        btn.innerHTML = origHTML; btn.disabled = false; 
-    }
-}
         window.salvarConfigRepasse = async function() {
             const repassarTaxa = document.getElementById('asaas-repassar-taxa').checked;
             const valorTaxa = strToFloat(document.getElementById('asaas-valor-taxa').value);
