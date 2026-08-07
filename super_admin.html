@@ -348,7 +348,7 @@
             </div>
         </div>
 
-<div id="aba-bi" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
+        <div id="aba-bi" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Data Explorer (BI)</h2>
@@ -408,6 +408,7 @@
                 </div>
             </div>
         </div>
+
         <div id="aba-comunicacao" class="p-6 md:p-10 max-w-4xl mx-auto w-full space-y-8 hidden">
             <div>
                 <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Mural de Avisos Global</h2>
@@ -715,7 +716,7 @@
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Valor a Transferir (R$)</label>
-                    <input type="number" id="pix-master-valor" placeholder="Ex: 1500.00" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-emerald-500 transition-colors">
+                    <input type="text" id="pix-master-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-4 bg-slate-800 border border-slate-700 rounded-xl font-black text-white text-2xl text-center shadow-inner outline-none focus:border-emerald-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Tipo de Chave PIX</label>
@@ -929,6 +930,25 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
+        // ==========================================
+        // FUNÇÕES DE MÁSCARA MONETÁRIA 
+        // ==========================================
+        window.mascaraMoeda = function(elemento) {
+            let valor = elemento.value.replace(/\D/g, ''); 
+            if (valor === '') { elemento.value = ''; return; }
+            valor = (parseInt(valor, 10) / 100).toFixed(2) + '';
+            valor = valor.replace(".", ",");
+            valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            elemento.value = valor;
+        }
+
+        window.strToFloat = function(stringMoeda) {
+            if (!stringMoeda) return 0;
+            let valor = stringMoeda.replace(/\./g, '');
+            valor = valor.replace(',', '.');
+            return parseFloat(valor);
+        }
+
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -971,37 +991,36 @@
             }
         }
 
-window.alternarAmbienteSistema = async function() {
-    const btn = document.getElementById('btn-switch-ambiente');
-    btn.classList.add('opacity-50', 'cursor-wait');
-    
-    const novoModo = !isModoProducao;
-    
-    if (novoModo === true) {
-        if (!confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a mudar o sistema inteiro para PRODUÇÃO.\nO Asaas passará a cobrar dinheiro REAL de todas as academias e alunos.\n\nTem certeza absoluta?")) {
-            btn.classList.remove('opacity-50', 'cursor-wait');
-            return;
-        }
-    }
+        window.alternarAmbienteSistema = async function() {
+            const btn = document.getElementById('btn-switch-ambiente');
+            btn.classList.add('opacity-50', 'cursor-wait');
+            
+            const novoModo = !isModoProducao;
+            
+            if (novoModo === true) {
+                if (!confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a mudar o sistema inteiro para PRODUÇÃO.\nO Asaas passará a cobrar dinheiro REAL de todas as academias e alunos.\n\nTem certeza absoluta?")) {
+                    btn.classList.remove('opacity-50', 'cursor-wait');
+                    return;
+                }
+            }
 
-    try {
-        // 🔥 CORREÇÃO: Usando setDoc com merge garante que o documento seja criado caso não exista
-        await setDoc(doc(db, "sistema", "config_ambiente"), {
-            modo_producao: novoModo,
-            data_atualizacao: new Date().toISOString()
-        }, { merge: true });
-        
-        isModoProducao = novoModo;
-        atualizarVisualDoSwitch();
-        
-        showToast(`Sistema alterado para ${novoModo ? 'PRODUÇÃO' : 'SANDBOX'}!`, "success");
-    } catch (error) {
-        console.error("Erro Crítico ao mudar ambiente:", error);
-        showToast("Erro de permissão ou conexão ao mudar o ambiente.", "error");
-    } finally {
-        btn.classList.remove('opacity-50', 'cursor-wait');
-    }
-}
+            try {
+                await setDoc(doc(db, "sistema", "config_ambiente"), {
+                    modo_producao: novoModo,
+                    data_atualizacao: new Date().toISOString()
+                }, { merge: true });
+                
+                isModoProducao = novoModo;
+                atualizarVisualDoSwitch();
+                
+                showToast(`Sistema alterado para ${novoModo ? 'PRODUÇÃO' : 'SANDBOX'}!`, "success");
+            } catch (error) {
+                console.error("Erro Crítico ao mudar ambiente:", error);
+                showToast("Erro de permissão ou conexão ao mudar o ambiente.", "error");
+            } finally {
+                btn.classList.remove('opacity-50', 'cursor-wait');
+            }
+        }
 
         function atualizarVisualDoSwitch() {
             const thumb = document.getElementById('thumb-switch');
@@ -1108,9 +1127,8 @@ window.alternarAmbienteSistema = async function() {
         // ==========================================
         // 📊 DATA EXPLORER (BUSINESS INTELLIGENCE) COM EXCLUSÃO
         // ==========================================
-let biFilteredCache = []; // Nova variável para guardar os dados filtrados
+        let biFilteredCache = []; 
 
-        // Formatação inteligente para visualização de dados brutos
         function formatarDadoVisual(val) {
             if (val === null || val === undefined || val === "") {
                 return `<span class="text-slate-600 italic text-[10px]">- vazio -</span>`;
@@ -1121,19 +1139,15 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                     : `<span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[9px] uppercase font-black tracking-widest">False</span>`;
             }
             if (typeof val === 'object') {
-                // Se for um timestamp do Firestore
                 if (val.seconds) return `<span class="text-cyan-400">${new Date(val.seconds * 1000).toLocaleString('pt-BR')}</span>`;
-                // Se for um objeto normal
                 return `<span class="text-indigo-400 text-[10px] bg-indigo-500/10 px-2 py-1 rounded cursor-help" title='${JSON.stringify(val).replace(/'/g, "&apos;")}'>{ Objeto }</span>`;
             }
             
             let disp = String(val);
-            // Identifica se parece uma data ISO para colorir
             if (disp.match(/^\d{4}-\d{2}-\d{2}T/)) {
                 return `<span class="text-cyan-400">${new Date(disp).toLocaleString('pt-BR')}</span>`;
             }
             
-            // Trunca textos muito grandes (mas não URLs)
             if (disp.length > 40 && !disp.startsWith('http')) {
                 disp = `<span title="${disp.replace(/"/g, '&quot;')}">${disp.substring(0, 40)}...</span>`;
             } else if (disp.startsWith('http')) {
@@ -1149,17 +1163,17 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
             const counter = document.getElementById('bi-count');
             const buscaInput = document.getElementById('bi-busca');
             
-            buscaInput.value = ""; // Limpa a busca ao trocar de tabela
+            buscaInput.value = ""; 
             tabelaHead.innerHTML = '';
             tabelaBody.innerHTML = '<tr><td class="text-center p-8 text-slate-500 font-bold text-xs animate-pulse">📡 Puxando dados brutos do Firebase...</td></tr>';
             counter.innerText = "⏳";
             
             try {
-                const q = query(collection(db, colecao), limit(1000)); // Cuidado com custos no BD
+                const q = query(collection(db, colecao), limit(1000));
                 const snap = await getDocs(q);
                 
                 biCache = snap.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
-                biFilteredCache = [...biCache]; // Inicialmente, o filtro é igual ao cache total
+                biFilteredCache = [...biCache];
                 
                 if (biCache.length === 0) {
                     tabelaBody.innerHTML = '<tr><td class="text-center p-8 text-slate-500 italic text-xs">A coleção está vazia.</td></tr>';
@@ -1167,7 +1181,6 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                     return;
                 }
 
-                // Descobrir todas as colunas dinâmicas (keys) do banco
                 const keysSet = new Set();
                 biCache.forEach(doc => Object.keys(doc).forEach(key => keysSet.add(key)));
                 biColumns = ['_id', ...Array.from(keysSet).filter(k => k !== '_id').sort()];
@@ -1181,16 +1194,13 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
             }
         }
 
-        // Função separada que constrói o HTML baseado no filtro atual
         function renderizarTabelaBI() {
             const tabelaHead = document.getElementById('bi-thead');
             const tabelaBody = document.getElementById('bi-tbody');
             const colecao = document.getElementById('bi-colecao').value;
             
-            // Montar Cabeçalho
             let headerRow = '<tr>';
             biColumns.forEach((col, index) => {
-                // A primeira coluna (ID) fica "sticky" à esquerda para não sumir no scroll horizontal
                 let classSticky = index === 0 ? "sticky left-0 bg-slate-950 z-10 border-r border-slate-800" : "";
                 headerRow += `<th class="px-6 py-4 text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-900 border-b border-slate-800 ${classSticky}">${col}</th>`;
             });
@@ -1198,7 +1208,6 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
             headerRow += '</tr>';
             tabelaHead.innerHTML = headerRow;
 
-            // Montar Corpo da Tabela
             tabelaBody.innerHTML = '';
             
             if (biFilteredCache.length === 0) {
@@ -1216,7 +1225,6 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                         tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-slate-300 whitespace-nowrap max-w-[250px] ${classSticky}">${formattedValue}</td>`;
                     });
                     
-                    // Botão de Excluir
                     tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-center sticky right-0 bg-slate-900 group-hover:bg-slate-800/80 transition-colors border-l border-slate-800/50 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.3)]">
                         <button onclick="excluirRegistroBI('${colecao}', '${row._id}')" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-lg transition-colors font-black flex items-center gap-2 mx-auto shadow-sm" title="Excluir Definitivamente">
                             🗑️ <span class="hidden sm:inline">Deletar</span>
@@ -1228,7 +1236,6 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                 });
             }
 
-            // Atualiza contador
             document.getElementById('bi-count').innerText = `${biFilteredCache.length} / ${biCache.length}`;
         }
 
@@ -1239,7 +1246,6 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                 biFilteredCache = [...biCache];
             } else {
                 biFilteredCache = biCache.filter(row => {
-                    // Verifica se o termo existe em *qualquer* coluna do objeto
                     return Object.values(row).some(val => {
                         if (val === null || val === undefined) return false;
                         if (typeof val === 'object') return JSON.stringify(val).toLowerCase().includes(termo);
@@ -1257,9 +1263,8 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
                 await deleteDoc(doc(db, colecao, id));
                 showToast("Registro excluído com sucesso!", "success");
                 
-                // Remove do cache local para não ter que buscar no BD novamente à toa
                 biCache = biCache.filter(item => item._id !== id);
-                filtrarDadosBI(); // Refaz o filtro e renderiza
+                filtrarDadosBI(); 
                 
             } catch(e) {
                 console.error("Erro ao excluir:", e);
@@ -1267,23 +1272,19 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
             }
         }
 
-        // CSV agora respeita o filtro da busca
         window.exportarCSV_BI = function() {
             if (biFilteredCache.length === 0) return showToast("Não há dados filtrados para exportar.", "info");
 
             const colecao = document.getElementById('bi-colecao').value;
             const termo = document.getElementById('bi-busca').value.trim();
             
-            // Cria o cabeçalho
             const header = biColumns.join(';');
             
-            // Cria as linhas usando apenas os dados filtrados
             const rows = biFilteredCache.map(obj => {
                 return biColumns.map(col => {
                     let val = obj[col] !== undefined && obj[col] !== null ? obj[col] : '';
-                    if (typeof val === 'object') val = JSON.stringify(val); // Converte objetos para texto
+                    if (typeof val === 'object') val = JSON.stringify(val); 
                     
-                    // Limpa quebras de linha e aspas para não quebrar o CSV
                     let cleaned = String(val).replace(/"/g, '""').replace(/\n/g, ' ');
                     return `"${cleaned}"`;
                 }).join(';');
@@ -1294,7 +1295,6 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             
-            // Adiciona o termo de busca no nome do arquivo, se houver
             let nomeArquivo = `SaaS_BI_${colecao}_${new Date().toISOString().slice(0,10)}.csv`;
             if (termo) nomeArquivo = `SaaS_BI_${colecao}_Filtrado_${new Date().toISOString().slice(0,10)}.csv`;
             
@@ -1306,6 +1306,7 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
             document.body.removeChild(link);
             showToast("CSV exportado com sucesso!", "success");
         }
+
         // ==========================================
         // 🕵️‍♂️ AUDITORIA (LOGS)
         // ==========================================
@@ -1697,7 +1698,7 @@ let biFilteredCache = []; // Nova variável para guardar os dados filtrados
         // ==========================================
         // 🏥 MONITOR DE SAÚDE E ACADEMIAS
         // ==========================================
-window.carregarImperio = async function() {
+        window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
                 const snapPlanos = await getDoc(doc(db, "sistema", "config_planos"));
@@ -1707,7 +1708,6 @@ window.carregarImperio = async function() {
 
                 const snapEquipes = await getDocs(collection(db, "equipes"));
                 
-                // 🔥 FILTRO REMOVIDO: Agora ele mapeia 100% das equipes cadastradas no banco
                 equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 const snapAlunos = await getDocs(collection(db, "alunos"));
@@ -2084,7 +2084,6 @@ window.carregarImperio = async function() {
             document.body.removeChild(link);
         }
 
-        // 🔥 FUNÇÃO DE GERAR O PDF PARA DECLARAÇÃO DE IMPOSTO DE RENDA
         window.gerarRelatorioPDF = function() {
             const dataInicioStr = document.getElementById('filtro-data-inicio').value;
             const dataFimStr = document.getElementById('filtro-data-fim').value;
@@ -2290,13 +2289,16 @@ window.carregarImperio = async function() {
         window.abrirModalPixMaster = () => document.getElementById('modal-pix-master').classList.replace('hidden', 'flex');
         window.fecharModalPixMaster = () => document.getElementById('modal-pix-master').classList.replace('flex', 'hidden');
 
+        // 🔥 FUNÇÃO DE SAQUE CORRIGIDA COM A MÁSCARA MONETÁRIA
         window.solicitarPixMaster = async function() {
-            const valor = parseFloat(document.getElementById('pix-master-valor').value);
+            const valor = window.strToFloat(document.getElementById('pix-master-valor').value);
             const tipo = document.getElementById('pix-master-tipo').value;
             const chave = document.getElementById('pix-master-chave').value.trim();
 
             if(!valor || valor <= 0) return showToast("Valor inválido.", "error");
             if(!chave) return showToast("Insira a chave PIX de destino.", "error");
+
+            if(!confirm(`Confirma a transferência PIX de R$ ${valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})} para a chave: ${chave}?`)) return;
 
             const btn = document.getElementById('btn-sacar-master');
             const txtOriginal = btn.innerHTML;
@@ -2307,6 +2309,7 @@ window.carregarImperio = async function() {
                 const res = await solicitarSaqueMaster({ uid: masterUid, valor: valor, chavePix: chave, tipoChave: tipo });
                 if(res.data.success) {
                     showToast("PIX solicitado com sucesso!", "success");
+                    document.getElementById('pix-master-valor').value = ""; // Limpa a tela
                     fecharModalPixMaster();
                     carregarSaldoMaster(); 
                 } else {
