@@ -382,6 +382,14 @@
                                             <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 font-black py-5 rounded-2xl shadow-lg uppercase tracking-widest transition-all text-xs border border-slate-900 dark:border-white">
                                                 Efetuar Transferência PIX
                                             </button>
+
+                                            <!-- 🔥 NOVO BOTÃO DE ALTERAR SENHA AQUI -->
+                                            <div class="text-center mt-4">
+                                                <button type="button" onclick="abrirModalSenhaSaque()" class="text-[9px] font-bold text-slate-400 hover:text-cyan-500 uppercase tracking-widest transition-colors flex items-center justify-center gap-1 w-full">
+                                                    <span>⚙️</span> Cadastrar / Alterar Senha de Saque
+                                                </button>
+                                            </div>
+                                            <!-- FIM DO NOVO BOTÃO -->
                                         </form>
                                     </div>
 
@@ -666,6 +674,33 @@
                     <div><span class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">Venc. (Dia)</span><select id="acao-venc" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-white outline-none"></select></div>
                 </div>
                 <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 font-black py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">💾 Salvar Regras</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE SENHA DE SAQUE -->
+    <div id="modal-senha-saque" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[400] p-4">
+        <div class="bg-white dark:bg-slate-900 card-premium shadow-2xl w-full max-w-sm overflow-hidden border-slate-200 dark:border-slate-800 border-t-4 border-cyan-500">
+            <div class="p-8 space-y-5">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-black text-slate-800 dark:text-white uppercase text-sm tracking-widest flex items-center gap-2"><span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg text-lg">🔐</span> Senha de Saque</h3>
+                    <button onclick="fecharModalSenhaSaque()" class="text-slate-400 hover:text-rose-500 text-2xl leading-none">&times;</button>
+                </div>
+                <p class="text-[10px] text-slate-500 font-bold mb-4">Crie ou altere a senha de 6 dígitos. Ela será exigida em toda transferência para proteger seu dinheiro.</p>
+                
+                <div id="box-senha-atual" class="hidden">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Senha Atual</label>
+                    <input type="password" id="input-senha-atual" placeholder="••••••" class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white tracking-widest text-center shadow-inner">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Nova Senha (Mínimo 6 dígitos)</label>
+                    <input type="password" id="input-nova-senha" required minlength="6" placeholder="Nova senha" class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white tracking-widest text-center shadow-inner">
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex gap-4">
+                <button onclick="fecharModalSenhaSaque()" class="flex-1 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-2xl transition-colors">Cancelar</button>
+                <button id="btn-salvar-senha-saque" onclick="salvarSenhaSaque()" class="flex-1 py-4 text-xs font-black text-white bg-cyan-600 hover:bg-cyan-700 rounded-2xl shadow-lg uppercase transition-all tracking-widest">Salvar</button>
             </div>
         </div>
     </div>
@@ -1374,6 +1409,58 @@
                     carregarSaldoAsaas(); 
                 } else { showToast("Erro do Banco: " + res.data.error, "error"); }
             } catch(e) { showToast("Falha na comunicação com o banco.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+        }
+
+        // ==========================================
+        // CADASTRAR / ALTERAR SENHA DE SAQUE (BLINDAGEM)
+        // ==========================================
+        window.abrirModalSenhaSaque = () => {
+            document.getElementById('input-senha-atual').value = '';
+            document.getElementById('input-nova-senha').value = '';
+            
+            // Se o usuário já tiver uma senha configurada no banco, exigimos a atual
+            if (equipeDados && equipeDados.senha_saque_hash) {
+                document.getElementById('box-senha-atual').classList.remove('hidden');
+            } else {
+                document.getElementById('box-senha-atual').classList.add('hidden');
+            }
+            
+            document.getElementById('modal-senha-saque').classList.replace('hidden', 'flex');
+        }
+
+        window.fecharModalSenhaSaque = () => document.getElementById('modal-senha-saque').classList.replace('flex', 'hidden');
+
+        window.salvarSenhaSaque = async function() {
+            const senhaAtual = document.getElementById('input-senha-atual').value;
+            const novaSenha = document.getElementById('input-nova-senha').value;
+
+            if(!novaSenha || novaSenha.length < 6) return showToast("A nova senha deve ter pelo menos 6 caracteres.", "error");
+            
+            // Trava de segurança: Se ele já tem senha, ele é obrigado a digitar a atual
+            if(equipeDados && equipeDados.senha_saque_hash && !senhaAtual) {
+                return showToast("Digite a sua senha atual para autorizar a mudança.", "error");
+            }
+
+            const btn = document.getElementById('btn-salvar-senha-saque');
+            const origTxt = btn.innerText;
+            btn.innerText = "⏳ Salvando..."; btn.disabled = true;
+
+            try {
+                const defSenha = httpsCallable(functions, 'definirSenhaSaque');
+                const res = await defSenha({ senhaAtual, novaSenha });
+
+                if(res.data.success) {
+                    showToast(res.data.message, "success");
+                    if(equipeDados) equipeDados.senha_saque_hash = "hash_definido"; // Flag para atualizar a tela
+                    fecharModalSenhaSaque();
+                } else {
+                    showToast("Atenção: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Erro de comunicação ao salvar a senha.", "error");
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         }
 
         window.buscarCEPAsaas = async (cep) => {
