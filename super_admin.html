@@ -1864,8 +1864,12 @@
                 }
 
                 let asaasBadge = `<span class="text-slate-500 font-bold text-[10px] flex items-center justify-center gap-1">⚪ Sem Asaas</span>`;
-                if(eq.status_asaas === 'ATIVO') asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
-                else if(eq.status_asaas === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
+                // Agora o painel reconhece tanto as contas antigas quanto a nova estrutura BaaS White Label
+                if(eq.status_asaas === 'ATIVO' || eq.status_baas === 'ATIVA') {
+                    asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
+                } else if(eq.status_asaas === 'PENDENTE' || eq.status_baas === 'PENDENTE') {
+                    asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
+                }
 
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-800/50 hover:bg-slate-800/40 transition-colors";
