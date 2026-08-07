@@ -48,7 +48,7 @@
             font-weight: 800; 
         }
 
-        input[type="text"], input[type="email"], input[type="date"], select {
+        input[type="text"], input[type="email"], input[type="password"], input[type="date"], select {
             border: 1px solid #E2E8F0;
             border-radius: 12px;
             transition: all 0.2s ease;
@@ -372,6 +372,13 @@
                                                     <input type="text" id="saque-chave-pix" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white shadow-sm" placeholder="Chave de destino...">
                                                 </div>
                                             </div>
+                                            
+                                            <!-- 🔥 NOVO CAMPO ADICIONADO AQUI -->
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Senha de Saque</label>
+                                                <input type="password" id="saque-senha" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white shadow-sm tracking-widest" placeholder="••••••">
+                                            </div>
+
                                             <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 font-black py-5 rounded-2xl shadow-lg uppercase tracking-widest transition-all text-xs border border-slate-900 dark:border-white">
                                                 Efetuar Transferência PIX
                                             </button>
@@ -1333,9 +1340,12 @@
             const valorNum = strToFloat(document.getElementById('saque-valor').value);
             const tipo = document.getElementById('saque-tipo-pix').value;
             const chave = document.getElementById('saque-chave-pix').value.trim();
+            const senha = document.getElementById('saque-senha').value; // Captura a senha
             
             if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
             if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
+            if(!senha) return showToast("Digite a sua senha de saque.", "error");
+            
             if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
 
             const btn = document.getElementById('btn-sacar-asaas');
@@ -1344,11 +1354,19 @@
 
             try {
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-                const res = await fazerSaque({ uid: uid, apiKey: equipeDados.asaas_api_key, valor: valorNum, chavePix: chave, tipoChave: tipo });
+                const res = await fazerSaque({ 
+                    uid: uid, 
+                    apiKey: equipeDados.asaas_api_key, 
+                    valor: valorNum, 
+                    chavePix: chave, 
+                    tipoChave: tipo,
+                    senhaDigitada: senha // Envia a senha para o validador bcrypt do servidor
+                });
 
                 if(res.data.success) {
                     showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
                     document.getElementById('saque-valor').value = "";
+                    document.getElementById('saque-senha').value = ""; // Limpa a senha da tela
                     await updateDoc(doc(db, "equipes", uid), { pix_saque_chave: chave, pix_saque_tipo: tipo });
                     await addDoc(collection(db, "saques"), { equipe_id: uid, valor: valorNum, chave_pix: chave, tipo_chave: tipo, data: new Date().toISOString(), status: 'SOLICITADO' });
                     carregarHistoricoSaques();
