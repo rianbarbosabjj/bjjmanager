@@ -529,7 +529,7 @@
                             <!-- MRR: RECEITA RECORRENTE -->
                             <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 dark:from-indigo-950 dark:to-slate-900 p-6 card-premium border-none shadow-xl flex items-center justify-between">
                                 <div>
-                                    <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1 flex items-center gap-1"><span>📈</span> MRR Previsto (Mês)</p>
+                                    <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1 flex items-center gap-1"><span>📈</span> Receita Recorrente Mensal</p>
                                     <h3 class="text-3xl font-black text-white" id="dash-mrr">R$ 0,00</h3>
                                     <p class="text-[9px] text-indigo-300 mt-1 font-bold">Baseado em alunos ativos x mensalidade base</p>
                                 </div>
@@ -1381,7 +1381,6 @@
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
                 const res = await fazerSaque({ 
                     uid: uid, 
-                    apiKey: equipeDados.asaas_api_key, 
                     valor: valorNum, 
                     chavePix: chave, 
                     tipoChave: tipo,
@@ -1499,7 +1498,6 @@
             let geradas = 0; const filaAsaas = []; const chavePixAtual = document.getElementById('config-pix').value.trim();
 
             try {
-                // Inicia o lote de gravação (Batch)
                 const batch = writeBatch(db);
 
                 for (const aluno of alunosCache) {
@@ -1517,7 +1515,6 @@
                         const temAsaas = equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true);
                         if (!temAsaas && status !== 'ISENTO') faturaData.chave_pix_manual = chavePixAtual;
 
-                        // Adiciona a fatura ao lote invés de gravar uma a uma
                         const novaFaturaRef = doc(collection(db, "financeiro"));
                         batch.set(novaFaturaRef, faturaData);
                         geradas++;
@@ -1525,16 +1522,22 @@
                         if (temAsaas && status !== 'ISENTO') {
                             let valorCobrarAsaas = valor;
                             if (equipeDados.asaas_repassar_taxa && equipeDados.asaas_valor_taxa > 0) valorCobrarAsaas += parseFloat(equipeDados.asaas_valor_taxa);
+                            
+                            // 🔥 Passando o ID gerado pelo batch e não enviando a API Key
                             filaAsaas.push({
-                                alunoId: aluno.id, valor: valorCobrarAsaas, mesAno: mesAnoFiltro, descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
-                                aceitaBoleto: equipeDados.asaas_aceita_boleto === true, aceitaCartao: equipeDados.asaas_aceita_cartao === true
+                                alunoId: aluno.id, 
+                                faturaId: novaFaturaRef.id, 
+                                valor: valorCobrarAsaas, 
+                                mesAno: mesAnoFiltro, 
+                                descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
+                                aceitaBoleto: equipeDados.asaas_aceita_boleto === true, 
+                                aceitaCartao: equipeDados.asaas_aceita_cartao === true
                             });
                         }
                     }
                 }
                 
                 if (geradas > 0) {
-                    // Executa todas as gravações de uma vez (instantâneo)
                     await batch.commit();
 
                     registrarLogAuditoria("GEROU_FATURAS", `Gerou ${geradas} faturas em lote para o mês ${mesAnoFiltro}`);
@@ -1774,10 +1777,13 @@
 
                 const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
                 const resultado = await gerarCobranca({
-                    alunoId: alunoSelecionadoMens.id, valor: valorCobrarAsaas, mesAno: fatura.mes_ano,
+                    alunoId: alunoSelecionadoMens.id, 
+                    faturaId: fatura.id, // 🔥 Removido apiKey, adicionado faturaId para otimização
+                    valor: valorCobrarAsaas, 
+                    mesAno: fatura.mes_ano,
                     descricao: `Mensalidade Jiu-Jitsu - Ref: ${fatura.mes_ano}`,
-                    aceitaBoleto: equipeDados.asaas_aceita_boleto === true, aceitaCartao: equipeDados.asaas_aceita_cartao === true,
-                    apiKey: equipeDados.asaas_api_key // MANTIDO PARA A ETAPA 1, será removido na Etapa 2
+                    aceitaBoleto: equipeDados.asaas_aceita_boleto === true, 
+                    aceitaCartao: equipeDados.asaas_aceita_cartao === true
                 });
 
                 if(resultado.data.success) {
