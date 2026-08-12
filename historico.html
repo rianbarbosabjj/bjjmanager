@@ -235,13 +235,13 @@
                 
                 <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
                     <p class="text-sm text-blue-800 font-medium leading-relaxed">
-                        📌 <span class="font-bold">Isso é comum para alunos transferidos</span> de outras academias ou quando se está corrigindo o histórico.
+                        📌 <span class="font-bold">Isso é comum para alunos transferidos</span> de outras academias ou quando se está corrigindo o histórico retroativo.
                     </p>
                 </div>
                 
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <p class="text-xs text-slate-600 font-medium">
-                        ℹ️ O sistema permitirá o registro, mas ficará registrado que esta foi uma graduação regressiva (transferência).
+                        ℹ️ O sistema manterá o atleta em sua faixa original e incluirá a nova graduação apenas no histórico (linha do tempo).
                     </p>
                 </div>
             </div>
@@ -498,26 +498,31 @@
             } catch (error) { console.log(error); }
         }
 
+        // NOVO DICIONÁRIO DE CORES
+        const ESTILOS_FAIXA = {
+            'branca': 'bg-white text-slate-800 border border-slate-300',
+            'cinza e branca': 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300',
+            'cinza': 'bg-slate-400 text-white border border-slate-500',
+            'cinza e preta': 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500',
+            'amarela e branca': 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500',
+            'amarela': 'bg-yellow-400 text-yellow-900 border border-yellow-500',
+            'amarela e preta': 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500',
+            'laranja e branca': 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500',
+            'laranja': 'bg-orange-500 text-white border border-orange-600',
+            'laranja e preta': 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500',
+            'verde e branca': 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600',
+            'verde': 'bg-green-600 text-white border border-green-700',
+            'verde e preta': 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600',
+            'azul': 'bg-blue-600 text-white border border-blue-700',
+            'roxa': 'bg-purple-600 text-white border border-purple-700',
+            'marrom': 'bg-amber-800 text-white border border-amber-900',
+            'preta': 'bg-slate-900 text-white border border-slate-900'
+        };
+
         function getCorFaixa(faixaTexto) {
-            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
-            if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
-            if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500';
-            if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500';
-            if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500';
-            if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500';
-            if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500';
-            if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600';
-            if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600';
-            if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300';
-            if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500';
-            if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500';
-            if (f.includes('laranja')) return 'bg-orange-500 text-white border border-orange-600';
-            if (f.includes('verde')) return 'bg-green-600 text-white border border-green-700';
-            if (f.includes('azul')) return 'bg-blue-600 text-white border border-blue-700';
-            if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700';
-            if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900';
-            if (f.includes('preta')) return 'bg-slate-900 text-white border border-slate-900';
-            return 'bg-slate-100 text-slate-600 border border-slate-200';
+            if (!faixaTexto) return 'bg-slate-100 text-slate-600 border border-slate-200';
+            const f = faixaTexto.toLowerCase().trim();
+            return ESTILOS_FAIXA[f] || 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
         const HIERARQUIA_FaIXAS = [
@@ -554,15 +559,19 @@
             }
         }
 
+        // LISTA OTIMIZADA COM DOCUMENT FRAGMENT
         function renderizarListaAlunos(lista) {
             const container = document.getElementById('lista-alunos');
             if (!container) return;
             container.innerHTML = '';
+            
             if(!lista || lista.length === 0) {
                 container.innerHTML = `<div class='p-8 text-center text-slate-400 text-sm font-medium'>Nenhum aluno encontrado.</div>`;
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
+            
             lista.forEach(aluno => {
                 const nomeAluno = aluno.nome || "Nome não informado";
                 const grauAluno = aluno.grau || 'Sem grau';
@@ -579,8 +588,10 @@
                     </div>
                     <div class="w-3 h-3 md:w-4 md:h-4 rounded-full shadow-sm ${corFaixa} shrink-0" title="${escapeHtml(faixaAluno)}"></div>
                 `;
-                container.appendChild(item);
+                fragment.appendChild(item);
             });
+            
+            container.appendChild(fragment);
         }
 
         window.filtrarLista = function() {
@@ -771,6 +782,7 @@
             setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); dadosGraduacaoPendente = null; }, 300);
         }
 
+        // MANTÉM A FAIXA ATUAL DO ALUNO, APENAS ATUALIZA A LINHA DO TEMPO (HISTÓRICO)
         window.confirmarGraduacaoRegressiva = async function() {
             if (!dadosGraduacaoPendente) return;
             fecharModalAviso();
@@ -786,27 +798,14 @@
                     grau: dadosGraduacaoPendente.novoGrau || "Sem grau",
                     registado_em: new Date().toISOString(),
                     origem: "MANUAL",
-                    observacao: "Graduação regressiva (transferência)"
+                    observacao: "Registro retroativo (histórico mantido)",
+                    mudou_faixa: true
                 });
-                await updateDoc(doc(db, "alunos", dadosGraduacaoPendente.alunoId), {
-                    faixa: dadosGraduacaoPendente.novaFaixa,
-                    grau: dadosGraduacaoPendente.novoGrau || "Sem grau"
-                });
-                showToast("🎉 Graduação transferida registrada com sucesso! Oss!", "success");
-                if (alunoSelecionado && alunoSelecionado.id === dadosGraduacaoPendente.alunoId) {
-                    alunoSelecionado.faixa = dadosGraduacaoPendente.novaFaixa;
-                    alunoSelecionado.grau = dadosGraduacaoPendente.novoGrau || "Sem grau";
-                    const badge = document.getElementById('aluno-faixa-badge');
-                    if (badge) {
-                        badge.innerText = escapeHtml(dadosGraduacaoPendente.novaFaixa);
-                        badge.className = `px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mb-1 ${getCorFaixa(dadosGraduacaoPendente.novaFaixa)}`;
-                    }
-                    const grauElemento = document.getElementById('aluno-grau-detalhe');
-                    if (grauElemento) grauElemento.innerText = `GRAU: ${escapeHtml(dadosGraduacaoPendente.novoGrau || 'Sem grau')}`;
-                }
+                
+                showToast("🎉 Histórico retroativo registrado com sucesso! Oss!", "success");
                 clearCache();
-                await carregarAlunos(true);
                 await carregarTimeline(dadosGraduacaoPendente.alunoId, true);
+                
             } catch (error) {
                 console.error("Erro ao salvar:", error);
                 showToast("Erro ao registrar graduação: " + (error.message || "Erro desconhecido"), "error");
@@ -815,6 +814,36 @@
                 hideLoading();
                 dadosGraduacaoPendente = null;
             }
+        }
+
+        // VALIDAÇÃO IBJJF
+        function validarRegrasIBJJF(novaFaixa, aluno) {
+            if (!aluno.data_nascimento) return null;
+            
+            const nascimento = new Date(aluno.data_nascimento);
+            const hoje = new Date();
+            const anoAtual = hoje.getFullYear();
+            const anoNasc = nascimento.getFullYear();
+            const idadeNoAno = anoAtual - anoNasc;
+
+            const faixaNormalizada = novaFaixa.toLowerCase();
+
+            if (faixaNormalizada === 'azul' || faixaNormalizada === 'roxa') {
+                if (idadeNoAno < 16) return `A IBJJF exige idade mínima de 16 anos (no ano vigente) para a faixa ${novaFaixa}. Este atleta completa ${idadeNoAno} anos este ano.`;
+            }
+            if (faixaNormalizada === 'marrom') {
+                if (idadeNoAno < 18) return `A IBJJF exige idade mínima de 18 anos (no ano vigente) para a faixa Marrom. Este atleta completa ${idadeNoAno} anos este ano.`;
+            }
+            if (faixaNormalizada === 'preta') {
+                if (idadeNoAno < 19) return `A IBJJF exige idade mínima de 19 anos (no ano vigente) para a faixa Preta. Este atleta completa ${idadeNoAno} anos este ano.`;
+            }
+
+            const faixasInfantis = ['cinza', 'cinza e branca', 'cinza e preta', 'amarela', 'amarela e branca', 'amarela e preta', 'laranja', 'laranja e branca', 'laranja e preta', 'verde', 'verde e branca', 'verde e preta'];
+            if (idadeNoAno >= 16 && faixasInfantis.includes(faixaNormalizada)) {
+                return `O atleta completa ${idadeNoAno} anos este ano. Atletas a partir de 16 anos não utilizam faixas infantis.`;
+            }
+
+            return null;
         }
 
         window.salvarGraduacao = async function() {
@@ -828,9 +857,17 @@
             if (!data) return showToast("A data da graduação é obrigatória!", "error");
             if (!novaFaixa) return showToast("Selecione a nova faixa!", "error");
 
+            const alertaIBJJF = validarRegrasIBJJF(novaFaixa, alunoSelecionado);
+            if (alertaIBJJF) {
+                if (!confirm(`⚠️ ALERTA DE REGRA IBJJF:\n\n${alertaIBJJF}\n\nDeseja registrar a graduação mesmo assim?`)) {
+                    return; 
+                }
+            }
+
             const faixaAtual = alunoSelecionado.faixa || 'Branca';
             const grauAtual = alunoSelecionado.grau || 'Sem grau';
             let isRegressiva = false;
+            
             if (faixaAtual !== novaFaixa) {
                 const indexAtual = HIERARQUIA_FaIXAS.indexOf(faixaAtual);
                 const indexNova = HIERARQUIA_FaIXAS.indexOf(novaFaixa);
