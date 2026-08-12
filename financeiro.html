@@ -373,7 +373,6 @@
                                                 </div>
                                             </div>
                                             
-                                            <!-- 🔥 NOVO CAMPO ADICIONADO AQUI -->
                                             <div>
                                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 ml-1">Senha de Saque</label>
                                                 <input type="password" id="saque-senha" required class="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 dark:text-white shadow-sm tracking-widest" placeholder="••••••">
@@ -383,13 +382,11 @@
                                                 Efetuar Transferência PIX
                                             </button>
 
-                                            <!-- 🔥 NOVO BOTÃO DE ALTERAR SENHA AQUI -->
                                             <div class="text-center mt-4">
                                                 <button type="button" onclick="abrirModalSenhaSaque()" class="text-[9px] font-bold text-slate-400 hover:text-cyan-500 uppercase tracking-widest transition-colors flex items-center justify-center gap-1 w-full">
                                                     <span>⚙️</span> Cadastrar / Alterar Senha de Saque
                                                 </button>
                                             </div>
-                                            <!-- FIM DO NOVO BOTÃO -->
                                         </form>
                                     </div>
 
@@ -442,7 +439,6 @@
                                         <button onclick="abrirLinkOnboarding()" id="btn-onboarding-docs" class="bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-200 text-white dark:text-slate-900 text-[10px] font-black px-8 py-4 rounded-2xl transition-all uppercase tracking-widest w-full shadow-lg">
                                             🚀 Acesse aqui para concluir o envio
                                         </button>
-                                        <!-- BOTÃO DE OCULTAR O KYC -->
                                         <button onclick="ocultarPainelAsaas('asaas-verificacao-panel', 'asaas_kyc_oculto')" class="mt-4 text-[9px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 uppercase tracking-widest w-full text-center transition-colors">
                                             👁️ Ocultar este aviso
                                         </button>
@@ -455,7 +451,6 @@
                                         <h4 class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
                                             <span class="bg-amber-100 text-amber-600 p-2 rounded-lg">🏦</span> Dados Bancários (Recebimento)
                                         </h4>
-                                        <!-- BOTÃO DE OCULTAR DADOS BANCÁRIOS (Xzinho) -->
                                         <button onclick="ocultarPainelAsaas('painel-dados-bancarios', 'asaas_banco_oculto')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none" title="Ocultar painel">&times;</button>
                                     </div>
                                     <p class="text-[11px] text-slate-500 font-bold mb-6">Cadastre uma conta bancária (da mesma titularidade do seu CPF/CNPJ) para resolver pendências e liberar transferências e saques.</p>
@@ -526,19 +521,45 @@
                         </div>
                     </div>
 
+                    <!-- TAB DASHBOARD DE INTELIGÊNCIA -->
                     <div id="tab-dash" class="aba-content hidden flex-col gap-6">
+                         
+                         <!-- NOVA SEÇÃO: INTELIGÊNCIA DE MÉTRICAS -->
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-2">
+                            <!-- MRR: RECEITA RECORRENTE -->
+                            <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 dark:from-indigo-950 dark:to-slate-900 p-6 card-premium border-none shadow-xl flex items-center justify-between">
+                                <div>
+                                    <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1 flex items-center gap-1"><span>📈</span> MRR Previsto (Mês)</p>
+                                    <h3 class="text-3xl font-black text-white" id="dash-mrr">R$ 0,00</h3>
+                                    <p class="text-[9px] text-indigo-300 mt-1 font-bold">Baseado em alunos ativos x mensalidade base</p>
+                                </div>
+                                <div class="w-12 h-12 bg-indigo-500/30 rounded-full flex items-center justify-center text-indigo-100 text-xl border border-indigo-400/50">💎</div>
+                            </div>
+
+                            <!-- INADIMPLÊNCIA -->
+                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Taxa de Inadimplência</p>
+                                    <h3 class="text-3xl font-black text-slate-800 dark:text-white" id="dash-inadimplencia">0,0%</h3>
+                                    <p class="text-[9px] text-slate-400 mt-1 font-bold">Atrasos vs Total Faturado no mês</p>
+                                </div>
+                                <div class="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center text-rose-500 text-xl">🔻</div>
+                            </div>
+                         </div>
+
+                         <!-- CAIXA REAL -->
                          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div class="bg-white dark:bg-slate-900 p-8 card-premium border-slate-200 dark:border-slate-800 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entradas Totais (Mês)</p>
-                                <h3 class="text-3xl font-black text-emerald-500 mt-2" id="dash-entradas">R$ 0,00</h3>
+                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Caixa Real: Entradas</p>
+                                <h3 class="text-2xl font-black text-emerald-500 mt-2" id="dash-entradas">R$ 0,00</h3>
                             </div>
-                            <div class="bg-white dark:bg-slate-900 p-8 card-premium border-slate-200 dark:border-slate-800 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saídas / Despesas</p>
-                                <h3 class="text-3xl font-black text-rose-500 mt-2" id="dash-saidas">R$ 0,00</h3>
+                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Caixa Real: Saídas</p>
+                                <h3 class="text-2xl font-black text-rose-500 mt-2" id="dash-saidas">R$ 0,00</h3>
                             </div>
-                            <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-950 p-8 card-premium border-none shadow-xl text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lucro / Prejuízo</p>
-                                <h3 class="text-3xl font-black text-white mt-2" id="dash-saldo">R$ 0,00</h3>
+                            <div class="bg-slate-100 dark:bg-slate-800/50 p-6 card-premium border-slate-200 dark:border-slate-700 text-center">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Lucro / Prejuízo (Mês)</p>
+                                <h3 class="text-2xl font-black text-slate-800 dark:text-white mt-2" id="dash-saldo">R$ 0,00</h3>
                             </div>
                          </div>
                          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -776,7 +797,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // IMPORTANTE: Foi importado o writeBatch para processamento em lote
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -836,19 +858,14 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-        // ==========================================
-        // CARREGAR LISTA COMPLETA DE BANCOS DO BACEN
-        // ==========================================
         window.carregarListaBancosBACEN = async function() {
             const select = document.getElementById('bank-code');
             if (!select) return;
 
             try {
-                // Busca a lista oficial e atualizada do Banco Central via BrasilAPI
                 const response = await fetch('https://brasilapi.com.br/api/banks/v1');
                 const bancos = await response.json();
 
-                // Filtra apenas instituições que possuem código COMPE de compensação ativo e ordena de A-Z
                 const bancosValidos = bancos
                     .filter(b => b.code != null)
                     .sort((a, b) => a.name.localeCompare(b.name));
@@ -865,7 +882,6 @@
 
             } catch (error) {
                 console.error("Erro ao buscar bancos do BACEN, aplicando fallback:", error);
-                // Fallback de emergência caso a API externa oscile
                 select.innerHTML = `
                     <option value="">Selecione o Banco...</option>
                     <option value="260">Nubank (260)</option>
@@ -882,13 +898,8 @@
                 `;
             }
         }
-
-        // Executa a busca ao abrir a página
         window.carregarListaBancosBACEN();
 
-        // ==========================================
-        // KYC - REDIRECIONAMENTO PARA ONBOARDING ASAAS
-        // ==========================================
         window.abrirLinkOnboarding = async function() {
             const btn = document.getElementById('btn-onboarding-docs');
             const origTxt = btn.innerHTML;
@@ -914,9 +925,6 @@
             }
         }
         
-        // ==========================================
-        // 🔒 MOTOR DE PERMISSÕES E PAYWALL
-        // ==========================================
         const HIERARQUIA_PLANOS = {
             'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'BLACK_BELT': 1,
             'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'MASTER': 2,
@@ -1154,13 +1162,11 @@
                     document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
                     window.toggleTaxaInput();
 
-                    // Considera ambas as variáveis para compatibilidade
                     const isAsaasAtivo = equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA';
 
                     if(isAsaasAtivo) {
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
                         
-                        // MANTÉM OS PAINÉIS OCULTOS SE O PROFESSOR JÁ TIVER DISPENSADO ELES
                         if (equipeDados.asaas_kyc_oculto) {
                             document.getElementById('asaas-verificacao-panel').classList.add('hidden');
                         } else {
@@ -1172,14 +1178,13 @@
                             if (equipeDados.asaas_banco_oculto) {
                                 pBanco.classList.add('hidden');
                             } else {
-                                pBanco.classList.remove('hidden'); // Boa prática para evitar bugs visuais
+                                pBanco.classList.remove('hidden'); 
                             }
                         }
                         
                         document.getElementById('asaas-form-panel').classList.add('hidden');
                         document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
 
-                        // ⚠️ CUIDADO: Estas linhas abaixo são vitais e não podem ser apagadas!
                         if(equipeDados.pix_saque_chave) {
                             document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
                             if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
@@ -1198,9 +1203,6 @@
             } catch (error) { console.log(error); }
         }
 
-        // ==========================================
-        // FUNÇÃO PARA OCULTAR PAINÉIS MANUALMENTE
-        // ==========================================
         window.ocultarPainelAsaas = async function(idPainel, nomeVariavelBD) {
             const painel = document.getElementById(idPainel);
             if(painel) painel.classList.add('hidden');
@@ -1214,9 +1216,6 @@
             }
         }
 
-        // ==========================================
-        // CADASTRAR / ATUALIZAR CONTA BANCÁRIA
-        // ==========================================
         window.salvarContaBancariaAsaas = async function() {
             const bankCode = document.getElementById('bank-code').value;
             const bankType = document.getElementById('bank-type').value;
@@ -1245,8 +1244,6 @@
                     registrarLogAuditoria("DADOS_BANCARIOS", `Enviou dados bancários do banco ${bankCode} para aprovação no Asaas.`);
                     
                     document.getElementById('form-conta-bancaria').reset();
-                    
-                    // Oculta automaticamente o painel de dados bancários assim que der sucesso!
                     window.ocultarPainelAsaas('painel-dados-bancarios', 'asaas_banco_oculto');
                 } else {
                     showToast("Erro do Banco: " + res.data.error, "error");
@@ -1271,7 +1268,6 @@
             try {
                 await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a, chave_pix: pix });
                 
-                // 1. Atualiza o cache local imediatamente para a página não reverter
                 equipeBaseConfig.prazo = p; 
                 equipeBaseConfig.atraso = a; 
                 equipeBaseConfig.chave_pix = pix;
@@ -1282,14 +1278,12 @@
                     equipeDados.chave_pix = pix;
                 }
 
-                // 2. Garante visualmente os campos atualizados
                 document.getElementById('config-prazo').value = floatToStr(p);
                 document.getElementById('config-atraso').value = floatToStr(a);
 
                 showToast("Configuração salva com sucesso!", "success");
                 registrarLogAuditoria("CONFIG_PRECOS", `Alterou as mensalidades base: Prazo (R$ ${p}), Atraso (R$ ${a}). Chave PIX: ${pix}`);
                 
-                // 3. Recarrega as tabelas para recalcular todas as faturas pendentes com o novo valor
                 await carregarDados(); 
             } catch (e) { 
                 showToast("Erro ao salvar config.", "error"); 
@@ -1337,7 +1331,6 @@
                 const res = await consultarSaldo({ uid: uid, apiKey: equipeDados.asaas_api_key });
                 
                 if(res.data.success) {
-                    // Atualiza os valores na tela
                     document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
                     const previsto = document.getElementById('asaas-saldo-previsto');
                     if(previsto) {
@@ -1345,16 +1338,13 @@
                         previsto.innerText = `R$ ${floatToStr(aCompensar > 0 ? aCompensar : 0)}`;
                     }
 
-                    // 🔥 MÁGICA DA AUTOMAÇÃO AQUI 🔥
                     const comp = res.data.compliance;
                     if (comp) {
-                        // 1. Se os documentos (KYC) estiverem em análise ou aprovados, some com o card do KYC automaticamente
                         if (comp.documentation === 'APPROVED' || comp.documentation === 'PENDING') {
                             const pDoc = document.getElementById('asaas-verificacao-panel');
                             if (pDoc) pDoc.classList.add('hidden');
                         }
 
-                        // 2. Se a conta bancária estiver em análise ou aprovada, some com o card do Banco automaticamente
                         if (comp.bankAccount === 'APPROVED' || comp.bankAccount === 'PENDING') {
                             const pBanco = document.getElementById('painel-dados-bancarios');
                             if (pBanco) pBanco.classList.add('hidden');
@@ -1375,7 +1365,7 @@
             const valorNum = strToFloat(document.getElementById('saque-valor').value);
             const tipo = document.getElementById('saque-tipo-pix').value;
             const chave = document.getElementById('saque-chave-pix').value.trim();
-            const senha = document.getElementById('saque-senha').value; // Captura a senha
+            const senha = document.getElementById('saque-senha').value; 
             
             if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
             if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
@@ -1395,13 +1385,13 @@
                     valor: valorNum, 
                     chavePix: chave, 
                     tipoChave: tipo,
-                    senhaDigitada: senha // Envia a senha para o validador bcrypt do servidor
+                    senhaDigitada: senha 
                 });
 
                 if(res.data.success) {
                     showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
                     document.getElementById('saque-valor').value = "";
-                    document.getElementById('saque-senha').value = ""; // Limpa a senha da tela
+                    document.getElementById('saque-senha').value = ""; 
                     await updateDoc(doc(db, "equipes", uid), { pix_saque_chave: chave, pix_saque_tipo: tipo });
                     await addDoc(collection(db, "saques"), { equipe_id: uid, valor: valorNum, chave_pix: chave, tipo_chave: tipo, data: new Date().toISOString(), status: 'SOLICITADO' });
                     carregarHistoricoSaques();
@@ -1411,14 +1401,10 @@
             } catch(e) { showToast("Falha na comunicação com o banco.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
         }
 
-        // ==========================================
-        // CADASTRAR / ALTERAR SENHA DE SAQUE (BLINDAGEM)
-        // ==========================================
         window.abrirModalSenhaSaque = () => {
             document.getElementById('input-senha-atual').value = '';
             document.getElementById('input-nova-senha').value = '';
             
-            // Se o usuário já tiver uma senha configurada no banco, exigimos a atual
             if (equipeDados && equipeDados.senha_saque_hash) {
                 document.getElementById('box-senha-atual').classList.remove('hidden');
             } else {
@@ -1436,7 +1422,6 @@
 
             if(!novaSenha || novaSenha.length < 6) return showToast("A nova senha deve ter pelo menos 6 caracteres.", "error");
             
-            // Trava de segurança: Se ele já tem senha, ele é obrigado a digitar a atual
             if(equipeDados && equipeDados.senha_saque_hash && !senhaAtual) {
                 return showToast("Digite a sua senha atual para autorizar a mudança.", "error");
             }
@@ -1451,7 +1436,7 @@
 
                 if(res.data.success) {
                     showToast(res.data.message, "success");
-                    if(equipeDados) equipeDados.senha_saque_hash = "hash_definido"; // Flag para atualizar a tela
+                    if(equipeDados) equipeDados.senha_saque_hash = "hash_definido"; 
                     fecharModalSenhaSaque();
                 } else {
                     showToast("Atenção: " + res.data.error, "error");
@@ -1498,6 +1483,9 @@
             } catch(e) { showToast("Falha de conexão ao criar conta.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
         }
 
+        // ==========================================
+        // GERAÇÃO EM LOTE COM FIRESTORE BATCHES
+        // ==========================================
         window.gerarFaturas = async function() {
             if (equipeBaseConfig.prazo <= 0) {
                 showToast("Atenção: O valor da mensalidade (No Prazo) está zerado. Geração bloqueada.", "error");
@@ -1505,12 +1493,15 @@
             }
 
             const btn = document.getElementById('btn-gerar-faturas'); if(!btn) return;
-            const originalTxt = btn.innerHTML; btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando..."; btn.disabled = true;
+            const originalTxt = btn.innerHTML; btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando Lote..."; btn.disabled = true;
 
             const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value; const mesAnoFiltro = `${ano}-${mes}`;
             let geradas = 0; const filaAsaas = []; const chavePixAtual = document.getElementById('config-pix').value.trim();
 
             try {
+                // Inicia o lote de gravação (Batch)
+                const batch = writeBatch(db);
+
                 for (const aluno of alunosCache) {
                     const existe = financeiroMesCache.find(f => f.aluno_id === aluno.id && f.tipo === 'MENSALIDADE');
                     if (!existe) {
@@ -1526,7 +1517,9 @@
                         const temAsaas = equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true);
                         if (!temAsaas && status !== 'ISENTO') faturaData.chave_pix_manual = chavePixAtual;
 
-                        await addDoc(collection(db, "financeiro"), faturaData);
+                        // Adiciona a fatura ao lote invés de gravar uma a uma
+                        const novaFaturaRef = doc(collection(db, "financeiro"));
+                        batch.set(novaFaturaRef, faturaData);
                         geradas++;
 
                         if (temAsaas && status !== 'ISENTO') {
@@ -1541,9 +1534,12 @@
                 }
                 
                 if (geradas > 0) {
-                    registrarLogAuditoria("GEROU_FATURAS", `Gerou ${geradas} faturas para o mês ${mesAnoFiltro}`);
+                    // Executa todas as gravações de uma vez (instantâneo)
+                    await batch.commit();
+
+                    registrarLogAuditoria("GEROU_FATURAS", `Gerou ${geradas} faturas em lote para o mês ${mesAnoFiltro}`);
                     if (filaAsaas.length > 0) {
-                        showToast(`Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
+                        showToast(`Faturas geradas! Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
                         const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
                         let count = 0;
                         for (const cob of filaAsaas) {
@@ -1584,7 +1580,7 @@
             const contMens = document.getElementById('tabela-mensalidades'); const contFluxo = document.getElementById('tabela-fluxo');
             if(contMens) contMens.innerHTML = ''; if(contFluxo) contFluxo.innerHTML = '';
 
-            let rPagos = 0; let rPendentes = 0;
+            let rPagos = 0; let rPendentes = 0; let rAtrasadosTotais = 0;
             const faturasMes = financeiroMesCache.filter(f => f.tipo === 'MENSALIDADE');
 
             if (faturasMes.length === 0) {
@@ -1611,8 +1607,12 @@
                         }
                     }
 
-                    if (status === 'PAGO') rPagos += valorFinal;
-                    else if (status === 'PENDENTE' || status === 'ATRASADO') rPendentes += valorFinal;
+                    if (status === 'PAGO') {
+                        rPagos += valorFinal;
+                    } else if (status === 'PENDENTE' || status === 'ATRASADO') {
+                        rPendentes += valorFinal;
+                        if(status === 'ATRASADO') rAtrasadosTotais += valorFinal;
+                    }
 
                     const dataPagTxt = (status === 'PAGO' && f.data_pagamento) ? new Date(f.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : (status === 'PAGO' && f.data) ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
                     
@@ -1646,6 +1646,19 @@
 
             if(document.getElementById('lbl-resumo-pago')) document.getElementById('lbl-resumo-pago').innerText = `R$ ${floatToStr(rPagos)}`;
             if(document.getElementById('lbl-resumo-pendente')) document.getElementById('lbl-resumo-pendente').innerText = `R$ ${floatToStr(rPendentes)}`;
+
+            // ATUALIZANDO AS NOVAS MÉTRICAS DE INTELIGÊNCIA NO DASHBOARD
+            let mrrEsperado = 0;
+            alunosCache.forEach(aluno => {
+                const bolsa = aluno.bolsa_perc || 0;
+                if(bolsa < 100) mrrEsperado += equipeBaseConfig.prazo * (1 - bolsa/100);
+            });
+            if(document.getElementById('dash-mrr')) document.getElementById('dash-mrr').innerText = `R$ ${floatToStr(mrrEsperado)}`;
+
+            let percInad = 0;
+            const faturamentoMesTotal = rPagos + rPendentes;
+            if(faturamentoMesTotal > 0) percInad = (rAtrasadosTotais / faturamentoMesTotal) * 100;
+            if(document.getElementById('dash-inadimplencia')) document.getElementById('dash-inadimplencia').innerText = `${percInad.toFixed(1).replace('.',',')}%`;
 
             const fluxoFiltrado = financeiroMesCache.filter(f => f.tipo !== 'MENSALIDADE');
             if(fluxoFiltrado.length === 0) {
@@ -1738,7 +1751,7 @@
             const campoBolsa = document.getElementById('acao-bolsa');
             if (campoBolsa) {
                 campoBolsa.value = aluno.bolsa_perc || "0";
-                window.validarBolsaAcao(campoBolsa); // Atualiza o layout visual
+                window.validarBolsaAcao(campoBolsa); 
             }
             document.getElementById('acao-venc').value = aluno.dia_vencimento || "10";
 
@@ -1763,7 +1776,8 @@
                 const resultado = await gerarCobranca({
                     alunoId: alunoSelecionadoMens.id, valor: valorCobrarAsaas, mesAno: fatura.mes_ano,
                     descricao: `Mensalidade Jiu-Jitsu - Ref: ${fatura.mes_ano}`,
-                    aceitaBoleto: equipeDados.asaas_aceita_boleto === true, aceitaCartao: equipeDados.asaas_aceita_cartao === true
+                    aceitaBoleto: equipeDados.asaas_aceita_boleto === true, aceitaCartao: equipeDados.asaas_aceita_cartao === true,
+                    apiKey: equipeDados.asaas_api_key // MANTIDO PARA A ETAPA 1, será removido na Etapa 2
                 });
 
                 if(resultado.data.success) {
@@ -1902,9 +1916,6 @@
             html2pdf().set(opt).from(tempDiv).save().then(() => { if (btnPainel) { btnPainel.innerHTML = btnOriginalTxt; btnPainel.disabled = false; } }).catch(err => { showToast("Erro ao gerar PDF.", "error"); if (btnPainel) { btnPainel.innerHTML = btnOriginalTxt; btnPainel.disabled = false; } });
         }
 
-        // ==========================================
-        // 📊 LÓGICA ATUALIZADA DOS GRÁFICOS (DARK MODE & GRADIENTES)
-        // ==========================================
         window.atualizarDashboardMes = function() {
             let tMens = 0, tExt = 0, tDesp = 0;
             financeiroMesCache.forEach(f => {
@@ -1919,10 +1930,9 @@
             if(document.getElementById('dash-saidas')) document.getElementById('dash-saidas').innerText = `R$ ${floatToStr(tDesp)}`;
             if(document.getElementById('dash-saldo')) {
                 document.getElementById('dash-saldo').innerText = `R$ ${floatToStr(saldo)}`;
-                document.getElementById('dash-saldo').className = saldo >= 0 ? "text-3xl font-black text-emerald-400 mt-2" : "text-3xl font-black text-rose-400 mt-2";
+                document.getElementById('dash-saldo').className = saldo >= 0 ? "text-2xl font-black text-emerald-400 mt-2" : "text-2xl font-black text-rose-400 mt-2";
             }
 
-            // Variáveis de Tema (Dark Mode)
             const isDark = document.documentElement.classList.contains('dark');
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(203, 213, 225, 0.3)';
             const textColor = isDark ? '#94a3b8' : '#64748b';
@@ -2050,7 +2060,6 @@
             if(document.getElementById('ano-saidas')) document.getElementById('ano-saidas').innerText = `R$ ${floatToStr(totalDespAno)}`;
             if(document.getElementById('ano-saldo')) document.getElementById('ano-saldo').innerText = `R$ ${floatToStr(saldoAcumulado)}`;
 
-            // Variáveis de Tema
             const isDark = document.documentElement.classList.contains('dark');
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(203, 213, 225, 0.3)';
             const textColor = isDark ? '#94a3b8' : '#64748b';
@@ -2058,7 +2067,6 @@
             const tooltipText = isDark ? '#f8fafc' : '#1e293b';
             const tooltipBody = isDark ? '#cbd5e1' : '#475569';
 
-            // Gráfico de Evolução Mensal - Modernizado
             if(chartEvolucaoAno) chartEvolucaoAno.destroy();
             const ctxEvo = document.getElementById('chartEvolucaoAno');
             if(ctxEvo) {
@@ -2094,7 +2102,6 @@
                 });
             }
 
-            // Gráfico de Crescimento do Caixa - Modernizado
             if(chartAcumuladoAno) chartAcumuladoAno.destroy();
             const ctxAcum = document.getElementById('chartAcumuladoAno');
             if(ctxAcum) {
@@ -2130,7 +2137,6 @@
             }
         }
         
-        // 🔭 Observer para atualizar os gráficos IMEDIATAMENTE ao clicar no botão "Tema Escuro"
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'class') {
@@ -2277,10 +2283,10 @@
             }
         }
 
-        // Inicialização garantida
         window.onload = () => {
             mudarAba('tab-mensalidades');
         };
+        
         window.gerarPDFRelatorio = async function() {
             const mIni = document.getElementById('rel-mes-ini').value;
             const aIni = document.getElementById('rel-ano-ini').value;
