@@ -38,12 +38,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
-        
-        @keyframes skeleton-pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .animate-pulse { animation: skeleton-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-rose-500 selection:text-white relative">
@@ -218,13 +212,12 @@
                             <tr class="text-slate-400">
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Equipe / Mestre</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Saúde (Alunos)</th>
-                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Último Acesso</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Plano & Asaas</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ações Rápidas</th>
                             </tr>
                         </thead>
                         <tbody id="tabela-equipes" class="divide-y divide-slate-800/50 text-sm">
-                            <tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs animate-pulse">Carregando império...</td></tr>
+                            <tr><td colspan="4" class="text-center p-8 text-slate-500 italic text-xs animate-pulse">Carregando império...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -264,7 +257,6 @@
                 </div>
             </div>
 
-            <!-- Cofre Asaas -->
             <div class="bg-gradient-to-r from-slate-900 to-slate-800 border border-emerald-500/20 p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-4 w-full lg:w-auto">
                     <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-black shrink-0 border border-emerald-500/30">🏦</div>
@@ -273,7 +265,6 @@
                         <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Sincronizado automaticamente</p>
                     </div>
                 </div>
-
                 <div class="w-full lg:w-auto flex flex-col md:flex-row items-center gap-4">
                     <div class="text-center md:text-right bg-slate-950/80 px-6 py-3 rounded-2xl border border-slate-800 min-w-[200px]">
                         <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo Disponível</p>
@@ -286,21 +277,20 @@
                 </div>
             </div>
 
-            <!-- KPIs Financeiros do Sistema -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-lg relative overflow-hidden card-hover">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-lg relative overflow-hidden transition-transform transform hover:-translate-y-1">
                     <div class="absolute -right-4 -top-4 text-6xl opacity-5">📈</div>
                     <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">MRR Ativo (Planos)</p>
                     <h3 class="text-3xl font-black text-white mt-2" id="fat-mrr-ativo">R$ 0,00</h3>
                     <p class="text-[9px] text-slate-500 mt-2 uppercase tracking-widest font-bold bg-slate-800 px-2 py-1 rounded inline-block" id="fat-qtd-ativos">0 assinaturas</p>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-lg relative overflow-hidden card-hover">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-lg relative overflow-hidden transition-transform transform hover:-translate-y-1">
                     <div class="absolute -right-4 -top-4 text-6xl opacity-5">🎟️</div>
                     <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Receita Avulsa (Fichas)</p>
                     <h3 class="text-3xl font-black text-white mt-2" id="fat-receita-fichas">R$ 0,00</h3>
                     <p class="text-[9px] text-slate-500 mt-2 uppercase tracking-widest font-bold bg-slate-800 px-2 py-1 rounded inline-block" id="fat-qtd-fichas">0 fichas adquiridas</p>
                 </div>
-                <div class="bg-slate-900 border border-rose-900/30 p-6 rounded-3xl shadow-lg relative overflow-hidden card-hover">
+                <div class="bg-slate-900 border border-rose-900/30 p-6 rounded-3xl shadow-lg relative overflow-hidden transition-transform transform hover:-translate-y-1">
                     <div class="absolute -right-4 -top-4 text-6xl opacity-5">🚨</div>
                     <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Inadimplência (Risco)</p>
                     <h3 class="text-3xl font-black text-rose-500 mt-2" id="fat-mrr-perdido">R$ 0,00</h3>
@@ -308,7 +298,6 @@
                 </div>
             </div>
 
-            <!-- Tabela de Detalhamento por Academia -->
             <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-slate-800 bg-slate-800/20 flex justify-between items-center">
                     <h3 class="text-sm font-black text-white uppercase tracking-widest">Detalhamento por Academia</h3>
@@ -332,7 +321,6 @@
                 </div>
             </div>
 
-            <!-- Gráfico e Extrato Asaas -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col">
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 text-center">Meios de Pagamento</h3>
@@ -961,12 +949,26 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const functions = getFunctions(app);
+        const storage = getStorage(app);
 
         // ==========================================
-        // ESCOPO GLOBAL E FUNÇÕES AUXILIARES
+        // UTILITÁRIOS E TOASTS
         // ==========================================
-        window.formatarMoeda = function(valor) { return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-        window.escapeHTML = function(value) { return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-indigo-500' : 'bg-rose-500');
+            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto max-w-sm border border-white/10`;
+            toast.innerHTML = `<span class="text-xl drop-shadow-md">${icon}</span> <span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        window.escapeHTML = function(value) {
+            return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
 
         window.mascaraMoeda = function(elemento) {
             let valor = elemento.value.replace(/\D/g, ''); 
@@ -984,18 +986,9 @@
             return parseFloat(valor);
         }
 
-        window.showToast = function(message, type = 'error') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-indigo-500' : 'bg-rose-500');
-            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto max-w-sm border border-white/10`;
-            toast.innerHTML = `<span class="text-xl drop-shadow-md">${icon}</span> <span class="flex-1">${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
-            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
-        }
-
+        // ==========================================
+        // VARIÁVEIS GLOBAIS
+        // ==========================================
         let isModoProducao = false;
         window.precoFichaGlobal = 2.50;
         let masterUid = null;
@@ -1010,6 +1003,7 @@
         let chartMrrInstance = null;
         let chartAcademiasInstance = null;
         let chartMetodosInstance = null; 
+        
         let timerBuscaAdmin = null;
         let equipeEditandoId = null;
         let equipeAcessoId = null; 
@@ -1019,7 +1013,40 @@
         const extratoMasterAsaas = httpsCallable(functions, 'extratoMasterAsaas'); 
 
         // ==========================================
-        // AUTH & AMBIENTE
+        // AÇÕES RÁPIDAS (GOD MODE)
+        // ==========================================
+        window.toggleBloqueioEquipe = async function(id, statusAtual) {
+            const ehBloqueado = statusAtual === 'BLOQUEADO';
+            const novoStatus = ehBloqueado ? 'BASICO' : 'BLOQUEADO';
+            
+            const msgConfirm = ehBloqueado 
+                ? "Restaurar o acesso desta academia? Ela voltará para o plano Básico provisoriamente." 
+                : "Bloquear acesso desta academia imediatamente? O mestre perderá o acesso.";
+                
+            if(!confirm(msgConfirm)) return;
+            
+            try {
+                await updateDoc(doc(db, "equipes", id), { status_plano: novoStatus });
+                showToast(`Equipe ${ehBloqueado ? 'Desbloqueada' : 'Bloqueada'}!`, "success");
+                
+                const eqIdx = equipesCache.findIndex(e => e.id === id);
+                if (eqIdx !== -1) equipesCache[eqIdx].status_plano = novoStatus;
+                window.renderizarEquipes();
+            } catch(e) { showToast("Erro de permissão.", "error"); }
+        }
+
+        window.copiarJsonBI = function(id) {
+            const doc = biCache.find(x => x._id === id);
+            if(doc) { navigator.clipboard.writeText(JSON.stringify(doc, null, 2)); showToast("JSON Copiado!", "success"); }
+        }
+
+        window.copiarLinkCupom = function(codigo) {
+            const url = window.location.origin + '/planos.html?cupom=' + codigo;
+            navigator.clipboard.writeText(url); showToast("Link de Venda copiado!", "success");
+        }
+
+        // ==========================================
+        // AMBIENTE DO BANCO E INIT
         // ==========================================
         async function carregarAmbienteAtual() {
             try {
@@ -1036,14 +1063,13 @@
             btn.classList.add('opacity-50', 'cursor-wait');
             const novoModo = !isModoProducao;
             if (novoModo === true) {
-                if (!confirm("⚠️ ALERTA DE RISCO MAXIMO!\n\nVocê está ativando o modo de PRODUÇÃO REAL.\nAs transações bancárias no Asaas (Cartão, PIX, Boletos) começarão a movimentar dinheiro real.\n\nTem certeza absoluta?")) {
+                if (!confirm("⚠️ ALERTA DE RISCO MAXIMO!\n\nVocê está ativando o modo de PRODUÇÃO REAL.\nAs transações bancárias começarão a movimentar dinheiro real.\n\nTem certeza absoluta?")) {
                     btn.classList.remove('opacity-50', 'cursor-wait'); return;
                 }
             }
             try {
                 await setDoc(doc(db, "sistema", "config_ambiente"), { modo_producao: novoModo, data_atualizacao: new Date().toISOString() }, { merge: true });
-                isModoProducao = novoModo;
-                window.atualizarVisualDoSwitch();
+                isModoProducao = novoModo; window.atualizarVisualDoSwitch();
                 showToast(`Sistema alterado para ${novoModo ? 'PRODUÇÃO REAL' : 'SANDBOX (Testes)'}!`, "success");
             } catch (error) { showToast("Erro de permissão.", "error"); } 
             finally { btn.classList.remove('opacity-50', 'cursor-wait'); }
@@ -1057,19 +1083,15 @@
             const badgeMobile = document.getElementById('badge-ambiente-mobile');
             
             if (isModoProducao) {
-                thumb.classList.replace('translate-x-0', 'translate-x-4');
-                thumb.classList.replace('bg-amber-500', 'bg-emerald-500');
-                lblSandbox.classList.replace('text-amber-500', 'text-slate-600');
-                lblProd.classList.replace('text-slate-600', 'text-emerald-500');
+                thumb.classList.replace('translate-x-0', 'translate-x-4'); thumb.classList.replace('bg-amber-500', 'bg-emerald-500');
+                lblSandbox.classList.replace('text-amber-500', 'text-slate-600'); lblProd.classList.replace('text-slate-600', 'text-emerald-500');
                 const html = `<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span> PRODUÇÃO`;
                 const css = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] flex items-center gap-2 mt-2 w-max";
                 if(badgeDesktop){ badgeDesktop.innerHTML = html; badgeDesktop.className = css; }
                 if(badgeMobile){ badgeMobile.innerHTML = html; badgeMobile.className = css; }
             } else {
-                thumb.classList.replace('translate-x-4', 'translate-x-0');
-                thumb.classList.replace('bg-emerald-500', 'bg-amber-500');
-                lblProd.classList.replace('text-emerald-500', 'text-slate-600');
-                lblSandbox.classList.replace('text-slate-600', 'text-amber-500');
+                thumb.classList.replace('translate-x-4', 'translate-x-0'); thumb.classList.replace('bg-emerald-500', 'bg-amber-500');
+                lblProd.classList.replace('text-emerald-500', 'text-slate-600'); lblSandbox.classList.replace('text-slate-600', 'text-amber-500');
                 const html = `<span class="text-sm leading-none">⚠️</span> SANDBOX`;
                 const css = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)] animate-pulse flex items-center gap-1.5 mt-2 w-max";
                 if(badgeDesktop){ badgeDesktop.innerHTML = html; badgeDesktop.className = css; }
@@ -1096,7 +1118,7 @@
         window.carregarImperio = async function() {
             const btnRefresh = document.getElementById('btn-atualizar-academias');
             if(btnRefresh) { btnRefresh.innerHTML = "⏳..."; btnRefresh.disabled = true; }
-            document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-12 text-slate-500 text-xs font-bold animate-pulse">📡 Sincronizando com as bases locais...</td></tr>';
+            document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="4" class="text-center p-12 text-slate-500 text-xs font-bold animate-pulse">📡 Sincronizando com as bases locais...</td></tr>';
             
             try {
                 const snapPlanos = await getDoc(doc(db, "sistema", "config_planos"));
@@ -1111,9 +1133,7 @@
 
                 snapAlunos.docs.forEach(docAluno => {
                     const aluno = docAluno.data();
-                    if (aluno.status === 'ATIVO' && idsEquipesValidas.has(aluno.equipe_id)) {
-                        contagemAlunos.set(aluno.equipe_id, (contagemAlunos.get(aluno.equipe_id) || 0) + 1);
-                    }
+                    if (aluno.status === 'ATIVO' && idsEquipesValidas.has(aluno.equipe_id)) contagemAlunos.set(aluno.equipe_id, (contagemAlunos.get(aluno.equipe_id) || 0) + 1);
                 });
 
                 let totalAtletas = 0, inativas = 0, leads = 0;
@@ -1129,15 +1149,11 @@
                 document.getElementById('dash-inativas').innerText = inativas;
                 document.getElementById('dash-leads').innerText = leads;
 
-                window.renderizarEquipes();
-                window.renderizarGraficos();
+                window.renderizarEquipes(); window.renderizarGraficos();
                 if(!document.getElementById('aba-faturamento').classList.contains('hidden')) window.renderizarFaturamento();
 
-            } catch (e) { 
-                showToast("Falha na sincronização dos dados.", "error"); 
-            } finally {
-                if(btnRefresh) { btnRefresh.innerHTML = "<span>🔄</span> Atualizar"; btnRefresh.disabled = false; }
-            }
+            } catch (e) { showToast("Falha na sincronização.", "error"); } 
+            finally { if(btnRefresh) { btnRefresh.innerHTML = "<span>🔄</span> Atualizar"; btnRefresh.disabled = false; } }
         }
 
         window.filtrarComDebounce = function(tipo) {
@@ -1160,7 +1176,8 @@
                 const planoAtual = (eq.status_plano || 'TESTE').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
                 const isIsento = (eq.isento === true || String(eq.isento) === 'true');
                 const totalAlunos = Number(eq.total_alunos || 0);
-                const diffDias = eq.ultimo_acesso ? Math.floor((new Date() - new Date(eq.ultimo_acesso)) / (1000 * 60 * 60 * 24)) : 9999;
+                const ultimoAcesso = eq.ultimo_acesso || eq.data_cadastro;
+                const diffDias = ultimoAcesso ? Math.floor((new Date() - new Date(ultimoAcesso)) / (1000 * 60 * 60 * 24)) : 9999;
 
                 const passaBusca = textoBusca.includes(termo);
                 const passaPlano = filtroPlano === 'TODOS' || planoAtual === filtroPlano;
@@ -1175,7 +1192,7 @@
 
             tabela.innerHTML = '';
             if (filtradas.length === 0) {
-                tabela.innerHTML = '<tr><td colspan="5" class="text-center p-12 text-slate-500 italic text-xs">A base de dados retornou vazia para este filtro.</td></tr>';
+                tabela.innerHTML = '<tr><td colspan="4" class="text-center p-12 text-slate-500 italic text-xs">A base de dados retornou vazia para este filtro.</td></tr>';
                 return;
             }
 
@@ -1186,14 +1203,6 @@
                 let diasDeVidaStr = diff !== null ? `Criada há ${diff} dias` : "Data desconhecida";
                 
                 let saudeHTML = eq.total_alunos > 10 ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded font-bold text-[9px] uppercase tracking-widest">💪 Saudável (${eq.total_alunos})</span>` : eq.total_alunos > 0 ? `<span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-1 rounded font-bold text-[9px] uppercase tracking-widest">🌱 Inicial (${eq.total_alunos})</span>` : `<span class="bg-rose-500/10 text-rose-500 border border-rose-500/20 px-2 py-1 rounded font-black text-[9px] uppercase tracking-widest status-blink">⚠️ Vazias (0)</span>`;
-
-                let dataAcessoBadge = `<span class="text-slate-600 font-bold text-[9px] uppercase tracking-widest">Sem Login</span>`;
-                if (eq.ultimo_acesso) {
-                    const diffDias = Math.floor((new Date() - new Date(eq.ultimo_acesso)) / (1000 * 60 * 60 * 24));
-                    if(diffDias < 7) dataAcessoBadge = `<span class="text-emerald-400 font-bold text-[9px] uppercase tracking-widest">Há ${diffDias} d</span>`;
-                    else if (diffDias <= 20) dataAcessoBadge = `<span class="text-amber-400 font-bold text-[9px] uppercase tracking-widest">Há ${diffDias} d</span>`;
-                    else dataAcessoBadge = `<span class="text-rose-500 font-bold text-[9px] uppercase tracking-widest border border-rose-500/30 px-1.5 py-0.5 rounded shadow-sm">Ausente (${diffDias}d)</span>`;
-                }
 
                 const isIsento = (eq.isento === true || String(eq.isento) === "true");
                 const st = eq.status_plano || "TESTE";
@@ -1227,7 +1236,6 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-center">${saudeHTML}</td>
-                    <td class="px-6 py-4 text-center">${dataAcessoBadge}</td>
                     <td class="px-6 py-4 text-center"><div class="flex flex-col items-center gap-1.5">${planoBadge}${asaasBadge}</div></td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex gap-2 justify-center items-center opacity-70 group-hover:opacity-100 transition-opacity">
@@ -1310,7 +1318,7 @@
         }
 
         // ==========================================
-        // 💰 FATURAMENTO E ASAAS (Cofre Master)
+        // 💰 FATURAMENTO (Cofre)
         // ==========================================
         window.carregarSaldoMaster = async function() {
             try {
@@ -1912,34 +1920,7 @@
         }
 
         // ==========================================
-        // 📢 MURAL DE AVISOS GLOBAIS
-        // ==========================================
-        window.carregarAvisoGlobal = async function() {
-            try {
-                const snap = await getDoc(doc(db, "sistema", "aviso_global"));
-                if(snap.exists()) {
-                    const d = snap.data();
-                    document.getElementById('aviso-texto').value = d.texto || "";
-                    document.getElementById('aviso-cor').value = d.cor || "bg-indigo-600";
-                    document.getElementById('aviso-ativo').value = String(d.ativo);
-                    document.getElementById('aviso-expiracao').value = d.data_expiracao || "";
-                }
-            } catch(e) { console.log(e); }
-        }
-
-        window.salvarAvisoGlobal = async function() {
-            const texto = document.getElementById('aviso-texto').value.trim();
-            const cor = document.getElementById('aviso-cor').value;
-            const ativo = document.getElementById('aviso-ativo').value === "true";
-            const data_expiracao = document.getElementById('aviso-expiracao').value;
-            try {
-                await setDoc(doc(db, "sistema", "aviso_global"), { texto, cor, ativo, data_expiracao, data_atualizacao: new Date().toISOString() });
-                showToast("Aviso disparado via Broadcast!", "success");
-            } catch(e) { showToast("Erro ao salvar aviso.", "error"); }
-        }
-
-        // ==========================================
-        // IMPERSONATE (ENTRAR COMO)
+        // 🚪 ACESSO COMPLETO AO SISTEMA DA EQUIPE (IMPERSONATE)
         // ==========================================
         window.abrirModalAcessoSistema = function(id) {
             const eq = equipesCache.find(e => e.id === id);
@@ -2046,7 +2027,7 @@
         }
 
         // ==========================================
-        // MENU MOBILE E NAVEGAÇÃO
+        // NAVEGAÇÃO E MENU
         // ==========================================
         window.mudarAbaMaster = function(abaID) {
             document.querySelectorAll('[id^="aba-"]').forEach(a => { a.classList.add('hidden'); a.classList.remove('block', 'animate-fade-in'); });
