@@ -729,34 +729,39 @@
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
                     <h3 class="font-black uppercase tracking-widest text-sm" id="modal-produto-titulo">Detalhes do Produto</h3>
                 </div>
-                <button onclick="fecharModalProduto()" class="text-white/70 hover:text-white text-2xl leading-none transition-colors">&times;</button>
+                <button onclick="fecharModalProduto()" class="text-white/70 hover:text-white text-3xl leading-none transition-colors">&times;</button>
             </div>
             <div class="overflow-y-auto hide-scrollbar flex-1">
                 <div class="relative bg-slate-800">
-                    <div id="modal-carrossel-container" class="relative aspect-square">
+                    <div id="modal-carrossel-container" class="relative aspect-[16/10] sm:aspect-video">
                         <div id="modal-carrossel" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth"></div>
-                        <button onclick="scrollModalCarrossel(-1)" id="modal-prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden">◀</button>
-                        <button onclick="scrollModalCarrossel(1)" id="modal-next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden">▶</button>
+                        <button onclick="scrollModalCarrossel(-1)" id="modal-prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden border border-white/20">◀</button>
+                        <button onclick="scrollModalCarrossel(1)" id="modal-next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10 transition-all hidden border border-white/20">▶</button>
                         <div id="modal-dots" class="absolute bottom-3 left-0 w-full flex justify-center gap-2 z-10"></div>
                     </div>
                 </div>
-                <div class="p-5 space-y-4">
+                <div class="p-6 space-y-5">
                     <div>
-                        <h4 class="text-xl font-black text-white" id="modal-produto-nome"></h4>
-                        <p class="text-3xl font-black text-emerald-400 mt-2" id="modal-produto-preco"></p>
+                        <h4 class="text-xl sm:text-2xl font-black text-white" id="modal-produto-nome"></h4>
+                        <p class="text-3xl font-black text-emerald-400 mt-2 flex items-baseline gap-2" id="modal-produto-preco"></p>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">📝 Descrição</p>
+                    
+                    <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50" id="modal-dados-adicionais" style="display: none;">
+                        <div id="modal-info-adicional" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-700 pb-2">📝 Detalhes e Descrição</p>
                         <p id="modal-produto-descricao" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></p>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4" id="modal-dados-adicionais" style="display: none;">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">ℹ️ Informações Adicionais</p>
-                        <div id="modal-info-adicional" class="text-sm text-slate-300 space-y-1"></div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700">
-                        <button id="modal-btn-whats" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2"><svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.124.553 4.195 1.604 6.014L.265 24l6.147-1.336c1.737.95 3.708 1.452 5.62 1.452 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm3.896 17.203c-.173.486-.983.92-1.428.986-.423.064-.967.143-3.136-.726-2.615-1.049-4.283-3.714-4.414-3.886-.13-.173-1.054-1.4-1.054-2.673 0-1.272.663-1.898.898-2.148.236-.25.509-.313.68-.313.171 0 .341-.005.49-.005.155 0 .363-.058.568.411.21.486.719 1.761.785 1.892.066.13.111.285.025.46-.086.173-.131.282-.26.435-.13.153-.273.327-.39.46-.126.144-.26.302-.113.557.146.253.649 1.071 1.396 1.71.961.821 1.762 1.066 2.015 1.196.252.13.399.111.55-.058.15-.17.65-1.194.821-1.604.17-.411.34-.344.571-.247.23.097 1.464.69 1.714.814.25.124.417.185.478.287.06.103.06.59-.113 1.076z"/></svg> Comprar via WhatsApp</button>
-                        <div id="modal-botoes-extras" class="flex-1"></div>
-                        <button onclick="fecharModalProduto()" class="px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all">Fechar</button>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-slate-700">
+                        <button id="modal-btn-whats" class="flex-[1.5] bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.124.553 4.195 1.604 6.014L.265 24l6.147-1.336c1.737.95 3.708 1.452 5.62 1.452 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm3.896 17.203c-.173.486-.983.92-1.428.986-.423.064-.967.143-3.136-.726-2.615-1.049-4.283-3.714-4.414-3.886-.13-.173-1.054-1.4-1.054-2.673 0-1.272.663-1.898.898-2.148.236-.25.509-.313.68-.313.171 0 .341-.005.49-.005.155 0 .363-.058.568.411.21.486.719 1.761.785 1.892.066.13.111.285.025.46-.086.173-.131.282-.26.435-.13.153-.273.327-.39.46-.126.144-.26.302-.113.557.146.253.649 1.071 1.396 1.71.961.821 1.762 1.066 2.015 1.196.252.13.399.111.55-.058.15-.17.65-1.194.821-1.604.17-.411.34-.344.571-.247.23.097 1.464.69 1.714.814.25.124.417.185.478.287.06.103.06.59-.113 1.076z"/></svg> 
+                            Comprar via WhatsApp
+                        </button>
+                        <div id="modal-botoes-extras" class="flex-1 w-full"></div>
+                        <button onclick="fecharModalProduto()" class="px-6 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all">Sair</button>
                     </div>
                 </div>
             </div>
@@ -764,7 +769,6 @@
     </div>
 
     <script type="module">
-        // ===================== IMPORTS =====================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc, deleteDoc, enableIndexedDbPersistence, CACHE_SIZE_UNLIMITED, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -1015,23 +1019,36 @@
             else { const container = document.getElementById(id); if (container) container.scrollBy({ left: container.clientWidth * direcao, behavior: 'smooth' }); }
         };
 
-        // ===================== FUNÇÃO CARREGAR LOJA =====================
+        // ==========================================
+        // 🛒 LOJA DO ALUNO (VITRINE)
+        // ==========================================
         async function carregarLoja(forceRefresh = false) {
             const container = document.getElementById('lista-produtos');
             if (!container) return;
+            
             if (!forceRefresh && isOnline) {
                 const cached = getFromCache(CACHE_KEYS.PRODUTOS);
                 if (cached) { renderizarProdutos(cached); return; }
             }
+            
             container.innerHTML = `<div class="col-span-full"><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">${[...Array(3)].map(() => `<div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden animate-pulse"><div class="aspect-square bg-slate-700/50"></div><div class="p-3 space-y-2"><div class="h-3 bg-slate-700/50 rounded w-3/4"></div><div class="h-2 bg-slate-700/50 rounded w-full"></div><div class="h-2 bg-slate-700/50 rounded w-2/3"></div><div class="h-4 bg-slate-700/50 rounded w-1/4"></div></div></div>`).join('')}</div></div>`;
             carrosseisAtivos.forEach(c => c.destroy());
             carrosseisAtivos = [];
+            
             try {
                 const q = query(collection(db, "produtos"), where("equipe_id", "==", alunoLogado.equipe_id), where("status", "==", "ATIVO"));
                 const snap = await getDocs(q);
-                if (snap.empty) { container.innerHTML = "<div class='col-span-full text-center p-6 text-slate-500 text-xs italic'>Nenhum produto disponível no momento.</div>"; return; }
+                
+                if (snap.empty) { 
+                    container.innerHTML = "<div class='col-span-full text-center p-6 text-slate-500 text-xs italic'>Nenhum produto disponível no momento.</div>"; 
+                    return; 
+                }
+                
                 let msgs = [];
                 snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+                
+                msgs.sort((a,b) => (a.nome || '').localeCompare(b.nome || ''));
+                
                 produtosCache = msgs;
                 saveToCache(CACHE_KEYS.PRODUTOS, msgs);
                 renderizarProdutos(msgs);
@@ -1040,58 +1057,70 @@
                 container.innerHTML = "<div class='col-span-full text-center text-rose-500 text-xs bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar produtos. Tente novamente mais tarde.</div>";
             }
         }
+
         function renderizarProdutos(produtos) {
             const container = document.getElementById('lista-produtos');
             if (!container) return;
+            
             let html = '';
             produtos.forEach(p => {
-                const preco = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                
+                let precoHtml = `<p class="text-base font-black text-emerald-400 mb-2">R$ ${precoFormatado}</p>`;
+                let valorParaWhats = precoFormatado;
+                
+                if (p.preco_promocional && p.preco_promocional > 0 && parseFloat(p.preco_promocional) < parseFloat(p.valor)) {
+                    const promoFormatado = parseFloat(p.preco_promocional).toFixed(2).replace('.', ',');
+                    valorParaWhats = promoFormatado;
+                    precoHtml = `
+                        <div class="flex items-center gap-2 mb-2">
+                            <p class="text-xs font-bold text-slate-500 line-through">R$ ${precoFormatado}</p>
+                            <p class="text-base font-black text-emerald-400">R$ ${promoFormatado}</p>
+                        </div>
+                    `;
+                }
+
                 let arrayDeImagens = [];
                 if (p.imagens_urls && Array.isArray(p.imagens_urls) && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls.filter(img => img && img.trim() !== '');
                 else if (p.imagem_url && p.imagem_url.trim() !== '') arrayDeImagens = [p.imagem_url];
                 else arrayDeImagens = ['https://via.placeholder.com/400x400?text=Sem+Foto'];
+                
                 let idUnicoCarrossel = `carousel-${p.id}`;
                 let slidesHtml = '';
                 arrayDeImagens.forEach((img, idx) => {
                     slidesHtml += `<div class="w-full h-full shrink-0 flex items-center justify-center snap-center relative overflow-hidden bg-slate-100"><img src="${img}" alt="${escapeHtml(p.nome)} - imagem ${idx + 1}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x400?text=Erro+ao+Carregar'"></div>`;
                 });
+                
                 let setasHtml = '';
                 if (arrayDeImagens.length > 1) {
-                    setasHtml = `<button onclick="scrollCarrossel('${idUnicoCarrossel}', -1)" class="carousel-nav prev absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-cyan-500" aria-label="Imagem anterior">◀</button><button onclick="scrollCarrossel('${idUnicoCarrossel}', 1)" class="carousel-nav next absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-cyan-500" aria-label="Próxima imagem">▶</button><div class="carousel-dots absolute bottom-2 left-0 w-full flex justify-center gap-1.5 z-10">${arrayDeImagens.map((_, i) => `<div class="dot ${i === 0 ? 'active' : 'inactive'}" data-index="${i}" style="${i === 0 ? 'width: 0.75rem; background-color: #06b6d4;' : 'width: 0.375rem; background-color: rgba(100, 116, 139, 0.5);'} height: 0.375rem; border-radius: 9999px; transition: all 0.2s ease; cursor: pointer;"></div>`).join('')}</div>`;
+                    setasHtml = `<button onclick="event.stopPropagation(); scrollCarrossel('${idUnicoCarrossel}', -1)" class="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">◀</button><button onclick="event.stopPropagation(); scrollCarrossel('${idUnicoCarrossel}', 1)" class="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">▶</button><div class="absolute bottom-2 left-0 w-full flex justify-center gap-1.5 z-10">${arrayDeImagens.map((_, i) => `<div class="${i === 0 ? 'active' : 'inactive'}" style="${i === 0 ? 'width: 0.75rem; background-color: #06b6d4;' : 'width: 0.375rem; background-color: rgba(100, 116, 139, 0.5);'} height: 0.375rem; border-radius: 9999px; transition: all 0.2s ease;"></div>`).join('')}</div>`;
                 }
-                const descricaoHtml = p.descricao ? `<p class="text-[10px] text-slate-400 line-clamp-2 mb-2 leading-tight flex-1">${escapeHtml(p.descricao).replace(/\n/g, '<br>')}</p>` : `<div class="flex-1"></div>`;
-                let linkPagamento = '', tipoBotao = '';
-                if (p.link_pagamento && typeof p.link_pagamento === 'string') {
-                    const linkSanitizado = p.link_pagamento.trim();
-                    if (linkSanitizado.startsWith('http://') || linkSanitizado.startsWith('https://')) { tipoBotao = 'link'; linkPagamento = sanitizarUrl(linkSanitizado); }
-                    else if (linkSanitizado.length > 0) { tipoBotao = 'pix'; linkPagamento = linkSanitizado; }
-                }
-                const btnZapHtml = `<button onclick="comprarViaWhatsApp('${p.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5 truncate px-1 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-800" aria-label="Comprar via WhatsApp"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.124.553 4.195 1.604 6.014L.265 24l6.147-1.336c1.737.95 3.708 1.452 5.62 1.452 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm3.896 17.203c-.173.486-.983.92-1.428.986-.423.064-.967.143-3.136-.726-2.615-1.049-4.283-3.714-4.414-3.886-.13-.173-1.054-1.4-1.054-2.673 0-1.272.663-1.898.898-2.148.236-.25.509-.313.68-.313.171 0 .341-.005.49-.005.155 0 .363-.058.568.411.21.486.719 1.761.785 1.892.066.13.111.285.025.46-.086.173-.131.282-.26.435-.13.153-.273.327-.39.46-.126.144-.26.302-.113.557.146.253.649 1.071 1.396 1.71.961.821 1.762 1.066 2.015 1.196.252.13.399.111.55-.058.15-.17.65-1.194.821-1.604.17-.411.34-.344.571-.247.23.097 1.464.69 1.714.814.25.124.417.185.478.287.06.103.06.59-.113 1.076z"/></svg><span>Whats</span></button>`;
-                let botoesHtml = '';
-                if (tipoBotao === 'link') botoesHtml = `<div class="flex gap-2 mt-auto shrink-0 pt-2">${btnZapHtml}<button onclick="window.open('${linkPagamento}', '_blank', 'noopener,noreferrer')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5 truncate px-1 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-800" aria-label="Abrir link de pagamento"><span aria-hidden="true">🔗</span><span>Link</span></button></div>`;
-                else if (tipoBotao === 'pix') botoesHtml = `<div class="flex gap-2 mt-auto shrink-0 pt-2">${btnZapHtml}<button onclick="copiarPixProduto('${escapeHtml(linkPagamento)}')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5 truncate px-1 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-800" aria-label="Copiar chave PIX"><span aria-hidden="true">📄</span><span>PIX</span></button></div>`;
-                else botoesHtml = `<div class="flex mt-auto shrink-0 pt-2">${btnZapHtml}</div>`;
                 
-                html += `<div onclick="abrirModalProduto('${p.id}')" class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col group h-full transition-all hover:scale-[1.02] duration-200 cursor-pointer active:scale-95">
-            <div class="aspect-square bg-white relative overflow-hidden p-2 flex items-center justify-center shrink-0">
-                ${setasHtml}
-                <div id="${idUnicoCarrossel}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth" tabindex="0" role="region" aria-label="Carrossel de imagens do produto ${escapeHtml(p.nome)}">
-                    ${slidesHtml}
-                </div>
-            </div>
-            <div class="p-3 flex flex-col flex-1">
-                <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-1 truncate" title="${escapeHtml(p.nome)}">
-                    ${escapeHtml(p.nome)}
-                </h4>
-                ${descricaoHtml}
-                <p class="text-xs font-black text-emerald-400 mb-1">
-                    R$ ${preco}
-                </p>
-                ${botoesHtml}
-            </div>
-        </div>`;
+                const descricaoHtml = p.descricao ? `<p class="text-[10px] text-slate-400 line-clamp-2 mb-2 leading-tight flex-1 whitespace-pre-line">${escapeHtml(p.descricao)}</p>` : `<div class="flex-1"></div>`;
+                let tamanhosHtml = p.tamanhos ? `<span class="bg-slate-700 text-slate-300 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-slate-600">📏 ${escapeHtml(p.tamanhos)}</span>` : '';
+                let categoriaHtml = p.categoria ? `<span class="bg-indigo-900/30 text-indigo-400 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-indigo-700">🏷️ ${escapeHtml(p.categoria)}</span>` : '';
+                
+                html += `
+                <div onclick="abrirModalProduto('${p.id}')" class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col group h-full transition-all hover:scale-[1.02] duration-200 cursor-pointer shadow-sm hover:shadow-xl">
+                    <div class="aspect-square bg-slate-100 relative overflow-hidden p-0 flex items-center justify-center shrink-0">
+                        ${setasHtml}
+                        <div id="${idUnicoCarrossel}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                            ${slidesHtml}
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <h4 class="text-xs font-black text-white uppercase tracking-wide truncate mb-1" title="${escapeHtml(p.nome)}">${escapeHtml(p.nome)}</h4>
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            ${categoriaHtml} ${tamanhosHtml}
+                        </div>
+                        ${descricaoHtml}
+                        ${precoHtml}
+                        <button class="mt-auto w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl uppercase tracking-widest text-[9px] shadow-md transition-colors">Detalhes e Compra</button>
+                    </div>
+                </div>`;
             });
             container.innerHTML = html;
+            
             setTimeout(() => {
                 produtos.forEach(p => {
                     let arrayDeImagens = [];
@@ -1103,169 +1132,125 @@
             }, 100);
         }
 
-        // ===================== FUNÇÕES COMPRAR E COPIAR PIX =====================
-        window.comprarViaWhatsApp = async function(produtoId) {
-            const p = produtosCache.find(x => x.id === produtoId);
-            if (!p) { showToast("Produto não encontrado.", "error"); return; }
+        window.abrirModalProduto = function(produtoId) { 
+            const p = produtosCache.find(x => x.id === produtoId); 
+            if(!p) return; 
+            
+            document.getElementById('modal-produto-titulo').innerText = "Detalhes"; 
+            document.getElementById('modal-produto-nome').innerText = p.nome; 
+            
+            const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+            let precoHtml = `R$ ${precoFormatado}`;
+            let valorParaWhats = precoFormatado;
+            
+            if (p.preco_promocional && p.preco_promocional > 0 && parseFloat(p.preco_promocional) < parseFloat(p.valor)) {
+                const promoFormatado = parseFloat(p.preco_promocional).toFixed(2).replace('.', ',');
+                valorParaWhats = promoFormatado;
+                precoHtml = `<span class="text-slate-500 line-through text-lg mr-2">R$ ${precoFormatado}</span> R$ ${promoFormatado}`;
+            }
+            document.getElementById('modal-produto-preco').innerHTML = precoHtml; 
+            document.getElementById('modal-produto-descricao').innerHTML = escapeHtml(p.descricao || '').replace(/\n/g, '<br>'); 
+            
+            let htmlBadges = '';
+            if (p.categoria) htmlBadges += `<span class="bg-indigo-900/30 text-indigo-400 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-indigo-700 mr-2">🏷️ ${escapeHtml(p.categoria)}</span>`;
+            if (p.tamanhos) htmlBadges += `<span class="bg-slate-700 text-slate-300 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-slate-600">📏 Tam: ${escapeHtml(p.tamanhos)}</span>`;
+            
+            const dadosAdicionais = document.getElementById('modal-dados-adicionais');
+            if (htmlBadges !== '') {
+                dadosAdicionais.style.display = 'block'; 
+                document.getElementById('modal-info-adicional').innerHTML = htmlBadges; 
+            } else {
+                dadosAdicionais.style.display = 'none';
+            }
+            
+            const carrossel = document.getElementById('modal-carrossel'); 
+            carrossel.innerHTML = ''; 
+            let imagens = []; 
+            if(p.imagens_urls && Array.isArray(p.imagens_urls) && p.imagens_urls.length) imagens = p.imagens_urls; 
+            else if(p.imagem_url) imagens = [p.imagem_url]; 
+            else imagens = ['https://via.placeholder.com/400x400?text=Sem+Imagem']; 
+            
+            imagens.forEach(img => { 
+                const div = document.createElement('div'); 
+                div.className = 'w-full h-full shrink-0 snap-center flex items-center justify-center bg-slate-100 p-2'; 
+                const imgEl = document.createElement('img'); 
+                imgEl.src = img; 
+                imgEl.className = 'w-full h-full object-contain'; 
+                div.appendChild(imgEl); 
+                carrossel.appendChild(div); 
+            }); 
+            
+            const prevBtn = document.getElementById('modal-prev-btn'); 
+            const nextBtn = document.getElementById('modal-next-btn'); 
+            const dots = document.getElementById('modal-dots'); 
+            dots.innerHTML = ''; 
+            
+            if(imagens.length > 1) { 
+                prevBtn.classList.remove('hidden'); 
+                nextBtn.classList.remove('hidden'); 
+                imagens.forEach((_, i) => { 
+                    const dot = document.createElement('div'); 
+                    dot.className = 'w-2 h-2 rounded-full bg-white/50 transition-all cursor-pointer'; 
+                    dot.addEventListener('click', () => { 
+                        carrossel.scrollTo({ left: carrossel.clientWidth * i, behavior: 'smooth' }); 
+                    }); 
+                    dots.appendChild(dot); 
+                }); 
+                
+                carrossel.addEventListener('scroll', () => { 
+                    const index = Math.round(carrossel.scrollLeft / carrossel.clientWidth); 
+                    Array.from(dots.children).forEach((dot, j) => { 
+                        dot.style.backgroundColor = j === index ? '#06b6d4' : 'rgba(255,255,255,0.5)'; 
+                        dot.style.width = j === index ? '0.75rem' : '0.5rem'; 
+                    }); 
+                }); 
+            } else { 
+                prevBtn.classList.add('hidden'); 
+                nextBtn.classList.add('hidden'); 
+            } 
+            
             const zapLoja = equipeDados?.whatsapp_loja || equipeDados?.telefone_whatsapp || equipeDados?.celular || '';
-            if (!zapLoja) { showToast("A academia não configurou o WhatsApp de atendimento da loja.", "error"); return; }
-            let numeroLimpo = zapLoja.replace(/\D/g, '');
-            if (numeroLimpo.length < 10 || numeroLimpo.length > 13) { showToast("Número de WhatsApp inválido. Contate o suporte.", "error"); return; }
-            if (!numeroLimpo.startsWith('55')) numeroLimpo = '55' + numeroLimpo;
-            const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.', ',');
-            const nomeProduto = escapeHtml(p.nome);
-            const nomeAluno = escapeHtml(alunoLogado.nome);
-            const msg = encodeURIComponent(`Olá, Oss! Sou o aluno(a) *${nomeAluno}*.\nGostaria de encomendar o produto: *${nomeProduto}* no valor de R$ ${precoFormatado}.\nComo podemos efetuar o pagamento e combinar a entrega?`);
-            window.open(`https://wa.me/${numeroLimpo}?text=${msg}`, '_blank', 'noopener,noreferrer');
+            const numeroLimpo = zapLoja.replace(/\D/g, '');
+            const btnWhats = document.getElementById('modal-btn-whats'); 
+            
+            if (numeroLimpo) {
+                btnWhats.style.display = 'flex';
+                btnWhats.onclick = () => {
+                    if (numeroLimpo.length < 10) return showToast("Número da loja inválido.", "error");
+                    let numF = numeroLimpo; if (!numF.startsWith('55')) numF = '55' + numF;
+                    const nomeProduto = escapeHtml(p.nome);
+                    const nomeAluno = escapeHtml(alunoLogado.nome);
+                    const msg = encodeURIComponent(`Olá, Oss! Sou o atleta *${nomeAluno}*.\nGostaria de encomendar: *${nomeProduto}* (R$ ${valorParaWhats}).\nComo podemos combinar o pagamento e a entrega?`);
+                    window.open(`https://wa.me/${numF}?text=${msg}`, '_blank', 'noopener,noreferrer');
+                };
+            } else {
+                btnWhats.style.display = 'none';
+            }
+
+            const botoesExtras = document.getElementById('modal-botoes-extras');
+            botoesExtras.innerHTML = '';
+            if (p.link_pagamento && typeof p.link_pagamento === 'string' && p.link_pagamento.trim() !== '') {
+                const isUrl = /^https?:\/\//i.test(p.link_pagamento.trim());
+                if (isUrl) {
+                    botoesExtras.innerHTML = `<button onclick="window.open('${sanitizarUrl(p.link_pagamento.trim())}', '_blank')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2">🔗 Pagar Online</button>`;
+                } else {
+                    botoesExtras.innerHTML = `<button onclick="navigator.clipboard.writeText('${p.link_pagamento.replace(/'/g, "\\'")}'); showToast('Chave PIX Copiada!', 'success');" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2">📄 Copiar PIX</button>`;
+                }
+            }
+
+            document.getElementById('modal-produto').classList.remove('hidden'); 
+            document.getElementById('modal-produto').classList.add('flex'); 
         };
         
-        window.copiarPixProduto = function(chave) {
-            if (!chave || chave.trim() === '') { showToast("Chave PIX inválida.", "error"); return; }
-            navigator.clipboard.writeText(chave).then(() => showToast("Chave PIX copiada! Abra o app do seu banco.", "success"))
-                .catch(() => { const textarea = document.createElement('textarea'); textarea.value = chave; document.body.appendChild(textarea); textarea.select(); document.execCommand('copy'); document.body.removeChild(textarea); showToast("Chave PIX copiada!", "success"); });
+        window.fecharModalProduto = function() { 
+            document.getElementById('modal-produto').classList.add('hidden'); 
+            document.getElementById('modal-produto').classList.remove('flex'); 
         };
-
-        // ===================== FUNÇÃO BUSCAR FATURAS =====================
-async function buscarFaturasResiliente(forceRefresh = false) {
-    const lista = document.getElementById('lista-faturas');
-    if (!lista) return;
-if (!forceRefresh && isOnline) {
-        const cached = getFromCache(CACHE_KEYS.FATURAS);
-        if (cached) { 
-            faturasCache = cached; 
-            renderizarFaturas(cached); 
-            atualizarWidgetMensalidade(); 
-            // APAGUE O 'return;' QUE FICAVA AQUI!
-        }
-    }
-    
-    try {
-        const qAluno = query(
-            collection(db, "financeiro"),
-            where("aluno_id", "==", alunoLogado.id),
-            where("equipe_id", "==", alunoLogado.equipe_id)   // ← LINHA ADICIONADA
-        );
-        const snapAluno = await getDocs(qAluno);
-        if (snapAluno.empty) { 
-            lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhuma mensalidade encontrada.</div>`; 
-            faturasCache = []; 
-            atualizarWidgetMensalidade(); 
-            return; 
-        }
-        let faturasMensalidade = [];
-        snapAluno.forEach(doc => { 
-            const data = doc.data(); 
-            if (data.tipo === 'MENSALIDADE' || !data.tipo) 
-                faturasMensalidade.push({ id: doc.id, ...data }); 
-        });
-        faturasMensalidade.sort((a, b) => (b.mes_ano || "").localeCompare(a.mes_ano || ""));
-        faturasCache = faturasMensalidade;
-        saveToCache(CACHE_KEYS.FATURAS, faturasMensalidade, 10 * 60 * 1000);
-        renderizarFaturas(faturasMensalidade);
-        atualizarWidgetMensalidade();
-    } catch(erroFinanceiro) {
-        console.error("❌ Erro detalhado:", erroFinanceiro);
-        lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados. Verifique sua conexão.</div>`;
-    }
-}       
-function calcularValorFatura(fatura, aluno, equipe) {
-    // Se já paga, mantém o valor original
-    if (fatura.status === 'PAGO') return fatura.valor;
-    
-    const bolsa = aluno.bolsa_perc || 0;
-    if (bolsa === 100) return 0; // isento
-    
-    // Valor base conforme o status (prazo ou atraso)
-    const valorBase = (fatura.status === 'ATRASADO') 
-        ? (equipe.valor_atraso || 100)
-        : (equipe.valor_prazo || 70);
-    
-    // Aplica o desconto sobre o valor base
-    let valorCalculado = valorBase * (1 - bolsa / 100);
-
-    // --- ADIÇÃO DA TAXA DO ASAAS PARA EXIBIÇÃO ---
-    const repassarTaxa = equipe.asaas_repassar_taxa === true || String(equipe.asaas_repassar_taxa) === "true";
-    if (repassarTaxa && equipe.asaas_valor_taxa > 0) {
-        valorCalculado += parseFloat(equipe.asaas_valor_taxa);
-    }
-
-    return valorCalculado;
-}
         
-function renderizarFaturas(faturas) {
-    const lista = document.getElementById('lista-faturas');
-    if (!lista) return;
-    let temAsaas = true;
-    if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
-        const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
-        const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
-        const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
-        if (isIsento || planosPremium.includes(plano)) temAsaas = true;
-    }
-    let faturasHTML = '';
-    faturas.forEach(fat => {
-        let mesStr = "", anoStr = "";
-        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
-            const partes = String(fat.mes_ano).split('-');
-            anoStr = partes[0];
-            mesStr = partes[1];
-        }
-        const diaVenc = alunoLogado.dia_vencimento || 10;
-        let dataVencFormatada = '--/--/----';
-        if (anoStr && mesStr) dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
-        
-        // Recalcula o status atual (se for PENDENTE e já venceu, vira ATRASADO)
-        let statusAtual = fat.status || 'PENDENTE';
-        if (statusAtual === 'PENDENTE') {
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
-            const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
-            if (dataVencimento && hoje > dataVencimento) statusAtual = 'ATRASADO';
-        }
-        
-        const isPago = statusAtual === 'PAGO';
-        const isAtrasado = statusAtual === 'ATRASADO';
-        const isIsento = statusAtual === 'ISENTO';
-        
-        // Cria um objeto fatura temporário com o status recalculado
-        const faturaParaCalculo = { ...fat, status: statusAtual };
-        
-        // Recalcula o valor atual da fatura (para PENDENTE/ATRASADO)
-        let valorExibir = fat.valor;
-        if (!isPago && !isIsento) {
-            valorExibir = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
-        }
-        
-        let icone = '⏳', corTexto = 'text-cyan-400', statusLabel = 'Pendente';
-        if (isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; }
-        else if (isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; }
-        else if (isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
-        
-        let btnHtml = '';
-        if (isPago) btnHtml = `<span class="text-[10px] font-bold text-emerald-500 uppercase mt-1 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">✅ Pago</span>`;
-        else if (isIsento) btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">⭐ Isento</span>`;
-        else {
-            if (temAsaas && fat.link_pagamento) btnHtml = `<a href="${sanitizarUrl(fat.link_pagamento)}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 block text-center border border-cyan-400/50">💳 Pagar</a>`;
-            else if (fat.chave_pix_manual || (equipeDados && equipeDados.chave_pix)) btnHtml = `<button onclick="copiarPixAluno('${fat.chave_pix_manual || equipeDados.chave_pix}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50">📄 Copiar PIX</button>`;
-            else btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2">Detalhes</button>`;
-        }
-        const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
-        faturasHTML += `<div class="p-5 flex items-start justify-between hover:bg-slate-800/50 transition-colors border-b border-slate-700/30">
-            <div class="flex items-start gap-4">
-                <div class="text-2xl opacity-80 mt-1" title="${statusLabel}">${icone}</div>
-                <div>
-                    <p class="text-sm font-bold text-white">Mensalidade ${tituloMes}</p>
-                    <p class="text-[10px] text-slate-400 uppercase mt-0.5">Venc: ${dataVencFormatada}</p>
-                </div>
-            </div>
-            <div class="flex flex-col items-end">
-                <p class="text-lg font-black ${corTexto}">R$ ${parseFloat(valorExibir || 0).toFixed(2).replace('.', ',')}</p>
-                ${btnHtml}
-            </div>
-        </div>`;
-    });
-    lista.innerHTML = faturasHTML;
-}
+        window.scrollModalCarrossel = function(direcao) { 
+            const carrossel = document.getElementById('modal-carrossel'); 
+            if(carrossel) carrossel.scrollBy({ left: carrossel.clientWidth * direcao, behavior: 'smooth' }); 
+        };
 
         // ==========================================
         // 📱 NOTIFICAÇÕES PUSH (FCM)
@@ -1536,174 +1521,302 @@ function renderizarFaturas(faturas) {
         // ==========================================
         // 💳 FINANCEIRO E MENSALIDADES
         // ==========================================
-window.abrirPagamento = async function(faturaId) {
-    const fat = faturasCache.find(f => f.id === faturaId);
-    if (!fat) return showToast("Fatura não encontrada.", "error");
+        function calcularValorFatura(fatura, aluno, equipe) {
+            if (fatura.status === 'PAGO') return fatura.valor;
+            const bolsa = aluno.bolsa_perc || 0;
+            if (bolsa === 100) return 0;
+            
+            const valorBase = (fatura.status === 'ATRASADO') 
+                ? (equipe.valor_atraso || 100)
+                : (equipe.valor_prazo || 70);
+            
+            let valorCalculado = valorBase * (1 - bolsa / 100);
 
-    // Recalcula o status atual (se for PENDENTE e já venceu, vira ATRASADO)
-    let statusRecalculado = fat.status;
-    if (statusRecalculado === 'PENDENTE') {
-        let mesStr = "", anoStr = "";
-        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
-            const partes = String(fat.mes_ano).split('-');
-            anoStr = partes[0];
-            mesStr = partes[1];
-        }
-        const diaVenc = alunoLogado.dia_vencimento || 10;
-        const hoje = new Date();
-        hoje.setHours(0,0,0,0);
-        const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
-        if (dataVencimento && hoje > dataVencimento) statusRecalculado = 'ATRASADO';
-    }
-    const faturaParaCalculo = { ...fat, status: statusRecalculado };
-
-    // Recalcula o valor a ser cobrado
-    let valorCobrar = fat.valor;
-    if (statusRecalculado !== 'PAGO' && statusRecalculado !== 'ISENTO') {
-        valorCobrar = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
-    }
-
-    let temAsaas = false;
-    if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
-        const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
-        const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
-        const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
-        if (isIsento || planosPremium.includes(plano)) temAsaas = true;
-    }
-
-    if (temAsaas) {
-        if (fat.link_pagamento) {
-            window.open(sanitizarUrl(fat.link_pagamento), '_blank');
-            return;
-        }
-        showToast("⏳ Gerando link de pagamento seguro...", "success");
-        try {
-            const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-            const token = localStorage.getItem('bjj_aluno_token');
-            const resultado = await gerarCobranca({
-                alunoId: alunoLogado.id,
-                valor: valorCobrar,   // ← valor recalculado
-                mesAno: fat.mes_ano,
-                descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`,
-                _token: token
-            });
-            if (resultado.data.success) {
-                showToast("✅ Fatura gerada com sucesso!", "success");
-                window.open(resultado.data.url, '_blank');
-                buscarFaturasResiliente();
-            } else {
-                showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
+            const repassarTaxa = equipe.asaas_repassar_taxa === true || String(equipe.asaas_repassar_taxa) === "true";
+            if (repassarTaxa && equipe.asaas_valor_taxa > 0) {
+                valorCalculado += parseFloat(equipe.asaas_valor_taxa);
             }
-        } catch (error) {
-            console.error(error);
-            showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
+
+            return valorCalculado;
         }
-    } else {
-        // Pagamento manual via PIX
-        let mesStr = "", anoStr = "";
-        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
-            const partes = fat.mes_ano.split('-');
-            anoStr = partes[0];
-            mesStr = partes[1];
-        }
-        const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
-        document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`;
-        document.getElementById('pix-valor').innerText = `R$ ${parseFloat(valorCobrar || 0).toFixed(2).replace('.', ',')}`;
-        const inputPix = document.getElementById('pix-codigo');
-        const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);
-        if (chavePix) {
-            inputPix.value = chavePix;
-            document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema.";
-        } else {
-            inputPix.value = "Chave PIX não configurada pelo professor.";
-            document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor.";
-        }
-        document.getElementById('modal-pix').classList.remove('hidden');
-        document.getElementById('modal-pix').classList.add('flex');
-    }
-};
+
+        window.abrirPagamento = async function(faturaId) {
+            const fat = faturasCache.find(f => f.id === faturaId);
+            if (!fat) return showToast("Fatura não encontrada.", "error");
+
+            let statusRecalculado = fat.status;
+            if (statusRecalculado === 'PENDENTE') {
+                let mesStr = "", anoStr = "";
+                if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                    const partes = String(fat.mes_ano).split('-');
+                    anoStr = partes[0];
+                    mesStr = partes[1];
+                }
+                const diaVenc = alunoLogado.dia_vencimento || 10;
+                const hoje = new Date();
+                hoje.setHours(0,0,0,0);
+                const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
+                if (dataVencimento && hoje > dataVencimento) statusRecalculado = 'ATRASADO';
+            }
+            const faturaParaCalculo = { ...fat, status: statusRecalculado };
+
+            let valorCobrar = fat.valor;
+            if (statusRecalculado !== 'PAGO' && statusRecalculado !== 'ISENTO') {
+                valorCobrar = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+            }
+
+            let temAsaas = false;
+            if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
+                const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
+                const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
+                const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
+                if (isIsento || planosPremium.includes(plano)) temAsaas = true;
+            }
+
+            if (temAsaas) {
+                if (fat.link_pagamento) {
+                    window.open(sanitizarUrl(fat.link_pagamento), '_blank');
+                    return;
+                }
+                showToast("⏳ Gerando link de pagamento seguro...", "success");
+                try {
+                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                    const token = localStorage.getItem('bjj_aluno_token');
+                    const resultado = await gerarCobranca({
+                        alunoId: alunoLogado.id,
+                        valor: valorCobrar,   
+                        mesAno: fat.mes_ano,
+                        descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`,
+                        _token: token
+                    });
+                    if (resultado.data.success) {
+                        showToast("✅ Fatura gerada com sucesso!", "success");
+                        window.open(resultado.data.url, '_blank');
+                        buscarFaturasResiliente();
+                    } else {
+                        showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
+                }
+            } else {
+                let mesStr = "", anoStr = "";
+                if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                    const partes = fat.mes_ano.split('-');
+                    anoStr = partes[0];
+                    mesStr = partes[1];
+                }
+                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
+                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`;
+                document.getElementById('pix-valor').innerText = `R$ ${parseFloat(valorCobrar || 0).toFixed(2).replace('.', ',')}`;
+                const inputPix = document.getElementById('pix-codigo');
+                const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);
+                if (chavePix) {
+                    inputPix.value = chavePix;
+                    document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema.";
+                } else {
+                    inputPix.value = "Chave PIX não configurada pelo professor.";
+                    document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor.";
+                }
+                document.getElementById('modal-pix').classList.remove('hidden');
+                document.getElementById('modal-pix').classList.add('flex');
+            }
+        };
         
         window.fecharModalPix = function() { 
             document.getElementById('modal-pix').classList.add('hidden'); 
             document.getElementById('modal-pix').classList.remove('flex'); 
         };
         
-function atualizarWidgetMensalidade() {
-    const elValor = document.getElementById('home-proxima-fatura-valor');
-    const elVenc = document.getElementById('home-proxima-fatura-venc');
-    const btnPagar = document.getElementById('btn-home-pagar');
-    const cardBg = document.getElementById('card-mensalidade-home');
-    const iconFin = document.getElementById('home-fin-icon');
-    if (!elValor) return;
-    
-    let pendentes = faturasCache.filter(f => f.status === 'PENDENTE' || f.status === 'ATRASADO');
-    if (pendentes.length > 0) {
-        pendentes.sort((a, b) => (a.mes_ano || "").localeCompare(b.mes_ano || ""));
-        const fat = pendentes[0];
-        
-        // Recalcula o status atual (se for PENDENTE e já venceu, vira ATRASADO)
-        let statusRecalculado = fat.status;
-        if (statusRecalculado === 'PENDENTE') {
-            let mesStr = "", anoStr = "";
-            if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
-                const partes = String(fat.mes_ano).split('-');
-                anoStr = partes[0];
-                mesStr = partes[1];
+        function atualizarWidgetMensalidade() {
+            const elValor = document.getElementById('home-proxima-fatura-valor');
+            const elVenc = document.getElementById('home-proxima-fatura-venc');
+            const btnPagar = document.getElementById('btn-home-pagar');
+            const cardBg = document.getElementById('card-mensalidade-home');
+            const iconFin = document.getElementById('home-fin-icon');
+            if (!elValor) return;
+            
+            let pendentes = faturasCache.filter(f => f.status === 'PENDENTE' || f.status === 'ATRASADO');
+            if (pendentes.length > 0) {
+                pendentes.sort((a, b) => (a.mes_ano || "").localeCompare(b.mes_ano || ""));
+                const fat = pendentes[0];
+                
+                let statusRecalculado = fat.status;
+                if (statusRecalculado === 'PENDENTE') {
+                    let mesStr = "", anoStr = "";
+                    if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                        const partes = String(fat.mes_ano).split('-');
+                        anoStr = partes[0];
+                        mesStr = partes[1];
+                    }
+                    const diaVenc = alunoLogado.dia_vencimento || 10;
+                    const hoje = new Date();
+                    hoje.setHours(0,0,0,0);
+                    const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
+                    if (dataVencimento && hoje > dataVencimento) statusRecalculado = 'ATRASADO';
+                }
+                
+                const faturaParaCalculo = { ...fat, status: statusRecalculado };
+                
+                let valorExibir = fat.valor;
+                if (statusRecalculado !== 'PAGO' && statusRecalculado !== 'ISENTO') {
+                    valorExibir = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+                }
+                
+                let mesStr = "", anoStr = "";
+                if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                    const partes = String(fat.mes_ano).split('-');
+                    anoStr = partes[0];
+                    mesStr = partes[1];
+                }
+                const diaVenc = alunoLogado.dia_vencimento || 10;
+                let dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
+                
+                elValor.innerText = `R$ ${parseFloat(valorExibir || 0).toFixed(2).replace('.', ',')}`;
+                
+                if (statusRecalculado === 'ATRASADO') {
+                    cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-rose-500 bg-rose-900/20";
+                    elVenc.innerText = `Atrasada: ${dataVencFormatada}`;
+                    elVenc.className = "text-[10px] font-bold text-rose-300 uppercase tracking-widest mb-5 bg-rose-900/60 border border-rose-500/30 px-3 py-1 rounded-md";
+                    iconFin.innerHTML = "🚨";
+                    iconFin.className = "w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-2xl mb-3 border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]";
+                    btnPagar.className = "w-full bg-rose-600 hover:bg-rose-500 text-white transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(244,63,94,0.4)]";
+                } else {
+                    cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-amber-500 bg-amber-900/10";
+                    elVenc.innerText = `Vence em: ${dataVencFormatada}`;
+                    elVenc.className = "text-[10px] font-bold text-amber-300 uppercase tracking-widest mb-5 bg-amber-900/60 border border-amber-500/30 px-3 py-1 rounded-md";
+                    iconFin.innerHTML = "⏳";
+                    iconFin.className = "w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center text-2xl mb-3 border border-amber-500/50";
+                    btnPagar.className = "w-full bg-amber-50 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md";
+                }
+                btnPagar.classList.remove('hidden');
+                btnPagar.onclick = () => abrirPagamento(fat.id);
+            } else {
+                elValor.innerText = "Tudo em dia!";
+                elVenc.innerText = "Nenhuma pendência :)";
+                btnPagar.classList.add('hidden');
+                cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-emerald-500 bg-emerald-900/10";
+                elVenc.className = "text-[10px] font-bold text-emerald-300 uppercase tracking-widest mb-5 bg-emerald-900/60 border border-emerald-500/30 px-3 py-1 rounded-md";
+                iconFin.innerHTML = "✅";
+                iconFin.className = "w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-2xl mb-3 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
             }
-            const diaVenc = alunoLogado.dia_vencimento || 10;
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
-            const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
-            if (dataVencimento && hoje > dataVencimento) statusRecalculado = 'ATRASADO';
         }
-        
-        const faturaParaCalculo = { ...fat, status: statusRecalculado };
-        
-        // Recalcula o valor atual
-        let valorExibir = fat.valor;
-        if (statusRecalculado !== 'PAGO' && statusRecalculado !== 'ISENTO') {
-            valorExibir = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+
+        async function buscarFaturasResiliente(forceRefresh = false) {
+            const lista = document.getElementById('lista-faturas');
+            if (!lista) return;
+            if (!forceRefresh && isOnline) {
+                const cached = getFromCache(CACHE_KEYS.FATURAS);
+                if (cached) { 
+                    faturasCache = cached; 
+                    renderizarFaturas(cached); 
+                    atualizarWidgetMensalidade(); 
+                }
+            }
+            
+            try {
+                const qAluno = query(
+                    collection(db, "financeiro"),
+                    where("aluno_id", "==", alunoLogado.id),
+                    where("equipe_id", "==", alunoLogado.equipe_id)
+                );
+                const snapAluno = await getDocs(qAluno);
+                if (snapAluno.empty) { 
+                    lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhuma mensalidade encontrada.</div>`; 
+                    faturasCache = []; 
+                    atualizarWidgetMensalidade(); 
+                    return; 
+                }
+                let faturasMensalidade = [];
+                snapAluno.forEach(doc => { 
+                    const data = doc.data(); 
+                    if (data.tipo === 'MENSALIDADE' || !data.tipo) 
+                        faturasMensalidade.push({ id: doc.id, ...data }); 
+                });
+                faturasMensalidade.sort((a, b) => (b.mes_ano || "").localeCompare(a.mes_ano || ""));
+                faturasCache = faturasMensalidade;
+                saveToCache(CACHE_KEYS.FATURAS, faturasMensalidade, 10 * 60 * 1000);
+                renderizarFaturas(faturasMensalidade);
+                atualizarWidgetMensalidade();
+            } catch(erroFinanceiro) {
+                console.error("❌ Erro detalhado:", erroFinanceiro);
+                lista.innerHTML = `<div class="text-rose-500 text-center p-4">Erro ao carregar dados. Verifique sua conexão.</div>`;
+            }
+        }       
+
+        function renderizarFaturas(faturas) {
+            const lista = document.getElementById('lista-faturas');
+            if (!lista) return;
+            let temAsaas = true;
+            if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
+                const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
+                const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
+                const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
+                if (isIsento || planosPremium.includes(plano)) temAsaas = true;
+            }
+            let faturasHTML = '';
+            faturas.forEach(fat => {
+                let mesStr = "", anoStr = "";
+                if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                    const partes = String(fat.mes_ano).split('-');
+                    anoStr = partes[0];
+                    mesStr = partes[1];
+                }
+                const diaVenc = alunoLogado.dia_vencimento || 10;
+                let dataVencFormatada = '--/--/----';
+                if (anoStr && mesStr) dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
+                
+                let statusAtual = fat.status || 'PENDENTE';
+                if (statusAtual === 'PENDENTE') {
+                    const hoje = new Date();
+                    hoje.setHours(0,0,0,0);
+                    const dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc));
+                    if (dataVencimento && hoje > dataVencimento) statusAtual = 'ATRASADO';
+                }
+                
+                const isPago = statusAtual === 'PAGO';
+                const isAtrasado = statusAtual === 'ATRASADO';
+                const isIsento = statusAtual === 'ISENTO';
+                
+                const faturaParaCalculo = { ...fat, status: statusAtual };
+                
+                let valorExibir = fat.valor;
+                if (!isPago && !isIsento) {
+                    valorExibir = calcularValorFatura(faturaParaCalculo, alunoLogado, equipeDados);
+                }
+                
+                let icone = '⏳', corTexto = 'text-cyan-400', statusLabel = 'Pendente';
+                if (isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; }
+                else if (isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; }
+                else if (isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
+                
+                let btnHtml = '';
+                if (isPago) btnHtml = `<span class="text-[10px] font-bold text-emerald-500 uppercase mt-1 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">✅ Pago</span>`;
+                else if (isIsento) btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">⭐ Isento</span>`;
+                else {
+                    if (temAsaas && fat.link_pagamento) btnHtml = `<a href="${sanitizarUrl(fat.link_pagamento)}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 block text-center border border-cyan-400/50">💳 Pagar</a>`;
+                    else if (fat.chave_pix_manual || (equipeDados && equipeDados.chave_pix)) btnHtml = `<button onclick="copiarPixAluno('${fat.chave_pix_manual || equipeDados.chave_pix}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50">📄 Copiar PIX</button>`;
+                    else btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2">Detalhes</button>`;
+                }
+                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
+                faturasHTML += `<div class="p-5 flex items-start justify-between hover:bg-slate-800/50 transition-colors border-b border-slate-700/30">
+                    <div class="flex items-start gap-4">
+                        <div class="text-2xl opacity-80 mt-1" title="${statusLabel}">${icone}</div>
+                        <div>
+                            <p class="text-sm font-bold text-white">Mensalidade ${tituloMes}</p>
+                            <p class="text-[10px] text-slate-400 uppercase mt-0.5">Venc: ${dataVencFormatada}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <p class="text-lg font-black ${corTexto}">R$ ${parseFloat(valorExibir || 0).toFixed(2).replace('.', ',')}</p>
+                        ${btnHtml}
+                    </div>
+                </div>`;
+            });
+            lista.innerHTML = faturasHTML;
         }
-        
-        let mesStr = "", anoStr = "";
-        if (fat.mes_ano && String(fat.mes_ano).includes('-')) {
-            const partes = String(fat.mes_ano).split('-');
-            anoStr = partes[0];
-            mesStr = partes[1];
-        }
-        const diaVenc = alunoLogado.dia_vencimento || 10;
-        let dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
-        
-        elValor.innerText = `R$ ${parseFloat(valorExibir || 0).toFixed(2).replace('.', ',')}`;
-        
-        if (statusRecalculado === 'ATRASADO') {
-            cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-rose-500 bg-rose-900/20";
-            elVenc.innerText = `Atrasada: ${dataVencFormatada}`;
-            elVenc.className = "text-[10px] font-bold text-rose-300 uppercase tracking-widest mb-5 bg-rose-900/60 border border-rose-500/30 px-3 py-1 rounded-md";
-            iconFin.innerHTML = "🚨";
-            iconFin.className = "w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-2xl mb-3 border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]";
-            btnPagar.className = "w-full bg-rose-600 hover:bg-rose-500 text-white transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(244,63,94,0.4)]";
-        } else {
-            cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-amber-500 bg-amber-900/10";
-            elVenc.innerText = `Vence em: ${dataVencFormatada}`;
-            elVenc.className = "text-[10px] font-bold text-amber-300 uppercase tracking-widest mb-5 bg-amber-900/60 border border-amber-500/30 px-3 py-1 rounded-md";
-            iconFin.innerHTML = "⏳";
-            iconFin.className = "w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center text-2xl mb-3 border border-amber-500/50";
-            btnPagar.className = "w-full bg-amber-50 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md";
-        }
-        btnPagar.classList.remove('hidden');
-        btnPagar.onclick = () => abrirPagamento(fat.id);
-    } else {
-        elValor.innerText = "Tudo em dia!";
-        elVenc.innerText = "Nenhuma pendência :)";
-        btnPagar.classList.add('hidden');
-        cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-emerald-500 bg-emerald-900/10";
-        elVenc.className = "text-[10px] font-bold text-emerald-300 uppercase tracking-widest mb-5 bg-emerald-900/60 border border-emerald-500/30 px-3 py-1 rounded-md";
-        iconFin.innerHTML = "✅";
-        iconFin.className = "w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-2xl mb-3 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
-    }
-}
-        
+
         window.copiarPixAluno = function(chave) { 
             navigator.clipboard.writeText(chave).then(() => { 
                 showToast("Chave PIX copiada! Abra o app do seu banco.", "success"); 
@@ -1713,7 +1826,7 @@ function atualizarWidgetMensalidade() {
         };
 
         // ==========================================
-        // 📅 CHECK-IN E MURAL (VERSÃO CORRIGIDA ESCAPE HTML)
+        // 📅 CHECK-IN E MURAL
         // ==========================================
         window.registrarCheckin = async function(turmaId, nomeTurma) { 
             const btn = document.getElementById(`btn-checkin-${turmaId}`); 
@@ -2249,91 +2362,6 @@ function atualizarWidgetMensalidade() {
             } finally { 
                 btn.disabled = false; btn.innerHTML = "Enviar Link de Redefinição"; 
             } 
-        };
-
-        // Funções auxiliares adicionais
-        window.fecharPwaBanner = function() { document.getElementById('pwa-install-banner').style.transform = 'translateY(100%)'; };
-        window.instalarPwa = function() { showToast("Para instalar, clique no menu do navegador e escolha 'Adicionar à tela inicial'.", "info"); };
-        window.dispensarPwaParaSempre = function() { localStorage.setItem('pwa_banner_dispensado', 'true'); document.getElementById('pwa-install-banner').style.transform = 'translateY(100%)'; };
-        window.toggleSenha = function(inputId, btn) { const input = document.getElementById(inputId); if(input.type === 'password') input.type = 'text'; else input.type = 'password'; };
-        window.copiarPix = function() { const chave = document.getElementById('pix-codigo').value; navigator.clipboard.writeText(chave).then(() => showToast("Chave PIX copiada!", "success")); };
-        
-        window.abrirModalProduto = function(produtoId) { 
-            const produto = produtosCache.find(p => p.id === produtoId); 
-            if(!produto) return; 
-            document.getElementById('modal-produto-titulo').innerText = produto.nome; 
-            document.getElementById('modal-produto-nome').innerText = produto.nome; 
-            document.getElementById('modal-produto-preco').innerHTML = `R$ ${parseFloat(produto.valor || 0).toFixed(2).replace('.', ',')}`; 
-            document.getElementById('modal-produto-descricao').innerHTML = escapeHtml(produto.descricao || '').replace(/\n/g, '<br>'); 
-            
-            const extraInfo = produto.informacoes_adicionais || produto.info_extra; 
-            if(extraInfo) { 
-                document.getElementById('modal-dados-adicionais').style.display = 'block'; 
-                document.getElementById('modal-info-adicional').innerHTML = escapeHtml(extraInfo).replace(/\n/g, '<br>'); 
-            } else { 
-                document.getElementById('modal-dados-adicionais').style.display = 'none'; 
-            } 
-            
-            const carrossel = document.getElementById('modal-carrossel'); 
-            carrossel.innerHTML = ''; 
-            let imagens = []; 
-            if(produto.imagens_urls && Array.isArray(produto.imagens_urls) && produto.imagens_urls.length) imagens = produto.imagens_urls; 
-            else if(produto.imagem_url) imagens = [produto.imagem_url]; 
-            else imagens = ['https://via.placeholder.com/400x400?text=Sem+Imagem']; 
-            imagens.forEach(img => { 
-                const div = document.createElement('div'); 
-                div.className = 'w-full h-full shrink-0 snap-center flex items-center justify-center bg-slate-100'; 
-                const imgEl = document.createElement('img'); 
-                imgEl.src = img; 
-                imgEl.className = 'w-full h-full object-contain'; 
-                imgEl.alt = produto.nome; 
-                div.appendChild(imgEl); 
-                carrossel.appendChild(div); 
-            }); 
-            
-            const prevBtn = document.getElementById('modal-prev-btn'); 
-            const nextBtn = document.getElementById('modal-next-btn'); 
-            const dots = document.getElementById('modal-dots'); 
-            dots.innerHTML = ''; 
-            
-            if(imagens.length > 1) { 
-                prevBtn.classList.remove('hidden'); 
-                nextBtn.classList.remove('hidden'); 
-                imagens.forEach((_, i) => { 
-                    const dot = document.createElement('div'); 
-                    dot.className = 'w-2 h-2 rounded-full bg-white/50 transition-all cursor-pointer'; 
-                    dot.addEventListener('click', () => { 
-                        carrossel.scrollTo({ left: carrossel.clientWidth * i, behavior: 'smooth' }); 
-                    }); 
-                    dots.appendChild(dot); 
-                }); 
-                
-                carrossel.addEventListener('scroll', () => { 
-                    const index = Math.round(carrossel.scrollLeft / carrossel.clientWidth); 
-                    Array.from(dots.children).forEach((dot, j) => { 
-                        dot.style.backgroundColor = j === index ? '#06b6d4' : 'rgba(255,255,255,0.5)'; 
-                        dot.style.width = j === index ? '0.75rem' : '0.5rem'; 
-                    }); 
-                }); 
-            } else { 
-                prevBtn.classList.add('hidden'); 
-                nextBtn.classList.add('hidden'); 
-            } 
-            
-            const btnWhats = document.getElementById('modal-btn-whats'); 
-            btnWhats.onclick = () => comprarViaWhatsApp(produtoId); 
-            document.getElementById('modal-produto').classList.remove('hidden'); 
-            document.getElementById('modal-produto').classList.add('flex'); 
-        };
-        
-        window.fecharModalProduto = function() { 
-            document.getElementById('modal-produto').classList.add('hidden'); 
-            document.getElementById('modal-produto').classList.remove('flex'); 
-        };
-        
-        window.scrollModalCarrossel = function(direcao) { 
-            const carrossel = document.getElementById('modal-carrossel'); 
-            if(carrossel) carrossel.scrollBy({ left: carrossel.clientWidth * direcao, behavior: 'smooth' }); 
         };
     </script>
 </body>
