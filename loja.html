@@ -40,7 +40,6 @@
         }
         .toast-slide { animation: slide-in 0.3s ease-out; }
 
-        /* Destaque para o formulário ao editar */
         .form-highlight {
             transition: all 0.3s ease;
             box-shadow: 0 0 0 2px #f59e0b, 0 0 0 4px #fef3c7, 0 10px 25px -5px rgba(0,0,0,0.1) !important;
@@ -74,12 +73,10 @@
                 </div>
             </div>
 
-            <!-- Área rolável principal - agora com layout responsivo lado a lado / empilhado -->
             <div class="flex-1 overflow-y-auto p-4 md:p-6 max-w-7xl mx-auto w-full">
-                <!-- Flex container: coluna em mobile, linha em desktop -->
                 <div class="flex flex-col lg:flex-row gap-6 h-full">
                     
-                    <!-- FORMULÁRIO (lado esquerdo em telas grandes) -->
+                    <!-- FORMULÁRIO -->
                     <div class="w-full lg:w-2/5 flex-shrink-0">
                         <div id="formulario-produto" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 relative overflow-hidden transition-all duration-300">
                             <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
@@ -88,12 +85,11 @@
                                     <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form">Novo Produto</h3>
                                 </div>
                                 <button onclick="abrirModalAluno()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center gap-1">
-                                    👁️ Visualizar como Aluno
+                                    👁️ Visão do Aluno
                                 </button>
                             </div>
                             
                             <div class="space-y-4 relative z-10">
-                                
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Imagens do Produto</label>
                                     <div class="flex gap-2 overflow-x-auto hide-scrollbar py-1" id="container-miniaturas">
@@ -103,48 +99,72 @@
                                             <input type="file" id="produto-foto" accept="image/*" multiple class="hidden" onchange="processarNovasImagens(this)">
                                         </label>
                                     </div>
-                                    <p class="text-[9px] text-slate-400 mt-1">Até 5 imagens. Máx 5MB por foto (JPG, PNG).</p>
+                                    <p class="text-[9px] text-slate-400 mt-1">Até 5 imagens. (Compactação automática).</p>
                                 </div>
 
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Produto *</label>
-                                    <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono..." maxlength="100" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                                    <input type="text" id="produto-nome" placeholder="Ex: Kimono Trançado..." maxlength="100" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Categoria</label>
+                                        <select id="produto-categoria" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                            <option value="">Geral</option>
+                                            <option value="Kimonos">Kimonos</option>
+                                            <option value="Roupas (No-Gi)">Roupas (No-Gi)</option>
+                                            <option value="Faixas">Faixas</option>
+                                            <option value="Acessórios">Acessórios</option>
+                                            <option value="Suplementos">Suplementos</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tamanhos (Opcional)</label>
+                                        <input type="text" id="produto-tamanhos" placeholder="Ex: A1, A2, M, G" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Preço Normal (R$) *</label>
+                                        <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-slate-700 font-black">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 text-rose-500">Preço Promocional (Opcional)</label>
+                                        <input type="number" id="produto-promocao" step="0.01" placeholder="Ex: 120.00" class="w-full p-3 bg-rose-50 border border-rose-200 rounded-xl outline-none focus:border-rose-500 transition-all text-rose-700 font-black placeholder:text-rose-300">
+                                    </div>
                                 </div>
 
                                 <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label>
-                                    <textarea id="produto-descricao" rows="2" placeholder="Detalhes do produto, tamanhos disponíveis..." maxlength="500" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-xs font-medium text-slate-700 resize-none hide-scrollbar"></textarea>
+                                    <textarea id="produto-descricao" rows="2" placeholder="Detalhes do produto..." maxlength="500" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-xs font-medium text-slate-700 resize-none hide-scrollbar"></textarea>
                                     <p class="text-[8px] text-slate-400 text-right mt-1"><span id="desc-contador">0</span>/500</p>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Preço de Venda (R$) *</label>
-                                    <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-emerald-700 font-black">
-                                </div>
-
-                                <div>
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Link de Pagamento / Chave PIX</label>
-                                    <input type="text" id="produto-link" placeholder="Ex: Link do seu produto ou chave pix" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs font-bold text-slate-700">
-                                    <p class="text-[9px] text-slate-400 mt-1">O aluno terá a opção de acessar este link/pix além do WhatsApp.</p>
+                                    <input type="text" id="produto-link" placeholder="Ex: Link do asaas, pagseguro ou chave pix" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs font-bold text-slate-700">
+                                    <p class="text-[9px] text-slate-400 mt-1">Facilite o pagamento automático para o aluno.</p>
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status do Produto</label>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status na Vitrine</label>
                                     <select id="produto-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
-                                        <option value="ATIVO">🟢 Disponível na vitrine</option>
+                                        <option value="ATIVO">🟢 Disponível para Venda</option>
                                         <option value="INATIVO">🔴 Oculto / Esgotado</option>
                                     </select>
                                 </div>
                                 
-                                <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
+                                <div class="flex gap-2 mt-4 pt-4 border-t border-slate-100">
                                     <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                                    <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar Produto</button>
+                                    <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar Produto</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- LISTA DE PRODUTOS CADASTRADOS (lado direito em telas grandes) -->
+                    <!-- LISTA DE PRODUTOS CADASTRADOS -->
                     <div class="w-full lg:w-3/5 flex flex-col min-h-[400px]">
                         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
                             <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0 flex-wrap gap-2">
@@ -165,13 +185,13 @@
         </main>
     </div>
 
-    <!-- MODAL DO ALUNO (igual) -->
+    <!-- MODAL DO ALUNO -->
     <div id="modal-aluno" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4 transition-all duration-300 opacity-0 invisible pointer-events-none">
         <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50 shrink-0">
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl">👨‍🎓</span>
-                    <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Vitrine do Aluno</h3>
+                    <span class="text-2xl">📱</span>
+                    <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Visão do Atleta (Simulador)</h3>
                 </div>
                 <button onclick="fecharModalAluno()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition-colors">✕</button>
             </div>
@@ -285,9 +305,6 @@
                             elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
                         }
                     }
-                    
-                    sessionStorage.setItem('bjj_equipe_nome', nomeEquipe);
-                    sessionStorage.setItem('bjj_equipe_logo', logoEquipe);
                 }
 
                 if (teamId) {
@@ -314,24 +331,66 @@
             }
         };
 
-        window.processarNovasImagens = function(input) {
+        // --- MOTOR DE COMPRESSÃO DE IMAGENS ---
+        async function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; 
+                        const MAX_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        } else {
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                        }
+                        
+                        canvas.width = width; 
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        canvas.toBlob(blob => { 
+                            // Preserva o nome original no novo blob
+                            blob.name = file.name;
+                            resolve(blob); 
+                        }, 'image/jpeg', 0.85);
+                    };
+                };
+            });
+        }
+
+        window.processarNovasImagens = async function(input) {
             if (input.files && input.files.length > 0) {
-                for(let i = 0; i < input.files.length; i++) {
-                    const file = input.files[i];
-                    if (file.size > 5 * 1024 * 1024) {
-                        showToast(`A imagem "${file.name}" excede 5MB.`, "error");
-                        continue;
-                    }
-                    if (!file.type.startsWith('image/')) {
-                        showToast(`O arquivo "${file.name}" não é uma imagem.`, "error");
-                        continue;
-                    }
-                    if (imagensUrlsExistentes.length + novosArquivosImagem.length >= 5) {
-                        showToast("Máximo de 5 fotos por produto.", "error");
-                        break;
-                    }
-                    novosArquivosImagem.push(file);
+                const limit = 5 - (imagensUrlsExistentes.length + novosArquivosImagem.length);
+                const filesToProcess = Array.from(input.files).slice(0, limit);
+
+                if (input.files.length > limit) {
+                    showToast(`Apenas as primeiras fotos foram aceitas (Máximo de 5).`, "warning");
                 }
+
+                // Desabilita input durante compressão
+                input.disabled = true;
+                showToast("Compactando imagens para a vitrine...", "success");
+
+                for(let file of filesToProcess) {
+                    if (!file.type.startsWith('image/')) {
+                        showToast(`O arquivo "${file.name}" não é válido.`, "error");
+                        continue;
+                    }
+                    // Comprime antes de guardar no array
+                    const compressedBlob = await compressImage(file);
+                    novosArquivosImagem.push(compressedBlob);
+                }
+                
+                input.disabled = false;
                 atualizarContainerMiniaturas();
             }
             input.value = ""; 
@@ -435,8 +494,23 @@
                 return;
             }
             container.innerHTML = '';
+            
+            const fragment = document.createDocumentFragment();
+
             produtosCache.forEach((p) => {
                 const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                
+                let precoHtml = `<p class="text-base font-black text-emerald-600 mb-2">R$ ${precoFormatado}</p>`;
+                if (p.preco_promocional && p.preco_promocional > 0 && parseFloat(p.preco_promocional) < parseFloat(p.valor)) {
+                    const promoFormatado = parseFloat(p.preco_promocional).toFixed(2).replace('.', ',');
+                    precoHtml = `
+                        <div class="flex items-center gap-2 mb-2">
+                            <p class="text-xs font-bold text-slate-400 line-through">R$ ${precoFormatado}</p>
+                            <p class="text-base font-black text-emerald-600">R$ ${promoFormatado}</p>
+                        </div>
+                    `;
+                }
+
                 let arrayDeImagens = [];
                 if (p.imagens_urls && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls;
                 else if (p.imagem_url) arrayDeImagens = [p.imagem_url];
@@ -447,7 +521,13 @@
                     ? '<span class="absolute top-3 left-3 z-20 bg-emerald-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Na vitrine</span>'
                     : '<span class="absolute top-3 left-3 z-20 bg-slate-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Oculto</span>';
 
-                const descricaoHtml = p.descricao ? `<p class="text-[10px] text-slate-500 line-clamp-2 mb-2 leading-tight flex-1">${escapeHtml(p.descricao)}</p>` : `<div class="flex-1"></div>`;
+                // Aplica formatação de quebra de linha na descrição
+                const descricaoHtml = p.descricao 
+                    ? `<p class="text-[10px] text-slate-500 line-clamp-3 mb-2 leading-tight flex-1 whitespace-pre-line">${escapeHtml(p.descricao)}</p>` 
+                    : `<div class="flex-1"></div>`;
+
+                let tamanhosHtml = p.tamanhos ? `<span class="bg-slate-100 text-slate-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-slate-200">📏 ${escapeHtml(p.tamanhos)}</span>` : '';
+                let categoriaHtml = p.categoria ? `<span class="bg-indigo-50 text-indigo-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-indigo-200">🏷️ ${escapeHtml(p.categoria)}</span>` : '';
 
                 let idUnicoCarrossel = `carousel-${p.id}`;
                 let slidesHtml = '';
@@ -477,8 +557,11 @@
                     </div>
                     <div class="p-4 flex flex-col flex-1">
                         <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${escapeHtml(p.nome)}">${escapeHtml(p.nome)}</h4>
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            ${categoriaHtml} ${tamanhosHtml}
+                        </div>
                         ${descricaoHtml}
-                        <p class="text-base font-black text-emerald-600 mb-2">R$ ${precoFormatado}</p>
+                        ${precoHtml}
                         <div class="flex flex-wrap gap-1 mb-4">
                             <span class="bg-emerald-50 text-emerald-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-emerald-200 flex items-center gap-1">💬 WhatsApp</span>
                             ${p.link_pagamento ? `<span class="bg-indigo-50 text-indigo-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-indigo-200 flex items-center gap-1 max-w-full truncate" title="${escapeHtml(p.link_pagamento)}">🔗 Link/PIX</span>` : ''}
@@ -489,8 +572,9 @@
                         </div>
                     </div>
                 `;
-                container.appendChild(card);
+                fragment.appendChild(card);
             });
+            container.appendChild(fragment);
         }
 
         function renderizarModalAluno() {
@@ -504,14 +588,37 @@
             container.innerHTML = '';
             const whatsappLoja = document.getElementById('config-whatsapp-loja')?.value || "";
             const numeroLimpo = whatsappLoja.replace(/\D/g, '');
+            
+            const fragment = document.createDocumentFragment();
+
             ativos.forEach((p) => {
                 const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                
+                let precoHtml = `<p class="text-base font-black text-emerald-600 mb-3">R$ ${precoFormatado}</p>`;
+                let valorParaWhats = precoFormatado;
+                
+                if (p.preco_promocional && p.preco_promocional > 0 && parseFloat(p.preco_promocional) < parseFloat(p.valor)) {
+                    const promoFormatado = parseFloat(p.preco_promocional).toFixed(2).replace('.', ',');
+                    valorParaWhats = promoFormatado;
+                    precoHtml = `
+                        <div class="flex items-center gap-2 mb-3">
+                            <p class="text-xs font-bold text-slate-400 line-through">R$ ${precoFormatado}</p>
+                            <p class="text-base font-black text-emerald-600">R$ ${promoFormatado}</p>
+                        </div>
+                    `;
+                }
+
                 let arrayDeImagens = [];
                 if (p.imagens_urls && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls;
                 else if (p.imagem_url) arrayDeImagens = [p.imagem_url];
                 else arrayDeImagens = ['https://via.placeholder.com/400x400?text=Sem+Foto'];
 
-                const descricaoHtml = p.descricao ? `<p class="text-[10px] text-slate-500 line-clamp-2 mb-2 leading-tight flex-1">${escapeHtml(p.descricao)}</p>` : `<div class="flex-1"></div>`;
+                const descricaoHtml = p.descricao 
+                    ? `<p class="text-[10px] text-slate-500 line-clamp-3 mb-2 leading-tight flex-1 whitespace-pre-line">${escapeHtml(p.descricao)}</p>` 
+                    : `<div class="flex-1"></div>`;
+
+                let tamanhosHtml = p.tamanhos ? `<span class="bg-slate-100 text-slate-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-slate-200">📏 ${escapeHtml(p.tamanhos)}</span>` : '';
+                let categoriaHtml = p.categoria ? `<span class="bg-indigo-50 text-indigo-600 text-[8px] font-black px-2 py-1 rounded-md uppercase tracking-widest border border-indigo-200">🏷️ ${escapeHtml(p.categoria)}</span>` : '';
 
                 let idUnicoCarrossel = `modal-carousel-${p.id}`;
                 let slidesHtml = '';
@@ -529,7 +636,7 @@
                     `;
                 }
 
-                const mensagemWhats = `Olá! Gostaria de saber mais sobre o produto: ${p.nome} (R$ ${precoFormatado}). ${p.descricao ? p.descricao : ''}`;
+                const mensagemWhats = `Olá! Gostaria de saber mais sobre o produto: ${p.nome} (R$ ${valorParaWhats}).`;
                 const linkWhats = numeroLimpo ? `https://wa.me/${numeroLimpo}?text=${encodeURIComponent(mensagemWhats)}` : "#";
                 let linkPagamentoAction = "";
                 if (p.link_pagamento) {
@@ -552,16 +659,20 @@
                     </div>
                     <div class="p-4 flex flex-col flex-1">
                         <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${escapeHtml(p.nome)}">${escapeHtml(p.nome)}</h4>
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            ${categoriaHtml} ${tamanhosHtml}
+                        </div>
                         ${descricaoHtml}
-                        <p class="text-base font-black text-emerald-600 mb-3">R$ ${precoFormatado}</p>
+                        ${precoHtml}
                         <div class="mt-auto grid grid-cols-2 gap-2 shrink-0">
                             ${numeroLimpo ? `<a href="${linkWhats}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center justify-center gap-1">💬 WhatsApp</a>` : '<button disabled class="bg-slate-300 text-white rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest cursor-not-allowed">WhatsApp</button>'}
                             ${p.link_pagamento ? `<button onclick="${linkPagamentoAction}" class="bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center justify-center gap-1">🔗 Link/PIX</button>` : '<button disabled class="bg-slate-300 text-white rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest cursor-not-allowed">Sem link</button>'}
                         </div>
                     </div>
                 `;
-                container.appendChild(card);
+                fragment.appendChild(card);
             });
+            container.appendChild(fragment);
         }
 
         window.abrirModalAluno = function() {
@@ -586,7 +697,6 @@
             return div.innerHTML;
         }
 
-        // Função Editar melhorada
         window.editarProduto = function(id) {
             const p = produtosCache.find(x => x.id === id);
             if(!p) return;
@@ -600,9 +710,12 @@
             atualizarContainerMiniaturas();
 
             document.getElementById('produto-nome').value = p.nome || "";
+            document.getElementById('produto-categoria').value = p.categoria || "";
+            document.getElementById('produto-tamanhos').value = p.tamanhos || "";
             document.getElementById('produto-descricao').value = p.descricao || "";
             if (descCounter) descCounter.innerText = (p.descricao || "").length;
             document.getElementById('produto-valor').value = p.valor || "";
+            document.getElementById('produto-promocao').value = p.preco_promocional || "";
             document.getElementById('produto-status').value = p.status || "ATIVO";
             document.getElementById('produto-link').value = p.link_pagamento || "";
 
@@ -625,13 +738,16 @@
 
         window.salvarProduto = async function() {
             const nome = document.getElementById('produto-nome').value.trim();
+            const categoria = document.getElementById('produto-categoria').value.trim();
+            const tamanhos = document.getElementById('produto-tamanhos').value.trim();
             const descricao = document.getElementById('produto-descricao').value.trim();
             const valor = parseFloat(document.getElementById('produto-valor').value);
+            const precoPromo = parseFloat(document.getElementById('produto-promocao').value);
             const linkPagamento = document.getElementById('produto-link').value.trim();
             const status = document.getElementById('produto-status').value;
 
             if (!nome) return showToast("Preencha o nome do produto.", "error");
-            if (isNaN(valor) || valor <= 0) return showToast("Preencha o preço corretamente.", "error");
+            if (isNaN(valor) || valor <= 0) return showToast("Preencha o preço normal corretamente.", "error");
             if (imagensUrlsExistentes.length === 0 && novosArquivosImagem.length === 0) return showToast("Adicione pelo menos uma foto.", "error");
             
             const btn = document.getElementById('btn-salvar-produto');
@@ -648,6 +764,13 @@
                     equipe_id: uid,
                     atualizado_em: new Date().toISOString()
                 };
+                
+                // Novos Campos
+                if (categoria) dados.categoria = categoria;
+                if (tamanhos) dados.tamanhos = tamanhos;
+                if (!isNaN(precoPromo) && precoPromo > 0) dados.preco_promocional = precoPromo;
+                else dados.preco_promocional = null; // Limpa se estiver vazio ou zero
+                
                 if (linkPagamento && linkPagamento.trim() !== '') dados.link_pagamento = linkPagamento;
 
                 let urlsGeradas = [];
@@ -720,9 +843,12 @@
             imagensUrlsExistentes = [];
             novosArquivosImagem = [];
             document.getElementById('produto-nome').value = "";
+            document.getElementById('produto-categoria').value = "";
+            document.getElementById('produto-tamanhos').value = "";
             document.getElementById('produto-descricao').value = "";
             if (descCounter) descCounter.innerText = "0";
             document.getElementById('produto-valor').value = "";
+            document.getElementById('produto-promocao').value = "";
             document.getElementById('produto-status').value = "ATIVO";
             document.getElementById('produto-link').value = "";
             const fileInput = document.getElementById('produto-foto');
