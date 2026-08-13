@@ -294,7 +294,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
+                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6 transition-all" id="container-lgpd-termos">
                         <p class="text-sm text-slate-700">Declaro que li e concordo com os termos de matrícula. <span class="text-red-500 font-bold">*</span></p>
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500">
@@ -429,7 +429,7 @@
                         </ul>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm space-y-4 mt-6">
+                    <div class="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm space-y-4 mt-6 transition-all" id="container-prof-termos">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" id="prof-lgpd-termos" class="w-6 h-6 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500">
                             <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Li e Aceito os Termos de Sigilo <span class="text-red-500">*</span></span>
@@ -498,6 +498,26 @@
                 input.type = "password";
                 btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
             }
+        }
+
+        // ==========================================
+        // NOVIDADE: Validação Matemática de CPF
+        // ==========================================
+        window.validarCPFRegra = function(cpf) {
+            cpf = cpf.replace(/[^\d]+/g,'');
+            if(cpf == '') return false;
+            if (cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let add = 0;
+            for (let i=0; i < 9; i ++) add += parseInt(cpf.charAt(i)) * (10 - i);
+            let rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) return false;
+            add = 0;
+            for (let i = 0; i < 10; i ++) add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) return false;
+            return true;
         }
 
         window.mascaraCPF = (i) => {
@@ -595,24 +615,51 @@
             }
         };
 
+        // ==========================================
+        // NOVIDADE: Compressão de Imagens Client-Side
+        // ==========================================
         window.mostrarPreviewFoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                const tamanhoEmMB = file.size / (1024 * 1024);
-                if (tamanhoEmMB > 3) {
-                    showToast(`⚠️ A foto é muito pesada (${tamanhoEmMB.toFixed(1)}MB). O limite é 3MB.`, "error");
-                    document.getElementById('cad-foto').value = ''; 
-                    ficheiroFotoSelecionado = null;
-                    return; 
-                }
-                ficheiroFotoSelecionado = file;
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const imgPreview = document.getElementById('preview-foto');
-                    imgPreview.src = e.target.result;
-                    imgPreview.classList.remove('hidden');
-                    document.getElementById('placeholder-foto').classList.add('hidden');
-                }
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const MAX_HEIGHT = 600;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        const imgPreview = document.getElementById('preview-foto');
+                        imgPreview.src = dataUrl;
+                        imgPreview.classList.remove('hidden');
+                        document.getElementById('placeholder-foto').classList.add('hidden');
+                        
+                        canvas.toBlob((blob) => {
+                            ficheiroFotoSelecionado = blob; 
+                        }, 'image/jpeg', 0.8);
+                    };
+                    img.src = e.target.result;
+                };
                 reader.readAsDataURL(file);
             }
         }
@@ -665,7 +712,6 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
-                    // Removida a consulta de contagem de alunos por equipe_id (violava regra de segurança)
                 }
 
             } catch (e) {
@@ -694,32 +740,6 @@
             const senhaPortalConfirma = document.getElementById('cad-senha-portal-confirma').value;
             const concordo = document.getElementById('cad-lgpd-termos').checked;
 
-            if (!nome || !cpf || !nasc || !tel || !email || !senhaPortal || !senhaPortalConfirma) {
-                return showToast("Preencha todos os campos obrigatórios (*)", "error");
-            }
-            
-            if (senhaPortal.length < 6) {
-                return showToast("A senha do portal deve ter no mínimo 6 caracteres.", "error");
-            }
-
-            if (senhaPortal !== senhaPortalConfirma) {
-                document.getElementById('cad-senha-portal-confirma').classList.add('border-rose-500', 'focus:border-rose-500');
-                return showToast("As senhas não coincidem!", "error");
-            } else {
-                document.getElementById('cad-senha-portal-confirma').classList.remove('border-rose-500', 'focus:border-rose-500');
-            }
-
-            if (!concordo) {
-                return showToast("É obrigatório concordar com os termos no final.", "error");
-            }
-            
-            if (ficheiroFotoSelecionado) {
-                const tamanhoEmMB = ficheiroFotoSelecionado.size / (1024 * 1024);
-                if (tamanhoEmMB > 3) {
-                    return showToast(`A foto escolhida ultrapassa o limite de 3MB. Por favor, reduza o tamanho ou escolha outra.`, "error");
-                }
-            }
-
             let nomeResponsavel = '';
             let cpfResponsavel = '';
             let telResponsavel = '';
@@ -732,16 +752,65 @@
                 nomeResponsavel = document.getElementById('cad-resp-nome').value.toUpperCase().trim();
                 cpfResponsavel = document.getElementById('cad-resp-cpf').value.trim();
                 telResponsavel = document.getElementById('cad-resp-tel').value.trim();
-                if (!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
-                    return showToast("Preencha todos os dados do Responsável Legal.", "error");
-                }
             } else {
                 nomeEmergencia = document.getElementById('cad-emerg-nome').value.toUpperCase().trim();
                 telEmergencia = document.getElementById('cad-emerg-tel').value.trim();
                 parentescoEmergencia = document.getElementById('cad-emerg-parentesco').value.trim();
-                if (!nomeEmergencia || !telEmergencia || !parentescoEmergencia) {
-                    return showToast("Preencha todos os dados do Contato de Emergência.", "error");
+            }
+
+            // ==========================================
+            // NOVIDADE: VALIDAÇÃO VISUAL DE ERROS
+            // ==========================================
+            const campos = [
+                { id: 'cad-nome', valid: !!nome },
+                { id: 'cad-cpf', valid: !!cpf && window.validarCPFRegra(cpf) },
+                { id: 'cad-nasc', valid: !!nasc },
+                { id: 'cad-tel', valid: !!tel },
+                { id: 'cad-email', valid: !!email && email.includes('@') },
+                { id: 'cad-senha-portal', valid: senhaPortal.length >= 6 },
+                { id: 'cad-senha-portal-confirma', valid: senhaPortalConfirma === senhaPortal && senhaPortal !== '' }
+            ];
+
+            if (idadeAtual < 18) {
+                campos.push({ id: 'cad-resp-nome', valid: !!nomeResponsavel });
+                campos.push({ id: 'cad-resp-cpf', valid: !!cpfResponsavel && window.validarCPFRegra(cpfResponsavel) });
+                campos.push({ id: 'cad-resp-tel', valid: !!telResponsavel });
+            } else {
+                campos.push({ id: 'cad-emerg-nome', valid: !!nomeEmergencia });
+                campos.push({ id: 'cad-emerg-tel', valid: !!telEmergencia });
+                campos.push({ id: 'cad-emerg-parentesco', valid: !!parentescoEmergencia });
+            }
+
+            let temErro = false;
+            campos.forEach(c => {
+                const el = document.getElementById(c.id);
+                if(el) {
+                    if(!c.valid) {
+                        el.classList.add('border-rose-500', 'bg-rose-50');
+                        el.classList.remove('border-slate-200', 'bg-slate-50', 'focus:border-cyan-500');
+                        temErro = true;
+                        el.addEventListener('input', function removerErro() {
+                            this.classList.remove('border-rose-500', 'bg-rose-50');
+                            this.classList.add('border-slate-200', 'bg-slate-50', 'focus:border-cyan-500');
+                            this.removeEventListener('input', removerErro);
+                        });
+                    }
                 }
+            });
+
+            const elLgpd = document.getElementById('cad-lgpd-termos');
+            const containerLgpd = document.getElementById('container-lgpd-termos');
+            if (!concordo) {
+                if(containerLgpd) {
+                    containerLgpd.classList.add('border-rose-500', 'shadow-md');
+                    setTimeout(() => containerLgpd.classList.remove('border-rose-500', 'shadow-md'), 3000);
+                }
+                temErro = true;
+            }
+
+            if (temErro) {
+                showToast("Preencha os campos obrigatórios corretamente (destacados em vermelho).", "error");
+                return;
             }
 
             const anoAtual = new Date().getFullYear();
@@ -855,18 +924,47 @@
             const senhaConfirma = document.getElementById('prof-senha-confirma').value;
             const concordo = document.getElementById('prof-lgpd-termos').checked;
             
-            if(!nome || !cpf || !tel || !email || !senha || !senhaConfirma) return showToast("Preencha todos os dados pessoais e de contato!", "error");
-            if(!email.includes('@')) return showToast("Digite um e-mail válido!", "error");
-            if(senha.length < 8) return showToast("A senha deve ter no mínimo 8 caracteres.", "error");
-            
-            if(senha !== senhaConfirma) {
-                document.getElementById('prof-senha-confirma').classList.add('border-rose-500', 'focus:border-rose-500');
-                return showToast("As senhas não coincidem!", "error");
-            } else {
-                document.getElementById('prof-senha-confirma').classList.remove('border-rose-500', 'focus:border-rose-500');
+            // ==========================================
+            // NOVIDADE: VALIDAÇÃO VISUAL PROFESSOR
+            // ==========================================
+            const campos = [
+                { id: 'prof-nome', valid: !!nome },
+                { id: 'prof-cpf', valid: !!cpf && window.validarCPFRegra(cpf) },
+                { id: 'prof-tel', valid: !!tel },
+                { id: 'prof-email', valid: !!email && email.includes('@') },
+                { id: 'prof-senha', valid: senha.length >= 8 },
+                { id: 'prof-senha-confirma', valid: senhaConfirma === senha && senha !== '' }
+            ];
+
+            let temErro = false;
+            campos.forEach(c => {
+                const el = document.getElementById(c.id);
+                if(el) {
+                    if(!c.valid) {
+                        el.classList.add('border-rose-500', 'bg-rose-50');
+                        el.classList.remove('border-slate-200', 'bg-slate-50', 'focus:border-indigo-500');
+                        temErro = true;
+                        el.addEventListener('input', function removerErro() {
+                            this.classList.remove('border-rose-500', 'bg-rose-50');
+                            this.classList.add('border-slate-200', 'bg-slate-50', 'focus:border-indigo-500');
+                            this.removeEventListener('input', removerErro);
+                        });
+                    }
+                }
+            });
+
+            const containerLgpdProf = document.getElementById('container-prof-termos');
+            if(!concordo) {
+                if(containerLgpdProf) {
+                    containerLgpdProf.classList.add('border-rose-500', 'shadow-md');
+                    setTimeout(() => containerLgpdProf.classList.remove('border-rose-500', 'shadow-md'), 3000);
+                }
+                temErro = true;
             }
 
-            if(!concordo) return showToast("Você deve aceitar os termos de sigilo (LGPD).", "error");
+            if (temErro) {
+                return showToast("Preencha os campos obrigatórios corretamente (destacados em vermelho).", "error");
+            }
 
             const btn = document.getElementById('btn-salvar-prof');
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A REGISTRAR...";
