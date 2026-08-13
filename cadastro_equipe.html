@@ -17,7 +17,6 @@
         .form-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
         .form-scroll::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
 
-        /* Animação Pulsar para o WhatsApp */
         @keyframes pulse-whatsapp {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
@@ -98,11 +97,16 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome da Equipe *</label>
-                                <input type="text" id="cad-equipe" required placeholder="Digite o nome de sua equipe" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
+                                <input type="text" id="cad-equipe" placeholder="Digite o nome de sua equipe" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Logo da Equipe (Opcional)</label>
-                                <input type="file" id="cad-logo" accept="image/png, image/jpeg" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-slate-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div id="preview-logo-container" class="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 hidden items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                        <img id="preview-logo-img" src="" class="w-full h-full object-contain p-1">
+                                    </div>
+                                    <input type="file" id="cad-logo" accept="image/png, image/jpeg, image/jpg" onchange="previewEComprimirLogo(event)" class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-slate-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -113,15 +117,15 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome Completo *</label>
-                                <input type="text" id="cad-nome-resp" required placeholder="Digite seu nome completo" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                                <input type="text" id="cad-nome-resp" placeholder="Digite seu nome completo" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CPF ou CNPJ *</label>
-                                <input type="text" id="cad-doc" required maxlength="18" oninput="mascaraDoc(this)" placeholder="000.000.000-00" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                                <input type="text" id="cad-doc" maxlength="18" oninput="mascaraDoc(this)" placeholder="000.000.000-00" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">WhatsApp *</label>
-                                <input type="tel" id="cad-tel" required maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                                <input type="tel" id="cad-tel" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
                             </div>
                         </div>
                     </div>
@@ -184,20 +188,20 @@
                         
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">E-mail *</label>
-                            <input type="email" id="cad-email" required placeholder="mestre@equipe.com" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            <input type="email" id="cad-email" placeholder="mestre@equipe.com" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="relative">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Criar Senha *</label>
-                                <input type="password" id="cad-senha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all pr-12 placeholder:text-slate-600">
-                                <button type="button" onclick="toggleSenha('cad-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-cyan-400 transition-colors">
+                                <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all pr-12 placeholder:text-slate-600">
+                                <button type="button" onclick="toggleSenha('cad-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-cyan-400 transition-colors focus:outline-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
                                 </button>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Confirmar Senha *</label>
-                                <input type="password" id="cad-senha-confirma" required minlength="6" placeholder="Repita a senha" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-rose-500 transition-all placeholder:text-slate-600">
+                                <input type="password" id="cad-senha-confirma" placeholder="Repita a senha" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
                             </div>
                         </div>
                     </div>
@@ -207,19 +211,19 @@
                         <div class="relative flex items-center">
                             <span class="absolute left-4 text-slate-500">🎟️</span>
                             <input type="text" id="cad-cupom" placeholder="Insira o código de indicação" class="w-full p-3.5 pl-11 pr-24 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-emerald-500 transition-all uppercase placeholder:text-slate-600 placeholder:normal-case tracking-widest">
-                            <button type="button" onclick="validarCupomCadastro()" id="btn-validar-cupom" class="absolute right-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-1.5 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-colors">Validar</button>
+                            <button type="button" onclick="validarCupomCadastro()" id="btn-validar-cupom" class="absolute right-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-1.5 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-colors focus:outline-none">Validar</button>
                         </div>
                         <p id="msg-cupom-cadastro" class="text-[11px] font-bold mt-1 ml-1 hidden"></p>
                     </div>
 
-                    <div class="flex items-start gap-3 mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-                        <input type="checkbox" id="cad-termos" required class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900 cursor-pointer shrink-0">
+                    <div id="container-termos" class="flex items-start gap-3 mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700 transition-all">
+                        <input type="checkbox" id="cad-termos" class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900 cursor-pointer shrink-0">
                         <label for="cad-termos" class="text-xs text-slate-400 leading-relaxed cursor-pointer">
                             Declaro que li e concordo com os <a href="https://manager.bjjdigital.com.br/termos.html" target="_blank" class="text-cyan-400 hover:underline font-bold">Termos de Uso</a> e <a href="https://manager.bjjdigital.com.br/termos.html" target="_blank" class="text-cyan-400 hover:underline font-bold">Política de Privacidade</a>, autorizando o tratamento dos dados conforme a LGPD.
                         </label>
                     </div>
 
-                    <button type="submit" id="btn-cadastrar" class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center">
+                    <button type="submit" id="btn-cadastrar" class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900">
                         Finalizar e Criar Conta
                     </button>
                     
@@ -237,7 +241,6 @@
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
             authDomain: "bjj-maneger.firebaseapp.com",
@@ -253,13 +256,14 @@
         const storage = getStorage(app);
 
         let cupomValidado = null; 
+        let logoComprimidaBlob = null; // Guardar a logo em memória
 
         // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
-            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-blue-500' : 'bg-rose-500');
+            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
@@ -268,6 +272,97 @@
                 toast.classList.add('translate-x-full', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 4500);
+        }
+
+        // --- COMPRESSÃO E PREVIEW DE LOGO (NOVIDADE) ---
+        window.previewEComprimirLogo = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; // Logos não precisam ser enormes
+                    const MAX_HEIGHT = 400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const dataUrl = canvas.toDataURL('image/png', 0.9);
+                    
+                    const imgPreview = document.getElementById('preview-logo-img');
+                    const containerPreview = document.getElementById('preview-logo-container');
+                    
+                    imgPreview.src = dataUrl;
+                    containerPreview.classList.remove('hidden');
+                    containerPreview.classList.add('flex');
+                    
+                    canvas.toBlob((blob) => {
+                        logoComprimidaBlob = blob;
+                    }, 'image/png', 0.9);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // --- VALIDAÇÃO MATEMÁTICA DE CPF E CNPJ (NOVIDADE) ---
+        window.validarCPFCNPJ = function(val) {
+            const doc = val.replace(/\D/g, '');
+            if (doc.length === 11) return validarCPF(doc);
+            if (doc.length === 14) return validarCNPJ(doc);
+            return false;
+        };
+
+        function validarCPF(cpf) {
+            if (/^(\d)\1{10}$/.test(cpf)) return false;
+            let add = 0, rev;
+            for (let i=0; i < 9; i ++) add += parseInt(cpf.charAt(i)) * (10 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) return false;
+            add = 0;
+            for (let i = 0; i < 10; i ++) add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) return false;
+            return true;
+        }
+
+        function validarCNPJ(cnpj) {
+            if (/^(\d)\1{13}$/.test(cnpj)) return false;
+            let tamanho = cnpj.length - 2;
+            let numeros = cnpj.substring(0, tamanho);
+            let digitos = cnpj.substring(tamanho);
+            let soma = 0, pos = tamanho - 7;
+            for (let i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2) pos = 9;
+            }
+            let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(0)) return false;
+            tamanho = tamanho + 1;
+            numeros = cnpj.substring(0, tamanho);
+            soma = 0; pos = tamanho - 7;
+            for (let i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2) pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(1)) return false;
+            return true;
         }
 
         // --- OLHINHO DA SENHA ---
@@ -285,8 +380,16 @@
         // --- MÁSCARAS E CEP ---
         window.mascaraDoc = (i) => {
             let v = i.value.replace(/\D/g, "");
-            if (v.length <= 11) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-            else v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            if (v.length <= 11) {
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            } else {
+                v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+                v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+                v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+                v = v.replace(/(\d{4})(\d)/, "$1-$2");
+            }
             i.value = v;
         };
         window.mascaraTelefone = (i) => {
@@ -310,6 +413,7 @@
                 document.getElementById('cad-bairro').value = r.bairro || "";
                 document.getElementById('cad-cidade').value = r.localidade || "";
                 document.getElementById('cad-uf').value = r.uf || "";
+                document.getElementById('cad-num').focus();
             }
         };
 
@@ -345,14 +449,14 @@
                         msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-emerald-400 block";
                         
                         input.classList.add('border-emerald-500');
-                        input.classList.remove('border-rose-500');
+                        input.classList.remove('border-rose-500', 'border-slate-700');
                     }
                 } else {
                     msgTexto.innerText = "Cupom inválido ou não existe.";
                     msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
                     cupomValidado = null;
                     input.classList.add('border-rose-500');
-                    input.classList.remove('border-emerald-500');
+                    input.classList.remove('border-emerald-500', 'border-slate-700');
                 }
             } catch(e) {
                 msgTexto.innerText = "Erro ao consultar banco. Tente novamente.";
@@ -368,16 +472,15 @@
                 cupomValidado = null;
                 document.getElementById('msg-cupom-cadastro').classList.add('hidden');
                 e.target.classList.remove('border-emerald-500', 'border-rose-500');
+                e.target.classList.add('border-slate-700');
             }
         });
-
 
         // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE COM PLANO SELECIONADO ---
         document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const nomeEquipe = document.getElementById('cad-equipe').value.trim();
-            const arquivoLogo = document.getElementById('cad-logo').files[0];
             const nomeResp = document.getElementById('cad-nome-resp').value.trim();
             const docCpfCnpj = document.getElementById('cad-doc').value.trim();
             const telefone = document.getElementById('cad-tel').value.trim();
@@ -393,10 +496,49 @@
             const email = document.getElementById('cad-email').value.trim().toLowerCase();
             const senha = document.getElementById('cad-senha').value;
             const senhaConfirma = document.getElementById('cad-senha-confirma').value;
+            const concordo = document.getElementById('cad-termos').checked;
 
-            if (senha !== senhaConfirma) {
-                document.getElementById('cad-senha-confirma').classList.add('border-rose-500');
-                return showToast("As senhas não coincidem!", "error");
+            // ==========================================
+            // NOVIDADE: VALIDAÇÃO VISUAL E MATEMÁTICA
+            // ==========================================
+            const campos = [
+                { id: 'cad-equipe', valid: !!nomeEquipe },
+                { id: 'cad-nome-resp', valid: !!nomeResp },
+                { id: 'cad-doc', valid: !!docCpfCnpj && window.validarCPFCNPJ(docCpfCnpj) },
+                { id: 'cad-tel', valid: !!telefone },
+                { id: 'cad-email', valid: !!email && email.includes('@') },
+                { id: 'cad-senha', valid: senha.length >= 6 },
+                { id: 'cad-senha-confirma', valid: senhaConfirma === senha && senha !== '' }
+            ];
+
+            let temErro = false;
+            campos.forEach(c => {
+                const el = document.getElementById(c.id);
+                if (el) {
+                    if (!c.valid) {
+                        el.classList.add('border-rose-500', 'bg-rose-900/20');
+                        el.classList.remove('border-slate-700', 'bg-slate-800');
+                        temErro = true;
+                        el.addEventListener('input', function removerErro() {
+                            this.classList.remove('border-rose-500', 'bg-rose-900/20');
+                            this.classList.add('border-slate-700', 'bg-slate-800');
+                            this.removeEventListener('input', removerErro);
+                        });
+                    }
+                }
+            });
+            
+            const termosContainer = document.getElementById('container-termos');
+            if (!concordo) {
+                if(termosContainer) {
+                    termosContainer.classList.add('border-rose-500', 'shadow-md', 'shadow-rose-500/20');
+                    setTimeout(() => termosContainer.classList.remove('border-rose-500', 'shadow-md', 'shadow-rose-500/20'), 3000);
+                }
+                temErro = true;
+            }
+
+            if (temErro) {
+                return showToast("Existem erros ou campos vazios (destacados em vermelho).", "error");
             }
 
             const cupomDigitado = document.getElementById('cad-cupom').value.trim().toUpperCase();
@@ -436,11 +578,11 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const user = userCredential.user;
 
-                // 3. Upload da Logo
+                // 3. Upload da Logo (Comprimida)
                 let urlLogo = "";
-                if (arquivoLogo) {
-                    const caminhoRef = ref(storage, `equipes_logos/${user.uid}_${arquivoLogo.name}`);
-                    await uploadBytes(caminhoRef, arquivoLogo);
+                if (logoComprimidaBlob) {
+                    const caminhoRef = ref(storage, `equipes_logos/${user.uid}_logo.png`);
+                    await uploadBytes(caminhoRef, logoComprimidaBlob);
                     urlLogo = await getDownloadURL(caminhoRef);
                 }
 
@@ -471,7 +613,7 @@
 
                 // 5. Envia e-mail de verificação
                 await sendEmailVerification(user);
-                await signOut(auth);
+                await auth.signOut();
 
                 // 6. MENSAGEM DE SUCESSO REFORÇADA (CONTRA SPAM)
                 showToast("Sucesso! Verifique seu e-mail (incluindo o SPAM).", "success");
@@ -498,7 +640,7 @@
                         </div>
 
                         <div class="pt-6">
-                            <a href="login.html" class="inline-block w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-all border border-slate-700">
+                            <a href="login.html" class="inline-block w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-all border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500">
                                 Ir para a tela de Login
                             </a>
                         </div>
