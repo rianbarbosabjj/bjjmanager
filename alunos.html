@@ -211,7 +211,7 @@
                                 </select>
                                 
                                 <div class="relative w-full">
-                                    <input type="text" id="input-busca" onkeyup="window.renderizarTabela()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-4 pr-10 p-3 md:p-2.5 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar por nome ou CPF...">
+                                    <input type="text" id="input-busca" onkeyup="window.filtrarComDebounce()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-4 pr-10 p-3 md:p-2.5 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar por nome ou CPF...">
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -346,26 +346,26 @@
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo *</label>
-                            <input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 outline-none uppercase font-bold text-slate-700 transition-all">
+                            <input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none uppercase font-bold text-slate-700 transition-all">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF *</label>
-                            <input type="text" id="aluno-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <input type="text" id="aluno-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all text-slate-700 font-bold">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento *</label>
                             <div class="flex gap-2">
-                                <input type="date" id="aluno-nasc" onchange="window.calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                                <input type="date" id="aluno-nasc" onchange="window.calcularIdade()" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all text-slate-700 font-bold">
                                 <div id="aluno-idade-exibir" class="w-24 p-3 bg-slate-100 border border-slate-200 rounded-xl text-center font-bold text-slate-600 flex items-center justify-center"></div>
                             </div>
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">RG</label>
-                            <input type="text" id="aluno-rg" placeholder="Apenas números..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <input type="text" id="aluno-rg" placeholder="Apenas números..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Naturalidade</label>
-                            <input type="text" id="aluno-naturalidade" placeholder="Ex: Rio de Janeiro - RJ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                            <input type="text" id="aluno-naturalidade" placeholder="Ex: Rio de Janeiro - RJ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
@@ -399,15 +399,15 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="md:col-span-2">
             <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
-            <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none uppercase" placeholder="NOME...">
+            <input type="text" id="aluno-responsavel-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none uppercase transition-all" placeholder="NOME...">
         </div>
         <div>
             <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
-            <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700">
+            <input type="text" id="aluno-responsavel-cpf" maxlength="14" oninput="window.mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all">
                                 </div>
                                 <div>
                                 <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone do Responsável *</label>
-                               <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700">
+                               <input type="text" id="aluno-responsavel-telefone" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all">
                                </div>
                            </div>
                       </div>
@@ -415,9 +415,9 @@
                             <div id="bloco-emergencia" class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4 hidden">
                                 <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3"><span class="text-base">🚨</span><h4 class="text-xs font-black text-slate-700 uppercase tracking-widest">Contato de Emergência</h4></div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Contato *</label><input type="text" id="aluno-emerg-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Quem avisar?"></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone *</label><input type="text" id="aluno-emerg-tel" maxlength="15" oninput="window.mascaraTelefone(this)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000"></div>
-                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Grau de Parentesco *</label><input type="text" id="aluno-emerg-parentesco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Ex: Mãe, Irmão..."></div>
+                                    <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Contato *</label><input type="text" id="aluno-emerg-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Quem avisar?"></div>
+                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Telefone *</label><input type="text" id="aluno-emerg-tel" maxlength="15" oninput="window.mascaraTelefone(this)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000"></div>
+                                    <div><label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Grau de Parentesco *</label><input type="text" id="aluno-emerg-parentesco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Ex: Mãe, Irmão..."></div>
                                 </div>
                             </div>
                         </div>
@@ -427,14 +427,14 @@
                 <!-- ABA CONTATO -->
                 <div id="aba-contato" class="aba-content hidden space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Telefone do Atleta (WhatsApp) *</label><input type="text" id="aluno-tel" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Peso (Kg)</label><input type="text" id="aluno-peso" placeholder="Ex: 80" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
-                        <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label><input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Telefone do Atleta (WhatsApp) *</label><input type="text" id="aluno-tel" maxlength="15" oninput="window.mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all font-bold text-slate-700"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Peso (Kg)</label><input type="text" id="aluno-peso" placeholder="Ex: 80" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all"></div>
+                        <div class="md:col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label><input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all"></div>
                         
                         <div class="md:col-span-1 relative">
                             <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
                             <div class="relative w-full">
-                                <input type="password" id="aluno-senha-portal" placeholder="Defina uma senha..." class="w-full p-3 pr-12 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold">
+                                <input type="password" id="aluno-senha-portal" placeholder="Defina uma senha..." class="w-full p-3 pr-12 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold transition-all">
                                 <button type="button" onclick="window.toggleSenha('aluno-senha-portal', this)" class="absolute inset-y-0 right-0 flex items-center pr-3 text-cyan-600 hover:text-cyan-800">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
                                 </button>
@@ -445,19 +445,19 @@
                         <div class="md:col-span-2 mt-[-10px] mb-2"><p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p></div>
                         
                         <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2"><h4 class="text-xs font-black text-slate-700 mb-4 uppercase tracking-widest">Endereço</h4></div>
-                        <div class="col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label><input type="text" id="aluno-cep" maxlength="9" oninput="window.mascaraCEP(this)" onblur="window.buscarCEP(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
-                        <div class="col-span-1 md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logradouro (Rua, Av.)</label><input type="text" id="aluno-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                        <div class="col-span-1"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label><input type="text" id="aluno-cep" maxlength="9" oninput="window.mascaraCEP(this)" onblur="window.buscarCEP(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all"></div>
+                        <div class="col-span-1 md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Logradouro (Rua, Av.)</label><input type="text" id="aluno-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all"></div>
                         <div class="grid grid-cols-2 gap-3 md:col-span-2">
-                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
-                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none"></div>
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label><input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all"></div>
+                            <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label><input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all"></div>
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cidade</label>
-                            <input type="text" id="aluno-cidade" placeholder="Ex: Rio de Janeiro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                            <input type="text" id="aluno-cidade" placeholder="Ex: Rio de Janeiro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">UF</label>
-                            <input type="text" id="aluno-uf" maxlength="2" placeholder="Ex: RJ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none uppercase">
+                            <input type="text" id="aluno-uf" maxlength="2" placeholder="Ex: RJ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none uppercase transition-all">
                         </div>
                     </div>
                 </div>
@@ -475,10 +475,10 @@
                         </div>
                     </div>
                 </div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label><select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700 transition-all cursor-pointer"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select></div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label>
-                            <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                            <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700 transition-all cursor-pointer">
                                 <option value="1">Dia 1</option>
                                 <option value="5">Dia 5</option>
                                 <option value="10" selected>Dia 10</option>
@@ -494,7 +494,7 @@
                 <div id="aba-frequencia" class="aba-content hidden space-y-5">
                     <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <div class="flex items-center gap-3"><div class="w-10 h-10 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-xl">📍</div><div><h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Assiduidade do Atleta</h4><p class="text-[10px] text-slate-500">Histórico de treinos (Check-ins do Portal)</p></div></div>
-                        <div><input type="month" id="filtro-mes-freq-admin" onchange="window.filtrarFrequenciaAdmin()" class="bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg p-2 outline-none focus:border-cyan-500 cursor-pointer shadow-sm"></div>
+                        <div><input type="month" id="filtro-mes-freq-admin" onchange="window.filtrarFrequenciaAdmin()" class="bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg p-2 outline-none focus:border-cyan-500 cursor-pointer shadow-sm transition-all"></div>
                     </div>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -510,14 +510,14 @@
                         <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4"><span class="text-xl">⚖️</span><h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização do uso da imagem</h3></div>
                         <div class="space-y-4"><p class="text-sm text-amber-900">De acordo com a Lei de Garantia e Protection de dados <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13853.htm" target="_blank" class="text-cyan-600 underline font-bold hover:text-cyan-700">(Lei nº 13.853, de 2019)</a>. Assinale as opções a seguir.</p>
                         <p class="text-sm font-bold text-amber-900">Autorizo a utilização de imagens deste aluno(a) com a finalidade de:</p>
-                        <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
+                        <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm transition-all">
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Publicações em redes sociais oficiais da Equipe / Projeto</span></label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Divulgação em site institutional</span></label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Materiais informativos e promocionais</span></label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> <span>Relatórios e prestação de contas</span></label>
                         </div></div>
                         <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6"><h4 class="font-bold text-slate-800 text-lg">Declaração de proteção de dados</h4><p class="text-sm text-slate-700">A equipe declara que:</p><ul class="list-disc pl-5 text-sm text-slate-700 space-y-2"><li>Não divulgará dados pessoais do(a) aluno(a) (como CPF, endereço, telefone ou informações sensíveis).</li><li>Utilizará apenas nome e imagem, quando necessário.</li><li>Não comercializará as imagens.</li><li>Adotará medidas de segurança para proteção das informações coletadas.</li></ul><p class="text-sm text-slate-500 pt-4 font-bold italic">Ass: Diretoria da Equipe</p></div>
-                        <div class="bg-white p-6 rounded-xl border border-emerald-200 shadow-sm space-y-4 mt-6"><p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p><label class="flex items-center gap-3 cursor-pointer mt-2"><input type="checkbox" id="lgpd-concordo" class="w-6 h-6 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"><span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo com os Termos</span></label></div>
+                        <div class="bg-white p-6 rounded-xl border border-emerald-200 shadow-sm space-y-4 mt-6 transition-all"><p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p><label class="flex items-center gap-3 cursor-pointer mt-2"><input type="checkbox" id="lgpd-concordo" class="w-6 h-6 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"><span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo com os Termos</span></label></div>
                         <button onclick="window.gerarPDF_LGPD()" id="btn-generar-pdf" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm hidden">📥 Baixar Assinatura Digital (PDF)</button>
                     </div>
                 </div>
@@ -1186,6 +1186,15 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
             } 
         }
 
+        // ===================== MELHORIA 1: DEBOUNCE NA BUSCA =====================
+        window.timerBusca = null;
+        window.filtrarComDebounce = function() {
+            clearTimeout(window.timerBusca);
+            window.timerBusca = setTimeout(() => {
+                window.renderizarTabela();
+            }, 300);
+        };
+
         // ===================== RENDERIZAR TABELA (COM DOCUMENT FRAGMENT) =====================
         window.renderizarTabela = function() { 
             const tab = document.getElementById('tabela-alunos'); 
@@ -1473,6 +1482,12 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
             const btnGerarPdf = document.getElementById('btn-gerar-pdf');
             if(btnGerarPdf) btnGerarPdf.classList.add('hidden'); 
             
+            // Remove erros visuais que possam ter ficado do cadastro anterior
+            document.querySelectorAll('#modal-aluno .border-rose-500').forEach(el => {
+                el.classList.remove('border-rose-500', 'bg-rose-50', 'shadow-md');
+                el.classList.add('border-slate-200', 'bg-slate-50', 'focus:bg-white');
+            });
+
             const alertaIdade = document.getElementById('alerta-idade');
             const blocoResp = document.getElementById('bloco-responsavel');
             const blocoEmerg = document.getElementById('bloco-emergencia');
@@ -1612,37 +1627,30 @@ async function carregarFrequenciaDoAluno(idAluno) {
         // ===================== SALVAR ALUNO =====================
         window.salvarAluno = async function() { 
             const id = window.alunoEditandoId; 
-            const nome = document.getElementById('aluno-nome')?.value.toUpperCase() || ''; 
-            const cpf = document.getElementById('aluno-cpf')?.value || ''; 
-            const nasc = document.getElementById('aluno-nasc')?.value || ''; 
-            const tel = document.getElementById('aluno-tel')?.value || ''; 
             
-            if(!nome || !cpf || !nasc || !tel) {
-                showToast("Preencha os campos obrigatórios (Nome, CPF, Nascimento, Telefone)", "error"); 
-                return;
-            }
+            const nomeEl = document.getElementById('aluno-nome');
+            const cpfEl = document.getElementById('aluno-cpf');
+            const nascEl = document.getElementById('aluno-nasc');
+            const telEl = document.getElementById('aluno-tel');
+
+            const nome = nomeEl?.value.toUpperCase().trim() || ''; 
+            const cpf = cpfEl?.value.trim() || ''; 
+            const nasc = nascEl?.value || ''; 
+            const tel = telEl?.value.trim() || ''; 
             
             const lgpdConcordo = document.getElementById('lgpd-concordo');
-            if(!lgpdConcordo || !lgpdConcordo.checked) {
-                showToast("É necessário aceitar os Termos da LGPD.", "error"); 
-                return;
-            }
             
             let nomeResponsavel = '', cpfResponsavel = '', telResponsavel = '';
             let nomeEmergencia = '', telEmergencia = '', parentescoEmergencia = ''; 
-            
+
+            const respNomeEl = document.getElementById('aluno-responsavel-nome');
+            const respCpfEl = document.getElementById('aluno-responsavel-cpf');
+            const respTelEl = document.getElementById('aluno-responsavel-telefone');
+
             if (window.idadeAtual < 18) { 
-                const respNome = document.getElementById('aluno-responsavel-nome');
-                const respCpf = document.getElementById('aluno-responsavel-cpf');
-                const respTel = document.getElementById('aluno-responsavel-telefone');
-                nomeResponsavel = respNome ? respNome.value.toUpperCase().trim() : ''; 
-                cpfResponsavel = respCpf ? respCpf.value.trim() : ''; 
-                telResponsavel = respTel ? respTel.value.trim() : ''; 
-                
-                if(!nomeResponsavel || !cpfResponsavel || !telResponsavel) {
-                    showToast("Preencha todos os dados do responsável legal", "error");
-                    return;
-                }
+                nomeResponsavel = respNomeEl ? respNomeEl.value.toUpperCase().trim() : ''; 
+                cpfResponsavel = respCpfEl ? respCpfEl.value.trim() : ''; 
+                telResponsavel = respTelEl ? respTelEl.value.trim() : ''; 
             } else { 
                 const emergNome = document.getElementById('aluno-emerg-nome');
                 const emergTel = document.getElementById('aluno-emerg-tel');
@@ -1651,6 +1659,58 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 telEmergencia = emergTel ? emergTel.value.trim() : ''; 
                 parentescoEmergencia = emergParentesco ? emergParentesco.value.toUpperCase().trim() : ''; 
             } 
+            
+            // MELHORIA 2: VALIDAÇÃO VISUAL
+            const camposObrigatorios = [
+                { el: nomeEl, val: nome },
+                { el: cpfEl, val: cpf },
+                { el: nascEl, val: nasc },
+                { el: telEl, val: tel }
+            ];
+
+            if (window.idadeAtual < 18) {
+                camposObrigatorios.push({ el: respNomeEl, val: nomeResponsavel });
+                camposObrigatorios.push({ el: respCpfEl, val: cpfResponsavel });
+                camposObrigatorios.push({ el: respTelEl, val: telResponsavel });
+            }
+
+            let temErro = false;
+            let primeiraAbaComErro = null;
+
+            camposObrigatorios.forEach(item => {
+                if (item.el) {
+                    if (!item.val) {
+                        item.el.classList.add('border-rose-500', 'bg-rose-50');
+                        item.el.classList.remove('border-slate-200', 'bg-slate-50', 'focus:bg-white');
+                        temErro = true;
+                        
+                        const aba = item.el.closest('.aba-content');
+                        if (aba && !primeiraAbaComErro) primeiraAbaComErro = aba.id;
+
+                        item.el.addEventListener('input', function removerErro() {
+                            this.classList.remove('border-rose-500', 'bg-rose-50');
+                            this.classList.add('border-slate-200', 'bg-slate-50', 'focus:bg-white');
+                            this.removeEventListener('input', removerErro);
+                        });
+                    }
+                }
+            });
+
+            if(!lgpdConcordo || !lgpdConcordo.checked) {
+                const lgpdContainer = lgpdConcordo ? lgpdConcordo.closest('.bg-white') : null;
+                if(lgpdContainer) {
+                    lgpdContainer.classList.add('border-rose-500', 'shadow-md');
+                    setTimeout(() => lgpdContainer.classList.remove('border-rose-500', 'shadow-md'), 3000);
+                }
+                temErro = true;
+                if (!primeiraAbaComErro) primeiraAbaComErro = 'aba-lgpd';
+            }
+
+            if (temErro) {
+                showToast("Preencha os campos obrigatórios destacados em vermelho.", "error"); 
+                if (primeiraAbaComErro) window.mudarAba(primeiraAbaComErro);
+                return;
+            }
             
             const btnSalvar = document.getElementById('btn-salvar-aluno'); 
             if(!btnSalvar) return;
