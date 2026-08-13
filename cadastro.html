@@ -75,7 +75,7 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data de Nascimento *</label>
-                            <input type="date" id="cad-nasc" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            <input type="date" id="cad-nasc" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" onchange="verificarIdade()">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faixa Atual</label>
@@ -123,7 +123,7 @@
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">📍</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Endereço</h3>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Acesso</h3>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -136,7 +136,6 @@
                             <input type="email" id="cad-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
                         </div>
 
-                        <!-- 🔥 NOVO CAMPO DE SENHA -->
                         <div class="md:col-span-2 relative">
                             <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Senha de Acesso ao Portal *</label>
                             <div class="relative w-full">
@@ -148,7 +147,7 @@
                             <p class="text-[9px] text-slate-400 mt-1">* Esta senha será usada para acessar o Portal do Atleta.</p>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                        <div class="grid grid-cols-3 gap-3 md:col-span-2 mt-2">
                             <div class="col-span-1">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
                                 <input type="text" id="cad-cep" maxlength="9" onblur="buscarCEP(this.value)" oninput="mascaraCEP(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="00000-000">
@@ -185,6 +184,10 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
                             <input type="text" id="cad-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Telefone do Responsável</label>
+                            <input type="text" id="cad-resp-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
                         </div>
                     </div>
                 </div>
@@ -234,9 +237,9 @@
                         <p class="text-sm text-slate-500 pt-4 font-bold italic">Ass: Diretoria da Equipe</p>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
+                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6" id="container-lgpd-termos">
                         <p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p>
-                        <label class="flex items-center gap-3 cursor-pointer">
+                        <label class="flex items-center gap-3 cursor-pointer mt-2">
                             <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer">
                             <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo</span>
                         </label>
@@ -244,7 +247,7 @@
                 </div>
 
                 <div class="pt-6 pb-8">
-                    <button onclick="salvarMatricula()" id="btn-salvar-matricula" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                    <button onclick="salvarMatricula()" id="btn-salvar-matricula" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-50">
                         <span class="mr-2">✅</span> FINALIZAR MATRÍCULA
                     </button>
                 </div>
@@ -279,6 +282,7 @@
         let uid = null;
         let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
+        let idadeAtual = 0;
 
         // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
@@ -286,14 +290,35 @@
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            
             container.appendChild(toast);
+            
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
             setTimeout(() => {
                 toast.classList.add('translate-x-full', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 4500);
+        }
+
+        // --- VALIDAÇÃO MATEMÁTICA DE CPF ---
+        window.validarCPFRegra = function(cpf) {
+            cpf = cpf.replace(/[^\d]+/g,'');
+            if(cpf == '') return false;
+            if (cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let add = 0;
+            for (let i=0; i < 9; i ++) add += parseInt(cpf.charAt(i)) * (10 - i);
+            let rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) return false;
+            add = 0;
+            for (let i = 0; i < 10; i ++) add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) return false;
+            return true;
         }
 
         // --- MÁSCARAS ---
@@ -316,58 +341,110 @@
             i.value = v;
         };
         
-        window.toggleSenha = function(inputId, btnElement) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
-            } else {
-                input.type = "password";
-                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+        window.verificarIdade = function() {
+            const nasc = document.getElementById('cad-nasc').value;
+            if (!nasc) { idadeAtual = 0; return; }
+            const hoje = new Date();
+            const dataNascimento = new Date(nasc);
+            idadeAtual = hoje.getFullYear() - dataNascimento.getFullYear();
+            const mes = hoje.getMonth() - dataNascimento.getMonth();
+            if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
+                idadeAtual--;
             }
-        };
+        }
 
-        window.buscarCEP = async (cep) => {
-            const cleanCep = cep.replace(/\D/g, "");
-            if (cleanCep.length !== 8) return;
-            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
-            if (!r.erro) {
-                document.getElementById('cad-end').value = r.logradouro || "";
-                document.getElementById('cad-bairro').value = r.bairro || "";
-                document.getElementById('cad-num').focus();
+        // --- COMPRESSÃO E PREVIEW DA FOTO ---
+        window.mostrarPreviewFoto = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const MAX_HEIGHT = 600;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        } else {
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        const imgPreview = document.getElementById('preview-foto');
+                        imgPreview.src = dataUrl;
+                        imgPreview.classList.remove('hidden');
+                        document.getElementById('placeholder-foto').classList.add('hidden');
+                        
+                        canvas.toBlob((blob) => {
+                            ficheiroFotoSelecionado = blob;
+                        }, 'image/jpeg', 0.8);
+                    };
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
             }
-        };
+        }
 
+        // =====================================================================================
+        // 🔥 LÓGICA DE AUTENTICAÇÃO BLINDADA
+        // =====================================================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                if (equipeImpersonada) {
-                    uid = equipeImpersonada;
-                } else {
-                    uid = user.uid;
-                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                    if(colabSnap.exists()) {
-                        uid = colabSnap.data().equipe_id;
-                    }
-                }
-                
+                let isSuper = false;
                 try {
-                    const docEquipe = await getDoc(doc(db, "equipes", uid));
-                    if (docEquipe.exists()) {
-                        const dadosEquipe = docEquipe.data();
-                        if (dadosEquipe.url_logo) {
-                            const imgEl = document.getElementById('logo-equipe');
-                            imgEl.src = dadosEquipe.url_logo;
-                            imgEl.classList.remove('hidden');
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) {
+                    isSuper = false;
+                }
+
+                try {
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; 
                         } else {
-                            const fallEl = document.getElementById('fallback-logo');
-                            fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
-                            fallEl.classList.remove('hidden');
+                            window.location.href = "super_admin.html";
+                            return;
+                        }
+                    } else {
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
+                            }
                         }
                     }
-                } catch(e) { console.log("Erro ao carregar logo"); }
+                    
+                    try {
+                        const docEquipe = await getDoc(doc(db, "equipes", uid));
+                        if (docEquipe.exists()) {
+                            const dadosEquipe = docEquipe.data();
+                            if (dadosEquipe.url_logo) {
+                                const imgEl = document.getElementById('logo-equipe');
+                                imgEl.src = dadosEquipe.url_logo;
+                                imgEl.classList.remove('hidden');
+                            } else {
+                                const fallEl = document.getElementById('fallback-logo');
+                                fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
+                                fallEl.classList.remove('hidden');
+                            }
+                        }
+                    } catch(e) { console.log("Erro ao carregar logo"); }
 
-                contarAlunos(); 
+                    contarAlunos(); 
+                } catch (error) { console.log(error); }
             } else {
                 window.location.href = "index.html";
             }
@@ -381,21 +458,6 @@
             } catch(e) { console.log("Erro ao contar alunos."); }
         }
 
-        window.mostrarPreviewFoto = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                ficheiroFotoSelecionado = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imgPreview = document.getElementById('preview-foto');
-                    imgPreview.src = e.target.result;
-                    imgPreview.classList.remove('hidden');
-                    document.getElementById('placeholder-foto').classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
         window.salvarMatricula = async function() {
             const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
             const cpf = document.getElementById('cad-cpf').value.trim();
@@ -405,16 +467,59 @@
             const senha = document.getElementById('cad-senha').value.trim();
             const concordo = document.getElementById('cad-lgpd-termos').checked;
 
-            if (!nome || !cpf || !nasc || !tel || !email || !senha) {
-                return showToast("Preencha todos os campos obrigatórios (*)", "error");
+            let nomeResponsavel = '';
+            let cpfResponsavel = '';
+
+            if (idadeAtual < 18 && idadeAtual > 0) {
+                nomeResponsavel = document.getElementById('cad-resp-nome').value.toUpperCase().trim();
+                cpfResponsavel = document.getElementById('cad-resp-cpf').value.trim();
             }
 
-            if (senha.length < 6) {
-                return showToast("A senha deve ter no mínimo 6 caracteres.", "error");
+            // ==========================================
+            // VALIDAÇÃO VISUAL DE ERROS
+            // ==========================================
+            const campos = [
+                { id: 'cad-nome', valid: !!nome },
+                { id: 'cad-cpf', valid: !!cpf && window.validarCPFRegra(cpf) },
+                { id: 'cad-nasc', valid: !!nasc },
+                { id: 'cad-tel', valid: !!tel },
+                { id: 'cad-email', valid: !!email && email.includes('@') },
+                { id: 'cad-senha', valid: senha.length >= 6 }
+            ];
+
+            if (idadeAtual < 18 && idadeAtual > 0) {
+                campos.push({ id: 'cad-resp-nome', valid: !!nomeResponsavel });
+                campos.push({ id: 'cad-resp-cpf', valid: !!cpfResponsavel && window.validarCPFRegra(cpfResponsavel) });
             }
 
+            let temErro = false;
+            campos.forEach(c => {
+                const el = document.getElementById(c.id);
+                if (el) {
+                    if (!c.valid) {
+                        el.classList.add('border-rose-500', 'bg-rose-50');
+                        el.classList.remove('border-slate-200', 'bg-slate-50', 'focus:border-cyan-500');
+                        temErro = true;
+                        el.addEventListener('input', function removerErro() {
+                            this.classList.remove('border-rose-500', 'bg-rose-50');
+                            this.classList.add('border-slate-200', 'bg-slate-50', 'focus:border-cyan-500');
+                            this.removeEventListener('input', removerErro);
+                        });
+                    }
+                }
+            });
+
+            const lgpdContainer = document.getElementById('container-lgpd-termos');
             if (!concordo) {
-                return showToast("É obrigatório concordar com os termos no final do formulário.", "error");
+                if (lgpdContainer) {
+                    lgpdContainer.classList.add('border-rose-500', 'shadow-md');
+                    setTimeout(() => lgpdContainer.classList.remove('border-rose-500', 'shadow-md'), 3000);
+                }
+                temErro = true;
+            }
+
+            if (temErro) {
+                return showToast("Preencha os campos obrigatórios corretamente (destacados em vermelho).", "error");
             }
 
             const anoAtual = new Date().getFullYear();
@@ -441,8 +546,8 @@
                 numero: document.getElementById('cad-num').value.trim(),
                 bairro: document.getElementById('cad-bairro').value.trim(),
                 cep: document.getElementById('cad-cep').value.trim(),
-                nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
-                cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                nome_responsavel: nomeResponsavel,
+                cpf_responsavel: cpfResponsavel,
                 status: "ATIVO",
                 bolsa_perc: 0,
                 dia_vencimento: 10,
@@ -456,7 +561,7 @@
             };
 
             try {
-                // 🔥 USAR CLOUD FUNCTION PARA CRIAR ALUNO COM HASH
+                // USA A FUNÇÃO DA NUVEM (CRIAR ALUNO COM HASH)
                 const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
                 const result = await criarAluno({ dados: dadosAluno, senha: senha });
                 
@@ -465,24 +570,21 @@
                 }
                 
                 const docRefId = result.data.alunoId;
-                
-                // 2. Se o atleta selecionou uma fotografia, envia para a Nuvem
+
+                // Envia foto se houver
                 if (ficheiroFotoSelecionado) {
                     btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
-                    
                     const fotoPath = `fotos_carteirinha/${uid}/${docRefId}.jpg`;
                     const storageRef = ref(storage, fotoPath);
-                    
                     await uploadBytes(storageRef, ficheiroFotoSelecionado);
                     const downloadUrl = await getDownloadURL(storageRef);
-                    
                     await updateDoc(doc(db, "alunos", docRefId), { foto_url: downloadUrl });
                 }
 
                 showToast(`Matrícula de ${nome} concluída!`, "success");
                 
                 document.getElementById('container-principal').innerHTML = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10 shadow-lg">
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10 shadow-lg animate-fade-in">
                         <span class="text-6xl mb-4 block">✅</span>
                         <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
                         <p class="text-emerald-600 font-medium mt-2">O atleta ${nome} foi adicionado à equipe.</p>
@@ -503,4 +605,4 @@
         }
     </script>
 </body>
-</html>
+</html> agora olhe turmas.html o que acha que podemos melhorar?
