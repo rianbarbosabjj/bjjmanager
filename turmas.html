@@ -1028,20 +1028,68 @@
         // Os IDs antigos permanecem no documento da turma por segurança, mas não inflam KPIs,
         // ocupação ou capacidade da interface.
         function idsAlunosDaTurma(t) {
-            if (Array.isArray(t?.alunos_ids)) return t.alunos_ids;
-            if (Array.isArray(t?.alunosIds)) return t.alunosIds;
-            if (Array.isArray(t?.alunos)) return t.alunos;
-            return [];
+            let ids = [];
+            if (Array.isArray(t?.alunos_ids)) ids = t.alunos_ids;
+            else if (Array.isArray(t?.alunosIds)) ids = t.alunosIds;
+            else if (Array.isArray(t?.alunos)) ids = t.alunos;
+            // Evita que o mesmo ID repetido dentro do próprio documento infle a contagem.
+            return [...new Set(ids.map(String).filter(Boolean))];
         }
         function setIdsAlunosAtivos() { return new Set(alunosCache.map(a => String(a.id))); }
-        function idsAtivosDaTurma(t) {
+        function idsAtivosBrutosDaTurma(t) {
             const ativos = setIdsAlunosAtivos();
-            return idsAlunosDaTurma(t).map(String).filter(id => ativos.has(id));
+            return idsAlunosDaTurma(t).filter(id => ativos.has(id));
+        }
+
+        // Resolve vínculos duplicados entre turmas sem alterar o Firestore.
+        // Cada aluno ativo conta em apenas UMA turma. Se houver mais de uma,
+        // prioriza-se a turma cuja regra etária é compatível e mais específica.
+        function mapaTurmaCanonicaPorAluno() {
+            const mapa = new Map();
+            const turmasAtivas = turmasCache.filter(t => !isArquivada(t));
+            const porId = new Map(alunosCache.map(a => [String(a.id), a]));
+
+            for (const [alunoId, aluno] of porId.entries()) {
+                const candidatas = turmasAtivas.filter(t => idsAlunosDaTurma(t).includes(alunoId));
+                if (!candidatas.length) continue;
+                if (candidatas.length === 1) { mapa.set(alunoId, candidatas[0].id); continue; }
+
+                const idade = calcularIdadeNum(aluno.data_nascimento);
+                const ordenadas = candidatas.map((t, ordem) => {
+                    const min = Math.max(0, Number(t.idade_min || 0));
+                    const max = Math.max(min, Number(t.idade_max || 999));
+                    const regraExplicita = t.idade_min !== undefined || t.idade_max !== undefined;
+                    const compativel = idade >= 0 ? (idade >= min && idade <= max) : false;
+                    const faixa = Math.max(0, max - min);
+                    return { t, ordem, compativel, regraExplicita, faixa };
+                }).sort((a,b) => {
+                    if (a.compativel !== b.compativel) return a.compativel ? -1 : 1;
+                    if (a.regraExplicita !== b.regraExplicita) return a.regraExplicita ? -1 : 1;
+                    if (a.faixa !== b.faixa) return a.faixa - b.faixa;
+                    return a.ordem - b.ordem;
+                });
+
+                mapa.set(alunoId, ordenadas[0].t.id);
+            }
+            return mapa;
+        }
+        function idsAtivosDaTurma(t) {
+            const mapa = mapaTurmaCanonicaPorAluno();
+            return idsAtivosBrutosDaTurma(t).filter(id => mapa.get(id) === t.id);
         }
         function qtdAtivosNaTurma(t) { return idsAtivosDaTurma(t).length; }
-        function qtdReferenciasAntigasNaTurma(t) { return Math.max(0, idsAlunosDaTurma(t).length - qtdAtivosNaTurma(t)); }
+        function qtdReferenciasAntigasNaTurma(t) {
+            const ativos = setIdsAlunosAtivos();
+            return idsAlunosDaTurma(t).filter(id => !ativos.has(id)).length;
+        }
+        function qtdVinculosRepetidosNaTurma(t) {
+            return Math.max(0, idsAtivosBrutosDaTurma(t).length - idsAtivosDaTurma(t).length);
+        }
+        function totalVinculosRepetidos() {
+            return turmasCache.filter(t => !isArquivada(t)).reduce((acc,t) => acc + qtdVinculosRepetidosNaTurma(t), 0);
+        }
         function turmaLotada(t) { const cap = capacidadeTurma(t); return cap > 0 && qtdAtivosNaTurma(t) >= cap; }
-        function alunoEstaEmAlgumaTurma(id) { return turmasCache.some(t => !isArquivada(t) && idsAlunosDaTurma(t).map(String).includes(String(id))); }
+        function alunoEstaEmAlgumaTurma(id) { return turmasCache.some(t => !isArquivada(t) && idsAlunosDaTurma(t).includes(String(id))); }
 
         function intervalosConflitam(aInicio, aFim, bInicio, bFim) {
             if (!aInicio || !bInicio) return false;
@@ -1185,7 +1233,9 @@
 
         function renderizarTurmas() {
             const container = document.getElementById('lista-turmas');
-            const antigasTotal = turmasCache.reduce((acc,t)=>acc+qtdReferenciasAntigasNaTurma(t),0); document.getElementById('lista-resumo').textContent = `${turmasFiltradas.length} exibida(s) · ${turmasCache.length} carregada(s) do banco${antigasTotal ? ` · ${antigasTotal} vínculo(s) antigo(s) ignorado(s)` : ''}`;
+            const antigasTotal = turmasCache.reduce((acc,t)=>acc+qtdReferenciasAntigasNaTurma(t),0);
+            const repetidosTotal = totalVinculosRepetidos();
+            document.getElementById('lista-resumo').textContent = `${turmasFiltradas.length} exibida(s) · ${turmasCache.length} carregada(s) do banco${repetidosTotal ? ` · ${repetidosTotal} vínculo(s) repetido(s) não contabilizado(s)` : ''}${antigasTotal ? ` · ${antigasTotal} vínculo(s) antigo(s) ignorado(s)` : ''}`;
             container.innerHTML = '';
             if (!turmasFiltradas.length) {
                 const vazio = document.createElement('div'); vazio.className = 'bg-white border border-dashed border-slate-300 rounded-2xl p-7 text-center mt-1';
@@ -1194,7 +1244,7 @@
             } else {
                 const frag = document.createDocumentFragment();
                 turmasFiltradas.forEach(t => {
-                    const alunos = qtdAtivosNaTurma(t), referenciasAntigas = qtdReferenciasAntigasNaTurma(t), cap = capacidadeTurma(t), ocup = cap > 0 ? Math.min(100, Math.round(alunos/cap*100)) : 0;
+                    const alunos = qtdAtivosNaTurma(t), referenciasAntigas = qtdReferenciasAntigasNaTurma(t), vinculosRepetidos = qtdVinculosRepetidosNaTurma(t), cap = capacidadeTurma(t), ocup = cap > 0 ? Math.min(100, Math.round(alunos/cap*100)) : 0;
                     const arq = isArquivada(t), ativa = turmaSelecionada?.id === t.id;
                     const card = document.createElement('article'); card.id = `card-turma-${t.id}`;
                     card.className = `card-turma bg-white border rounded-2xl p-4 mb-3 shadow-sm cursor-pointer ${ativa ? 'border-cyan-400 ring-2 ring-cyan-100' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'} ${arq ? 'opacity-70' : ''}`;
@@ -1204,7 +1254,7 @@
                     card.innerHTML = `
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 rounded-xl ${arq?'bg-slate-100 text-slate-400':'bg-cyan-50 text-cyan-600'} flex items-center justify-center shrink-0"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div>
-                            <div class="min-w-0 flex-1"><div class="flex items-center gap-2"><h3 class="font-black text-sm text-slate-900 uppercase truncate">${escapeHtml(t.nome || t.nome_turma || t.titulo || 'SEM NOME')}</h3>${arq?'<span class="text-[7px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-black uppercase">Arquivada</span>':''}</div><p class="text-[10px] text-slate-400 font-bold mt-1 truncate">${escapeHtml(formatarDiasSemanas(t.dias_semana))} · ${escapeHtml(formatarHorarioBox(t.hora_inicio,t.hora_fim))}</p><p class="text-[10px] text-slate-500 mt-1 truncate">${escapeHtml(t.professor_responsavel || 'Professor não definido')}</p>${referenciasAntigas ? `<p class="text-[8px] text-amber-500 font-bold mt-1">${referenciasAntigas} referência(s) antiga(s) ignorada(s)</p>` : ''}</div>
+                            <div class="min-w-0 flex-1"><div class="flex items-center gap-2"><h3 class="font-black text-sm text-slate-900 uppercase truncate">${escapeHtml(t.nome || t.nome_turma || t.titulo || 'SEM NOME')}</h3>${arq?'<span class="text-[7px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-black uppercase">Arquivada</span>':''}</div><p class="text-[10px] text-slate-400 font-bold mt-1 truncate">${escapeHtml(formatarDiasSemanas(t.dias_semana))} · ${escapeHtml(formatarHorarioBox(t.hora_inicio,t.hora_fim))}</p><p class="text-[10px] text-slate-500 mt-1 truncate">${escapeHtml(t.professor_responsavel || 'Professor não definido')}</p>${vinculosRepetidos ? `<p class="text-[8px] text-indigo-500 font-bold mt-1">${vinculosRepetidos} vínculo(s) repetido(s) não contabilizado(s)</p>` : ''}${referenciasAntigas ? `<p class="text-[8px] text-amber-500 font-bold mt-1">${referenciasAntigas} referência(s) antiga(s) ignorada(s)</p>` : ''}</div>
                             <div class="shrink-0 text-right"><p class="text-sm font-black text-slate-800">${badgeCap}</p><p class="text-[8px] font-bold ${estadoCap==='Lotada'?'text-rose-500':estadoCap==='Quase cheia'?'text-amber-500':'text-emerald-500'} mt-0.5">${cap>0?estadoCap:'alunos'}</p></div>
                         </div>
                         ${cap>0?`<div class="mt-3 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div class="h-full ${ocup>=100?'bg-rose-500':ocup>=80?'bg-amber-500':'bg-cyan-500'} rounded-full" style="width:${ocup}%"></div></div>`:''}
@@ -1263,10 +1313,11 @@
             document.getElementById('turma-horario-badge').textContent = `${formatarDiasSemanas(turmaSelecionada.dias_semana)} · ${formatarHorarioBox(turmaSelecionada.hora_inicio,turmaSelecionada.hora_fim)}`;
             document.getElementById('turma-idade-badge').textContent = formatarRegraIdade(turmaSelecionada.idade_min,turmaSelecionada.idade_max);
             document.getElementById('turma-professor-badge').textContent = turmaSelecionada.professor_responsavel || 'Sem professor';
-            const qtd = qtdAtivosNaTurma(turmaSelecionada), referenciasAntigas = qtdReferenciasAntigasNaTurma(turmaSelecionada), cap = capacidadeTurma(turmaSelecionada);
+            const qtd = qtdAtivosNaTurma(turmaSelecionada), referenciasAntigas = qtdReferenciasAntigasNaTurma(turmaSelecionada), vinculosRepetidos = qtdVinculosRepetidosNaTurma(turmaSelecionada), cap = capacidadeTurma(turmaSelecionada);
             document.getElementById('turma-contagem').textContent = qtd;
             document.getElementById('turma-capacidade-mini').textContent = cap > 0 ? `de ${cap}` : 'sem limite';
-            document.getElementById('turma-ocupacao-texto').textContent = cap > 0 ? `${qtd} de ${cap} vagas${referenciasAntigas ? ` · ${referenciasAntigas} antiga(s) ignorada(s)` : ''}` : `${qtd} aluno(s) ativo(s)${referenciasAntigas ? ` · ${referenciasAntigas} antiga(s) ignorada(s)` : ''}`;
+            const notasVinculo = `${vinculosRepetidos ? ` · ${vinculosRepetidos} repetido(s) não contabilizado(s)` : ''}${referenciasAntigas ? ` · ${referenciasAntigas} antigo(s) ignorado(s)` : ''}`;
+            document.getElementById('turma-ocupacao-texto').textContent = cap > 0 ? `${qtd} de ${cap} vagas${notasVinculo}` : `${qtd} aluno(s) ativo(s)${notasVinculo}`;
             const pct = cap>0 ? Math.min(100,Math.round(qtd/cap*100)) : 0;
             const barra = document.getElementById('turma-ocupacao-barra'); barra.style.width = `${pct}%`; barra.className = `h-full rounded-full transition-all ${pct>=100?'bg-rose-500':pct>=80?'bg-amber-500':'bg-cyan-500'}`;
             const arq = isArquivada(turmaSelecionada); document.getElementById('turma-status-badge').classList.toggle('hidden', !arq);
