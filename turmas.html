@@ -215,12 +215,12 @@
 
             <!-- Lista / detalhe -->
             <div id="view-lista" class="flex-1 overflow-hidden p-0 md:p-5 lg:p-6 flex max-w-[1500px] mx-auto w-full h-full relative min-h-0">
-                <aside id="painel-lista" class="w-full md:w-[39%] xl:w-[34%] flex flex-col h-full shrink-0 bg-slate-50 md:bg-transparent md:pr-4 min-w-0">
+                <div id="painel-lista" class="w-full md:w-[39%] xl:w-[34%] flex flex-col h-full shrink-0 bg-slate-50 md:bg-transparent md:pr-4 min-w-0">
                     <div id="lista-resumo" class="px-4 pt-3 md:px-0 md:pt-0 pb-2 text-[10px] text-slate-400 font-bold">Carregando...</div>
                     <div class="flex-1 overflow-y-auto hide-scrollbar px-4 pb-24 md:px-0 md:pb-3" id="lista-turmas">
                         <div class="space-y-3 animate-pulse"><div class="h-28 bg-white border border-slate-200 rounded-2xl"></div><div class="h-28 bg-white border border-slate-200 rounded-2xl"></div></div>
                     </div>
-                </aside>
+                </div>
 
                 <section id="painel-detalhe" class="w-full md:w-[61%] xl:w-[66%] absolute md:relative inset-0 z-40 bg-slate-50 transform translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col h-full overflow-hidden md:pl-1">
                     <div id="detalhe-vazio" class="flex-1 flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-3xl text-center p-8 h-full hidden md:flex mb-3">
@@ -765,7 +765,7 @@
                 if (!aulas.length) body.innerHTML = '<div class="py-8 text-center text-[10px] text-slate-300 font-medium">Sem aulas</div>';
                 aulas.forEach(t => {
                     const a = document.createElement('button'); a.className = 'w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-cyan-50 border border-slate-100 hover:border-cyan-200 transition-colors focus-ring';
-                    a.onclick = () => { alterarVisualizacao('lista'); selecionarTurma(t.id); };
+                    a.onclick = () => { turmaSelecionada = turmasCache.find(x => x.id === t.id) || t; alterarVisualizacao('lista'); selecionarTurma(t.id, window.innerWidth < 768); };
                     a.innerHTML = `<p class="text-[9px] font-black text-cyan-600">${escapeHtml(formatarHorarioBox(t.hora_inicio,t.hora_fim))}</p><p class="text-[11px] font-black text-slate-800 uppercase mt-1 truncate">${escapeHtml(t.nome||'')}</p><p class="text-[9px] text-slate-400 mt-1 truncate">${escapeHtml(t.professor_responsavel||'Sem professor')} · ${qtdAtivosNaTurma(t)}${capacidadeTurma(t)>0?'/'+capacidadeTurma(t):''}</p>`;
                     body.appendChild(a);
                 });
@@ -961,10 +961,10 @@
         window.excluirTurma = async function(id) { const t = turmasCache.find(x => x.id === id); if (!t) return; turmaSelecionada = t; await window.arquivarTurmaSelecionada(); };
 
         // ================= EQUIPE / IMPERSONAÇÃO =================
-        async function carregarDadosEquipe(){try{const snap=await getDoc(doc(db,'equipes',teamId));if(snap.exists()){const d=snap.data();equipeDados.nome=d.nome_equipe||d.nome||'Sua Equipe';equipeDados.logo=d.url_logo||'';const nome=document.querySelector('aside h2')||document.getElementById('nome-equipe');if(nome)nome.textContent=equipeDados.nome.toUpperCase();const logo=document.getElementById('logo-equipe-menu')||document.getElementById('container-logo');if(logo){if(equipeDados.logo){logo.style.background='transparent';const img=document.createElement('img');img.src=equipeDados.logo;img.alt='Logo da equipe';img.className='w-full h-full object-cover rounded-xl shadow-md';logo.innerHTML='';logo.appendChild(img);}else{logo.innerHTML='';const span=document.createElement('span');span.className='text-white font-black text-2xl';span.textContent=equipeDados.nome.charAt(0).toUpperCase();logo.appendChild(span);}}}}catch(e){console.error('Equipe:',e);}}
+        async function carregarDadosEquipe(){try{const snap=await getDoc(doc(db,'equipes',teamId));if(snap.exists()){const d=snap.data();equipeDados.nome=d.nome_equipe||d.nome||'Sua Equipe';equipeDados.logo=d.url_logo||'';const nome=document.getElementById('nome-equipe')||document.querySelector('body > aside h2')||document.querySelector('aside h2');if(nome)nome.textContent=equipeDados.nome.toUpperCase();const logo=document.getElementById('logo-equipe-menu')||document.getElementById('container-logo');if(logo){if(equipeDados.logo){logo.style.background='transparent';const img=document.createElement('img');img.src=equipeDados.logo;img.alt='Logo da equipe';img.className='w-full h-full object-cover rounded-xl shadow-md';logo.innerHTML='';logo.appendChild(img);}else{logo.innerHTML='';const span=document.createElement('span');span.className='text-white font-black text-2xl';span.textContent=equipeDados.nome.charAt(0).toUpperCase();logo.appendChild(span);}}}}catch(e){console.error('Equipe:',e);}}
 
         window.sairModoSuporte=function(){sessionStorage.removeItem('admin_impersonate');sessionStorage.removeItem('admin_impersonate_reason');window.location.href='super_admin.html';};
-        function injetarAvisoSuporte(){setTimeout(()=>{const aside=document.querySelector('aside');if(!aside||document.getElementById('btn-sair-suporte-turmas'))return;const b=document.createElement('button');b.id='btn-sair-suporte-turmas';b.onclick=window.sairModoSuporte;b.className='mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2';b.textContent='MODO SUPORTE · SAIR';const sair=[...aside.querySelectorAll('button,a')].find(el=>el.textContent.toUpperCase().includes('SAIR'));if(sair?.parentNode)sair.parentNode.insertBefore(b,sair);else aside.appendChild(b);},700);}
+        function injetarAvisoSuporte(){setTimeout(()=>{const aside=document.querySelector('body > aside')||document.querySelector('aside');if(!aside||document.getElementById('btn-sair-suporte-turmas'))return;const b=document.createElement('button');b.id='btn-sair-suporte-turmas';b.onclick=window.sairModoSuporte;b.className='mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2';b.textContent='MODO SUPORTE · SAIR';const sair=[...aside.querySelectorAll('button,a')].find(el=>el.textContent.toUpperCase().includes('SAIR'));if(sair?.parentNode)sair.parentNode.insertBefore(b,sair);else aside.appendChild(b);},700);}
 
         // ================= AUTENTICAÇÃO / RESOLUÇÃO DA EQUIPE =================
         // IMPORTANTE: a conexão normal preserva o fluxo original que já funcionava:
