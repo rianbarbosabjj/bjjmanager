@@ -918,15 +918,96 @@
         window.sairModoSuporte=function(){sessionStorage.removeItem('admin_impersonate');sessionStorage.removeItem('admin_impersonate_reason');window.location.href='super_admin.html';};
         function injetarAvisoSuporte(){setTimeout(()=>{const aside=document.querySelector('aside');if(!aside||document.getElementById('btn-sair-suporte-turmas'))return;const b=document.createElement('button');b.id='btn-sair-suporte-turmas';b.onclick=window.sairModoSuporte;b.className='mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2';b.textContent='MODO SUPORTE · SAIR';const sair=[...aside.querySelectorAll('button,a')].find(el=>el.textContent.toUpperCase().includes('SAIR'));if(sair?.parentNode)sair.parentNode.insertBefore(b,sair);else aside.appendChild(b);},700);}
 
+        // ================= AUTENTICAÇÃO / RESOLUÇÃO DA EQUIPE =================
+        // IMPORTANTE: a conexão normal preserva o fluxo original que já funcionava:
+        // 1) responsável da academia -> equipes/{user.uid}
+        // 2) colaborador -> colaboradores/{user.uid}.equipe_id
+        // A coleção super_admins só é consultada quando existe uma impersonação solicitada
+        // pelo Super Admin. Isso evita que regras mais restritivas de super_admins bloqueiem
+        // o carregamento de usuários comuns.
+        async function resolverEquipeDoUsuario(user) {
+            const impersonada = sessionStorage.getItem('admin_impersonate');
+
+            if (impersonada) {
+                try {
+                    const superSnap = await getDoc(doc(db, 'super_admins', user.uid));
+                    if (superSnap.exists()) {
+                        usuarioEhSuperAdmin = true;
+                        window.isSuperAdmin = true;
+                        injetarAvisoSuporte();
+                        return impersonada;
+                    }
+                } catch (e) {
+                    console.warn('Não foi possível validar a sessão de suporte:', e);
+                }
+
+                // Não mantém uma impersonação que não pôde ser validada.
+                sessionStorage.removeItem('admin_impersonate');
+                sessionStorage.removeItem('admin_impersonate_reason');
+            }
+
+            // Fluxo principal das academias: mantém a conexão do código-base funcional.
+            const mestre = await getDoc(doc(db, 'equipes', user.uid));
+            if (mestre.exists()) return user.uid;
+
+            const colab = await getDoc(doc(db, 'colaboradores', user.uid));
+            if (colab.exists() && colab.data().equipe_id) return colab.data().equipe_id;
+
+            // Só chegamos aqui se o usuário não for responsável nem colaborador.
+            // A checagem de super admin é então segura para decidir o redirecionamento.
+            try {
+                const superSnap = await getDoc(doc(db, 'super_admins', user.uid));
+                if (superSnap.exists()) {
+                    usuarioEhSuperAdmin = true;
+                    window.isSuperAdmin = true;
+                    window.location.href = 'super_admin.html';
+                    return null;
+                }
+            } catch (e) {
+                // Para usuários comuns sem acesso a super_admins, não transformamos isso
+                // em erro de conexão do módulo de turmas.
+                console.debug('Usuário sem leitura de super_admins; seguindo fluxo normal.');
+            }
+
+            return null;
+        }
+
         onAuthStateChanged(auth, async user => {
-            if(!user){window.location.href='index.html';return;}
-            try{
-                const superSnap=await getDoc(doc(db,'super_admins',user.uid));usuarioEhSuperAdmin=superSnap.exists();window.isSuperAdmin=usuarioEhSuperAdmin;
-                if(usuarioEhSuperAdmin){const impersonada=sessionStorage.getItem('admin_impersonate');if(!impersonada){window.location.href='super_admin.html';return;}teamId=impersonada;injetarAvisoSuporte();}
-                else {const mestre=await getDoc(doc(db,'equipes',user.uid));if(mestre.exists())teamId=user.uid;else{const colab=await getDoc(doc(db,'colaboradores',user.uid));if(colab.exists())teamId=colab.data().equipe_id;}}
-                if(!teamId){document.getElementById('lista-turmas').innerHTML='<div class="p-6 text-center text-rose-500 font-bold">Equipe não encontrada.</div>';return;}
-                uid=teamId;await registrarUltimoAcessoReal();await carregarDadosEquipe();await Promise.all([carregarAlunos(),carregarTurmas()]);atualizarTudo();
-            }catch(e){console.error('Autenticação:',e);document.getElementById('lista-turmas').innerHTML='<div class="p-6 text-center text-rose-500 font-bold">Erro ao carregar a equipe.</div>';}
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                teamId = await resolverEquipeDoUsuario(user);
+
+                if (!teamId) {
+                    // Se resolverEquipeDoUsuario já iniciou um redirecionamento, não troca a tela.
+                    if (window.location.pathname.endsWith('/super_admin.html')) return;
+                    const lista = document.getElementById('lista-turmas');
+                    if (lista) lista.innerHTML = '<div class="p-6 text-center text-rose-500 font-bold">Equipe não encontrada para este usuário.</div>';
+                    return;
+                }
+
+                uid = teamId;
+
+                // O carregamento dos dados não depende da telemetria. Se a gravação de
+                // último acesso for bloqueada pelas regras, a tela continua funcionando.
+                registrarUltimoAcessoReal().catch(() => {});
+
+                await carregarDadosEquipe();
+                await Promise.all([
+                    carregarAlunos(),
+                    carregarTurmas()
+                ]);
+                atualizarTudo();
+            } catch (e) {
+                console.error('Erro ao resolver/carregar a equipe:', e);
+                const lista = document.getElementById('lista-turmas');
+                if (lista) {
+                    lista.innerHTML = `<div class="p-6 text-center"><p class="text-rose-500 font-bold">Não foi possível carregar os dados da academia.</p><p class="text-xs text-slate-400 mt-2">${escapeHtml(e?.message || 'Erro de conexão ou permissão.')}</p></div>`;
+                }
+            }
         });
 
         // ================= EVENTOS GERAIS =================
