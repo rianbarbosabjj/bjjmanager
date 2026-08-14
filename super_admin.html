@@ -13,11 +13,12 @@
     <link rel="manifest" href="manifest_master.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS Master Admin | BJJ Manager</title>
+    <title>BJJ Manager Control Center</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -42,6 +43,69 @@
         .focus-ring:focus-visible { outline: 2px solid rgba(244, 63, 94, 0.85); outline-offset: 2px; }
         .soft-card { background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.86)); }
         .status-dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; display: inline-block; }
+
+
+        /* =====================================================
+           BJJ MANAGER CONTROL CENTER — UI SYSTEM V2
+           ===================================================== */
+        :root {
+            color-scheme: dark;
+            --cc-bg: #020617;
+            --cc-panel: #0f172a;
+            --cc-panel-2: #111c31;
+            --cc-border: rgba(148, 163, 184, .14);
+            --cc-muted: #94a3b8;
+            --cc-accent: #f43f5e;
+            --cc-success: #10b981;
+            --cc-warning: #f59e0b;
+            --cc-danger: #ef4444;
+        }
+        body { background: radial-gradient(circle at 75% -20%, rgba(79,70,229,.14), transparent 32%), var(--cc-bg); }
+        .cc-card { background: rgba(15,23,42,.82); border: 1px solid var(--cc-border); border-radius: 1.25rem; box-shadow: 0 18px 50px rgba(0,0,0,.14); }
+        .cc-card-interactive { transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+        .cc-card-interactive:hover { transform: translateY(-2px); border-color: rgba(148,163,184,.28); background: rgba(15,23,42,.96); }
+        .cc-eyebrow { font-size: .66rem; line-height: 1rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #64748b; }
+        .cc-kpi { font-size: clamp(1.7rem, 4vw, 2.25rem); line-height: 1.08; font-weight: 800; letter-spacing: -.035em; }
+        .cc-btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: .75rem; min-height: 2.5rem; padding: .6rem .9rem; font-size: .72rem; font-weight: 750; transition: .18s ease; border: 1px solid transparent; }
+        .cc-btn:disabled { opacity: .5; cursor: not-allowed; }
+        .cc-btn-primary { background: #e11d48; color: white; box-shadow: 0 8px 24px rgba(225,29,72,.18); }
+        .cc-btn-primary:hover { background: #f43f5e; }
+        .cc-btn-secondary { background: rgba(30,41,59,.72); color: #e2e8f0; border-color: rgba(148,163,184,.12); }
+        .cc-btn-secondary:hover { background: #1e293b; border-color: rgba(148,163,184,.25); }
+        .cc-btn-danger { background: rgba(239,68,68,.12); color: #f87171; border-color: rgba(239,68,68,.2); }
+        .cc-btn-danger:hover { background: rgba(239,68,68,.2); }
+        .cc-input { background: rgba(2,6,23,.75); border: 1px solid rgba(148,163,184,.14); color: #f8fafc; border-radius: .8rem; min-height: 2.55rem; padding: .65rem .8rem; outline: none; transition: .18s ease; }
+        .cc-input:focus { border-color: rgba(244,63,94,.65); box-shadow: 0 0 0 3px rgba(244,63,94,.1); }
+        .cc-chip { display: inline-flex; align-items: center; gap: .35rem; border-radius: 999px; padding: .3rem .55rem; font-size: .63rem; font-weight: 750; border: 1px solid rgba(148,163,184,.14); background: rgba(30,41,59,.62); color: #cbd5e1; white-space: nowrap; }
+        .cc-divider { height: 1px; background: rgba(148,163,184,.10); }
+        .cc-sidebar-label { padding: .7rem .65rem .3rem; font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .15em; color: #475569; }
+        .cc-menu-btn { width:100%; display:flex; align-items:center; gap:.7rem; padding:.68rem .8rem; border-radius:.78rem; font-size:.73rem; font-weight:650; color:#94a3b8; border:1px solid transparent; transition:.16s ease; text-align:left; }
+        .cc-menu-btn:hover { color:#e2e8f0; background:rgba(30,41,59,.55); }
+        .cc-menu-btn.cc-menu-active { color:#fb7185; background:rgba(244,63,94,.09); border-color:rgba(244,63,94,.16); }
+        .cc-icon { width: 1.05rem; height: 1.05rem; stroke-width: 1.8; flex: 0 0 auto; }
+        .cc-table thead th { position: relative; }
+        .cc-row-risk { background: linear-gradient(90deg, rgba(239,68,68,.045), transparent 40%); }
+        .cc-row-healthy { background: linear-gradient(90deg, rgba(16,185,129,.025), transparent 36%); }
+        .cc-health-ring { --score: 0; width: 2.3rem; height: 2.3rem; border-radius: 50%; display:grid; place-items:center; background: conic-gradient(var(--ring-color,#10b981) calc(var(--score)*1%), rgba(51,65,85,.5) 0); position:relative; }
+        .cc-health-ring::after { content:""; position:absolute; inset:4px; border-radius:50%; background:#0f172a; }
+        .cc-health-ring > span { position:relative; z-index:1; font-size:.56rem; font-weight:800; color:#e2e8f0; }
+        .cc-alert-item { display:flex; gap:.75rem; align-items:flex-start; padding:.8rem; border-radius:.9rem; border:1px solid rgba(148,163,184,.10); background:rgba(2,6,23,.28); }
+        .cc-alert-item:hover { background:rgba(30,41,59,.45); }
+        .cc-skeleton { background: linear-gradient(90deg, rgba(51,65,85,.22) 25%, rgba(71,85,105,.34) 37%, rgba(51,65,85,.22) 63%); background-size: 400% 100%; animation: cc-shimmer 1.35s ease infinite; border-radius:.55rem; }
+        @keyframes cc-shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+        .cc-prod-frame { box-shadow: inset 0 0 0 2px rgba(16,185,129,.30); }
+        .cc-modal-shell { background: rgba(2,6,23,.82); backdrop-filter: blur(14px); }
+        .cc-command-results { max-height: 24rem; overflow:auto; }
+        .cc-command-result { width:100%; display:flex; align-items:center; gap:.75rem; padding:.75rem; border-radius:.8rem; text-align:left; transition:.15s; }
+        .cc-command-result:hover, .cc-command-result:focus { background:rgba(30,41,59,.75); outline:none; }
+        .cc-tab { padding:.55rem .75rem; border-radius:.7rem; font-size:.7rem; font-weight:700; color:#94a3b8; }
+        .cc-tab[aria-selected="true"] { color:#fff; background:rgba(30,41,59,.88); }
+        .cc-stat-mini { padding:.75rem; border-radius:.85rem; border:1px solid rgba(148,163,184,.1); background:rgba(2,6,23,.28); }
+        .cc-tooltip { position: relative; }
+        .cc-tooltip:hover::after { content: attr(data-tooltip); position:absolute; z-index:100; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); width:max-content; max-width:230px; padding:.45rem .6rem; border-radius:.5rem; background:#020617; color:#e2e8f0; border:1px solid #334155; font-size:.65rem; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+        }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-rose-500 selection:text-white relative">
@@ -63,30 +127,40 @@
                 </div>
                 <div id="badge-ambiente-desktop" class="mt-2"></div>
             </div>
-            <nav class="p-4 space-y-2 flex-1 overflow-y-auto custom-scroll">
-                <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
-                    <span class="text-lg">🏢</span> Dashboard
+            <nav class="p-3 flex-1 overflow-y-auto custom-scroll" aria-label="Navegação principal">
+                <p class="cc-sidebar-label">Visão</p>
+                <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="cc-menu-btn cc-menu-active">
+                    <i data-lucide="layout-dashboard" class="cc-icon"></i><span>Visão Geral</span>
                 </button>
-                <button onclick="mudarAbaMaster('comunicacao')" id="menu-comunicacao" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">📢</span> Avisos Globais
+
+                <p class="cc-sidebar-label">Negócio</p>
+                <button onclick="mudarAbaMaster('faturamento')" id="menu-faturamento" class="cc-menu-btn">
+                    <i data-lucide="wallet-cards" class="cc-icon"></i><span>Financeiro</span>
                 </button>
-                <button onclick="mudarAbaMaster('suporte')" id="menu-suporte" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">🎧</span> Helpdesk
+                <button onclick="mudarAbaMaster('planos')" id="menu-planos" class="cc-menu-btn">
+                    <i data-lucide="package-check" class="cc-icon"></i><span>Planos & Créditos</span>
                 </button>
-                <button onclick="mudarAbaMaster('faturamento')" id="menu-faturamento" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">💳</span> Faturamento
+                <button onclick="mudarAbaMaster('cupons')" id="menu-cupons" class="cc-menu-btn">
+                    <i data-lucide="badge-percent" class="cc-icon"></i><span>Afiliados & Cupons</span>
                 </button>
-                <button onclick="mudarAbaMaster('bi')" id="menu-bi" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">📊</span> Data Explorer (BI)
+
+                <p class="cc-sidebar-label">Operações</p>
+                <button onclick="mudarAbaMaster('suporte')" id="menu-suporte" class="cc-menu-btn">
+                    <i data-lucide="headphones" class="cc-icon"></i><span>Helpdesk</span><span id="menu-badge-suporte" class="ml-auto hidden cc-chip !py-0.5 !px-1.5 text-rose-300">0</span>
                 </button>
-                <button onclick="mudarAbaMaster('auditoria')" id="menu-auditoria" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">🕵️‍♂️</span> Auditoria (Logs)
+                <button onclick="mudarAbaMaster('comunicacao')" id="menu-comunicacao" class="cc-menu-btn">
+                    <i data-lucide="megaphone" class="cc-icon"></i><span>Comunicação</span>
                 </button>
-                <button onclick="mudarAbaMaster('planos')" id="menu-planos" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">⚙️</span> Planos & Fichas
+
+                <p class="cc-sidebar-label">Dados & Controle</p>
+                <button onclick="mudarAbaMaster('bi')" id="menu-bi" class="cc-menu-btn">
+                    <i data-lucide="database" class="cc-icon"></i><span>Data Explorer</span>
                 </button>
-                <button onclick="mudarAbaMaster('cupons')" id="menu-cupons" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
-                    <span class="text-lg">🎟️</span> Afiliados
+                <button onclick="mudarAbaMaster('auditoria')" id="menu-auditoria" class="cc-menu-btn">
+                    <i data-lucide="scan-search" class="cc-icon"></i><span>Auditoria</span>
+                </button>
+                <button onclick="mudarAbaMaster('configuracoes')" id="menu-configuracoes" class="cc-menu-btn">
+                    <i data-lucide="shield-cog" class="cc-icon"></i><span>Configurações</span>
                 </button>
             </nav>
         </div>
@@ -103,14 +177,29 @@
             </div>
 
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
-                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Logado como CEO</p>
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Sessão administrativa</p>
+                <span id="master-role-badge" class="cc-chip mb-2">OWNER</span>
                 <p id="master-email" class="text-[10px] font-black text-white truncate mb-3 uppercase tracking-tighter">carregando...</p>
                 <button onclick="sairDoMaster()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Sair</button>
             </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full relative overflow-y-auto hide-scrollbar">
+    <main class="flex-1 flex flex-col h-full relative overflow-y-auto hide-scrollbar" id="main-control-center">
+        <header class="hidden md:flex sticky top-0 z-40 h-16 px-7 items-center gap-4 border-b border-slate-800/70 bg-slate-950/85 backdrop-blur-xl">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-emerald-500" id="system-status-dot"></span>
+                <span class="text-xs font-semibold text-slate-300">Control Center</span>
+                <span class="text-[10px] text-slate-600">•</span>
+                <span id="last-sync-label" class="text-[10px] text-slate-500">Sincronizando…</span>
+            </div>
+            <button onclick="abrirBuscaGlobal()" class="ml-auto w-full max-w-md h-10 px-3 rounded-xl border border-slate-800 bg-slate-900/80 flex items-center gap-2 text-slate-500 hover:border-slate-700 hover:text-slate-300 transition" aria-label="Abrir busca global">
+                <i data-lucide="search" class="w-4 h-4"></i><span class="text-xs">Buscar academia, mestre, e-mail, ticket…</span><kbd class="ml-auto hidden xl:inline-flex text-[9px] border border-slate-700 rounded px-1.5 py-0.5">Ctrl K</kbd>
+            </button>
+            <button onclick="rolarParaAlertas()" class="relative cc-btn cc-btn-secondary !px-3" aria-label="Ver alertas">
+                <i data-lucide="bell" class="w-4 h-4"></i><span id="top-alert-count" class="hidden absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] items-center justify-center">0</span>
+            </button>
+        </header>
         <header class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30 shadow-md">
             <div class="flex items-center gap-3">
                 <button onclick="toggleMenuMaster()" class="text-slate-400 hover:text-white p-1 focus:outline-none transition-colors">
@@ -129,8 +218,9 @@
         <div id="aba-academias" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 block">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Monitor de Engajamento</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium italic">Fique de olho na saúde das academias e evite cancelamentos.</p>
+                    <div class="flex items-center gap-2 mb-2"><span class="cc-chip"><i data-lucide="activity" class="w-3 h-3"></i> Operação em tempo real</span></div>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Visão geral do negócio</h2>
+                    <p class="text-sm text-slate-400 mt-1">Receita, clientes, risco e pendências operacionais em uma única visão.</p>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="exportarCSV('academias')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
@@ -141,6 +231,45 @@
                     </button>
                 </div>
             </div>
+
+            <section class="grid grid-cols-2 xl:grid-cols-6 gap-3" aria-label="Indicadores executivos">
+                <button onclick="filtrarRapido('PAGANTES')" class="cc-card cc-card-interactive p-4 text-left">
+                    <p class="cc-eyebrow">MRR estimado</p><p id="exec-mrr" class="cc-kpi text-white mt-2">R$ 0</p><p id="exec-mrr-caption" class="text-[10px] text-slate-500 mt-1">base recorrente ativa</p>
+                </button>
+                <button onclick="filtrarRapido('PAGANTES')" class="cc-card cc-card-interactive p-4 text-left">
+                    <p class="cc-eyebrow">Pagantes</p><p id="exec-pagantes" class="cc-kpi text-cyan-300 mt-2">0</p><p id="exec-arpu" class="text-[10px] text-slate-500 mt-1">ARPU R$ 0</p>
+                </button>
+                <button onclick="filtrarRapido('TRIALS')" class="cc-card cc-card-interactive p-4 text-left">
+                    <p class="cc-eyebrow">Trials ativos</p><p id="exec-trials" class="cc-kpi text-amber-300 mt-2">0</p><p id="exec-trials-expira" class="text-[10px] text-slate-500 mt-1">0 vencem em 3 dias</p>
+                </button>
+                <button onclick="filtrarRapido('RISCO')" class="cc-card cc-card-interactive p-4 text-left">
+                    <p class="cc-eyebrow">Risco de churn</p><p id="exec-risco" class="cc-kpi text-rose-300 mt-2">0</p><p class="text-[10px] text-slate-500 mt-1">Health Score &lt; 45</p>
+                </button>
+                <button onclick="mudarAbaMaster('suporte')" class="cc-card cc-card-interactive p-4 text-left">
+                    <p class="cc-eyebrow">Tickets pendentes</p><p id="exec-tickets" class="cc-kpi text-indigo-300 mt-2">0</p><p id="exec-tickets-sla" class="text-[10px] text-slate-500 mt-1">0 fora do SLA</p>
+                </button>
+                <button onclick="filtrarRapido('INADIMPLENTES')" class="cc-card cc-card-interactive p-4 text-left">
+                    <p class="cc-eyebrow">Inadimplência</p><p id="exec-inadimplentes" class="cc-kpi text-rose-300 mt-2">0</p><p id="exec-inadimplencia-valor" class="text-[10px] text-slate-500 mt-1">R$ 0 em risco</p>
+                </button>
+            </section>
+
+            <section id="central-alertas" class="grid grid-cols-1 xl:grid-cols-3 gap-5 scroll-mt-24">
+                <div class="xl:col-span-2 cc-card overflow-hidden">
+                    <div class="p-5 border-b border-slate-800/70 flex items-center justify-between">
+                        <div><p class="cc-eyebrow">Central de alertas</p><h3 class="text-sm font-bold text-white mt-1">O que precisa da sua atenção</h3></div>
+                        <button onclick="carregarImperio()" class="cc-btn cc-btn-secondary !min-h-8 !px-2.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Atualizar</button>
+                    </div>
+                    <div id="lista-alertas-executivos" class="p-4 grid sm:grid-cols-2 gap-2">
+                        <div class="cc-alert-item"><div class="cc-skeleton w-8 h-8 shrink-0"></div><div class="flex-1"><div class="cc-skeleton h-3 w-2/3"></div><div class="cc-skeleton h-2 w-full mt-2"></div></div></div>
+                        <div class="cc-alert-item"><div class="cc-skeleton w-8 h-8 shrink-0"></div><div class="flex-1"><div class="cc-skeleton h-3 w-2/3"></div><div class="cc-skeleton h-2 w-full mt-2"></div></div></div>
+                    </div>
+                </div>
+                <div class="cc-card p-5">
+                    <p class="cc-eyebrow">Funil atual da base</p><h3 class="text-sm font-bold text-white mt-1 mb-4">Da ativação ao uso</h3>
+                    <div id="funil-base" class="space-y-3"></div>
+                    <p class="text-[9px] text-slate-600 mt-4 leading-relaxed">Visão observada da base atual. Não substitui uma coorte histórica de aquisição/cancelamento.</p>
+                </div>
+            </section>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xl">
@@ -170,23 +299,29 @@
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2"><span class="text-lg">💰</span> Evolução do MRR Estimado</h3>
                     <canvas id="chartMrr" height="100"></canvas>
                 </div>
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl lg:col-span-2">
+                    <div class="flex items-start justify-between gap-3 mb-4"><div><p class="cc-eyebrow">Coortes</p><h3 class="text-sm font-bold text-white mt-1">Retenção observada por mês de cadastro</h3></div><span class="cc-chip">base atual</span></div>
+                    <div id="cohort-retention-bars" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+                    <p class="text-[9px] text-slate-600 mt-4">Calculada sobre os registros que permanecem na base. Para churn histórico exato, preserve cancelamentos/arquivamentos e mantenha eventos de assinatura no backend.</p>
+                </div>
             </div>
 
             <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-slate-800 flex flex-col lg:flex-row gap-3 justify-between items-stretch lg:items-center bg-slate-800/20">
                     <div class="relative w-full lg:max-w-md">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">🔍</div>
-                        <input type="text" id="busca-equipe" onkeyup="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-rose-500 transition-all focus-ring" placeholder="Buscar por Nome, Mestre ou Email...">
+                        <input type="text" id="busca-equipe" onkeyup="resetPaginacaoEquipes()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-rose-500 transition-all focus-ring" placeholder="Buscar por Nome, Mestre ou Email...">
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full lg:w-auto">
-                        <select id="filtro-status-equipe" onchange="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 w-full lg:w-auto">
+                        <select id="filtro-status-equipe" onchange="resetPaginacaoEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
                             <option value="TODAS">Todas as situações</option>
                             <option value="ATIVAS">Com alunos</option>
                             <option value="INATIVAS">Sem alunos</option>
                             <option value="AUSENTES">Sem acesso há 20 dias</option>
                             <option value="ISENTAS">Isentas</option>
+                            <option value="ARQUIVADAS">Arquivadas</option>
                         </select>
-                        <select id="filtro-plano-equipe" onchange="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
+                        <select id="filtro-plano-equipe" onchange="resetPaginacaoEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
                             <option value="TODOS">Todos os planos</option>
                             <option value="TESTE">Teste</option>
                             <option value="BASICO">Básico</option>
@@ -194,6 +329,19 @@
                             <option value="PREMIUM">Premium</option>
                             <option value="BLOQUEADO">Bloqueado</option>
                         </select>
+                        <select id="filtro-health-equipe" onchange="resetPaginacaoEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
+                            <option value="TODOS">Todos os Health Scores</option>
+                            <option value="RISCO">Risco (0–44)</option>
+                            <option value="ATENCAO">Atenção (45–69)</option>
+                            <option value="SAUDAVEL">Saudável (70–100)</option>
+                        </select>
+                        <select id="ordenacao-equipe" onchange="resetPaginacaoEquipes()" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl p-3 outline-none focus:border-rose-500 transition-all focus-ring">
+                            <option value="RISCO">Ordenar: maior risco</option>
+                            <option value="NOME">Nome A–Z</option>
+                            <option value="RECENTE">Cadastro recente</option>
+                            <option value="ALUNOS">Mais alunos</option>
+                        </select>
+                        <button id="filtro-rapido-indicador" onclick="limparFiltroRapido()" class="hidden cc-btn cc-btn-secondary text-rose-300" title="Limpar filtro rápido"><i data-lucide="x" class="w-3.5 h-3.5"></i><span id="filtro-rapido-label">Filtro rápido</span></button>
                     </div>
                 </div>
                 <div class="overflow-x-auto w-full">
@@ -212,6 +360,15 @@
                             <tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="px-5 py-3 border-t border-slate-800/70 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-950/25">
+                    <p id="equipes-paginacao-info" class="text-[10px] text-slate-500">0 resultados</p>
+                    <div class="flex items-center gap-2">
+                        <select id="equipes-page-size" onchange="mudarTamanhoPaginaEquipes()" class="cc-input !min-h-8 !py-1 text-[10px]"><option>25</option><option>50</option><option>100</option></select>
+                        <button onclick="paginaEquipesAnterior()" id="equipes-prev" class="cc-btn cc-btn-secondary !min-h-8 !px-2.5" aria-label="Página anterior"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+                        <span id="equipes-page-label" class="text-[10px] text-slate-400 min-w-14 text-center">1 / 1</span>
+                        <button onclick="paginaEquipesProxima()" id="equipes-next" class="cc-btn cc-btn-secondary !min-h-8 !px-2.5" aria-label="Próxima página"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -352,7 +509,8 @@
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Data Explorer (BI)</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Extração, filtragem e análise de dados brutos do banco de dados.</p>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Exploração segura de dados em modo somente leitura, com exportação controlada.</p>
+                    <span class="cc-chip mt-2 text-emerald-300"><i data-lucide="shield-check" class="w-3 h-3"></i> Somente leitura</span>
                 </div>
                 <button onclick="exportarCSV_BI()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg flex items-center gap-2">
                     <span>📥</span> Exportar Filtrados (CSV)
@@ -405,6 +563,21 @@
                             <tr><td class="text-center p-8 text-slate-500 italic text-xs">Aguardando comando...</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="aba-configuracoes" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-7 hidden">
+            <div><div class="flex items-center gap-2 mb-2"><span class="cc-chip"><i data-lucide="shield-check" class="w-3 h-3"></i> Administração</span></div><h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Configurações e acessos</h2><p class="text-sm text-slate-400 mt-1">Perfis administrativos, ambiente e controles sensíveis do Control Center.</p></div>
+            <div class="grid lg:grid-cols-3 gap-5">
+                <div class="lg:col-span-2 cc-card overflow-hidden">
+                    <div class="p-5 border-b border-slate-800 flex items-center justify-between"><div><p class="cc-eyebrow">RBAC</p><h3 class="text-sm font-bold text-white mt-1">Administradores autorizados</h3></div><button onclick="carregarSuperAdmins()" class="cc-btn cc-btn-secondary"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Atualizar</button></div>
+                    <div class="overflow-x-auto"><table class="w-full text-left min-w-[700px]"><thead><tr class="text-[10px] text-slate-500 uppercase border-b border-slate-800"><th class="p-4">Usuário</th><th class="p-4">Perfil</th><th class="p-4">Status</th><th class="p-4 text-right">Ação</th></tr></thead><tbody id="tabela-super-admins"><tr><td colspan="4" class="p-8 text-center text-xs text-slate-500">Carregue os acessos administrativos.</td></tr></tbody></table></div>
+                </div>
+                <div class="space-y-5">
+                    <div class="cc-card p-5"><p class="cc-eyebrow">Ambiente financeiro</p><div class="mt-4" id="config-ambiente-resumo"></div><p class="text-[10px] text-slate-500 mt-3 leading-relaxed">A alteração continua dependendo das regras de segurança do Firebase. O Control Center exige confirmação digitada e motivo, mas a autorização final deve existir no backend.</p></div>
+                    <div class="cc-card p-5"><p class="cc-eyebrow">Política recomendada</p><div class="space-y-2 mt-3 text-xs text-slate-400"><p>• OWNER: ambiente, PIX e permissões.</p><p>• FINANCEIRO: relatórios e faturamento.</p><p>• SUPORTE: tickets e impersonação.</p><p>• ANALISTA: BI e auditoria em leitura.</p><p>• READ_ONLY: consulta sem alterações.</p></div></div>
                 </div>
             </div>
         </div>
@@ -476,8 +649,11 @@
             </div>
 
             <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-slate-800 bg-slate-800/20">
-                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Caixa de Entrada</h3>
+                <div class="p-5 border-b border-slate-800 bg-slate-800/20 flex flex-col lg:flex-row lg:items-center gap-3">
+                    <div class="mr-auto"><h3 class="text-sm font-bold text-white">Caixa de entrada</h3><p class="text-[10px] text-slate-500 mt-1">Priorize por status, urgência e SLA.</p></div>
+                    <select id="filtro-ticket-status" onchange="renderizarChamados()" class="cc-input text-xs"><option value="TODOS">Todos os status</option><option value="ABERTO">Aberto</option><option value="RESPONDIDO">Respondido</option><option value="RESOLVIDO">Resolvido</option></select>
+                    <select id="filtro-ticket-prioridade" onchange="renderizarChamados()" class="cc-input text-xs"><option value="TODAS">Todas prioridades</option><option value="URGENTE">Urgente</option><option value="ALTA">Alta</option><option value="NORMAL">Normal</option><option value="BAIXA">Baixa</option></select>
+                    <input id="busca-ticket" oninput="renderizarChamados()" class="cc-input text-xs" placeholder="Buscar ticket…">
                 </div>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
@@ -526,10 +702,12 @@
 
             <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
                 <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20 gap-4 flex-wrap">
-                    <div class="relative w-full max-w-md">
+                    <div class="relative w-full lg:max-w-md">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">🔍</div>
-                        <input type="text" id="busca-log" onkeyup="renderizarAuditoria()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-indigo-500 transition-all" placeholder="Buscar por Equipe, Ação ou Email...">
+                        <input type="text" id="busca-log" onkeyup="renderizarAuditoria()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-indigo-500 transition-all" placeholder="Buscar por academia, ação, e-mail ou detalhe…">
                     </div>
+                    <select id="filtro-log-acao" onchange="renderizarAuditoria()" class="cc-input text-xs"><option value="TODAS">Todas as ações</option><option value="CRITICA">Ações críticas</option><option value="ALTERACAO">Alterações</option><option value="ACESSO">Acessos</option></select>
+                    <input type="date" id="filtro-log-data" onchange="renderizarAuditoria()" class="cc-input text-xs">
                 </div>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
@@ -560,6 +738,8 @@
                     <span>💾</span> Publicar Configurações
                 </button>
             </div>
+
+            <div class="cc-card p-4 flex flex-col sm:flex-row sm:items-center gap-3"><div><p class="cc-eyebrow">Versionamento</p><p id="planos-history-summary" class="text-xs text-slate-300 mt-1">Carregando histórico de publicação…</p></div><button onclick="carregarHistoricoPlanos()" class="cc-btn cc-btn-secondary sm:ml-auto"><i data-lucide="history" class="w-3.5 h-3.5"></i> Atualizar histórico</button></div>
 
             <div class="bg-gradient-to-r from-slate-900 to-slate-800 border border-indigo-500/30 p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -685,6 +865,10 @@
                     <p class="text-sm text-slate-300 whitespace-pre-wrap" id="ticket-mensagem">Carregando mensagem...</p>
                 </div>
                 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-2">Prioridade</label><select id="ticket-prioridade" class="cc-input w-full text-xs"><option value="BAIXA">Baixa</option><option value="NORMAL">Normal</option><option value="ALTA">Alta</option><option value="URGENTE">Urgente</option></select></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-2">SLA</label><div id="ticket-sla-info" class="cc-input flex items-center text-xs text-slate-400">—</div></div>
+                </div>
                 <div class="border-t border-slate-800 pt-4">
                     <label class="block text-[10px] font-black text-emerald-500 uppercase mb-2">Sua Resposta / Solução</label>
                     <textarea id="ticket-resposta" rows="4" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-4 outline-none focus:border-emerald-500 transition-all font-medium" placeholder="Escreva a resposta ao mestre da academia..."></textarea>
@@ -885,6 +1069,12 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Válido a partir de</label><input type="date" id="cupom-inicio" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white outline-none"></div>
+                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Expira em</label><input type="date" id="cupom-fim" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white outline-none"></div>
+                </div>
+                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Planos elegíveis</label><select id="cupom-planos" multiple class="w-full min-h-24 p-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white outline-none"><option value="BASICO" selected>Básico</option><option value="INTERMEDIARIO" selected>Intermediário</option><option value="PREMIUM" selected>Premium</option></select><p class="text-[9px] text-slate-500 mt-1">Ctrl/Cmd + clique para selecionar mais de um.</p></div>
+
                 <div class="border-t border-slate-800 pt-4 mt-2">
                     <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">Área de Parceria (Afiliados)</p>
                     <div>
@@ -904,6 +1094,52 @@
                     Gerar Cupom
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Busca global / Command palette -->
+    <div id="modal-busca-global" class="fixed inset-0 cc-modal-shell hidden items-start justify-center z-[120] p-4 pt-[10vh]" role="dialog" aria-modal="true" aria-labelledby="busca-global-title">
+        <div class="w-full max-w-2xl bg-slate-900 border border-slate-700/70 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-slate-800 flex items-center gap-3">
+                <i data-lucide="search" class="w-5 h-5 text-slate-500"></i>
+                <input id="busca-global-input" oninput="renderizarBuscaGlobal()" class="bg-transparent outline-none flex-1 text-sm text-white placeholder:text-slate-600" placeholder="Digite nome da academia, mestre, e-mail ou ticket…" autocomplete="off">
+                <button onclick="fecharBuscaGlobal()" class="cc-chip">Esc</button>
+            </div>
+            <div class="p-2 cc-command-results" id="busca-global-resultados"><p class="text-xs text-slate-500 p-4">Comece a digitar para pesquisar.</p></div>
+        </div>
+    </div>
+
+    <!-- Academia 360 -->
+    <div id="modal-academia-360" class="fixed inset-0 cc-modal-shell hidden items-center justify-center z-[110] p-3 md:p-6" role="dialog" aria-modal="true" aria-labelledby="academia-360-title">
+        <div class="w-full max-w-5xl max-h-[92vh] bg-slate-900 border border-slate-700/70 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-5 border-b border-slate-800 flex items-center gap-4 bg-slate-950/45">
+                <div id="academia-360-avatar" class="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 grid place-items-center font-extrabold text-lg">A</div>
+                <div class="min-w-0"><p class="cc-eyebrow">Academia 360º</p><h3 id="academia-360-title" class="font-bold text-white truncate">Academia</h3><p id="academia-360-subtitle" class="text-[10px] text-slate-500 mt-0.5"></p></div>
+                <div class="ml-auto flex items-center gap-2"><div id="academia-360-health"></div><button onclick="fecharAcademia360()" class="cc-btn cc-btn-secondary !px-2.5" aria-label="Fechar"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+            </div>
+            <div class="px-5 pt-4 flex gap-1 overflow-x-auto border-b border-slate-800/60" role="tablist">
+                <button class="cc-tab" aria-selected="true" data-a360-tab="resumo" onclick="trocarTabAcademia360('resumo')">Resumo</button>
+                <button class="cc-tab" aria-selected="false" data-a360-tab="financeiro" onclick="trocarTabAcademia360('financeiro')">Financeiro</button>
+                <button class="cc-tab" aria-selected="false" data-a360-tab="atividade" onclick="trocarTabAcademia360('atividade')">Atividade</button>
+                <button class="cc-tab" aria-selected="false" data-a360-tab="suporte" onclick="trocarTabAcademia360('suporte')">Suporte</button>
+                <button class="cc-tab" aria-selected="false" data-a360-tab="auditoria" onclick="trocarTabAcademia360('auditoria')">Auditoria</button>
+            </div>
+            <div id="academia-360-conteudo" class="p-5 overflow-y-auto custom-scroll flex-1"></div>
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40 flex flex-wrap items-center gap-2">
+                <button id="a360-btn-editar" class="cc-btn cc-btn-secondary"><i data-lucide="settings-2" class="w-4 h-4"></i> Licença</button>
+                <button id="a360-btn-acessar" class="cc-btn cc-btn-secondary"><i data-lucide="log-in" class="w-4 h-4"></i> Acessar como academia</button>
+                <button id="a360-btn-whatsapp" class="cc-btn cc-btn-secondary"><i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp</button>
+                <button id="a360-btn-arquivar" class="cc-btn cc-btn-danger ml-auto"><i data-lucide="archive" class="w-4 h-4"></i> Arquivar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmação crítica reutilizável -->
+    <div id="modal-confirmacao-critica" class="fixed inset-0 cc-modal-shell hidden items-center justify-center z-[140] p-4" role="dialog" aria-modal="true" aria-labelledby="critical-title">
+        <div class="w-full max-w-md bg-slate-900 border border-rose-500/25 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-slate-800 flex gap-3"><div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 grid place-items-center"><i data-lucide="shield-alert" class="w-5 h-5"></i></div><div><p class="cc-eyebrow text-rose-400">Ação crítica</p><h3 id="critical-title" class="font-bold text-white mt-0.5">Confirmar ação</h3></div></div>
+            <div class="p-5 space-y-4"><p id="critical-message" class="text-sm text-slate-300 leading-relaxed"></p><div id="critical-type-wrap" class="hidden"><label id="critical-type-label" class="cc-eyebrow block mb-2"></label><input id="critical-type-input" class="cc-input w-full font-mono" autocomplete="off"></div><div><label class="cc-eyebrow block mb-2">Motivo / contexto</label><textarea id="critical-reason" rows="2" class="cc-input w-full resize-none" placeholder="Registre por que esta ação é necessária"></textarea></div></div>
+            <div class="p-4 border-t border-slate-800 flex justify-end gap-2"><button onclick="cancelarConfirmacaoCritica()" class="cc-btn cc-btn-secondary">Cancelar</button><button id="critical-confirm-btn" class="cc-btn cc-btn-primary">Confirmar</button></div>
         </div>
     </div>
 
@@ -1056,6 +1292,8 @@
         }
 
         let masterUid = null;
+        let masterRole = 'OWNER';
+        let masterProfile = {};
         let equipesCache = [];
         let cuponsCache = [];
         let chamadosCache = [];
@@ -1113,11 +1351,15 @@
                 const superSnap = await getDoc(doc(db, "super_admins", user.uid));
                 if (superSnap.exists()) {
                     masterUid = user.uid;
+                    masterProfile = superSnap.data() || {};
+                    masterRole = String(masterProfile.role || masterProfile.perfil || 'OWNER').toUpperCase();
                     document.getElementById('master-email').innerText = user.email;
+                    aplicarPermissoesVisuais();
                     
                     carregarAmbienteAtual(); 
                     carregarAvisoGlobal();
                     carregarImperio();
+                    carregarChamadosSilencioso();
                 } else {
                     signOut(auth).then(() => window.location.href = "index.html");
                 }
@@ -1130,30 +1372,20 @@
         let biFilteredCache = []; 
 
         function formatarDadoVisual(val) {
-            if (val === null || val === undefined || val === "") {
-                return `<span class="text-slate-600 italic text-[10px]">- vazio -</span>`;
-            }
-            if (typeof val === 'boolean') {
-                return val 
-                    ? `<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] uppercase font-black tracking-widest">True</span>` 
-                    : `<span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[9px] uppercase font-black tracking-widest">False</span>`;
-            }
+            if (val === null || val === undefined || val === "") return `<span class="text-slate-600 italic text-[10px]">- vazio -</span>`;
+            if (typeof val === 'boolean') return val ? `<span class="cc-chip text-emerald-300">true</span>` : `<span class="cc-chip text-rose-300">false</span>`;
             if (typeof val === 'object') {
-                if (val.seconds) return `<span class="text-cyan-400">${new Date(val.seconds * 1000).toLocaleString('pt-BR')}</span>`;
-                return `<span class="text-indigo-400 text-[10px] bg-indigo-500/10 px-2 py-1 rounded cursor-help" title='${JSON.stringify(val).replace(/'/g, "&apos;")}'>{ Objeto }</span>`;
+                if (val.seconds) return `<span class="text-cyan-400">${escapeHTML(new Date(val.seconds * 1000).toLocaleString('pt-BR'))}</span>`;
+                const json = JSON.stringify(val);
+                return `<span class="text-indigo-300 text-[10px] bg-indigo-500/10 px-2 py-1 rounded cursor-help" title="${escapeHTML(json)}">{ objeto }</span>`;
             }
-            
-            let disp = String(val);
-            if (disp.match(/^\d{4}-\d{2}-\d{2}T/)) {
-                return `<span class="text-cyan-400">${new Date(disp).toLocaleString('pt-BR')}</span>`;
+            const raw=String(val);
+            if (/^\d{4}-\d{2}-\d{2}T/.test(raw)) { const d=new Date(raw); if(!isNaN(d)) return `<span class="text-cyan-400">${escapeHTML(d.toLocaleString('pt-BR'))}</span>`; }
+            if (/^https?:\/\//i.test(raw)) {
+                try { const u=new URL(raw); if(['http:','https:'].includes(u.protocol)) return `<a href="${escapeHTML(u.href)}" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline truncate block max-w-[150px]">Link</a>`; } catch(_) {}
             }
-            
-            if (disp.length > 40 && !disp.startsWith('http')) {
-                disp = `<span title="${disp.replace(/"/g, '&quot;')}">${disp.substring(0, 40)}...</span>`;
-            } else if (disp.startsWith('http')) {
-                disp = `<a href="${disp}" target="_blank" class="text-blue-400 underline truncate block max-w-[150px]">Link</a>`;
-            }
-            return disp;
+            const safe=escapeHTML(raw);
+            return raw.length>40 ? `<span title="${safe}">${escapeHTML(raw.substring(0,40))}…</span>` : safe;
         }
 
         window.carregarDadosBI = async function() {
@@ -1226,9 +1458,7 @@
                     });
                     
                     tdContent += `<td class="px-6 py-3 font-mono text-[10px] text-center sticky right-0 bg-slate-900 group-hover:bg-slate-800/80 transition-colors border-l border-slate-800/50 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.3)]">
-                        <button onclick="excluirRegistroBI('${colecao}', '${row._id}')" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-lg transition-colors font-black flex items-center gap-2 mx-auto shadow-sm" title="Excluir Definitivamente">
-                            🗑️ <span class="hidden sm:inline">Deletar</span>
-                        </button>
+                        <span class="cc-chip text-emerald-300"><span aria-hidden="true">🔒</span> leitura</span>
                     </td>`;
                     
                     tr.innerHTML = tdContent;
@@ -1256,20 +1486,8 @@
             renderizarTabelaBI();
         }
 
-        window.excluirRegistroBI = async function(colecao, id) {
-            if (!confirm(`⚠️ ATENÇÃO EXTREMA: Você está prestes a deletar o registro:\n\nID: ${id}\nColeção: ${colecao}\n\nIsso NÃO pode ser desfeito. Deseja continuar?`)) return;
-
-            try {
-                await deleteDoc(doc(db, colecao, id));
-                showToast("Registro excluído com sucesso!", "success");
-                
-                biCache = biCache.filter(item => item._id !== id);
-                filtrarDadosBI(); 
-                
-            } catch(e) {
-                console.error("Erro ao excluir:", e);
-                showToast("Erro ao excluir. Verifique as permissões de segurança.", "error");
-            }
+        window.excluirRegistroBI = async function() {
+            showToast("O Data Explorer está em modo somente leitura. Use a gestão específica do registro para alterações.", "info");
         }
 
         window.exportarCSV_BI = function() {
@@ -1972,7 +2190,7 @@
                     extratoAsaasCache = res.data.pagamentos || [];
                     renderizarExtratoAsaas();
                 } else {
-                    tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">${res.data.error}</td></tr>`;
+                    tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">${escapeHTML(res.data.error)}</td></tr>`;
                     if(loader) loader.style.display = 'none';
                 }
             } catch(e) {
@@ -2017,9 +2235,9 @@
                     tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
                     tr.innerHTML = `
                         <td class="px-6 py-4 font-mono text-[10px] text-slate-400">${dataFormat}</td>
-                        <td class="px-6 py-4 text-xs font-bold text-white uppercase truncate max-w-[150px]">${clienteNome}</td>
-                        <td class="px-6 py-4 text-xs text-slate-300 truncate max-w-[200px]" title="${descOriginal}">${descCurta}</td>
-                        <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-[10px] font-black tracking-widest text-slate-300">${iconeForma} ${pgto.billingType}</span></td>
+                        <td class="px-6 py-4 text-xs font-bold text-white uppercase truncate max-w-[150px]">${escapeHTML(clienteNome)}</td>
+                        <td class="px-6 py-4 text-xs text-slate-300 truncate max-w-[200px]" title="${escapeHTML(descOriginal)}">${escapeHTML(descCurta)}</td>
+                        <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-[10px] font-black tracking-widest text-slate-300">${iconeForma} ${escapeHTML(pgto.billingType||'')}</span></td>
                         <td class="px-6 py-4 text-right font-mono text-sm font-black text-emerald-400">R$ ${valLiq.toFixed(2)}</td>
                     `;
                     tabela.appendChild(tr);
@@ -2130,9 +2348,9 @@
                 linhasTabela += `
                     <tr style="border-bottom: 1px solid #e2e8f0; font-size: 11px;">
                         <td style="padding: 8px 4px; color: #475569;">${dataFormatada}</td>
-                        <td style="padding: 8px 4px; font-weight: bold; color: #0f172a;">${p.customerName || p.customer || '-'}</td>
-                        <td style="padding: 8px 4px; color: #475569;">${p.description ? p.description.substring(0, 30) : '-'}</td>
-                        <td style="padding: 8px 4px; color: #475569;">${p.billingType || '-'}</td>
+                        <td style="padding: 8px 4px; font-weight: bold; color: #0f172a;">${escapeHTML(p.customerName || p.customer || '-')}</td>
+                        <td style="padding: 8px 4px; color: #475569;">${escapeHTML(p.description ? p.description.substring(0, 30) : '-')}</td>
+                        <td style="padding: 8px 4px; color: #475569;">${escapeHTML(p.billingType || '-')}</td>
                         <td style="padding: 8px 4px; text-align: right; color: #0f172a;">R$ ${bruto.toFixed(2).replace('.',',')}</td>
                         <td style="padding: 8px 4px; text-align: right; color: #ef4444;">- R$ ${taxa.toFixed(2).replace('.',',')}</td>
                         <td style="padding: 8px 4px; text-align: right; font-weight: bold; color: #10b981;">R$ ${liquido.toFixed(2).replace('.',',')}</td>
@@ -2270,7 +2488,7 @@
                 let txtReceitaFichas = isIsento ? `<span class="text-slate-600">ISENTO</span>` : `R$ ${valorDessasFichas.toFixed(2)}`;
 
                 tr.innerHTML = `
-                    <td class="px-6 py-4"><span class="font-bold text-slate-200 text-xs">${(eq.nome_equipe || 'Equipe Sem Nome').toUpperCase()}</span></td>
+                    <td class="px-6 py-4"><span class="font-bold text-slate-200 text-xs">${escapeHTML((eq.nome_equipe || 'Equipe Sem Nome').toUpperCase())}</span></td>
                     <td class="px-6 py-4 text-center text-xs uppercase tracking-widest">${planoBadge}</td>
                     <td class="px-6 py-4 text-right font-mono text-sm font-black text-emerald-400">${txtLiquido}</td>
                     <td class="px-6 py-4 text-center font-mono text-xs text-slate-400">${txtFichas}</td>
@@ -2589,6 +2807,9 @@
             let parceiro = document.getElementById('cupom-parceiro').value.trim();
             let comissao = parseFloat(document.getElementById('cupom-comissao').value) || 0;
             let duracao = document.getElementById('cupom-duracao').value;
+            let validoDe = document.getElementById('cupom-inicio')?.value || null;
+            let validoAte = document.getElementById('cupom-fim')?.value || null;
+            let planosElegiveis = Array.from(document.getElementById('cupom-planos')?.selectedOptions || []).map(o => o.value);
 
             if(!codigo || isNaN(desconto)) return showToast("Preencha código e desconto.", "error");
 
@@ -2601,7 +2822,9 @@
 
                 await setDoc(doc(db, "cupons", codigo), {
                     desconto_perc: desconto, duracao, limite_uso: limite, vezes_usado: 0,
-                    nome_parceiro: parceiro || null, comissao_perc: comissao, data_criacao: new Date().toISOString()
+                    nome_parceiro: parceiro || null, comissao_perc: comissao,
+                    valido_de: validoDe, valido_ate: validoAte, planos_elegiveis: planosElegiveis,
+                    status: 'ATIVO', data_criacao: new Date().toISOString(), criado_por: masterUid
                 });
                 showToast("Cupom criado!", "success"); fecharModalCupom(); carregarCupons();
             } catch (error) { showToast("Erro ao criar cupom.", "error"); } 
@@ -2613,6 +2836,500 @@
             try { await deleteDoc(doc(db, "cupons", codigo)); showToast("Excluído.", "success"); carregarCupons(); } 
             catch(e) { showToast("Erro.", "error"); }
         }
+
+
+        // =====================================================
+        // BJJ MANAGER CONTROL CENTER — ADMIN V2
+        // =====================================================
+        const ADMIN_V2 = {
+            equipesPage: 1,
+            equipesPageSize: 25,
+            equipesFiltradas: [],
+            academia360Id: null,
+            academia360Tab: 'resumo',
+            criticalResolver: null,
+            lastSyncAt: null,
+            signedImpersonation: false,
+            supportSlaHours: 24,
+            quickFilter: ''
+        };
+
+        const ROLE_PERMISSIONS = {
+            OWNER: ['*'],
+            FINANCEIRO: ['academias:read','academias:manage','financeiro:read','financeiro:export','cupons:manage'],
+            SUPORTE: ['academias:read','academias:impersonate','suporte:manage','comunicacao:manage','auditoria:read'],
+            COMERCIAL: ['academias:read','cupons:manage','planos:read','comunicacao:manage'],
+            ANALISTA: ['academias:read','financeiro:read','bi:read','auditoria:read'],
+            READ_ONLY: ['academias:read','financeiro:read','bi:read','auditoria:read','suporte:read','planos:read','cupons:read']
+        };
+
+        function can(permission) {
+            const grants = ROLE_PERMISSIONS[masterRole] || ROLE_PERMISSIONS.READ_ONLY;
+            return grants.includes('*') || grants.includes(permission);
+        }
+
+        function aplicarPermissoesVisuais() {
+            const badge = document.getElementById('master-role-badge');
+            if (badge) badge.textContent = masterRole;
+            const rules = [
+                ['menu-faturamento', 'financeiro:read'], ['menu-bi', 'bi:read'], ['menu-auditoria', 'auditoria:read'],
+                ['menu-planos', 'planos:read'], ['menu-cupons', 'cupons:read'], ['menu-suporte', 'suporte:read'], ['menu-configuracoes', 'admin:manage']
+            ];
+            rules.forEach(([id, p]) => { const el = document.getElementById(id); if (el) el.classList.toggle('hidden', !can(p)); });
+            const toggleAction=(selector,allowed)=>document.querySelectorAll(selector).forEach(el=>el.classList.toggle('hidden',!allowed));
+            toggleAction('button[onclick="abrirModalPixMaster()"]', masterRole==='OWNER');
+            toggleAction('button[onclick="salvarConfigPlanos()"]', masterRole==='OWNER');
+            toggleAction('button[onclick="abrirModalNovoCupom()"]', can('cupons:manage'));
+            toggleAction('button[onclick="salvarAvisoGlobal()"]', can('comunicacao:manage'));
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function registrarAuditAdmin(acao, detalhes = '', extra = {}) {
+            if (!masterUid) return Promise.resolve();
+            const id = `${Date.now()}_${masterUid}_${Math.random().toString(36).slice(2,7)}`;
+            const payload = {
+                timestamp: new Date().toISOString(),
+                acao,
+                detalhes: typeof detalhes === 'string' ? detalhes : JSON.stringify(detalhes),
+                usuario_email: document.getElementById('master-email')?.innerText || '',
+                master_uid: masterUid,
+                master_role: masterRole,
+                origem: 'SUPER_ADMIN_V2',
+                ...extra
+            };
+            return setDoc(doc(db, 'auditoria', id), payload).catch(err => console.warn('Falha ao registrar auditoria administrativa:', err));
+        }
+
+        function normalizeDate(value) {
+            if (!value) return null;
+            if (value?.seconds) return new Date(value.seconds * 1000);
+            const d = new Date(value);
+            return isNaN(d) ? null : d;
+        }
+
+        function daysFrom(value) {
+            const d = normalizeDate(value);
+            if (!d) return 9999;
+            return Math.floor((Date.now() - d.getTime()) / 86400000);
+        }
+
+        function daysUntil(value) {
+            const d = normalizeDate(value);
+            if (!d) return null;
+            const now = new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
+            return Math.ceil((d-now)/86400000);
+        }
+        function hoursFrom(value) {
+            const d=normalizeDate(value); if(!d) return 999999;
+            return Math.max(0, Math.floor((Date.now()-d.getTime())/3600000));
+        }
+
+        function calcularHealthScore(eq) {
+            let score = 100;
+            const alunos = Number(eq.total_alunos || 0);
+            const diasSemAcesso = daysFrom(eq.ultimo_acesso || eq.data_cadastro);
+            const plano = String(eq.status_plano || 'TESTE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+            const isento = eq.isento === true || String(eq.isento) === 'true';
+            const diasVenc = daysUntil(eq.data_pagamento_plano);
+
+            if (alunos === 0) score -= 28;
+            else if (alunos <= 3) score -= 12;
+            else if (alunos >= 10) score += 4;
+
+            if (diasSemAcesso > 45) score -= 34;
+            else if (diasSemAcesso > 30) score -= 24;
+            else if (diasSemAcesso > 20) score -= 16;
+            else if (diasSemAcesso > 10) score -= 7;
+
+            if (plano === 'BLOQUEADO') score -= 35;
+            if (diasVenc !== null && diasVenc < 0 && !isento && plano !== 'TESTE') score -= 22;
+            if (!isento && plano !== 'TESTE' && plano !== 'BLOQUEADO' && !eq.asaas_customer_id) score -= 8;
+            if (plano === 'TESTE') {
+                if (diasVenc !== null && diasVenc < 0) score -= 30;
+                else if (alunos === 0) score -= 10;
+            }
+            return Math.max(0, Math.min(100, Math.round(score)));
+        }
+
+        function healthMeta(score) {
+            if (score < 45) return { label:'Risco', color:'#ef4444', text:'text-rose-400', bg:'bg-rose-500/10 border-rose-500/20' };
+            if (score < 70) return { label:'Atenção', color:'#f59e0b', text:'text-amber-400', bg:'bg-amber-500/10 border-amber-500/20' };
+            return { label:'Saudável', color:'#10b981', text:'text-emerald-400', bg:'bg-emerald-500/10 border-emerald-500/20' };
+        }
+
+        function renderHealthRing(score, compact = false) {
+            const m = healthMeta(score);
+            return `<div class="flex items-center ${compact ? 'justify-center':'gap-2'}"><div class="cc-health-ring" style="--score:${score};--ring-color:${m.color}"><span>${score}</span></div>${compact ? '' : `<div><p class="text-xs font-bold ${m.text}">${m.label}</p><p class="text-[9px] text-slate-500">Health Score</p></div>`}</div>`;
+        }
+
+        function setLastSyncNow() {
+            ADMIN_V2.lastSyncAt = new Date();
+            atualizarLastSyncLabel();
+        }
+        function atualizarLastSyncLabel() {
+            const el = document.getElementById('last-sync-label');
+            if (!el || !ADMIN_V2.lastSyncAt) return;
+            const s = Math.max(0, Math.floor((Date.now()-ADMIN_V2.lastSyncAt.getTime())/1000));
+            el.textContent = s < 10 ? 'Atualizado agora' : s < 60 ? `Atualizado há ${s}s` : `Atualizado há ${Math.floor(s/60)} min`;
+        }
+        setInterval(atualizarLastSyncLabel, 15000);
+
+        function renderDashboardExecutivo() {
+            const base = equipesCache.filter(e => !e.arquivada && e.status_admin !== 'ARQUIVADA');
+            const paid = base.filter(e => !['TESTE','BLOQUEADO'].includes(String(e.status_plano||'TESTE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase()) && !(e.isento === true || String(e.isento)==='true'));
+            const trials = base.filter(e => String(e.status_plano||'TESTE').toUpperCase()==='TESTE');
+            const blocked = base.filter(e => String(e.status_plano||'').toUpperCase()==='BLOQUEADO');
+            const risk = base.filter(e => calcularHealthScore(e) < 45);
+            const mrr = paid.reduce((s,e) => { const base=Number(e.valor_plano||0); const pct=Number(e.desconto_plano||0); return s + Math.max(0, base * (1 - pct/100)); }, 0);
+            const arpu = paid.length ? mrr/paid.length : 0;
+            const expira3 = trials.filter(e => { const d=daysUntil(e.data_pagamento_plano); return d !== null && d >= 0 && d <= 3; }).length;
+            const inadValor = blocked.reduce((s,e)=>{ const base=Number(e.valor_plano||0); const pct=Number(e.desconto_plano||0); return s+Math.max(0,base*(1-pct/100)); },0);
+            const ticketsPend = chamadosCache.filter(t => (t.status||'ABERTO') !== 'RESOLVIDO');
+            const sla = ticketsPend.filter(t => hoursFrom(t.data_criacao) > ADMIN_V2.supportSlaHours).length;
+
+            const put = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+            const convTracked=base.filter(e=>e.trial_convertido_em).length;
+            put('exec-mrr', formatarMoeda(mrr)); put('exec-pagantes', paid.length); put('exec-arpu', `ARPU ${formatarMoeda(arpu)} · ${convTracked} conversões registradas`);
+            put('exec-trials', trials.length); put('exec-trials-expira', `${expira3} vencem em 3 dias`); put('exec-risco', risk.length);
+            put('exec-tickets', ticketsPend.length); put('exec-tickets-sla', `${sla} fora do SLA`); put('exec-inadimplentes', blocked.length); put('exec-inadimplencia-valor', `${formatarMoeda(inadValor)} em risco`);
+
+            const alerts = [];
+            if (risk.length) alerts.push({icon:'triangle-alert', tone:'rose', title:`${risk.length} academia${risk.length>1?'s':''} em alto risco`, desc:'Baixo Health Score: priorize contato e diagnóstico.', action:"filtrarRapido('RISCO')"});
+            if (expira3) alerts.push({icon:'timer', tone:'amber', title:`${expira3} trial${expira3>1?'s':''} perto do vencimento`, desc:'Janela de conversão nos próximos 3 dias.', action:"filtrarRapido('TRIALS')"});
+            if (blocked.length) alerts.push({icon:'credit-card', tone:'rose', title:`${blocked.length} academia${blocked.length>1?'s':''} bloqueada${blocked.length>1?'s':''}`, desc:`MRR potencial em risco: ${formatarMoeda(inadValor)}.`, action:"filtrarRapido('INADIMPLENTES')"});
+            const semAsaas = paid.filter(e => !e.asaas_customer_id).length;
+            if (semAsaas) alerts.push({icon:'unplug', tone:'amber', title:`${semAsaas} pagante${semAsaas>1?'s':''} sem automação`, desc:'Sem vínculo recorrente com Asaas.', action:"filtrarRapido('SEMASAAS')"});
+            if (ticketsPend.length) alerts.push({icon:'headphones', tone:'indigo', title:`${ticketsPend.length} ticket${ticketsPend.length>1?'s':''} pendente${ticketsPend.length>1?'s':''}`, desc:`${sla} ultrapassaram ${ADMIN_V2.supportSlaHours}h.`, action:"mudarAbaMaster('suporte')"});
+            if (!alerts.length) alerts.push({icon:'circle-check-big', tone:'emerald', title:'Nenhuma pendência crítica agora', desc:'Os principais sinais operacionais estão dentro do esperado.', action:''});
+            const tones = {rose:'text-rose-400 bg-rose-500/10', amber:'text-amber-400 bg-amber-500/10', indigo:'text-indigo-400 bg-indigo-500/10', emerald:'text-emerald-400 bg-emerald-500/10'};
+            const alertsEl = document.getElementById('lista-alertas-executivos');
+            if (alertsEl) alertsEl.innerHTML = alerts.slice(0,6).map(a=>`<button ${a.action?`onclick="${a.action}"`:''} class="cc-alert-item text-left w-full"><span class="w-8 h-8 rounded-lg grid place-items-center ${tones[a.tone]||tones.indigo}"><i data-lucide="${a.icon}" class="w-4 h-4"></i></span><span><span class="text-xs font-semibold text-slate-200 block">${escapeHTML(a.title)}</span><span class="text-[10px] text-slate-500 block mt-1 leading-relaxed">${escapeHTML(a.desc)}</span></span></button>`).join('');
+            const top = document.getElementById('top-alert-count');
+            const criticalCount = risk.length + expira3 + blocked.length + sla;
+            if(top){ top.textContent=criticalCount; top.classList.toggle('hidden',criticalCount===0); top.classList.toggle('flex',criticalCount>0); }
+
+            const funnel = [
+                ['Academias cadastradas', base.length, base.length],
+                ['Com alunos ativos', base.filter(e=>Number(e.total_alunos||0)>0).length, base.length],
+                ['Pagantes', paid.length, base.length],
+                ['Uso recente (≤ 7d)', base.filter(e=>daysFrom(e.ultimo_acesso||e.data_cadastro)<=7).length, base.length]
+            ];
+            const f = document.getElementById('funil-base');
+            if(f) f.innerHTML = funnel.map(([label,value,total])=>{ const pct=total?Math.round(value/total*100):0; return `<div><div class="flex justify-between text-[10px] mb-1.5"><span class="text-slate-400">${label}</span><span class="font-bold text-slate-200">${value} · ${pct}%</span></div><div class="h-1.5 rounded-full bg-slate-800 overflow-hidden"><div class="h-full rounded-full bg-slate-500" style="width:${pct}%"></div></div></div>`; }).join('');
+            const cohortEl=document.getElementById('cohort-retention-bars');
+            if(cohortEl){
+                const groups=new Map();
+                base.forEach(e=>{const d=normalizeDate(e.data_cadastro);if(!d)return;const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(!groups.has(key))groups.set(key,{total:0,retidos:0});const g=groups.get(key);g.total++;const plano=String(e.status_plano||'TESTE').toUpperCase();if(plano!=='BLOQUEADO'&&!e.arquivada&&daysFrom(e.ultimo_acesso||e.data_cadastro)<=45)g.retidos++;});
+                const items=[...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6).reverse();
+                cohortEl.innerHTML=items.length?items.map(([key,g])=>{const [y,m]=key.split('-');const nome=new Date(Number(y),Number(m)-1,1).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});const pct=g.total?Math.round(g.retidos/g.total*100):0;return `<div class="cc-stat-mini"><div class="flex justify-between"><span class="text-xs text-slate-300 capitalize">${escapeHTML(nome)}</span><span class="text-xs font-bold ${pct>=70?'text-emerald-300':pct>=45?'text-amber-300':'text-rose-300'}">${pct}%</span></div><div class="h-1.5 rounded bg-slate-800 overflow-hidden mt-2"><div class="h-full bg-slate-500" style="width:${pct}%"></div></div><p class="text-[9px] text-slate-600 mt-2">${g.retidos}/${g.total} com uso recente</p></div>`;}).join(''):'<p class="text-xs text-slate-500">Ainda não há datas de cadastro suficientes para formar coortes.</p>';
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function skeletonRows(cols=6, rows=7) {
+            return Array.from({length:rows},()=>`<tr>${Array.from({length:cols},()=>'<td class="px-6 py-4"><div class="cc-skeleton h-4 w-full"></div></td>').join('')}</tr>`).join('');
+        }
+
+        // Wrap master loader to improve states and update executive indicators.
+        const carregarImperioLegacy = window.carregarImperio;
+        window.carregarImperio = async function() {
+            const tabela = document.getElementById('tabela-equipes');
+            if(tabela) tabela.innerHTML = skeletonRows(6, 6);
+            try {
+                await carregarImperioLegacy();
+                equipesCache.forEach(e => e.health_score = calcularHealthScore(e));
+                setLastSyncNow();
+                renderDashboardExecutivo();
+                resetPaginacaoEquipes(false);
+            } finally { if(window.lucide) lucide.createIcons(); }
+        };
+
+        window.resetPaginacaoEquipes = function(render=true){ ADMIN_V2.equipesPage=1; ADMIN_V2.quickFilter=''; atualizarIndicadorFiltroRapido(); if(render) window.renderizarEquipes(); };
+        window.mudarTamanhoPaginaEquipes = function(){ ADMIN_V2.equipesPageSize = Number(document.getElementById('equipes-page-size')?.value||25); ADMIN_V2.equipesPage=1; window.renderizarEquipes(); };
+        window.paginaEquipesAnterior = function(){ if(ADMIN_V2.equipesPage>1){ADMIN_V2.equipesPage--; window.renderizarEquipes(); document.getElementById('tabela-equipes')?.scrollIntoView({behavior:'smooth',block:'center'});} };
+        window.paginaEquipesProxima = function(){ const pages=Math.max(1,Math.ceil(ADMIN_V2.equipesFiltradas.length/ADMIN_V2.equipesPageSize)); if(ADMIN_V2.equipesPage<pages){ADMIN_V2.equipesPage++; window.renderizarEquipes(); document.getElementById('tabela-equipes')?.scrollIntoView({behavior:'smooth',block:'center'});} };
+
+        window.renderizarEquipes = function() {
+            const termo = (document.getElementById('busca-equipe')?.value || '').toLowerCase().trim();
+            const filtroStatus = document.getElementById('filtro-status-equipe')?.value || 'TODAS';
+            const filtroPlano = document.getElementById('filtro-plano-equipe')?.value || 'TODOS';
+            const filtroHealth = document.getElementById('filtro-health-equipe')?.value || 'TODOS';
+            const ordenacao = document.getElementById('ordenacao-equipe')?.value || 'RISCO';
+            const tabela = document.getElementById('tabela-equipes'); if(!tabela) return;
+            let filtradas = equipesCache.filter(eq => {
+                if (eq.arquivada || eq.status_admin === 'ARQUIVADA') return filtroStatus === 'ARQUIVADAS';
+                const text = [eq.nome_equipe,eq.responsavel_nome,eq.email_responsavel,eq.telefone,eq.id].join(' ').toLowerCase();
+                const plano = String(eq.status_plano||'TESTE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+                const isento = eq.isento === true || String(eq.isento)==='true';
+                const alunos=Number(eq.total_alunos||0); const diff=daysFrom(eq.ultimo_acesso||eq.data_cadastro); const score=calcularHealthScore(eq);
+                const passaStatus = filtroStatus==='TODAS' || (filtroStatus==='ATIVAS'&&alunos>0) || (filtroStatus==='INATIVAS'&&alunos===0) || (filtroStatus==='AUSENTES'&&diff>20) || (filtroStatus==='ISENTAS'&&isento) || (filtroStatus==='ARQUIVADAS'&&(eq.arquivada||eq.status_admin==='ARQUIVADA'));
+                const passaPlano = filtroPlano==='TODOS'||plano===filtroPlano;
+                const passaHealth = filtroHealth==='TODOS'||(filtroHealth==='RISCO'&&score<45)||(filtroHealth==='ATENCAO'&&score>=45&&score<70)||(filtroHealth==='SAUDAVEL'&&score>=70);
+                let passaQuick=true;
+                if(ADMIN_V2.quickFilter==='PAGANTES') passaQuick=!['TESTE','BLOQUEADO'].includes(plano)&&!isento;
+                if(ADMIN_V2.quickFilter==='TRIALS') passaQuick=plano==='TESTE';
+                if(ADMIN_V2.quickFilter==='RISCO') passaQuick=score<45;
+                if(ADMIN_V2.quickFilter==='INADIMPLENTES') passaQuick=plano==='BLOQUEADO';
+                if(ADMIN_V2.quickFilter==='SEMASAAS') passaQuick=!eq.asaas_customer_id&&!['TESTE','BLOQUEADO'].includes(plano)&&!isento;
+                return text.includes(termo)&&passaStatus&&passaPlano&&passaHealth&&passaQuick;
+            });
+            filtradas.sort((a,b)=>{
+                if(ordenacao==='NOME') return String(a.nome_equipe||'').localeCompare(String(b.nome_equipe||''),'pt-BR');
+                if(ordenacao==='RECENTE') return (normalizeDate(b.data_cadastro)?.getTime()||0)-(normalizeDate(a.data_cadastro)?.getTime()||0);
+                if(ordenacao==='ALUNOS') return Number(b.total_alunos||0)-Number(a.total_alunos||0);
+                return calcularHealthScore(a)-calcularHealthScore(b);
+            });
+            ADMIN_V2.equipesFiltradas=filtradas;
+            const pages=Math.max(1,Math.ceil(filtradas.length/ADMIN_V2.equipesPageSize)); if(ADMIN_V2.equipesPage>pages) ADMIN_V2.equipesPage=pages;
+            const start=(ADMIN_V2.equipesPage-1)*ADMIN_V2.equipesPageSize; const page=filtradas.slice(start,start+ADMIN_V2.equipesPageSize);
+            tabela.innerHTML='';
+            if(!page.length){ tabela.innerHTML='<tr><td colspan="6" class="text-center p-10 text-slate-500 text-xs">Nenhuma academia corresponde aos filtros.</td></tr>'; }
+            page.forEach(eq=>{
+                const score=calcularHealthScore(eq), meta=healthMeta(score), plano=String(eq.status_plano||'TESTE');
+                const isento=eq.isento===true||String(eq.isento)==='true'; const dias=daysFrom(eq.ultimo_acesso||eq.data_cadastro); const venc=daysUntil(eq.data_pagamento_plano);
+                let planoLabel=plano; let planoTone='bg-slate-800 text-slate-300 border-slate-700';
+                if(/PREMIUM/i.test(plano)) planoTone='bg-purple-500/10 text-purple-300 border-purple-500/20'; else if(/INTER/i.test(plano)) planoTone='bg-cyan-500/10 text-cyan-300 border-cyan-500/20'; else if(/BLOQ/i.test(plano)) planoTone='bg-rose-500/10 text-rose-300 border-rose-500/20'; else if(/TESTE/i.test(plano)) planoTone='bg-amber-500/10 text-amber-300 border-amber-500/20';
+                const row=document.createElement('tr'); row.className=`border-b border-slate-800/50 hover:bg-slate-800/35 transition-colors ${score<45?'cc-row-risk':'cc-row-healthy'}`;
+                const logo = eq.url_logo ? `<img src="${escapeHTML(eq.url_logo)}" alt="" class="h-full w-full object-cover">` : escapeHTML((eq.nome_equipe||'A').charAt(0).toUpperCase());
+                const last = dias===9999?'Sem registro':dias===0?'Hoje':`Há ${dias}d`;
+                const vencTxt = venc===null?'':venc<0?`Atrasado ${Math.abs(venc)}d`:venc===0?'Vence hoje':`Vence em ${venc}d`;
+                const asaas = (eq.status_asaas==='ATIVO'||eq.status_baas==='ATIVA') ? '<span class="cc-chip text-emerald-300">● Conectado</span>' : (eq.status_asaas==='PENDENTE'||eq.status_baas==='PENDENTE') ? '<span class="cc-chip text-amber-300">● Pendente</span>' : '<span class="cc-chip text-slate-400">○ Sem Asaas</span>';
+                row.innerHTML=`
+                    <td class="px-6 py-4"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="flex items-center gap-3 text-left group"><span class="h-10 w-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 grid place-items-center font-bold">${logo}</span><span><span class="font-semibold text-slate-100 text-xs group-hover:text-rose-300 transition block max-w-[220px] truncate">${escapeHTML(eq.nome_equipe||'Sem nome')}</span><span class="text-[9px] text-slate-500 mt-1 block max-w-[220px] truncate">${escapeHTML(eq.responsavel_nome||eq.email_responsavel||'Responsável não informado')}</span></span></button></td>
+                    <td class="px-6 py-4 text-center"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="mx-auto">${renderHealthRing(score,true)}</button><span class="text-[9px] ${meta.text} font-semibold mt-1 block">${meta.label}</span></td>
+                    <td class="px-6 py-4 text-center"><span class="text-xs ${dias>20?'text-rose-300':dias>7?'text-amber-300':'text-slate-300'}">${last}</span></td>
+                    <td class="px-6 py-4 text-center"><span class="cc-chip border ${planoTone}">${escapeHTML(planoLabel)}${isento?' · ISENTO':''}</span>${vencTxt?`<span class="text-[9px] ${venc<0?'text-rose-400':'text-slate-500'} block mt-1">${escapeHTML(vencTxt)}</span>`:''}</td>
+                    <td class="px-6 py-4 text-center">${asaas}</td>
+                    <td class="px-6 py-4"><div class="flex gap-1.5 justify-center"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="cc-btn cc-btn-secondary !min-h-8 !px-2 cc-tooltip" data-tooltip="Abrir visão 360º"><i data-lucide="panel-right-open" class="w-3.5 h-3.5"></i></button><button onclick="abrirModalEditarEquipe('${escapeHTML(eq.id)}')" class="cc-btn cc-btn-secondary !min-h-8 !px-2 cc-tooltip" data-tooltip="Editar licença"><i data-lucide="settings-2" class="w-3.5 h-3.5"></i></button><button onclick="abrirModalAcessoSistema('${escapeHTML(eq.id)}')" class="cc-btn cc-btn-secondary !min-h-8 !px-2 cc-tooltip" data-tooltip="Acessar como academia"><i data-lucide="log-in" class="w-3.5 h-3.5"></i></button></div></td>`;
+                tabela.appendChild(row);
+            });
+            const info=document.getElementById('equipes-paginacao-info'), label=document.getElementById('equipes-page-label'), prev=document.getElementById('equipes-prev'), next=document.getElementById('equipes-next');
+            if(info) info.textContent=filtradas.length?`${start+1}–${Math.min(start+ADMIN_V2.equipesPageSize,filtradas.length)} de ${filtradas.length} academias`:'0 resultados';
+            if(label) label.textContent=`${ADMIN_V2.equipesPage} / ${pages}`; if(prev) prev.disabled=ADMIN_V2.equipesPage<=1; if(next) next.disabled=ADMIN_V2.equipesPage>=pages;
+            if(window.lucide) lucide.createIcons();
+        };
+
+        function atualizarIndicadorFiltroRapido(){ const el=document.getElementById('filtro-rapido-indicador'),lbl=document.getElementById('filtro-rapido-label'); if(!el)return; const labels={PAGANTES:'Pagantes',TRIALS:'Trials',RISCO:'Alto risco',INADIMPLENTES:'Inadimplentes',SEMASAAS:'Sem Asaas'}; const active=Boolean(ADMIN_V2.quickFilter); el.classList.toggle('hidden',!active); if(lbl)lbl.textContent=labels[ADMIN_V2.quickFilter]||'Filtro rápido'; if(window.lucide)lucide.createIcons(); }
+        window.limparFiltroRapido=function(){ADMIN_V2.quickFilter='';ADMIN_V2.equipesPage=1;atualizarIndicadorFiltroRapido();window.renderizarEquipes();};
+        window.filtrarRapido = function(tipo) {
+            ADMIN_V2.quickFilter=tipo; ADMIN_V2.equipesPage=1;
+            const st=document.getElementById('filtro-status-equipe'),pl=document.getElementById('filtro-plano-equipe'),hs=document.getElementById('filtro-health-equipe'),busca=document.getElementById('busca-equipe');
+            if(st)st.value='TODAS';if(pl)pl.value='TODOS';if(hs)hs.value='TODOS';if(busca)busca.value='';atualizarIndicadorFiltroRapido();mudarAbaMaster('academias');window.renderizarEquipes();document.getElementById('tabela-equipes')?.scrollIntoView({behavior:'smooth',block:'start'});
+        };
+
+        window.rolarParaAlertas = function(){ mudarAbaMaster('academias'); setTimeout(()=>document.getElementById('central-alertas')?.scrollIntoView({behavior:'smooth'}),50); };
+
+        // ---------- Academy 360 ----------
+        window.abrirAcademia360 = function(id) {
+            const eq=equipesCache.find(e=>e.id===id); if(!eq) return;
+            ADMIN_V2.academia360Id=id; ADMIN_V2.academia360Tab='resumo';
+            const modal=document.getElementById('modal-academia-360'); modal.classList.replace('hidden','flex');
+            const title=document.getElementById('academia-360-title'), sub=document.getElementById('academia-360-subtitle'), av=document.getElementById('academia-360-avatar');
+            if(title) title.textContent=eq.nome_equipe||'Sem nome'; if(sub) sub.textContent=[eq.responsavel_nome,eq.email_responsavel].filter(Boolean).join(' · ');
+            if(av){ av.innerHTML=eq.url_logo?`<img src="${escapeHTML(eq.url_logo)}" alt="" class="w-full h-full object-cover">`:escapeHTML((eq.nome_equipe||'A').charAt(0)); }
+            document.getElementById('academia-360-health').innerHTML=renderHealthRing(calcularHealthScore(eq));
+            document.getElementById('a360-btn-editar').onclick=()=>{fecharAcademia360();abrirModalEditarEquipe(id);};
+            document.getElementById('a360-btn-acessar').onclick=()=>{fecharAcademia360();abrirModalAcessoSistema(id);};
+            document.getElementById('a360-btn-whatsapp').onclick=()=>window.open(`https://wa.me/55${String(eq.telefone||'').replace(/\D/g,'')}`,'_blank','noopener');
+            document.getElementById('a360-btn-arquivar').onclick=()=>arquivarEquipe(id);
+            trocarTabAcademia360('resumo'); registrarAuditAdmin('VISUALIZOU_ACADEMIA_360',`Abriu visão 360º de ${eq.nome_equipe||id}`,{equipe_id:id,equipe_nome:eq.nome_equipe||''});
+            if(window.lucide) lucide.createIcons();
+        };
+        window.fecharAcademia360 = function(){ document.getElementById('modal-academia-360')?.classList.replace('flex','hidden'); ADMIN_V2.academia360Id=null; };
+        window.trocarTabAcademia360 = function(tab){
+            ADMIN_V2.academia360Tab=tab; document.querySelectorAll('[data-a360-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.a360Tab===tab)));
+            renderAcademia360Content();
+        };
+        function renderAcademia360Content(){
+            const eq=equipesCache.find(e=>e.id===ADMIN_V2.academia360Id), out=document.getElementById('academia-360-conteudo'); if(!eq||!out)return;
+            const score=calcularHealthScore(eq), plan=String(eq.status_plano||'TESTE'), dias=daysFrom(eq.ultimo_acesso||eq.data_cadastro), venc=daysUntil(eq.data_pagamento_plano);
+            if(ADMIN_V2.academia360Tab==='resumo'){
+                out.innerHTML=`<div class="grid md:grid-cols-4 gap-3 mb-5"><div class="cc-stat-mini"><p class="cc-eyebrow">Alunos ativos</p><p class="text-2xl font-bold mt-2">${Number(eq.total_alunos||0)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Plano</p><p class="text-lg font-bold mt-2">${escapeHTML(plan)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Último acesso</p><p class="text-lg font-bold mt-2">${dias===9999?'—':dias===0?'Hoje':`${dias}d`}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Health Score</p><p class="text-lg font-bold mt-2 ${healthMeta(score).text}">${score}/100</p></div></div><div class="grid md:grid-cols-2 gap-4"><div class="cc-card p-4"><p class="cc-eyebrow mb-3">Cadastro</p>${[['Responsável',eq.responsavel_nome],['E-mail',eq.email_responsavel],['Telefone',eq.telefone],['ID',eq.id]].map(([a,b])=>`<div class="flex justify-between gap-4 py-2 border-b border-slate-800/50 last:border-0"><span class="text-xs text-slate-500">${a}</span><span class="text-xs text-slate-200 text-right break-all">${escapeHTML(b||'—')}</span></div>`).join('')}</div><div class="cc-card p-4"><p class="cc-eyebrow mb-3">Sinais de saúde</p><div class="space-y-2">${score<45?'<div class="cc-alert-item"><span class="text-rose-400">●</span><span class="text-xs text-slate-300">Risco elevado de churn. Recomendada abordagem ativa.</span></div>':''}${Number(eq.total_alunos||0)===0?'<div class="cc-alert-item"><span class="text-amber-400">●</span><span class="text-xs text-slate-300">Nenhum aluno ativo cadastrado.</span></div>':''}${dias>20?`<div class="cc-alert-item"><span class="text-rose-400">●</span><span class="text-xs text-slate-300">Sem acesso há ${dias} dias.</span></div>`:''}${!eq.asaas_customer_id&&plan!=='TESTE'?'<div class="cc-alert-item"><span class="text-amber-400">●</span><span class="text-xs text-slate-300">Sem automação recorrente do Asaas.</span></div>':''}${score>=70?'<div class="cc-alert-item"><span class="text-emerald-400">●</span><span class="text-xs text-slate-300">Uso e situação geral saudáveis.</span></div>':''}</div></div></div>`;
+            } else if(ADMIN_V2.academia360Tab==='financeiro'){
+                const bruto=Number(eq.valor_plano||0), desc=Number(eq.desconto_plano||0), liquido=Math.max(0,bruto*(1-desc/100));
+                out.innerHTML=`<div class="grid md:grid-cols-3 gap-3"><div class="cc-stat-mini"><p class="cc-eyebrow">MRR líquido</p><p class="text-2xl font-bold mt-2">${formatarMoeda(liquido)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Desconto</p><p class="text-2xl font-bold mt-2">${Number(desc).toLocaleString('pt-BR')}%</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Vencimento</p><p class="text-xl font-bold mt-2 ${venc!==null&&venc<0?'text-rose-400':''}">${venc===null?'—':venc<0?`${Math.abs(venc)}d atrasado`:venc===0?'Hoje':`${venc}d`}</p></div></div><div class="cc-card p-4 mt-4"><p class="cc-eyebrow mb-3">Integração financeira</p><p class="text-sm text-slate-300">Asaas customer: <span class="font-mono text-xs">${escapeHTML(eq.asaas_customer_id||'não vinculado')}</span></p><p class="text-sm text-slate-300 mt-2">Status Asaas/BaaS: ${escapeHTML(eq.status_asaas||eq.status_baas||'não informado')}</p><p class="text-sm text-slate-300 mt-2">Créditos certificados: ${Number(eq.creditos_certificados||0)}</p></div>`;
+            } else if(ADMIN_V2.academia360Tab==='atividade'){
+                out.innerHTML=`<div class="cc-card p-4"><p class="cc-eyebrow mb-3">Atividade conhecida</p><div class="space-y-3"><div class="flex gap-3"><i data-lucide="log-in" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Último acesso</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(eq.ultimo_acesso?new Date(eq.ultimo_acesso).toLocaleString('pt-BR'):'não registrado')}</p></div></div><div class="flex gap-3"><i data-lucide="user-plus" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Cadastro da academia</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(eq.data_cadastro?new Date(eq.data_cadastro).toLocaleString('pt-BR'):'não registrado')}</p></div></div><div class="flex gap-3"><i data-lucide="users" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Alunos ativos</p><p class="text-[10px] text-slate-500 mt-1">${Number(eq.total_alunos||0)} na leitura atual.</p></div></div></div></div>`;
+            } else if(ADMIN_V2.academia360Tab==='suporte'){
+                const list=chamadosCache.filter(t=>t.equipe_id===eq.id||String(t.equipe_nome||'').toLowerCase()===String(eq.nome_equipe||'').toLowerCase());
+                out.innerHTML=list.length?`<div class="space-y-2">${list.map(t=>`<button onclick="fecharAcademia360();mudarAbaMaster('suporte');setTimeout(()=>abrirModalTicket('${escapeHTML(t.id)}'),100)" class="cc-alert-item w-full text-left"><span class="cc-chip">${escapeHTML(t.status||'ABERTO')}</span><span><span class="text-xs text-slate-200 block">${escapeHTML(t.assunto||'Sem assunto')}</span><span class="text-[10px] text-slate-500 mt-1 block">${escapeHTML(t.data_criacao?new Date(t.data_criacao).toLocaleString('pt-BR'):'')}</span></span></button>`).join('')}</div>`:'<div class="text-center py-12 text-slate-500 text-sm">Nenhum chamado relacionado encontrado.</div>';
+            } else {
+                const list=auditoriaCache.filter(a=>a.equipe_id===eq.id||String(a.equipe_nome||'').toLowerCase()===String(eq.nome_equipe||'').toLowerCase()).slice(0,50);
+                out.innerHTML=list.length?`<div class="space-y-2">${list.map(a=>`<div class="cc-alert-item"><span class="text-[10px] font-mono text-slate-500 w-32 shrink-0">${escapeHTML(a.timestamp?new Date(a.timestamp).toLocaleString('pt-BR'):'')}</span><span><span class="text-xs font-semibold text-slate-200 block">${escapeHTML(a.acao||'AÇÃO')}</span><span class="text-[10px] text-slate-500 mt-1 block">${escapeHTML(a.detalhes||'')}</span></span></div>`).join('')}</div>`:'<div class="text-center py-12 text-slate-500 text-sm">Carregue a aba Auditoria para ampliar o histórico desta academia.</div>';
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // ---------- Critical confirmation ----------
+        function confirmarCritico({title='Confirmar ação', message='', phrase='', phraseLabel='', reasonRequired=true}={}) {
+            return new Promise(resolve=>{
+                ADMIN_V2.criticalResolver=resolve;
+                const modal=document.getElementById('modal-confirmacao-critica');
+                document.getElementById('critical-title').textContent=title; document.getElementById('critical-message').textContent=message;
+                const wrap=document.getElementById('critical-type-wrap'), input=document.getElementById('critical-type-input'), label=document.getElementById('critical-type-label'), reason=document.getElementById('critical-reason');
+                input.value=''; reason.value=''; wrap.classList.toggle('hidden',!phrase); label.textContent=phraseLabel||`Digite ${phrase} para confirmar`;
+                const btn=document.getElementById('critical-confirm-btn');
+                btn.onclick=()=>{ if(phrase&&input.value.trim()!==phrase){showToast(`Digite exatamente ${phrase}.`,'error');return;} if(reasonRequired&&!reason.value.trim()){showToast('Informe o motivo/contexto da ação.','error');return;} modal.classList.replace('flex','hidden'); ADMIN_V2.criticalResolver=null; resolve({ok:true,reason:reason.value.trim()}); };
+                modal.classList.replace('hidden','flex'); setTimeout(()=>phrase?input.focus():reason.focus(),30);
+            });
+        }
+        window.cancelarConfirmacaoCritica=function(){ const m=document.getElementById('modal-confirmacao-critica');m?.classList.replace('flex','hidden'); const r=ADMIN_V2.criticalResolver;ADMIN_V2.criticalResolver=null;if(r)r({ok:false,reason:''}); };
+
+        // Stronger client-side confirmation for environment change. Authorization must still be enforced by Firestore/Functions.
+        window.alternarAmbienteSistema = async function() {
+            if(!can('sistema:environment') && masterRole!=='OWNER') return showToast('Seu perfil não pode alterar o ambiente global.','error');
+            const novoModo=!isModoProducao;
+            const conf=await confirmarCritico({title:novoModo?'Ativar ambiente de PRODUÇÃO':'Voltar para SANDBOX',message:novoModo?'Esta alteração muda o comportamento financeiro global. Cobranças reais podem ser executadas.':'O ambiente global será alterado para sandbox.',phrase:novoModo?'PRODUÇÃO':'SANDBOX',phraseLabel:`Digite ${novoModo?'PRODUÇÃO':'SANDBOX'} para confirmar`});
+            if(!conf.ok)return;
+            const btn=document.getElementById('btn-switch-ambiente');btn?.classList.add('opacity-50','cursor-wait');
+            try{await setDoc(doc(db,'sistema','config_ambiente'),{modo_producao:novoModo,data_atualizacao:new Date().toISOString(),alterado_por:masterUid,alterado_por_email:document.getElementById('master-email')?.innerText||'',motivo:conf.reason},{merge:true});isModoProducao=novoModo;atualizarVisualDoSwitch();document.body.classList.toggle('cc-prod-frame',novoModo);await registrarAuditAdmin('ALTEROU_AMBIENTE_GLOBAL',`${novoModo?'PRODUÇÃO':'SANDBOX'} · ${conf.reason}`,{criticidade:'CRITICA'});showToast(`Ambiente alterado para ${novoModo?'PRODUÇÃO':'SANDBOX'}.`,'success');}catch(e){console.error(e);showToast('Falha ao alterar ambiente. Verifique as permissões do backend.','error');}finally{btn?.classList.remove('opacity-50','cursor-wait');}
+        };
+
+        // ---------- Soft archive ----------
+        window.arquivarEquipe = async function(id){
+            const eq=equipesCache.find(e=>e.id===id);if(!eq)return;
+            const conf=await confirmarCritico({title:'Arquivar academia',message:`A academia “${eq.nome_equipe||id}” sairá da operação ativa do Control Center. Esta ação marca o cadastro como ARQUIVADA. A restauração é reversível; o restante do sistema deve respeitar os campos arquivada/status_admin.`,phrase:'ARQUIVAR',phraseLabel:'Digite ARQUIVAR para confirmar'}); if(!conf.ok)return;
+            try{await updateDoc(doc(db,'equipes',id),{arquivada:true,status_admin:'ARQUIVADA',arquivada_em:new Date().toISOString(),arquivada_por:masterUid,arquivada_motivo:conf.reason});await registrarAuditAdmin('ARQUIVOU_EQUIPE',conf.reason,{equipe_id:id,equipe_nome:eq.nome_equipe||'',criticidade:'CRITICA'});showToast('Academia arquivada.','success');fecharAcademia360();carregarImperio();}catch(e){console.error(e);showToast('Não foi possível arquivar a academia.','error');}
+        };
+        window.excluirEquipe = window.arquivarEquipe;
+
+
+        const abrirModalEditarEquipeLegacy=window.abrirModalEditarEquipe;
+        window.abrirModalEditarEquipe=function(id){if(!can('academias:manage')&&masterRole!=='OWNER')return showToast('Seu perfil não pode alterar licenças.','error');abrirModalEditarEquipeLegacy(id);};
+        window.salvarEdicaoEquipe=async function(){
+            if(!can('academias:manage')&&masterRole!=='OWNER')return showToast('Seu perfil não pode alterar licenças.','error');
+            if(!equipeEditandoId)return;
+            const id=equipeEditandoId,old=equipesCache.find(e=>e.id===id),oldPlan=String(old?.status_plano||'TESTE');
+            const newPlan=document.getElementById('edit-status-plano')?.value||oldPlan;
+            const valPlano=parseFloat(String(document.getElementById('edit-valor-plano')?.value||0).replace(',','.'))||0;
+            const descPlano=parseFloat(String(document.getElementById('edit-desconto')?.value||0).replace(',','.'))||0;
+            const saldoFichas=parseInt(document.getElementById('edit-fichas')?.value||0)||0;
+            const isento=Boolean(document.getElementById('edit-isento')?.checked);
+            const before=old?{status_plano:old.status_plano,valor_plano:old.valor_plano,desconto_plano:old.desconto_plano,creditos_certificados:old.creditos_certificados,isento:old.isento}:null;
+            const after={status_plano:newPlan,valor_plano:valPlano,desconto_plano:descPlano,creditos_certificados:saldoFichas,isento};
+            const btn=document.getElementById('btn-salvar-edicao'),txt=btn?.innerHTML;if(btn){btn.disabled=true;btn.innerHTML='Salvando…';}
+            try{
+                await updateDoc(doc(db,'equipes',id),after);
+                await registrarAuditAdmin('ATUALIZOU_LICENCA_EQUIPE',`${old?.nome_equipe||id}: ${oldPlan} → ${newPlan}`,{equipe_id:id,equipe_nome:old?.nome_equipe||'',antes:before,depois:after});
+                if(oldPlan!==newPlan){
+                    const evId=`${Date.now()}_${id}_${Math.random().toString(36).slice(2,6)}`;
+                    await setDoc(doc(db,'eventos_assinatura',evId),{timestamp:new Date().toISOString(),equipe_id:id,equipe_nome:old?.nome_equipe||'',evento:'MUDANCA_PLANO',plano_anterior:oldPlan,plano_novo:newPlan,alterado_por:masterUid,origem:'SUPER_ADMIN'}).catch(()=>{});
+                    if(oldPlan==='TESTE'&&!['TESTE','BLOQUEADO'].includes(newPlan)) await updateDoc(doc(db,'equipes',id),{trial_convertido_em:new Date().toISOString()}).catch(()=>{});
+                }
+                showToast('Licença atualizada.','success');fecharModalEditar();await carregarImperio();
+            }catch(e){console.error(e);showToast('Erro ao atualizar licença. Verifique as permissões do Firebase.','error');}
+            finally{if(btn){btn.disabled=false;btn.innerHTML=txt;}}
+        };
+
+        // ---------- Signed-aware impersonation ----------
+        window.entrarComo = async function(pagina) {
+            if(!equipeAcessoId)return; if(!can('academias:impersonate')&&masterRole!=='OWNER')return showToast('Seu perfil não pode acessar como academia.','error');
+            const eq=equipesCache.find(e=>e.id===equipeAcessoId); const id=equipeAcessoId;
+            const conf=await confirmarCritico({title:'Acessar como academia',message:`Você abrirá ${eq?.nome_equipe||id} com privilégios administrativos. Todas as ações devem ser tratadas como operação de suporte.`,phrase:'ACESSAR',phraseLabel:'Digite ACESSAR para iniciar a sessão'}); if(!conf.ok)return;
+            sessionStorage.setItem('admin_impersonate',id); sessionStorage.setItem('admin_impersonate_meta',JSON.stringify({masterUid,masterEmail:document.getElementById('master-email')?.innerText||'',startedAt:new Date().toISOString(),reason:conf.reason,academyName:eq?.nome_equipe||''}));
+            await registrarAuditAdmin('INICIOU_IMPERSONACAO',conf.reason,{equipe_id:id,equipe_nome:eq?.nome_equipe||'',criticidade:'CRITICA'});
+            window.open(pagina,'_blank','noopener');fecharModalAcessoSistema();
+        };
+
+        // ---------- Safer PIX confirmation ----------
+        window.solicitarPixMaster = async function(){
+            if(masterRole!=='OWNER')return showToast('Somente OWNER pode solicitar transferências PIX.','error');
+            const valor=window.strToFloat(document.getElementById('pix-master-valor').value),tipo=document.getElementById('pix-master-tipo').value,chave=document.getElementById('pix-master-chave').value.trim();
+            if(!valor||valor<=0)return showToast('Valor inválido.','error'); if(!chave)return showToast('Insira a chave PIX.','error');
+            const conf=await confirmarCritico({title:'Confirmar transferência PIX',message:`Transferência de ${formatarMoeda(valor)} para a chave ${chave}. O processamento financeiro ocorre no backend.`,phrase:valor.toFixed(2).replace('.',','),phraseLabel:`Digite ${valor.toFixed(2).replace('.',',')} para confirmar o valor`}); if(!conf.ok)return;
+            const btn=document.getElementById('btn-sacar-master'),txt=btn.innerHTML;btn.disabled=true;btn.innerHTML='Processando…';
+            try{const res=await solicitarSaqueMaster({uid:masterUid,valor,chavePix:chave,tipoChave:tipo,adminReason:conf.reason,clientRequestId:(crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`)});if(res.data.success){await registrarAuditAdmin('SOLICITOU_PIX_MASTER',`${formatarMoeda(valor)} · ${conf.reason}`,{criticidade:'CRITICA',valor_pix:valor});showToast('PIX solicitado com sucesso.','success');document.getElementById('pix-master-valor').value='';fecharModalPixMaster();carregarSaldoMaster();}else showToast('Erro: '+res.data.error,'error');}catch(e){console.error(e);showToast('Erro ao processar transferência.','error');}finally{btn.innerHTML=txt;btn.disabled=false;}
+        };
+
+        // ---------- Support V2 ----------
+        const renderizarChamadosLegacy = window.renderizarChamados;
+        window.renderizarChamados = function(){
+            const tabela=document.getElementById('tabela-suporte');if(!tabela)return;
+            const statusF=document.getElementById('filtro-ticket-status')?.value||'TODOS',prioF=document.getElementById('filtro-ticket-prioridade')?.value||'TODAS',term=(document.getElementById('busca-ticket')?.value||'').toLowerCase();
+            const filtered=[...chamadosCache].filter(t=>(statusF==='TODOS'||(t.status||'ABERTO')===statusF)&&(prioF==='TODAS'||(t.prioridade||'NORMAL')===prioF)&&[t.id,t.equipe_nome,t.remetente_email,t.assunto,t.mensagem].join(' ').toLowerCase().includes(term)).sort((a,b)=>String(b.data_criacao||'').localeCompare(String(a.data_criacao||'')));
+            let abertos=0,resolvidos=0;tabela.innerHTML='';
+            chamadosCache.forEach(t=>{if((t.status||'ABERTO')==='RESOLVIDO')resolvidos++;else abertos++;});
+            const badgeSide=document.getElementById('menu-badge-suporte');if(badgeSide){badgeSide.textContent=abertos;badgeSide.classList.toggle('hidden',!abertos);}
+            if(!filtered.length)tabela.innerHTML='<tr><td colspan="5" class="text-center p-10 text-slate-500 text-xs">Nenhum ticket encontrado.</td></tr>';
+            const prioTone={URGENTE:'text-rose-300 bg-rose-500/10',ALTA:'text-amber-300 bg-amber-500/10',NORMAL:'text-slate-300 bg-slate-800',BAIXA:'text-slate-500 bg-slate-900'};
+            filtered.forEach(t=>{const st=t.status||'ABERTO',prio=t.prioridade||'NORMAL',ageH=hoursFrom(t.data_criacao),sla=st!=='RESOLVIDO'&&ageH>ADMIN_V2.supportSlaHours;const tr=document.createElement('tr');tr.className='border-b border-slate-800/50 hover:bg-slate-800/30';tr.innerHTML=`<td class="px-6 py-4"><span class="font-mono text-slate-400 text-xs">${escapeHTML(t.id.substring(0,6).toUpperCase())}</span>${sla?'<span class="text-[9px] text-rose-400 block mt-1">SLA vencido</span>':''}</td><td class="px-6 py-4"><p class="font-semibold text-white text-xs">${escapeHTML(t.equipe_nome||'Equipe desconhecida')}</p><p class="text-[9px] text-slate-500 mt-1">${escapeHTML(t.remetente_email||'')}</p></td><td class="px-6 py-4"><p class="text-xs text-slate-300 truncate max-w-[240px]">${escapeHTML(t.assunto||'Sem assunto')}</p><span class="cc-chip mt-1 ${prioTone[prio]||prioTone.NORMAL}">${escapeHTML(prio)}</span></td><td class="px-6 py-4 text-center"><span class="cc-chip ${st==='RESOLVIDO'?'text-emerald-300':st==='RESPONDIDO'?'text-indigo-300':'text-rose-300'}">${escapeHTML(st)}</span></td><td class="px-6 py-4 text-center"><button onclick="abrirModalTicket('${escapeHTML(t.id)}')" class="cc-btn cc-btn-secondary !min-h-8">Abrir</button></td>`;tabela.appendChild(tr);});
+            document.getElementById('kpi-tickets-abertos').innerText=abertos;document.getElementById('kpi-tickets-resolvidos').innerText=resolvidos;renderDashboardExecutivo();
+        };
+        const abrirModalTicketLegacy=window.abrirModalTicket;
+        window.abrirModalTicket=function(id){abrirModalTicketLegacy(id);const t=chamadosCache.find(x=>x.id===id);if(!t)return;const p=document.getElementById('ticket-prioridade');if(p)p.value=t.prioridade||'NORMAL';const s=document.getElementById('ticket-sla-info');if(s){const age=hoursFrom(t.data_criacao);s.textContent=(t.status||'ABERTO')==='RESOLVIDO'?'Resolvido':age>ADMIN_V2.supportSlaHours?`SLA excedido · ~${age}h`:`Dentro do SLA · ~${age}h`;s.className=`cc-input flex items-center text-xs ${age>ADMIN_V2.supportSlaHours?'text-rose-300':'text-emerald-300'}`;}};
+        const salvarTicketLegacy=window.salvarTicket;
+        window.salvarTicket=async function(status){if(!can('suporte:manage')&&masterRole!=='OWNER')return showToast('Seu perfil não pode atualizar tickets.','error');const id=document.getElementById('ticket-id-ativo').value,p=document.getElementById('ticket-prioridade')?.value||'NORMAL';const before=await getDoc(doc(db,'chamados_suporte',id)).then(s=>s.exists()?s.data():null).catch(()=>null);try{await updateDoc(doc(db,'chamados_suporte',id),{prioridade:p});}catch(e){console.warn(e);}await salvarTicketLegacy(status);const after=await getDoc(doc(db,'chamados_suporte',id)).then(s=>s.exists()?s.data():null).catch(()=>null);if(after&&JSON.stringify(before)!==JSON.stringify(after))await registrarAuditAdmin('ATUALIZOU_TICKET',`Ticket ${id} → ${status} · prioridade ${p}`,{ticket_id:id,antes:before?{status:before.status,prioridade:before.prioridade}:null,depois:{status:after.status,prioridade:after.prioridade}});};
+        window.carregarChamadosSilencioso=async function(){try{const snap=await getDocs(collection(db,'chamados_suporte'));chamadosCache=snap.docs.map(d=>({id:d.id,...d.data()}));renderDashboardExecutivo();const badge=document.getElementById('menu-badge-suporte');const pend=chamadosCache.filter(t=>(t.status||'ABERTO')!=='RESOLVIDO').length;if(badge){badge.textContent=pend;badge.classList.toggle('hidden',!pend);}}catch(e){console.warn('Suporte silencioso:',e);}};
+
+        // ---------- Audit V2 filtering ----------
+        window.renderizarAuditoria=function(){
+            const term=(document.getElementById('busca-log')?.value||'').toLowerCase(),type=document.getElementById('filtro-log-acao')?.value||'TODAS',date=document.getElementById('filtro-log-data')?.value||'',tb=document.getElementById('tabela-auditoria');if(!tb)return;
+            const arr=auditoriaCache.filter(l=>{const act=String(l.acao||'').toUpperCase(),txt=[l.acao,l.detalhes,l.equipe_nome,l.usuario_email].join(' ').toLowerCase();let passType=type==='TODAS'||(type==='CRITICA'&&(l.criticidade==='CRITICA'||/EXCL|ARQUIV|PIX|AMBIENTE|IMPERSON/.test(act)))||(type==='ALTERACAO'&&/EDIT|ATUAL|ALTER|SALV|ARQUIV/.test(act))||(type==='ACESSO'&&/ACESS|LOGIN|IMPERSON|VISUALIZ/.test(act));let passDate=!date||String(l.timestamp||'').slice(0,10)===date;return txt.includes(term)&&passType&&passDate;});tb.innerHTML='';if(!arr.length){tb.innerHTML='<tr><td colspan="5" class="text-center p-10 text-slate-500 text-xs">Nenhum evento encontrado.</td></tr>';return;}arr.forEach(l=>{const tr=document.createElement('tr');tr.className='border-b border-slate-800/50 hover:bg-slate-800/30';const critical=l.criticidade==='CRITICA'||/EXCL|ARQUIV|PIX|AMBIENTE|IMPERSON/.test(String(l.acao||''));tr.innerHTML=`<td class="px-6 py-4 font-mono text-[10px] text-slate-500">${escapeHTML(l.timestamp?new Date(l.timestamp).toLocaleString('pt-BR'):'—')}</td><td class="px-6 py-4 text-xs font-semibold text-white">${escapeHTML(l.equipe_nome||'Sistema')}</td><td class="px-6 py-4"><span class="cc-chip ${critical?'text-rose-300':'text-indigo-300'}">${escapeHTML(l.acao||'AÇÃO')}</span></td><td class="px-6 py-4 text-xs text-slate-300 max-w-md"><span class="line-clamp-2" title="${escapeHTML(l.detalhes||'')}">${escapeHTML(l.detalhes||'—')}</span>${(l.antes||l.depois)?'<span class="text-[9px] text-slate-500 block mt-1">Evento possui snapshot antes/depois.</span>':''}</td><td class="px-6 py-4 text-right text-[10px] font-mono text-cyan-400">${escapeHTML(l.usuario_email||'Sistema')}</td>`;tb.appendChild(tr);});
+        };
+
+        // ---------- Plan version history ----------
+        const salvarConfigPlanosLegacy=window.salvarConfigPlanos;
+        window.salvarConfigPlanos=async function(){if(masterRole!=='OWNER')return showToast('Somente OWNER pode publicar alterações de planos.','error');const before=await getDoc(PLANOS_DOC_REF).then(s=>s.exists()?s.data():null).catch(()=>null);await salvarConfigPlanosLegacy();const after=await getDoc(PLANOS_DOC_REF).then(s=>s.exists()?s.data():null).catch(()=>null);if(JSON.stringify(before)!==JSON.stringify(after)){const id=`${Date.now()}_${masterUid}`;await setDoc(doc(db,'historico_config_planos',id),{timestamp:new Date().toISOString(),alterado_por:masterUid,alterado_por_email:document.getElementById('master-email')?.innerText||'',antes:before,depois:after});await registrarAuditAdmin('ATUALIZOU_CONFIG_PLANOS','Publicou nova versão de planos e créditos',{criticidade:'ALTERACAO'});}};
+
+        // ---------- Global search ----------
+        window.abrirBuscaGlobal=function(){const m=document.getElementById('modal-busca-global');m.classList.replace('hidden','flex');const i=document.getElementById('busca-global-input');i.value='';renderizarBuscaGlobal();setTimeout(()=>i.focus(),30);};
+        window.fecharBuscaGlobal=function(){document.getElementById('modal-busca-global')?.classList.replace('flex','hidden');};
+        window.renderizarBuscaGlobal=function(){const q=(document.getElementById('busca-global-input')?.value||'').toLowerCase().trim(),out=document.getElementById('busca-global-resultados');if(!out)return;if(!q){out.innerHTML='<p class="text-xs text-slate-500 p-4">Pesquise por academia, mestre, e-mail ou ticket.</p>';return;}const teams=equipesCache.filter(e=>[e.nome_equipe,e.responsavel_nome,e.email_responsavel,e.id].join(' ').toLowerCase().includes(q)).slice(0,8);const tickets=chamadosCache.filter(t=>[t.id,t.equipe_nome,t.remetente_email,t.assunto].join(' ').toLowerCase().includes(q)).slice(0,5);const html=[];teams.forEach(e=>html.push(`<button onclick="fecharBuscaGlobal();abrirAcademia360('${escapeHTML(e.id)}')" class="cc-command-result"><span class="w-9 h-9 rounded-lg bg-slate-800 grid place-items-center"><i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i></span><span><span class="text-xs font-semibold text-slate-200 block">${escapeHTML(e.nome_equipe||'Sem nome')}</span><span class="text-[10px] text-slate-500 mt-1 block">${escapeHTML(e.email_responsavel||e.responsavel_nome||e.id)}</span></span><span class="cc-chip ml-auto">Academia</span></button>`));tickets.forEach(t=>html.push(`<button onclick="fecharBuscaGlobal();mudarAbaMaster('suporte');setTimeout(()=>abrirModalTicket('${escapeHTML(t.id)}'),80)" class="cc-command-result"><span class="w-9 h-9 rounded-lg bg-slate-800 grid place-items-center"><i data-lucide="ticket" class="w-4 h-4 text-slate-400"></i></span><span><span class="text-xs font-semibold text-slate-200 block">${escapeHTML(t.assunto||'Ticket')}</span><span class="text-[10px] text-slate-500 mt-1 block">${escapeHTML(t.equipe_nome||t.id)}</span></span><span class="cc-chip ml-auto">Ticket</span></button>`));out.innerHTML=html.join('')||'<p class="text-xs text-slate-500 p-4">Nenhum resultado encontrado.</p>';if(window.lucide)lucide.createIcons();};
+
+
+        window.carregarSuperAdmins=async function(){
+            const tb=document.getElementById('tabela-super-admins');if(!tb)return;tb.innerHTML=skeletonRows(4,4);
+            try{const snap=await getDocs(collection(db,'super_admins'));const rows=snap.docs.map(d=>({id:d.id,...d.data()}));tb.innerHTML='';if(!rows.length){tb.innerHTML='<tr><td colspan="4" class="p-8 text-center text-xs text-slate-500">Nenhum administrador encontrado.</td></tr>';return;}rows.forEach(a=>{const role=String(a.role||a.perfil||'OWNER').toUpperCase(),email=a.email||a.usuario_email||a.id;const tr=document.createElement('tr');tr.className='border-b border-slate-800/50';tr.innerHTML=`<td class="p-4"><p class="text-xs text-slate-200">${escapeHTML(email)}</p><p class="text-[9px] font-mono text-slate-600 mt-1">${escapeHTML(a.id)}</p></td><td class="p-4"><span class="cc-chip">${escapeHTML(role)}</span></td><td class="p-4"><span class="cc-chip text-emerald-300">AUTORIZADO</span></td><td class="p-4 text-right">${masterRole==='OWNER'&&a.id!==masterUid?`<select onchange="alterarRoleSuperAdmin('${escapeHTML(a.id)}',this.value)" class="cc-input !min-h-8 !py-1 text-[10px]"><option value="">Alterar perfil…</option>${['OWNER','FINANCEIRO','SUPORTE','COMERCIAL','ANALISTA','READ_ONLY'].map(r=>`<option value="${r}">${r}</option>`).join('')}</select>`:'<span class="text-[10px] text-slate-600">—</span>'}</td>`;tb.appendChild(tr);});}catch(e){console.error(e);tb.innerHTML='<tr><td colspan="4" class="p-8 text-center text-xs text-rose-400">Sem permissão para listar super_admins.</td></tr>';}
+            const env=document.getElementById('config-ambiente-resumo');if(env)env.innerHTML=`<div class="flex items-center justify-between gap-3"><div><p class="text-lg font-bold ${isModoProducao?'text-emerald-300':'text-amber-300'}">${isModoProducao?'PRODUÇÃO':'SANDBOX'}</p><p class="text-[10px] text-slate-500 mt-1">estado global atual</p></div><button onclick="alternarAmbienteSistema()" class="cc-btn cc-btn-secondary">Alterar</button></div>`;if(window.lucide)lucide.createIcons();
+        };
+        window.alterarRoleSuperAdmin=async function(uid,newRole){if(masterRole!=='OWNER'||!newRole)return;const conf=await confirmarCritico({title:'Alterar perfil administrativo',message:`O usuário ${uid} passará a usar o perfil ${newRole}.`,phrase:newRole,phraseLabel:`Digite ${newRole} para confirmar`});if(!conf.ok){carregarSuperAdmins();return;}try{const old=await getDoc(doc(db,'super_admins',uid));await updateDoc(doc(db,'super_admins',uid),{role:newRole,role_atualizado_em:new Date().toISOString(),role_atualizado_por:masterUid});await registrarAuditAdmin('ALTEROU_ROLE_SUPER_ADMIN',`${uid}: ${old.exists()?(old.data().role||old.data().perfil||'OWNER'):'?'} → ${newRole} · ${conf.reason}`,{criticidade:'CRITICA',admin_alvo_uid:uid});showToast('Perfil atualizado.','success');carregarSuperAdmins();}catch(e){console.error(e);showToast('Não foi possível alterar o perfil.','error');carregarSuperAdmins();}};
+
+        window.carregarHistoricoPlanos=async function(){const el=document.getElementById('planos-history-summary');if(!el)return;el.textContent='Carregando…';try{const q=query(collection(db,'historico_config_planos'),orderBy('timestamp','desc'),limit(1));const snap=await getDocs(q);if(snap.empty){el.textContent='Nenhuma versão anterior registrada. A próxima publicação passará a gerar histórico.';return;}const d=snap.docs[0].data();el.textContent=`Última publicação: ${d.timestamp?new Date(d.timestamp).toLocaleString('pt-BR'):'data não registrada'} · ${d.alterado_por_email||d.alterado_por||'administrador'}`;}catch(e){el.textContent='Histórico indisponível ou sem permissão de leitura.';}};
+
+        // ---------- Enhanced navigation state ----------
+        const mudarAbaMasterLegacy=window.mudarAbaMaster;
+        window.mudarAbaMaster=function(abaID){mudarAbaMasterLegacy(abaID);document.querySelectorAll('[id^="menu-"]').forEach(el=>el.classList.remove('cc-menu-active'));document.getElementById('menu-'+abaID)?.classList.add('cc-menu-active');if(abaID==='academias')renderDashboardExecutivo();if(abaID==='configuracoes')carregarSuperAdmins();if(abaID==='planos')carregarHistoricoPlanos();if(window.lucide)lucide.createIcons();};
+
+
+        window.renderizarCupons=function(){
+            const tabela=document.getElementById('tabela-cupons');if(!tabela)return;const hoje=new Date();let ativos=0,comissoes=0;
+            const arr=[...cuponsCache].sort((a,b)=>String(b.data_criacao||'').localeCompare(String(a.data_criacao||'')));
+            tabela.innerHTML='';
+            arr.forEach(c=>{const fim=c.valido_ate?new Date(c.valido_ate+'T23:59:59'):null;const ativo=(c.status||'ATIVO')==='ATIVO'&&(!fim||fim>=hoje)&&(Number(c.limite_uso||0)<=0||Number(c.vezes_usado||0)<Number(c.limite_uso||0));if(ativo)ativos++;const receita=Number(c.receita_gerada||c.valor_gerado||0);const acumulada=Number(c.comissao_acumulada||0)||(receita*Number(c.comissao_perc||0)/100);comissoes+=acumulada;const tr=document.createElement('tr');tr.className='border-b border-slate-800/50 hover:bg-slate-800/30';tr.innerHTML=`<td class="px-6 py-4"><span class="font-mono text-white text-xs font-bold bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-700">${escapeHTML(c.id)}</span><span class="cc-chip ml-2 ${ativo?'text-emerald-300':'text-slate-500'}">${ativo?'ATIVO':'INATIVO'}</span></td><td class="px-6 py-4 text-center"><span class="text-rose-400 font-bold">-${Number(c.desconto_perc||0).toLocaleString('pt-BR')}%</span></td><td class="px-6 py-4 text-center"><span class="text-[10px] text-slate-400">${escapeHTML(c.duracao||'—')}</span>${c.valido_ate?`<span class="text-[9px] text-slate-600 block mt-1">até ${escapeHTML(new Date(c.valido_ate+'T12:00:00').toLocaleDateString('pt-BR'))}</span>`:''}</td><td class="px-6 py-4 text-center"><span class="text-[10px] text-slate-400">${Number(c.vezes_usado||0)} / ${Number(c.limite_uso||0)>0?Number(c.limite_uso):'∞'}</span></td><td class="px-6 py-4 text-center"><p class="text-xs text-indigo-300 font-semibold">${escapeHTML(c.nome_parceiro||'Sem afiliado')}</p><p class="text-[9px] text-slate-600 mt-1">comissão ${Number(c.comissao_perc||0).toLocaleString('pt-BR')}%</p></td><td class="px-6 py-4 text-center"><button onclick="excluirCupom('${escapeHTML(c.id)}')" class="cc-btn cc-btn-danger !min-h-8 !px-2" aria-label="Excluir cupom"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>`;tabela.appendChild(tr);});
+            document.getElementById('kpi-cupons-ativos').innerText=ativos;document.getElementById('kpi-comissoes').innerText=formatarMoeda(comissoes);if(!arr.length)tabela.innerHTML='<tr><td colspan="6" class="text-center p-10 text-slate-500 text-xs">Nenhum cupom criado.</td></tr>';if(window.lucide)lucide.createIcons();
+        };
+
+        const salvarAvisoGlobalLegacy=window.salvarAvisoGlobal;
+        window.salvarAvisoGlobal=async function(){if(!can('comunicacao:manage')&&masterRole!=='OWNER')return showToast('Seu perfil não pode publicar avisos.','error');const ref=doc(db,'sistema','aviso_global'),before=await getDoc(ref).then(s=>s.exists()?s.data():null).catch(()=>null);await salvarAvisoGlobalLegacy();const after=await getDoc(ref).then(s=>s.exists()?s.data():null).catch(()=>null);if(after&&JSON.stringify(before)!==JSON.stringify(after))await registrarAuditAdmin('ATUALIZOU_AVISO_GLOBAL','Publicou/atualizou comunicação global',{antes:before,depois:after});};
+
+        // ---------- Coupon audit ----------
+        const salvarCupomLegacy=window.salvarCupom;
+        window.salvarCupom=async function(){if(!can('cupons:manage')&&masterRole!=='OWNER')return showToast('Seu perfil não pode criar cupons.','error');const codigo=document.getElementById('cupom-codigo')?.value.trim().toUpperCase();if(!codigo)return salvarCupomLegacy();const existed=await getDoc(doc(db,'cupons',codigo)).then(s=>s.exists()).catch(()=>false);await salvarCupomLegacy();const nowExists=await getDoc(doc(db,'cupons',codigo)).then(s=>s.exists()).catch(()=>false);if(!existed&&nowExists)await registrarAuditAdmin('CRIOU_CUPOM',`Cupom ${codigo}`,{cupom:codigo});};
+        const excluirCupomLegacy=window.excluirCupom;
+        window.excluirCupom=async function(codigo){if(!can('cupons:manage')&&masterRole!=='OWNER')return showToast('Seu perfil não pode excluir cupons.','error');const conf=await confirmarCritico({title:'Excluir cupom',message:`O cupom ${codigo} deixará de ser aceito.`,phrase:codigo,phraseLabel:`Digite ${codigo} para confirmar`});if(!conf.ok)return;try{await deleteDoc(doc(db,'cupons',codigo));await registrarAuditAdmin('EXCLUIU_CUPOM',`${codigo} · ${conf.reason}`,{cupom:codigo,criticidade:'CRITICA'});showToast('Cupom excluído.','success');carregarCupons();}catch(e){showToast('Erro ao excluir cupom.','error');}};
+
+        // ---------- BI pagination guard / large data note ----------
+        const carregarDadosBILegacy=window.carregarDadosBI;
+        window.carregarDadosBI=async function(){showToast('Data Explorer: leitura limitada a 1.000 registros por consulta. Para escala maior, use paginação server-side no backend.','info');return carregarDadosBILegacy();};
+
+        // ---------- Accessibility & shortcuts ----------
+        document.addEventListener('keydown',e=>{
+            if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();abrirBuscaGlobal();}
+            if(e.key==='Escape'){
+                if(!document.getElementById('modal-busca-global')?.classList.contains('hidden'))fecharBuscaGlobal();
+                else if(!document.getElementById('modal-academia-360')?.classList.contains('hidden'))fecharAcademia360();
+                else if(!document.getElementById('modal-confirmacao-critica')?.classList.contains('hidden'))cancelarConfirmacaoCritica();
+            }
+        });
+
+        // Improve environment visual on initial load without changing backend semantics.
+        const atualizarVisualDoSwitchLegacy=atualizarVisualDoSwitch;
+        atualizarVisualDoSwitch=function(){atualizarVisualDoSwitchLegacy();document.body.classList.toggle('cc-prod-frame',isModoProducao);};
+
+        // Initialize icons and ARIA helpers.
+        document.querySelectorAll('button').forEach(btn=>{if(!btn.getAttribute('type'))btn.setAttribute('type','button');});
+        if(window.lucide)lucide.createIcons();
+
     </script>
 </body>
 </html>
