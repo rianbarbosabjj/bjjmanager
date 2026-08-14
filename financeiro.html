@@ -12,7 +12,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Centro de Controle Financeiro | BJJ Manager</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -134,6 +134,49 @@
             background: linear-gradient(135deg, #06B6D4, #3B82F6);
             border-radius: 2px;
         }
+
+
+        /* ========== FINANCEIRO V2: RESPONSIVIDADE E UX ========== */
+        .finance-header { background: linear-gradient(135deg, #0f172a 0%, #111827 100%); }
+        .finance-kpi { min-width: 0; }
+        .finance-kpi-value { font-variant-numeric: tabular-nums; }
+        .status-chip { border: 1px solid #e2e8f0; background: #fff; color: #64748b; }
+        .status-chip:hover { border-color: #67e8f9; color: #0891b2; }
+        .status-chip.active { background: #0f172a; border-color: #0f172a; color: #fff; }
+        html.dark .status-chip { background: #0f172a; border-color: #334155; color: #94a3b8; }
+        html.dark .status-chip.active { background: #06b6d4; border-color: #06b6d4; color: #082f49; }
+        .rel-subtab { color: #94a3b8; border-bottom: 2px solid transparent; }
+        .rel-subtab.active { color: #0891b2; border-bottom-color: #06b6d4; }
+        .mobile-invoice-card { transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+        .mobile-invoice-card:active { transform: scale(.99); }
+        .finance-table-row td { vertical-align: middle; }
+
+        @media (max-width: 767px) {
+            .card-premium { border-radius: 18px; }
+            .chart-wrapper { padding: 14px; border-radius: 18px; }
+            .chart-container { min-height: 235px; }
+            #modal-acoes-wrapper { align-items: flex-end !important; padding: 0 !important; }
+            #painel-acoes-mensalidade {
+                width: 100% !important; max-width: none !important; max-height: 92dvh !important;
+                border-radius: 24px 24px 0 0 !important; padding: 20px !important;
+                padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+            }
+            #painel-acoes-mensalidade::before {
+                content: ''; display: block; width: 42px; height: 4px; border-radius: 999px;
+                background: #cbd5e1; margin: -8px auto 14px;
+            }
+            .finance-main-scroll { padding: 14px 12px 96px !important; }
+            #tab-config-asaas .card-premium { padding: 18px !important; }
+            #tab-config-asaas h2 { font-size: 1.35rem !important; }
+            .finance-tabs-inner { gap: 24px !important; }
+        }
+
+        @media (min-width: 768px) and (max-height: 820px) {
+            .finance-main-scroll { padding-top: 18px !important; padding-bottom: 24px !important; }
+            .card-premium { border-radius: 18px; }
+            .chart-container { min-height: 280px; }
+        }
+
     </style>
 </head>
 <body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F1F5F9] dark:bg-slate-950 transition-colors">
@@ -143,118 +186,102 @@
     <div id="interface-sistema" class="flex w-full h-full relative">
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
-            <div class="bg-slate-900 text-white p-4 shrink-0 flex flex-col xl:flex-row justify-between items-center gap-4 z-10 shadow-md">
-                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full xl:w-auto">
-                    <span class="text-xl sm:text-2xl hidden sm:block">💰</span>
-                    <select id="filtro-mes" class="bg-slate-800 border-none text-white text-xs sm:text-sm font-bold rounded-xl p-2 sm:p-2.5 outline-none cursor-pointer">
-                        <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
-                    </select>
-                    <span class="font-black text-slate-500">/</span>
-                    <select id="filtro-ano" class="bg-slate-800 border-none text-white text-xs sm:text-sm font-bold rounded-xl p-2 sm:p-2.5 outline-none cursor-pointer">
-                        <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
-                    </select>
-                    <button onclick="carregarDados()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-xs transition-colors shrink-0 shadow-md">
-                        Atualizar Dados
-                    </button>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-center gap-3 w-full xl:w-auto">
-                    <div class="flex flex-wrap items-center justify-center bg-slate-800 p-1.5 rounded-xl border border-slate-700 shrink-0 gap-1 sm:gap-0">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2">No Prazo</span>
-                        <input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border-none rounded-lg text-white text-center text-xs sm:text-sm font-bold p-1 outline-none" placeholder="0,00">
-
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Atraso</span>
-                        <input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border-none rounded-lg text-rose-400 text-center text-xs sm:text-sm font-bold p-1 outline-none" placeholder="0,00">
-                        
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Chave PIX</span>
-                        <input type="text" id="config-pix" placeholder="Sua Chave PIX..." class="w-20 sm:w-32 bg-slate-900 border-none rounded-lg text-emerald-400 text-center text-xs sm:text-sm font-bold p-1 outline-none">
-                        
-                        <button id="btn-salvar-valores" onclick="salvarConfiguracaoGeral()" class="ml-1 sm:ml-2 bg-slate-700 hover:bg-slate-600 text-white p-1 sm:p-1.5 rounded-lg text-xs transition-colors" title="Salvar Valores">💾</button>
+            <div class="finance-header text-white shrink-0 z-10 shadow-md border-b border-white/5">
+                <div class="max-w-7xl mx-auto w-full px-4 md:px-8 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <h1 class="text-lg md:text-2xl font-black tracking-tight">Financeiro</h1>
+                        <p class="text-[10px] md:text-xs text-slate-400 font-medium">Mensalidades, caixa e relatórios da academia</p>
                     </div>
-
-                    <button onclick="abrirModalRelatorio()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shrink-0 flex items-center justify-center shadow-md">
-                        <span class="mr-2 text-base">📊</span> Gerar Relatório
-                    </button>
+                    <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                        <div class="flex items-center bg-slate-800/90 border border-slate-700 rounded-xl p-1 flex-1 sm:flex-none">
+                            <select id="filtro-mes" onchange="carregarDados()" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold rounded-lg py-2 px-2 outline-none cursor-pointer flex-1 sm:flex-none">
+                                <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+                            </select>
+                            <span class="text-slate-600 px-1">/</span>
+                            <select id="filtro-ano" onchange="carregarDados()" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold rounded-lg py-2 px-2 outline-none cursor-pointer flex-1 sm:flex-none">
+                                <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                            </select>
+                        </div>
+                        <button onclick="carregarDados()" class="h-10 px-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-xl text-xs transition-colors" title="Atualizar dados">↻ <span class="hidden sm:inline ml-1">Atualizar</span></button>
+                        <button onclick="abrirModalConfigFinanceira()" class="h-10 px-3.5 bg-cyan-600 hover:bg-cyan-500 text-white font-black rounded-xl text-xs transition-colors shadow-md flex items-center gap-2">
+                            <span>⚙</span><span class="hidden sm:inline">Configurações</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 overflow-x-auto hide-scrollbar transition-colors">
-                <div class="max-w-7xl mx-auto flex gap-8">
-                    <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap">👥 Mensalidades</button>
-                    
-                    <button onclick="if(verificarAcesso('asaas')) mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 px-3 rounded-t-xl transition-all whitespace-nowrap flex items-center gap-1.5">
-                        <span class="text-sm">💲</span> Conta Digital
-                    </button>
-                    
-                    <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">📊 Resumo Mês</button>
-                    <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">📋 Despesas / Extras</button>
-                    <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">📈 Análise Anual</button>
+            <div class="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 overflow-x-auto hide-scrollbar transition-colors shrink-0">
+                <div class="finance-tabs-inner max-w-7xl mx-auto flex gap-8">
+                    <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap">Mensalidades</button>
+                    <button onclick="if(verificarAcesso('asaas')) mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 transition-all whitespace-nowrap">Conta Digital</button>
+                    <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">Fluxo de Caixa</button>
+                    <button onclick="mudarRelatorio('mensal')" id="btn-tab-relatorios" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">Relatórios</button>
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10 transition-colors">
+            <div class="finance-main-scroll flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10 transition-colors">
                 <div class="max-w-7xl mx-auto space-y-6">
 
                     <!-- TAB MENSALIDADES -->
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-start gap-6 bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800">
-                            <div class="flex gap-8 mt-2">
-                                <div>
-                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Caixa Atual</p>
-                                    <p class="text-2xl font-black text-emerald-500" id="lbl-resumo-pago">Recebido: R$ 0,00</p>
-                                </div>
-                                <div>
-                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Falta Receber</p>
-                                    <p class="text-2xl font-black text-rose-400" id="lbl-resumo-pendente">A Receber: R$ 0,00</p>
-                                </div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                            <div class="finance-kpi card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800">
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Recebido</p>
+                                <p class="finance-kpi-value text-xl md:text-2xl font-black text-emerald-500 mt-1" id="lbl-resumo-pago">R$ 0,00</p>
                             </div>
-                            
-                            <div class="flex flex-col w-full sm:w-auto max-w-md gap-3">
-                                <div class="flex flex-col sm:flex-row gap-3">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">🔍</div>
-                                        <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-2xl w-full pl-10 p-4 outline-none focus:border-cyan-500 transition-all shadow-inner" placeholder="Buscar atleta ou fatura...">
-                                    </div>
-                                    <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl shadow-lg transition-all text-[11px] uppercase tracking-widest flex items-center justify-center shrink-0">
-                                        <span class="mr-2 text-base">⚡</span> Gerar Faturas
-                                    </button>
-                                </div>
-                                
-                                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-xl p-3 shadow-sm transition-all mt-1">
-                                    <label class="flex items-center justify-between cursor-pointer w-full">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm">🔄</span>
-                                            <p class="text-[10px] font-black text-amber-800 dark:text-amber-400 uppercase tracking-widest">Repassar Taxas p/ Aluno</p>
-                                        </div>
-                                        <input type="checkbox" id="asaas-repassar-taxa" onchange="toggleTaxaInput(); salvarConfigRepasse();" class="w-4 h-4 text-amber-600 rounded border-amber-300 dark:border-slate-600 focus:ring-amber-500 cursor-pointer dark:bg-slate-800">
-                                    </label>
-                                    
-                                    <div id="box-valor-taxa" class="hidden mt-3 pt-3 border-t border-amber-200/60 dark:border-amber-700/30 flex-col gap-2">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <label class="text-[9px] font-bold text-amber-700 dark:text-amber-400 uppercase flex-1">Taxa do Banco (R$):</label>
-                                            <input type="text" id="asaas-valor-taxa" oninput="mascaraMoeda(this)" onblur="salvarConfigRepasse()" placeholder="1,99" class="w-20 p-2 bg-white dark:bg-slate-900 border border-amber-300 dark:border-slate-600 rounded-lg font-black text-amber-900 dark:text-white text-center focus:border-amber-500 outline-none text-xs shadow-inner">
-                                        </div>
-                                        <p class="text-[8px] text-amber-600 dark:text-amber-500/70 leading-tight">O sistema somará este valor no link de cobrança. O aluno paga a taxa bancária e você recebe a mensalidade limpa.</p>
-                                    </div>
-                                </div>
+                            <div class="finance-kpi card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800">
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">A receber</p>
+                                <p class="finance-kpi-value text-xl md:text-2xl font-black text-amber-500 mt-1" id="lbl-resumo-pendente">R$ 0,00</p>
+                            </div>
+                            <div class="finance-kpi card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800">
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Em atraso</p>
+                                <p class="finance-kpi-value text-xl md:text-2xl font-black text-rose-500 mt-1" id="lbl-resumo-atrasado">R$ 0,00</p>
+                            </div>
+                            <div class="finance-kpi card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800">
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pagamentos</p>
+                                <p class="finance-kpi-value text-xl md:text-2xl font-black text-slate-800 dark:text-white mt-1" id="lbl-resumo-pagos-qtd">0 / 0</p>
                             </div>
                         </div>
 
-                        <div class="card-premium bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 overflow-hidden flex-1 min-h-[400px]">
-                            <div class="overflow-x-auto w-full h-full">
-                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                        <div class="card-premium bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-4 md:p-5 space-y-4">
+                            <div class="flex flex-col lg:flex-row gap-3 lg:items-center">
+                                <div class="relative flex-1">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">⌕</div>
+                                    <input type="text" id="input-busca-mens" oninput="filtrarMensalidades()" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl w-full pl-10 p-3.5 outline-none focus:border-cyan-500 transition-all" placeholder="Buscar atleta...">
+                                </div>
+                                <select id="ordenacao-mens" onchange="alterarOrdenacaoMensalidades(this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white text-xs font-bold rounded-xl p-3.5 outline-none lg:w-48">
+                                    <option value="NOME">Ordenar por nome</option>
+                                    <option value="VENCIMENTO">Por vencimento</option>
+                                    <option value="VALOR_DESC">Maior valor</option>
+                                </select>
+                                <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3.5 px-5 rounded-xl shadow-md transition-all text-[10px] uppercase tracking-widest flex items-center justify-center shrink-0">
+                                    Gerar Faturas
+                                </button>
+                            </div>
+                            <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1" id="filtros-status-mens">
+                                <button class="status-chip active shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="TODOS" onclick="setFiltroMensalidade('TODOS')">Todos</button>
+                                <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="PENDENTE" onclick="setFiltroMensalidade('PENDENTE')">Pendentes</button>
+                                <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="ATRASADO" onclick="setFiltroMensalidade('ATRASADO')">Atrasados</button>
+                                <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="PAGO" onclick="setFiltroMensalidade('PAGO')">Pagos</button>
+                                <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="ISENTO" onclick="setFiltroMensalidade('ISENTO')">Isentos</button>
+                            </div>
+                        </div>
+
+                        <div class="card-premium bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 overflow-hidden flex-1 min-h-[280px]">
+                            <div id="lista-mensalidades-mobile" class="md:hidden divide-y divide-slate-100 dark:divide-slate-800"></div>
+                            <div class="hidden md:block overflow-x-auto w-full h-full">
+                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[760px]">
                                     <thead>
                                         <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 text-slate-400">
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest">Aluno</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Vencimento</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Bolsa</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-right">Valor Total</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Pago Em</th>
+                                            <th class="px-5 py-4 text-[9px] font-black uppercase tracking-widest">Aluno</th>
+                                            <th class="px-5 py-4 text-[9px] font-black uppercase tracking-widest text-center">Vencimento</th>
+                                            <th class="px-5 py-4 text-[9px] font-black uppercase tracking-widest text-center">Bolsa</th>
+                                            <th class="px-5 py-4 text-[9px] font-black uppercase tracking-widest text-center">Status</th>
+                                            <th class="px-5 py-4 text-[9px] font-black uppercase tracking-widest text-right">Valor</th>
+                                            <th class="px-5 py-4 text-[9px] font-black uppercase tracking-widest text-center">Pago em</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tabela-mensalidades" class="divide-y divide-slate-50 dark:divide-slate-800/50 text-sm">
-                                    </tbody>
+                                    <tbody id="tabela-mensalidades" class="divide-y divide-slate-50 dark:divide-slate-800/50 text-sm"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -523,64 +550,37 @@
 
                     <!-- TAB DASHBOARD DE INTELIGÊNCIA -->
                     <div id="tab-dash" class="aba-content hidden flex-col gap-6">
-                         
-                         <!-- NOVA SEÇÃO: INTELIGÊNCIA DE MÉTRICAS -->
-                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-2">
-                            <!-- MRR: RECEITA RECORRENTE -->
-                            <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 dark:from-indigo-950 dark:to-slate-900 p-6 card-premium border-none shadow-xl flex items-center justify-between">
-                                <div>
-                                    <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1 flex items-center gap-1"><span>📈</span> Previsão de Receita Mensal</p>
-                                    <h3 class="text-3xl font-black text-white" id="dash-mrr">R$ 0,00</h3>
-                                    <p class="text-[9px] text-indigo-300 mt-1 font-bold">Soma de todas as mensalidades dos alunos ativos.</p>
-                                </div>
-                                <div class="w-12 h-12 bg-indigo-500/30 rounded-full flex items-center justify-center text-indigo-100 text-xl border border-indigo-400/50">💎</div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
+                            <div class="flex gap-5 overflow-x-auto hide-scrollbar">
+                                <button class="rel-subtab active py-3 text-[10px] md:text-xs font-black uppercase tracking-widest whitespace-nowrap" data-rel="mensal" onclick="mudarRelatorio('mensal')">Análise Mensal</button>
+                                <button class="rel-subtab py-3 text-[10px] md:text-xs font-black uppercase tracking-widest whitespace-nowrap" data-rel="anual" onclick="mudarRelatorio('anual')">Análise Anual</button>
                             </div>
-
-                            <!-- INADIMPLÊNCIA -->
-                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                                <div>
-                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Taxa de Inadimplência</p>
-                                    <h3 class="text-3xl font-black text-slate-800 dark:text-white" id="dash-inadimplencia">0,0%</h3>
-                                    <p class="text-[9px] text-slate-400 mt-1 font-bold">Atrasos vs Total Faturado no mês</p>
-                                </div>
-                                <div class="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center text-rose-500 text-xl">🔻</div>
+                            <div class="flex gap-2 pb-2 sm:pb-0">
+                                <button onclick="exportarCSVFinanceiro()" class="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest">Exportar CSV</button>
+                                <button onclick="abrirModalRelatorio()" class="flex-1 sm:flex-none px-3 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm">Gerar PDF</button>
                             </div>
-                         </div>
-
-                         <!-- CAIXA REAL -->
-                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Caixa Real: Entradas</p>
-                                <h3 class="text-2xl font-black text-emerald-500 mt-2" id="dash-entradas">R$ 0,00</h3>
+                        </div>
+                        <div class="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
+                            <div class="card-premium bg-gradient-to-br from-indigo-900 to-indigo-700 p-4 md:p-5 border-none"><p class="text-[9px] font-black text-indigo-200 uppercase tracking-widest">Receita prevista</p><h3 class="text-xl md:text-2xl font-black text-white mt-1" id="dash-mrr">R$ 0,00</h3></div>
+                            <div class="card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Recebido</p><h3 class="text-xl md:text-2xl font-black text-emerald-500 mt-1" id="dash-recebido">R$ 0,00</h3></div>
+                            <div class="card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">A receber</p><h3 class="text-xl md:text-2xl font-black text-amber-500 mt-1" id="dash-pendente">R$ 0,00</h3></div>
+                            <div class="card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Em atraso</p><h3 class="text-xl md:text-2xl font-black text-rose-500 mt-1" id="dash-atrasado">R$ 0,00</h3><p class="text-[9px] text-slate-400 font-bold mt-1"><span id="dash-inadimplencia">0,0%</span> do faturado</p></div>
+                            <div class="card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Despesas</p><h3 class="text-xl md:text-2xl font-black text-rose-500 mt-1" id="dash-saidas">R$ 0,00</h3></div>
+                            <div class="card-premium bg-slate-100 dark:bg-slate-800/60 p-4 md:p-5 border-slate-200 dark:border-slate-700"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Resultado realizado</p><h3 class="text-xl md:text-2xl font-black text-slate-800 dark:text-white mt-1" id="dash-saldo">R$ 0,00</h3></div>
+                        </div>
+                        <div class="card-premium bg-white dark:bg-slate-900 p-4 md:p-5 border-slate-200 dark:border-slate-800">
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Acompanhamento do mês</p>
+                            <div class="grid grid-cols-3 gap-3 text-center">
+                                <div><p class="text-xl font-black text-slate-800 dark:text-white" id="dash-pagos-qtd">0</p><p class="text-[8px] font-bold text-slate-400 uppercase">Pagas</p></div>
+                                <div><p class="text-xl font-black text-amber-500" id="dash-vencem-breve">0</p><p class="text-[8px] font-bold text-slate-400 uppercase">Vencem em 7 dias</p></div>
+                                <div><p class="text-xl font-black text-cyan-600" id="dash-isentos-qtd">0</p><p class="text-[8px] font-bold text-slate-400 uppercase">Isentas</p></div>
                             </div>
-                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Caixa Real: Saídas</p>
-                                <h3 class="text-2xl font-black text-rose-500 mt-2" id="dash-saidas">R$ 0,00</h3>
-                            </div>
-                            <div class="bg-slate-100 dark:bg-slate-800/50 p-6 card-premium border-slate-200 dark:border-slate-700 text-center">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Lucro / Prejuízo (Mês)</p>
-                                <h3 class="text-2xl font-black text-slate-800 dark:text-white mt-2" id="dash-saldo">R$ 0,00</h3>
-                            </div>
-                         </div>
-                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="chart-wrapper">
-                                <div class="chart-title">
-                                    <span>Balanço do Mês</span>
-                                </div>
-                                <div class="chart-container">
-                                    <canvas id="chartBalancoMes"></canvas>
-                                </div>
-                            </div>
-                            <div class="chart-wrapper">
-                                <div class="chart-title">
-                                    <span>Origem das Receitas</span>
-                                </div>
-                                <div class="chart-container">
-                                    <canvas id="chartOrigemMes"></canvas>
-                                </div>
-                            </div>
-                         </div>
-                    </div>
+                        </div>
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+                            <div class="chart-wrapper"><div class="chart-title"><span>Receitas x Despesas</span></div><div class="chart-container"><canvas id="chartBalancoMes"></canvas></div></div>
+                            <div class="chart-wrapper"><div class="chart-title"><span>Origem das Receitas</span></div><div class="chart-container"><canvas id="chartOrigemMes"></canvas></div></div>
+                        </div>
+</div>
 
                     <div id="tab-fluxo" class="aba-content hidden flex-col gap-6">
                         <div class="flex flex-col sm:flex-row gap-4 justify-end">
@@ -592,8 +592,9 @@
                             </button>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-900 card-premium border-slate-200 dark:border-slate-800 overflow-hidden min-h-[400px]">
-                            <div class="overflow-x-auto w-full">
+                        <div class="bg-white dark:bg-slate-900 card-premium border-slate-200 dark:border-slate-800 overflow-hidden min-h-[280px]">
+                            <div id="lista-fluxo-mobile" class="md:hidden divide-y divide-slate-100 dark:divide-slate-800"></div>
+                            <div class="hidden md:block overflow-x-auto w-full">
                                 <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                                     <thead>
                                         <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase text-slate-400">
@@ -612,42 +613,68 @@
                     </div>
 
                     <div id="tab-anual" class="aba-content hidden flex-col gap-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entradas (Ano)</p>
-                                <h3 class="text-2xl md:text-3xl font-black text-emerald-500 mt-2" id="ano-entradas">R$ 0,00</h3>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
+                            <div class="flex gap-5 overflow-x-auto hide-scrollbar">
+                                <button class="rel-subtab py-3 text-[10px] md:text-xs font-black uppercase tracking-widest whitespace-nowrap" data-rel="mensal" onclick="mudarRelatorio('mensal')">Análise Mensal</button>
+                                <button class="rel-subtab active py-3 text-[10px] md:text-xs font-black uppercase tracking-widest whitespace-nowrap" data-rel="anual" onclick="mudarRelatorio('anual')">Análise Anual</button>
                             </div>
-                            <div class="bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800 text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saídas (Ano)</p>
-                                <h3 class="text-2xl md:text-3xl font-black text-rose-500 mt-2" id="ano-saidas">R$ 0,00</h3>
-                            </div>
-                            <div class="bg-slate-100 dark:bg-slate-800/50 p-6 card-premium border-slate-200 dark:border-slate-700 text-center">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo Acumulado (YTD)</p>
-                                <h3 class="text-2xl md:text-3xl font-black text-slate-800 dark:text-white mt-2" id="ano-saldo">R$ 0,00</h3>
+                            <div class="flex gap-2 pb-2 sm:pb-0">
+                                <button onclick="exportarCSVFinanceiro()" class="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest">Exportar CSV</button>
+                                <button onclick="abrirModalRelatorio()" class="flex-1 sm:flex-none px-3 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm">Gerar PDF</button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="chart-wrapper">
-                                <div class="chart-title">
-                                    <span>Evolução Mensal</span>
-                                </div>
-                                <div class="chart-container">
-                                    <canvas id="chartEvolucaoAno"></canvas>
-                                </div>
-                            </div>
-                            <div class="chart-wrapper">
-                                <div class="chart-title">
-                                    <span>Crescimento do Caixa</span>
-                                </div>
-                                <div class="chart-container">
-                                    <canvas id="chartAcumuladoAno"></canvas>
-                                </div>
-                            </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                            <div class="bg-white dark:bg-slate-900 p-5 card-premium border-slate-200 dark:border-slate-800 text-center"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Entradas (Ano)</p><h3 class="text-2xl md:text-3xl font-black text-emerald-500 mt-2" id="ano-entradas">R$ 0,00</h3></div>
+                            <div class="bg-white dark:bg-slate-900 p-5 card-premium border-slate-200 dark:border-slate-800 text-center"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Saídas (Ano)</p><h3 class="text-2xl md:text-3xl font-black text-rose-500 mt-2" id="ano-saidas">R$ 0,00</h3></div>
+                            <div class="bg-slate-100 dark:bg-slate-800/50 p-5 card-premium border-slate-200 dark:border-slate-700 text-center"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Saldo Acumulado (YTD)</p><h3 class="text-2xl md:text-3xl font-black text-slate-800 dark:text-white mt-2" id="ano-saldo">R$ 0,00</h3></div>
                         </div>
-                    </div>
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+                            <div class="chart-wrapper"><div class="chart-title"><span>Evolução Mensal</span></div><div class="chart-container"><canvas id="chartEvolucaoAno"></canvas></div></div>
+                            <div class="chart-wrapper"><div class="chart-title"><span>Crescimento do Caixa</span></div><div class="chart-container"><canvas id="chartAcumuladoAno"></canvas></div></div>
+                        </div>
+</div>
                     </div>
             </div>
         </main>
+    </div>
+
+
+    <!-- CONFIGURAÇÕES FINANCEIRAS -->
+    <div id="modal-config-financeira" class="fixed inset-0 z-[350] bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 card-premium shadow-2xl w-full max-w-lg overflow-hidden border-slate-200 dark:border-slate-800 max-h-[92dvh] overflow-y-auto hide-scrollbar">
+            <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-10">
+                <div><h3 class="font-black text-slate-800 dark:text-white text-base">Configurações financeiras</h3><p class="text-[10px] text-slate-400 font-bold mt-1">As alterações valem para novas faturas. Faturas já geradas mantêm seus valores.</p></div>
+                <button onclick="fecharModalConfigFinanceira()" class="text-slate-400 hover:text-rose-500 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-5 md:p-6 space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Mensalidade no prazo</label><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">R$</span><input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="w-full pl-9 p-3.5 bg-slate-50 dark:bg-slate-950 dark:text-white font-black" placeholder="0,00"></div></div>
+                    <div><label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Valor após vencimento</label><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">R$</span><input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="w-full pl-9 p-3.5 bg-slate-50 dark:bg-slate-950 dark:text-white font-black" placeholder="0,00"></div></div>
+                </div>
+                <div><label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Chave PIX manual</label><input type="text" id="config-pix" placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 dark:text-white font-bold"></div>
+                <div class="bg-amber-50 dark:bg-amber-900/15 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-4">
+                    <label class="flex items-center justify-between cursor-pointer"><div><p class="text-[10px] font-black text-amber-800 dark:text-amber-400 uppercase tracking-widest">Repassar taxa bancária ao aluno</p><p class="text-[9px] text-amber-600 dark:text-amber-500 mt-1">Aplicada somente aos links digitais futuros.</p></div><input type="checkbox" id="asaas-repassar-taxa" onchange="toggleTaxaInput()" class="w-5 h-5 text-amber-600 rounded"></label>
+                    <div id="box-valor-taxa" class="hidden mt-4 pt-4 border-t border-amber-200 dark:border-amber-800/50 flex-col gap-2"><label class="text-[9px] font-black text-amber-700 dark:text-amber-400 uppercase">Taxa por cobrança</label><input type="text" id="asaas-valor-taxa" oninput="mascaraMoeda(this)" placeholder="1,99" class="w-full p-3 bg-white dark:bg-slate-950 dark:text-white font-black"></div>
+                </div>
+            </div>
+            <div class="p-5 md:p-6 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex gap-3"><button onclick="fecharModalConfigFinanceira()" class="flex-1 py-3.5 text-xs font-bold text-slate-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800">Cancelar</button><button id="btn-salvar-valores" onclick="salvarTodasConfiguracoesFinanceiras()" class="flex-1 py-3.5 text-xs font-black text-white bg-cyan-600 hover:bg-cyan-700 rounded-xl shadow-md uppercase tracking-widest">Salvar</button></div>
+        </div>
+    </div>
+
+    <!-- CONFIRMAÇÃO DE GERAÇÃO DE FATURAS -->
+    <div id="modal-gerar-faturas" class="fixed inset-0 z-[360] bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 card-premium shadow-2xl w-full max-w-md overflow-hidden border-slate-200 dark:border-slate-800">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800"><h3 class="font-black text-slate-800 dark:text-white text-lg">Gerar mensalidades</h3><p class="text-xs text-slate-400 font-medium mt-1" id="geracao-periodo">--</p></div>
+            <div class="p-6 grid grid-cols-2 gap-3">
+                <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4"><p class="text-[8px] font-black text-slate-400 uppercase">Alunos ativos</p><p id="geracao-ativos" class="text-2xl font-black text-slate-800 dark:text-white">0</p></div>
+                <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4"><p class="text-[8px] font-black text-slate-400 uppercase">Já existentes</p><p id="geracao-existentes" class="text-2xl font-black text-slate-500">0</p></div>
+                <div class="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-4"><p class="text-[8px] font-black text-cyan-600 uppercase">Novas faturas</p><p id="geracao-novas" class="text-2xl font-black text-cyan-600">0</p></div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4"><p class="text-[8px] font-black text-blue-600 uppercase">Isentos</p><p id="geracao-isentos" class="text-2xl font-black text-blue-600">0</p></div>
+                <div class="col-span-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4"><p class="text-[8px] font-black text-emerald-600 uppercase">Valor previsto das novas faturas</p><p id="geracao-valor" class="text-2xl font-black text-emerald-600">R$ 0,00</p></div>
+                <p class="col-span-2 text-[10px] text-slate-500 font-medium leading-relaxed">O valor, desconto e vencimento serão congelados na fatura deste mês. Alterações futuras nas configurações não modificarão esta cobrança.</p>
+            </div>
+            <div class="p-5 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex gap-3"><button onclick="fecharModalGeracaoFaturas()" class="flex-1 py-3.5 text-xs font-bold text-slate-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800">Cancelar</button><button id="btn-confirmar-geracao" onclick="confirmarGeracaoFaturas()" class="flex-1 py-3.5 text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md uppercase tracking-widest">Gerar faturas</button></div>
+        </div>
     </div>
 
     <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
@@ -680,7 +707,7 @@
             </div>
 
             <div class="space-y-4">
-                <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-widest">⚙️ Regras do Atleta</h4>
+                <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-widest">⚙️ Regras para próximas faturas</h4>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <span class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">Bolsa / Desconto (%)</span>
@@ -821,9 +848,72 @@
         window.equipeDados = null;
         window.equipeBaseConfig = { prazo: 0.0, atraso: 0.0, chave_pix: "" };
         window.alunosCache = [];
+        window.alunosTodosCache = [];
         window.financeiroMesCache = [];
         window.financeiroAnoCache = []; 
         window.alunoSelecionadoMens = null;
+
+        window.filtroStatusMens = 'TODOS';
+        window.ordenacaoMens = 'NOME';
+        window.previewGeracaoFaturas = null;
+
+        function escapeHtml(texto) {
+            const div = document.createElement('div');
+            div.textContent = texto == null ? '' : String(texto);
+            return div.innerHTML;
+        }
+
+        function mascararDadoSensivel(valor) {
+            const txt = String(valor || '').trim();
+            if (!txt) return '(não informado)';
+            if (txt.length <= 4) return '••••';
+            return `••••${txt.slice(-4)}`;
+        }
+
+        function formatarDataISO(data) {
+            const y = data.getFullYear();
+            const m = String(data.getMonth()+1).padStart(2,'0');
+            const d = String(data.getDate()).padStart(2,'0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function obterDataVencimento(ano, mes, diaDesejado) {
+            const a = Number(ano); const m = Number(mes);
+            const ultimoDia = new Date(a, m, 0).getDate();
+            const dia = Math.min(Math.max(Number(diaDesejado) || 10, 1), ultimoDia);
+            return new Date(a, m - 1, dia, 12, 0, 0, 0);
+        }
+
+        function normalizarStatusFatura(fatura) {
+            if (fatura.status) return String(fatura.status).toUpperCase();
+            // Compatibilidade: registro antigo sem status só é considerado pago quando há evidência de pagamento.
+            if (fatura.data_pagamento || fatura.forma_pagamento || fatura.paymentDate || fatura.data_recebimento) return 'PAGO';
+            return 'PENDENTE';
+        }
+
+        function calcularFatura(fatura, aluno, ano, mes) {
+            let status = normalizarStatusFatura(fatura);
+            const bolsa = Number(fatura.bolsa_aplicada ?? fatura.bolsa_snapshot ?? aluno?.bolsa_perc ?? 0) || 0;
+            const diaVenc = Number(fatura.dia_vencimento_snapshot ?? fatura.dia_vencimento ?? aluno?.dia_vencimento ?? 10) || 10;
+            let vencimento = fatura.data_vencimento ? new Date(`${fatura.data_vencimento}T12:00:00`) : obterDataVencimento(ano, mes, diaVenc);
+            if (Number.isNaN(vencimento.getTime())) vencimento = obterDataVencimento(ano, mes, diaVenc);
+
+            const temSnapshot = fatura.valor_prazo_snapshot !== undefined || fatura.valor_atraso_snapshot !== undefined;
+            const valorPrazo = Number(fatura.valor_prazo_snapshot ?? fatura.valor_original ?? fatura.valor ?? 0) || 0;
+            const valorAtraso = Number(fatura.valor_atraso_snapshot ?? valorPrazo) || 0;
+            let valor = Number(fatura.valor ?? valorPrazo) || 0;
+
+            if (status === 'ISENTO' || bolsa >= 100) { status = 'ISENTO'; valor = 0; }
+            else if (status !== 'PAGO') {
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
+                const venc = new Date(vencimento); venc.setHours(0,0,0,0);
+                if (hoje > venc) { status = 'ATRASADO'; valor = temSnapshot ? valorAtraso : (Number(fatura.valor) || valorPrazo); }
+                else { status = 'PENDENTE'; valor = temSnapshot ? valorPrazo : (Number(fatura.valor) || valorPrazo); }
+            }
+            return { status, valor, bolsa, vencimento, diaVenc };
+        }
+
+        function statusEhPago(fatura) { return normalizarStatusFatura(fatura) === 'PAGO'; }
 
         window.chartBalancoMes = null;
         window.chartOrigemMes = null;
@@ -836,7 +926,7 @@
                 await addDoc(collection(db, "auditoria"), {
                     equipe_id: uid,
                     equipe_nome: equipeNomeGlobal,
-                    usuario_email: auth.currentUser.email,
+                    usuario_email: auth.currentUser?.email || "",
                     acao: acao,
                     detalhes: detalhes,
                     timestamp: new Date().toISOString()
@@ -1067,39 +1157,42 @@
         }
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                let isSuper = false;
-                try {
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (superSnap.exists()) isSuper = true;
-                } catch(e) { isSuper = false; }
+            if (!user) { window.location.href = "index.html"; return; }
+            try {
+                uid = null;
+                const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                if (equipeImpersonada) {
+                    let permitido = false;
+                    try {
+                        const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                        permitido = superSnap.exists();
+                    } catch(e) { permitido = false; }
+                    if (permitido) uid = equipeImpersonada;
+                    else sessionStorage.removeItem('admin_impersonate');
+                }
 
-                try {
-                    if (isSuper) {
-                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                        if (equipeImpersonada) uid = equipeImpersonada; 
-                        else { window.location.href = "super_admin.html"; return; }
-                    } else {
-                        uid = user.uid;
-                        const docMestre = await getDoc(doc(db, "equipes", uid));
-                        if (!docMestre.exists()) {
-                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                            if(colabSnap.exists()) uid = colabSnap.data().equipe_id; 
-                        }
+                if (!uid) {
+                    const docMestre = await getDoc(doc(db, "equipes", user.uid));
+                    if (docMestre.exists()) uid = user.uid;
+                    else {
+                        const colabSnap = await getDoc(doc(db, "colaboradores", user.uid));
+                        if (colabSnap.exists() && colabSnap.data().equipe_id) uid = colabSnap.data().equipe_id;
                     }
-                    
-                    const hoje = new Date();
-                    document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
-                    document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
+                }
 
-                    await carregarInfoEquipe(user);
-                     
-                    document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
-                    document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
+                if (!uid) { showToast("Não foi possível identificar a academia vinculada a este usuário.", "error"); return; }
 
-                    carregarDados();
-                } catch (error) { console.log(error); }
-            } else window.location.href = "index.html";
+                const hoje = new Date();
+                document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
+                document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
+                await carregarInfoEquipe(user);
+                document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
+                document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
+                await carregarDados();
+            } catch (error) {
+                console.error("Erro ao inicializar financeiro:", error);
+                showToast("Erro ao carregar o financeiro.", "error");
+            }
         });
 
         async function carregarInfoEquipe(user) {
@@ -1165,7 +1258,7 @@
                     const isAsaasAtivo = equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA';
 
                     if(isAsaasAtivo) {
-                        document.getElementById('asaas-ativo-panel').classList.remove('hidden');
+                        document.getElementById('asaas-ativo-panel').classList.remove('hidden'); document.getElementById('asaas-ativo-panel').classList.add('flex');
                         
                         if (equipeDados.asaas_kyc_oculto) {
                             document.getElementById('asaas-verificacao-panel').classList.add('hidden');
@@ -1256,7 +1349,27 @@
             }
         }
 
-        window.salvarConfiguracaoGeral = async function() {
+        window.abrirModalConfigFinanceira = function() {
+            document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo || 0);
+            document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso || 0);
+            document.getElementById('config-pix').value = equipeBaseConfig.chave_pix || '';
+            if (equipeDados) {
+                document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
+                document.getElementById('asaas-valor-taxa').value = floatToStr(Number(equipeDados.asaas_valor_taxa || 1.99));
+                window.toggleTaxaInput();
+            }
+            const modal = document.getElementById('modal-config-financeira'); modal.classList.remove('hidden'); modal.classList.add('flex');
+        };
+        window.fecharModalConfigFinanceira = function() { const m=document.getElementById('modal-config-financeira'); m.classList.add('hidden'); m.classList.remove('flex'); };
+        window.salvarTodasConfiguracoesFinanceiras = async function() {
+            await window.salvarConfiguracaoGeral(false);
+            await window.salvarConfigRepasse(false);
+            window.fecharModalConfigFinanceira();
+            renderizarTabelas();
+            showToast("Configurações financeiras atualizadas.", "success");
+        };
+
+        window.salvarConfiguracaoGeral = async function(notificar = true) {
             const p = strToFloat(document.getElementById('config-prazo').value);
             const a = strToFloat(document.getElementById('config-atraso').value);
             const pix = document.getElementById('config-pix').value.trim();
@@ -1281,10 +1394,9 @@
                 document.getElementById('config-prazo').value = floatToStr(p);
                 document.getElementById('config-atraso').value = floatToStr(a);
 
-                showToast("Configuração salva com sucesso!", "success");
-                registrarLogAuditoria("CONFIG_PRECOS", `Alterou as mensalidades base: Prazo (R$ ${p}), Atraso (R$ ${a}). Chave PIX: ${pix}`);
-                
-                await carregarDados(); 
+                if (notificar) showToast("Configuração salva com sucesso!", "success");
+                registrarLogAuditoria("CONFIG_PRECOS", `Alterou mensalidades base: prazo R$ ${p}, atraso R$ ${a}, PIX ${mascararDadoSensivel(pix)}`);
+                if (notificar) await carregarDados(); 
             } catch (e) { 
                 showToast("Erro ao salvar config.", "error"); 
             } finally { 
@@ -1292,7 +1404,7 @@
             }
         }
         
-        window.salvarConfigRepasse = async function() {
+        window.salvarConfigRepasse = async function(notificar = true) {
             const repassarTaxa = document.getElementById('asaas-repassar-taxa').checked;
             const valorTaxa = strToFloat(document.getElementById('asaas-valor-taxa').value);
             
@@ -1394,7 +1506,7 @@
                     await updateDoc(doc(db, "equipes", uid), { pix_saque_chave: chave, pix_saque_tipo: tipo });
                     await addDoc(collection(db, "saques"), { equipe_id: uid, valor: valorNum, chave_pix: chave, tipo_chave: tipo, data: new Date().toISOString(), status: 'SOLICITADO' });
                     carregarHistoricoSaques();
-                    registrarLogAuditoria("SAQUE_ASAAS", `Saque Asaas de R$ ${valorNum} solicitado via PIX: ${chave}`);
+                    registrarLogAuditoria("SAQUE_ASAAS", `Saque Asaas de R$ ${valorNum} solicitado via PIX: ${mascararDadoSensivel(chave)}`);
                     carregarSaldoAsaas(); 
                 } else { showToast("Erro do Banco: " + res.data.error, "error"); }
             } catch(e) { showToast("Falha na comunicação com o banco.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
@@ -1476,92 +1588,111 @@
                 if(res.data.success) {
                     showToast("Conta Asaas ativada com sucesso!", "success");
                     equipeDados.status_baas = "ATIVA";
-                    registrarLogAuditoria("CONTA_ASAAS_CRIADA", `Cadastro Asaas criado para ${nome} (${cpfCnpj})`);
+                    registrarLogAuditoria("CONTA_ASAAS_CRIADA", `Cadastro Asaas criado para ${nome} (${mascararDadoSensivel(cpfCnpj)})`);
                     carregarInfoEquipe({email: document.getElementById('email-logado') ? document.getElementById('email-logado').innerText : ''});
                 } else { showToast("Erro Asaas: " + res.data.error, "error"); }
             } catch(e) { showToast("Falha de conexão ao criar conta.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
         }
 
         // ==========================================
-        // GERAÇÃO EM LOTE COM FIRESTORE BATCHES
+        // GERAÇÃO DE FATURAS COM PREVIEW + SNAPSHOT
         // ==========================================
-        window.gerarFaturas = async function() {
-            if (equipeBaseConfig.prazo <= 0) {
-                showToast("Atenção: O valor da mensalidade (No Prazo) está zerado. Geração bloqueada.", "error");
-                return;
-            }
+        window.gerarFaturas = function() {
+            if (equipeBaseConfig.prazo <= 0) return showToast("Defina o valor da mensalidade antes de gerar faturas.", "error");
+            const mes = document.getElementById('filtro-mes').value;
+            const ano = document.getElementById('filtro-ano').value;
+            const mesAno = `${ano}-${mes}`;
+            const existentesIds = new Set(financeiroMesCache.filter(f => f.tipo === 'MENSALIDADE').map(f => f.aluno_id));
+            const novas = alunosCache.filter(a => !existentesIds.has(a.id));
+            const isentos = novas.filter(a => Number(a.bolsa_perc || 0) >= 100).length;
+            const valorPrevisto = novas.reduce((tot,a) => tot + (Number(a.bolsa_perc||0)>=100 ? 0 : equipeBaseConfig.prazo * (1-Number(a.bolsa_perc||0)/100)),0);
+            if (!novas.length) return showToast("Todas as mensalidades dos alunos ativos já foram geradas para este mês.", "info");
 
-            const btn = document.getElementById('btn-gerar-faturas'); if(!btn) return;
-            const originalTxt = btn.innerHTML; btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando Lote..."; btn.disabled = true;
+            window.previewGeracaoFaturas = { mes, ano, mesAno, novas };
+            document.getElementById('geracao-periodo').innerText = `${mes}/${ano}`;
+            document.getElementById('geracao-ativos').innerText = alunosCache.length;
+            document.getElementById('geracao-existentes').innerText = existentesIds.size;
+            document.getElementById('geracao-novas').innerText = novas.length;
+            document.getElementById('geracao-isentos').innerText = isentos;
+            document.getElementById('geracao-valor').innerText = `R$ ${floatToStr(valorPrevisto)}`;
+            const modal=document.getElementById('modal-gerar-faturas'); modal.classList.remove('hidden'); modal.classList.add('flex');
+        };
 
-            const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value; const mesAnoFiltro = `${ano}-${mes}`;
-            let geradas = 0; const filaAsaas = []; const chavePixAtual = document.getElementById('config-pix').value.trim();
+        window.fecharModalGeracaoFaturas = function(){ const m=document.getElementById('modal-gerar-faturas'); m.classList.add('hidden'); m.classList.remove('flex'); window.previewGeracaoFaturas=null; };
 
+        window.confirmarGeracaoFaturas = async function() {
+            const preview = window.previewGeracaoFaturas;
+            if (!preview || !preview.novas?.length) return;
+            const btn = document.getElementById('btn-confirmar-geracao');
+            const originalTxt = btn.innerText; btn.innerText = 'Gerando...'; btn.disabled = true;
+            const filaAsaas = [];
+            let geradas = 0;
             try {
-                const batch = writeBatch(db);
+                const temAsaas = equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true);
+                const itens = preview.novas.map(aluno => {
+                    const bolsa = Math.min(100, Math.max(0, Number(aluno.bolsa_perc || 0)));
+                    const diaOriginal = Number(aluno.dia_vencimento || 10);
+                    const vencimento = obterDataVencimento(preview.ano, preview.mes, diaOriginal);
+                    const status = bolsa >= 100 ? 'ISENTO' : 'PENDENTE';
+                    const valorPrazo = status === 'ISENTO' ? 0 : Number(equipeBaseConfig.prazo) * (1 - bolsa/100);
+                    const valorAtraso = status === 'ISENTO' ? 0 : Number(equipeBaseConfig.atraso || equipeBaseConfig.prazo) * (1 - bolsa/100);
+                    const faturaId = `mens_${uid}_${aluno.id}_${preview.mesAno}`;
+                    const ref = doc(db, 'financeiro', faturaId);
+                    const data = {
+                        equipe_id: uid, aluno_id: aluno.id, tipo: 'MENSALIDADE', status,
+                        valor: valorPrazo, valor_original: valorPrazo, valor_prazo_snapshot: valorPrazo,
+                        valor_atraso_snapshot: valorAtraso, bolsa_aplicada: bolsa,
+                        dia_vencimento_snapshot: Math.min(diaOriginal || 10, new Date(Number(preview.ano), Number(preview.mes), 0).getDate()),
+                        data_vencimento: formatarDataISO(vencimento), mes_ano: preview.mesAno,
+                        descricao: `Mensalidade - ${aluno.nome}`, aluno_nome_snapshot: aluno.nome || '', telefone_snapshot: aluno.telefone || '', data_criacao: new Date().toISOString(), versao_fatura: 2
+                    };
+                    if (!temAsaas && status !== 'ISENTO' && equipeBaseConfig.chave_pix) data.chave_pix_manual = equipeBaseConfig.chave_pix;
+                    return { aluno, ref, data, status, valorPrazo };
+                });
 
-                for (const aluno of alunosCache) {
-                    const existe = financeiroMesCache.find(f => f.aluno_id === aluno.id && f.tipo === 'MENSALIDADE');
-                    if (!existe) {
-                        const bolsa = aluno.bolsa_perc || 0;
-                        const status = bolsa === 100 ? 'ISENTO' : 'PENDENTE';
-                        const valor = equipeBaseConfig.prazo * (1 - bolsa/100);
-
-                        const faturaData = { 
-                            equipe_id: uid, aluno_id: aluno.id, tipo: 'MENSALIDADE', status: status, valor: valor, mes_ano: mesAnoFiltro, 
-                            descricao: `Mensalidade - ${aluno.nome}`, data_criacao: new Date().toISOString() 
-                        };
-
-                        const temAsaas = equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true);
-                        if (!temAsaas && status !== 'ISENTO') faturaData.chave_pix_manual = chavePixAtual;
-
-                        const novaFaturaRef = doc(collection(db, "financeiro"));
-                        batch.set(novaFaturaRef, faturaData);
-                        geradas++;
-
-                        if (temAsaas && status !== 'ISENTO') {
-                            let valorCobrarAsaas = valor;
-                            if (equipeDados.asaas_repassar_taxa && equipeDados.asaas_valor_taxa > 0) valorCobrarAsaas += parseFloat(equipeDados.asaas_valor_taxa);
-                            
-                            // 🔥 Passando o ID gerado pelo batch e não enviando a API Key
-                            filaAsaas.push({
-                                alunoId: aluno.id, 
-                                faturaId: novaFaturaRef.id, 
-                                valor: valorCobrarAsaas, 
-                                mesAno: mesAnoFiltro, 
-                                descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
-                                aceitaBoleto: equipeDados.asaas_aceita_boleto === true, 
-                                aceitaCartao: equipeDados.asaas_aceita_cartao === true
-                            });
-                        }
-                    }
-                }
-                
-                if (geradas > 0) {
+                // Lotes menores que o limite do Firestore.
+                for (let i=0; i<itens.length; i+=400) {
+                    const batch = writeBatch(db);
+                    itens.slice(i,i+400).forEach(item => batch.set(item.ref, item.data));
                     await batch.commit();
+                }
+                geradas = itens.length;
 
-                    registrarLogAuditoria("GEROU_FATURAS", `Gerou ${geradas} faturas em lote para o mês ${mesAnoFiltro}`);
-                    if (filaAsaas.length > 0) {
-                        showToast(`Faturas geradas! Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
-                        const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-                        let count = 0;
-                        for (const cob of filaAsaas) {
-                            try { count++; btn.innerHTML = `<span class='mr-2 text-base'>⏳</span> Gerando Links (${count}/${filaAsaas.length})...`; await gerarCobranca(cob); } catch (err) {}
-                        }
+                if (temAsaas) {
+                    itens.filter(i => i.status !== 'ISENTO').forEach(item => {
+                        let valorCobrar = item.valorPrazo;
+                        if (equipeDados.asaas_repassar_taxa && Number(equipeDados.asaas_valor_taxa)>0) valorCobrar += Number(equipeDados.asaas_valor_taxa);
+                        filaAsaas.push({ alunoId:item.aluno.id, faturaId:item.ref.id, valor:valorCobrar, mesAno:preview.mesAno, descricao:`Mensalidade Jiu-Jitsu - Ref: ${preview.mesAno}`, aceitaBoleto:equipeDados.asaas_aceita_boleto===true, aceitaCartao:equipeDados.asaas_aceita_cartao===true });
+                    });
+                }
+
+                registrarLogAuditoria('GEROU_FATURAS', `Gerou ${geradas} faturas para ${preview.mesAno} com valores congelados na competência.`);
+                fecharModalGeracaoFaturas();
+                showToast(`${geradas} fatura(s) gerada(s) com sucesso.`, 'success');
+                await carregarDados();
+
+                if (filaAsaas.length) {
+                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                    let count=0;
+                    for (const cob of filaAsaas) {
+                        try { count++; showToast(`Gerando cobrança digital ${count}/${filaAsaas.length}...`, 'info'); await gerarCobranca(cob); } catch(err) { console.error('Falha ao gerar link Asaas:', err); }
                     }
-                    showToast(`Faturas geradas com sucesso para ${mes}/${ano}!`, "success");
-                    await carregarDados(); 
-                } else { showToast("Todas as faturas dos alunos ativos neste mês já estavam geradas.", "info"); }
-            } catch (e) { showToast("Erro ao gerar faturas.", "error"); console.error(e); } 
-            finally { btn.innerHTML = originalTxt; btn.disabled = false; }
-        }
+                    await carregarDados();
+                }
+            } catch(e) {
+                console.error(e); showToast('Erro ao gerar faturas.', 'error');
+            } finally { btn.innerText=originalTxt; btn.disabled=false; }
+        };
 
         window.carregarDados = async function() {
             const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value; const mesAnoFiltro = `${ano}-${mes}`; 
 
-            const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
+            // Carrega todos os alunos para preservar o histórico financeiro de quem ficou inativo;
+            // apenas os ATIVOS entram na geração de novas mensalidades.
+            const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", uid));
             const snapAlunos = await getDocs(qAlunos);
-            alunosCache = snapAlunos.docs.map(d => ({ id: d.id, ...d.data() }));
+            alunosTodosCache = snapAlunos.docs.map(d => ({ id: d.id, ...d.data() }));
+            alunosCache = alunosTodosCache.filter(a => String(a.status || '').toUpperCase() === 'ATIVO');
 
             const qFinMes = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
             const snapFinMes = await getDocs(qFinMes);
@@ -1574,120 +1705,104 @@
             renderizarTabelas(); atualizarDashboardMes(); atualizarAnaliseAnual(); fecharModalAcoes();
         }
 
-        window.filtrarMensalidades = function() { renderizarTabelas(); }
+        window.filtrarMensalidades = function() { renderizarTabelas(); };
+        window.setFiltroMensalidade = function(status) {
+            window.filtroStatusMens = status;
+            document.querySelectorAll('#filtros-status-mens .status-chip').forEach(b => b.classList.toggle('active', b.dataset.status === status));
+            renderizarTabelas();
+        };
+        window.alterarOrdenacaoMensalidades = function(valor) { window.ordenacaoMens = valor || 'NOME'; renderizarTabelas(); };
 
         function renderizarTabelas() {
             const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value;
-            const termo = document.getElementById('input-busca-mens') ? document.getElementById('input-busca-mens').value.toLowerCase() : "";
-            
-            const contMens = document.getElementById('tabela-mensalidades'); const contFluxo = document.getElementById('tabela-fluxo');
-            if(contMens) contMens.innerHTML = ''; if(contFluxo) contFluxo.innerHTML = '';
+            const termo = (document.getElementById('input-busca-mens')?.value || '').toLowerCase().trim();
+            const contMens = document.getElementById('tabela-mensalidades');
+            const contMobile = document.getElementById('lista-mensalidades-mobile');
+            const contFluxo = document.getElementById('tabela-fluxo');
+            const contFluxoMobile = document.getElementById('lista-fluxo-mobile');
+            if(contMens) contMens.innerHTML=''; if(contMobile) contMobile.innerHTML=''; if(contFluxo) contFluxo.innerHTML=''; if(contFluxoMobile) contFluxoMobile.innerHTML='';
 
-            let rPagos = 0; let rPendentes = 0; let rAtrasadosTotais = 0;
-            const faturasMes = financeiroMesCache.filter(f => f.tipo === 'MENSALIDADE');
+            const registros = financeiroMesCache.filter(f=>f.tipo==='MENSALIDADE').map(f => {
+                const aluno=alunosTodosCache.find(a=>a.id===f.aluno_id) || { id:f.aluno_id, nome:f.aluno_nome_snapshot || String(f.descricao||'').replace(/^Mensalidade\s*-\s*/i,'') || 'Aluno não localizado', telefone:f.telefone_snapshot || '', bolsa_perc:f.bolsa_aplicada || 0, dia_vencimento:f.dia_vencimento_snapshot || 10, _somenteHistorico:true };
+                return { f, aluno, calc: calcularFatura(f, aluno, ano, mes) };
+            }).filter(Boolean);
 
-            if (faturasMes.length === 0) {
-                if(contMens) contMens.innerHTML = `<tr><td colspan="6" class="p-0"><div class="flex flex-col items-center justify-center py-16 text-center w-full"><span class="text-5xl mb-4 opacity-50">📋</span><h3 class="text-lg font-black text-slate-700 dark:text-slate-300 mb-2">Nenhuma fatura gerada para este mês</h3><p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"⚡ Gerar Faturas"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p></div></td></tr>`;
-            } else {
-                faturasMes.sort((a,b) => {
-                    const alA = alunosCache.find(x => x.id === a.aluno_id)?.nome || ""; const alB = alunosCache.find(x => x.id === b.aluno_id)?.nome || ""; return alA.localeCompare(alB);
-                }).forEach(f => {
-                    let status = f.status || 'PAGO'; 
-                    const aluno = alunosCache.find(a => a.id === f.aluno_id);
-                    if (!aluno) return; 
-                    if (termo && !aluno.nome.toLowerCase().includes(termo)) return;
-
-                    let valorFinal = f.valor;
-
-                    if (status === 'PENDENTE' || status === 'ATRASADO') {
-                        const bolsa = aluno.bolsa_perc || 0;
-                        if (bolsa === 100) { status = 'ISENTO'; valorFinal = 0; } 
-                        else {
-                            const dataVenc = new Date(parseInt(ano), parseInt(mes)-1, aluno.dia_vencimento || 10);
-                            const hoje = new Date(); hoje.setHours(0,0,0,0);
-                            if (hoje > dataVenc) { status = 'ATRASADO'; valorFinal = equipeBaseConfig.atraso * (1 - bolsa/100); } 
-                            else { status = 'PENDENTE'; valorFinal = equipeBaseConfig.prazo * (1 - bolsa/100); }
-                        }
-                    }
-
-                    if (status === 'PAGO') {
-                        rPagos += valorFinal;
-                    } else if (status === 'PENDENTE' || status === 'ATRASADO') {
-                        rPendentes += valorFinal;
-                        if(status === 'ATRASADO') rAtrasadosTotais += valorFinal;
-                    }
-
-                    const dataPagTxt = (status === 'PAGO' && f.data_pagamento) ? new Date(f.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : (status === 'PAGO' && f.data) ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
-                    
-                    let corBg = "hover:bg-cyan-50 dark:hover:bg-slate-800"; let corStatus = "";
-                    if (status === 'PAGO') { corBg = "bg-emerald-50/30 dark:bg-emerald-900/10 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"; corStatus = 'bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800'; } 
-                    else if (status === 'ATRASADO') { corBg = "bg-rose-50/30 dark:bg-rose-900/10 hover:bg-rose-50 dark:hover:bg-rose-900/20"; corStatus = 'bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-800'; } 
-                    else if (status === 'ISENTO') corStatus = 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:border-blue-800'; 
-                    else corStatus = 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800';
-
-                    let iconeAsaas = f.link_pagamento && status !== 'PAGO' && status !== 'ISENTO' ? ' <span title="Link Gerado" class="ml-1 opacity-80">💳</span>' : '';
-
-                    const tr = document.createElement('tr');
-                    tr.className = `cursor-pointer transition-colors border-b border-slate-100 dark:border-slate-800/50 ${corBg}`;
-                    const calcData = { fatura_id: f.id, status: status, valor: valorFinal, reg: f };
-                    tr.onclick = () => abrirModalAcoes(aluno.id, calcData);
-
-                    tr.innerHTML = `
-                        <td class="px-6 py-5">
-                            <div class="font-bold text-slate-800 dark:text-white text-sm whitespace-normal min-w-[150px]">${aluno.nome}</div>
-                            <div class="text-[9px] text-slate-400 uppercase tracking-widest">${aluno.telefone || 'S/ Tel'}</div>
-                        </td>
-                        <td class="px-6 py-5 text-center text-xs font-bold text-slate-500">Dia ${aluno.dia_vencimento || 10}</td>
-                        <td class="px-6 py-5 text-center text-[10px] font-bold text-slate-500">${aluno.bolsa_perc || 0}%</td>
-                        <td class="px-6 py-5 text-center"><span class="px-2 py-1 rounded-md text-[9px] font-black shadow-sm ${corStatus}">${status}${iconeAsaas}</span></td>
-                        <td class="px-6 py-5 text-right font-black text-slate-700 dark:text-slate-300">R$ ${floatToStr(valorFinal)}</td>
-                        <td class="px-6 py-5 text-center text-[10px] font-bold text-slate-400">${dataPagTxt}</td>
-                    `;
-                    if(contMens) contMens.appendChild(tr);
-                });
-            }
-
-            if(document.getElementById('lbl-resumo-pago')) document.getElementById('lbl-resumo-pago').innerText = `R$ ${floatToStr(rPagos)}`;
-            if(document.getElementById('lbl-resumo-pendente')) document.getElementById('lbl-resumo-pendente').innerText = `R$ ${floatToStr(rPendentes)}`;
-
-            // ATUALIZANDO AS NOVAS MÉTRICAS DE INTELIGÊNCIA NO DASHBOARD
-            let mrrEsperado = 0;
-            alunosCache.forEach(aluno => {
-                const bolsa = aluno.bolsa_perc || 0;
-                if(bolsa < 100) mrrEsperado += equipeBaseConfig.prazo * (1 - bolsa/100);
+            let rPagos=0, rPendentes=0, rAtrasados=0, qtdPagos=0, qtdIsentos=0, vencemBreve=0;
+            const hoje=new Date(); hoje.setHours(0,0,0,0); const limite=new Date(hoje); limite.setDate(limite.getDate()+7);
+            registros.forEach(({calc})=>{
+                if(calc.status==='PAGO'){ rPagos+=calc.valor; qtdPagos++; }
+                else if(calc.status==='ISENTO'){ qtdIsentos++; }
+                else { rPendentes+=calc.valor; if(calc.status==='ATRASADO') rAtrasados+=calc.valor; else { const v=new Date(calc.vencimento); v.setHours(0,0,0,0); if(v>=hoje && v<=limite) vencemBreve++; } }
             });
-            if(document.getElementById('dash-mrr')) document.getElementById('dash-mrr').innerText = `R$ ${floatToStr(mrrEsperado)}`;
 
-            let percInad = 0;
-            const faturamentoMesTotal = rPagos + rPendentes;
-            if(faturamentoMesTotal > 0) percInad = (rAtrasadosTotais / faturamentoMesTotal) * 100;
-            if(document.getElementById('dash-inadimplencia')) document.getElementById('dash-inadimplencia').innerText = `${percInad.toFixed(1).replace('.',',')}%`;
+            let exibidos=registros.filter(({aluno,calc}) => (!termo || (aluno.nome||'').toLowerCase().includes(termo)) && (window.filtroStatusMens==='TODOS' || calc.status===window.filtroStatusMens));
+            exibidos.sort((x,y)=>{
+                if(window.ordenacaoMens==='VENCIMENTO') return x.calc.vencimento-y.calc.vencimento || (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
+                if(window.ordenacaoMens==='VALOR_DESC') return y.calc.valor-x.calc.valor || (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
+                return (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
+            });
 
-            const fluxoFiltrado = financeiroMesCache.filter(f => f.tipo !== 'MENSALIDADE');
-            if(fluxoFiltrado.length === 0) {
-                if(contFluxo) contFluxo.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Nenhum registo extra neste mês.</td></tr>';
+            const statusStyle = status => status==='PAGO' ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800' : status==='ATRASADO' ? 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-800' : status==='ISENTO' ? 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:border-blue-800' : 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800';
+
+            if(!registros.length){
+                const vazio=`<div class="flex flex-col items-center justify-center py-14 px-6 text-center"><div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl mb-3">▤</div><h3 class="text-sm font-black text-slate-700 dark:text-slate-300">Nenhuma fatura gerada para ${mes}/${ano}</h3><p class="text-xs text-slate-400 mt-2 max-w-sm">Use “Gerar Faturas” para preparar as mensalidades dos alunos ativos.</p></div>`;
+                if(contMens) contMens.innerHTML=`<tr><td colspan="6">${vazio}</td></tr>`; if(contMobile) contMobile.innerHTML=vazio;
+            } else if(!exibidos.length){
+                const vazio='<div class="p-10 text-center text-xs font-bold text-slate-400">Nenhuma mensalidade corresponde aos filtros.</div>';
+                if(contMens) contMens.innerHTML=`<tr><td colspan="6">${vazio}</td></tr>`; if(contMobile) contMobile.innerHTML=vazio;
             } else {
-                fluxoFiltrado.sort((a,b) => new Date(b.data) - new Date(a.data)).forEach(f => {
-                    const isEntrada = f.tipo === 'RECEITA'; const corValor = isEntrada ? 'text-emerald-500' : 'text-rose-500'; const sinal = isEntrada ? '+' : '-'; const icone = isEntrada ? '📈' : '📉';
-                    
-                    if(contFluxo) contFluxo.innerHTML += `
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50">
-                            <td class="px-6 py-4 text-slate-500 text-xs">${new Date(f.data).toLocaleDateString('pt-BR')}</td>
-                            <td class="px-6 py-4 whitespace-normal min-w-[200px]">
-                                <div class="font-bold text-slate-700 dark:text-slate-300 text-xs">${f.descricao}</div>
-                                <div class="text-[9px] text-slate-400 uppercase">${f.fonte || ''}</div>
-                            </td>
-                            <td class="px-6 py-4 text-center"><span class="text-[8px] font-black px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase tracking-widest">${icone} ${f.tipo}</span></td>
-                            <td class="px-6 py-4 text-right font-black text-xs ${corValor}">${sinal} R$ ${floatToStr(f.valor)}</td>
-                            <td class="px-6 py-4 text-center"><button onclick="excluirLancamento('${f.id}')" class="text-[10px] bg-rose-50 dark:bg-rose-500/10 text-rose-500 px-3 py-1 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-500/20 font-bold">Excluir</button></td>
-                        </tr>
-                    `;
+                exibidos.forEach(({f,aluno,calc})=>{
+                    const dataPagTxt = calc.status==='PAGO' && f.data_pagamento ? new Date(`${f.data_pagamento}T12:00:00`).toLocaleDateString('pt-BR') : calc.status==='PAGO' && f.data ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
+                    const vencTxt=calc.vencimento.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+                    const iconeAsaas=f.link_pagamento && !['PAGO','ISENTO'].includes(calc.status) ? '<span title="Link de cobrança disponível" class="ml-1">◈</span>' : '';
+                    const calcData={fatura_id:f.id,status:calc.status,valor:calc.valor,reg:f,vencimento:formatarDataISO(calc.vencimento)};
+                    const nome=escapeHtml(aluno.nome||'Aluno'); const tel=escapeHtml(aluno.telefone||'Sem telefone');
+                    if(contMens){
+                        const tr=document.createElement('tr'); tr.className='finance-table-row cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50'; tr.onclick=()=>abrirModalAcoes(aluno.id,calcData);
+                        tr.innerHTML=`<td class="px-5 py-4"><div class="font-bold text-slate-800 dark:text-white text-sm whitespace-normal min-w-[150px]">${nome}</div><div class="text-[9px] text-slate-400 uppercase tracking-widest">${tel}</div></td><td class="px-5 py-4 text-center text-xs font-bold text-slate-500">${vencTxt}</td><td class="px-5 py-4 text-center text-[10px] font-bold text-slate-500">${calc.bolsa}%</td><td class="px-5 py-4 text-center"><span class="px-2.5 py-1 rounded-lg text-[9px] font-black border ${statusStyle(calc.status)}">${calc.status}${iconeAsaas}</span></td><td class="px-5 py-4 text-right font-black text-slate-700 dark:text-slate-300">R$ ${floatToStr(calc.valor)}</td><td class="px-5 py-4 text-center text-[10px] font-bold text-slate-400">${dataPagTxt}</td>`;
+                        contMens.appendChild(tr);
+                    }
+                    if(contMobile){
+                        const card=document.createElement('button'); card.type='button'; card.className='mobile-invoice-card w-full text-left p-4 bg-white dark:bg-slate-900'; card.onclick=()=>abrirModalAcoes(aluno.id,calcData);
+                        card.innerHTML=`<div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="font-black text-slate-800 dark:text-white text-sm truncate">${nome}</p><p class="text-[9px] text-slate-400 font-bold mt-1">Venc. ${vencTxt} · Bolsa ${calc.bolsa}%</p></div><span class="shrink-0 px-2 py-1 rounded-lg text-[8px] font-black border ${statusStyle(calc.status)}">${calc.status}</span></div><div class="flex items-end justify-between mt-4"><div><p class="text-[8px] font-black text-slate-400 uppercase">Valor</p><p class="text-lg font-black text-slate-800 dark:text-white">R$ ${floatToStr(calc.valor)}</p></div><span class="text-[9px] font-black text-cyan-600 uppercase">Abrir ações ›</span></div>`;
+                        contMobile.appendChild(card);
+                    }
                 });
             }
+
+            document.getElementById('lbl-resumo-pago').innerText=`R$ ${floatToStr(rPagos)}`;
+            document.getElementById('lbl-resumo-pendente').innerText=`R$ ${floatToStr(rPendentes)}`;
+            document.getElementById('lbl-resumo-atrasado').innerText=`R$ ${floatToStr(rAtrasados)}`;
+            document.getElementById('lbl-resumo-pagos-qtd').innerText=`${qtdPagos} / ${registros.length}`;
+
+            let previsto=0;
+            if(registros.length) registros.forEach(({f,calc})=> { if(calc.status!=='ISENTO') previsto += Number(f.valor_prazo_snapshot ?? f.valor_original ?? f.valor ?? 0) || 0; });
+            else alunosCache.forEach(a=>{const b=Number(a.bolsa_perc||0); if(b<100) previsto += equipeBaseConfig.prazo*(1-b/100);});
+            if(document.getElementById('dash-mrr')) document.getElementById('dash-mrr').innerText=`R$ ${floatToStr(previsto)}`;
+            if(document.getElementById('dash-recebido')) document.getElementById('dash-recebido').innerText=`R$ ${floatToStr(rPagos)}`;
+            if(document.getElementById('dash-pendente')) document.getElementById('dash-pendente').innerText=`R$ ${floatToStr(rPendentes)}`;
+            if(document.getElementById('dash-atrasado')) document.getElementById('dash-atrasado').innerText=`R$ ${floatToStr(rAtrasados)}`;
+            const faturado=rPagos+rPendentes; const perc=faturado>0?(rAtrasados/faturado*100):0;
+            if(document.getElementById('dash-inadimplencia')) document.getElementById('dash-inadimplencia').innerText=`${perc.toFixed(1).replace('.',',')}%`;
+            if(document.getElementById('dash-pagos-qtd')) document.getElementById('dash-pagos-qtd').innerText=qtdPagos;
+            if(document.getElementById('dash-vencem-breve')) document.getElementById('dash-vencem-breve').innerText=vencemBreve;
+            if(document.getElementById('dash-isentos-qtd')) document.getElementById('dash-isentos-qtd').innerText=qtdIsentos;
+
+            const fluxoFiltrado=financeiroMesCache.filter(f=>f.tipo!=='MENSALIDADE');
+            if(!fluxoFiltrado.length){
+                if(contFluxo) contFluxo.innerHTML='<tr><td colspan="5" class="text-center py-10 text-slate-400 text-xs font-bold">Nenhum lançamento de caixa neste mês.</td></tr>';
+                if(contFluxoMobile) contFluxoMobile.innerHTML='<div class="p-10 text-center text-xs font-bold text-slate-400">Nenhum lançamento de caixa neste mês.</div>';
+            } else fluxoFiltrado.sort((a,b)=>new Date(b.data)-new Date(a.data)).forEach(f=>{
+                const isEntrada=f.tipo==='RECEITA', cor=isEntrada?'text-emerald-500':'text-rose-500', sinal=isEntrada?'+':'−';
+                const dataTxt=f.data?new Date(`${f.data}T12:00:00`).toLocaleDateString('pt-BR'):'--';
+                const desc=escapeHtml(f.descricao||''), fonte=escapeHtml(f.fonte||'');
+                if(contFluxo) contFluxo.innerHTML+=`<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800/50"><td class="px-6 py-4 text-slate-500 text-xs">${dataTxt}</td><td class="px-6 py-4 whitespace-normal min-w-[200px]"><div class="font-bold text-slate-700 dark:text-slate-300 text-xs">${desc}</div><div class="text-[9px] text-slate-400 uppercase">${fonte}</div></td><td class="px-6 py-4 text-center"><span class="text-[8px] font-black px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase">${f.tipo}</span></td><td class="px-6 py-4 text-right font-black text-xs ${cor}">${sinal} R$ ${floatToStr(Number(f.valor||0))}</td><td class="px-6 py-4 text-center"><button onclick="excluirLancamento('${f.id}')" class="text-[10px] bg-rose-50 dark:bg-rose-500/10 text-rose-500 px-3 py-1 rounded-lg font-bold">Excluir</button></td></tr>`;
+                if(contFluxoMobile) contFluxoMobile.innerHTML+=`<div class="p-4"><div class="flex justify-between gap-3"><div class="min-w-0"><p class="font-black text-slate-800 dark:text-white text-sm truncate">${desc}</p><p class="text-[9px] text-slate-400 font-bold mt-1">${dataTxt}${fonte?' · '+fonte:''}</p></div><span class="shrink-0 text-sm font-black ${cor}">${sinal} R$ ${floatToStr(Number(f.valor||0))}</span></div><div class="flex justify-between items-center mt-3"><span class="text-[8px] font-black px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase">${f.tipo}</span><button onclick="excluirLancamento('${f.id}')" class="text-[9px] font-black text-rose-500 uppercase">Excluir</button></div></div>`;
+            });
         }
 
         window.abrirModalAcoes = function(alunoId, calcData) {
-            const aluno = alunosCache.find(a => a.id === alunoId);
+            const aluno = alunosTodosCache.find(a => a.id === alunoId) || { id:alunoId, nome:calcData?.reg?.aluno_nome_snapshot || String(calcData?.reg?.descricao||'').replace(/^Mensalidade\s*-\s*/i,'') || 'Aluno não localizado', telefone:calcData?.reg?.telefone_snapshot || '', bolsa_perc:calcData?.reg?.bolsa_aplicada || 0, dia_vencimento:calcData?.reg?.dia_vencimento_snapshot || 10, _somenteHistorico:true };
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
 
             document.getElementById('acao-aluno-nome').innerText = aluno.nome;
@@ -1796,6 +1911,7 @@
 
         window.salvarConfigAluno = async function() {
             if(!alunoSelecionadoMens) return;
+            if(alunoSelecionadoMens._somenteHistorico) return showToast('O cadastro deste aluno não está mais disponível. O histórico financeiro foi preservado.', 'info');
             const nb = parseInt(document.getElementById('acao-bolsa').value) || 0; const nv = parseInt(document.getElementById('acao-venc').value);
             const btn = document.getElementById('btn-salvar-regras'); const origTxt = btn.innerText; btn.innerText = "Salvando..."; btn.disabled = true;
             try {
@@ -1925,7 +2041,7 @@
         window.atualizarDashboardMes = function() {
             let tMens = 0, tExt = 0, tDesp = 0;
             financeiroMesCache.forEach(f => {
-                if(f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status)) tMens += f.valor;
+                if(f.tipo === 'MENSALIDADE' && statusEhPago(f)) tMens += Number(f.valor || 0);
                 else if(f.tipo === 'RECEITA') tExt += f.valor;
                 else if(f.tipo === 'DESPESA') tDesp += f.valor;
             });
@@ -2051,7 +2167,7 @@
                 if(mIdx === -1) return;
 
                 if(f.tipo === 'DESPESA') { despAnual[mIdx] += f.valor; totalDespAno += f.valor; }
-                else if(f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status))) { 
+                else if(f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && statusEhPago(f))) { 
                     recAnual[mIdx] += f.valor; totalRecAno += f.valor; 
                 }
             });
@@ -2155,16 +2271,29 @@
 
         window.mudarAba = function(id) {
             document.querySelectorAll('.aba-content').forEach(a => { a.classList.add('hidden'); a.classList.remove('flex'); });
-            document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex');
-            
-            document.querySelectorAll('.aba-item').forEach(b => {
-                b.classList.remove('tab-active', 'text-slate-800');
-                if(b.id !== 'btn-tab-config-asaas') b.classList.add('text-slate-400');
-            });
-            
-            const abaClicada = document.getElementById('btn-' + id);
-            if(abaClicada) { abaClicada.classList.add('tab-active'); abaClicada.classList.remove('text-slate-400'); }
-        }
+            const alvo=document.getElementById(id); if(alvo){ alvo.classList.remove('hidden'); alvo.classList.add('flex'); }
+            document.querySelectorAll('.aba-item').forEach(b => { b.classList.remove('tab-active','text-slate-800'); b.classList.add('text-slate-400'); });
+            let btnId = (id==='tab-dash'||id==='tab-anual') ? 'btn-tab-relatorios' : 'btn-'+id;
+            const btn=document.getElementById(btnId); if(btn){ btn.classList.add('tab-active'); btn.classList.remove('text-slate-400'); }
+        };
+
+        window.mudarRelatorio = function(tipo='mensal') {
+            const id = tipo==='anual' ? 'tab-anual' : 'tab-dash';
+            window.mudarAba(id);
+            document.querySelectorAll('.rel-subtab').forEach(b=>b.classList.toggle('active', b.dataset.rel===tipo));
+            if(tipo==='anual') window.atualizarAnaliseAnual(); else window.atualizarDashboardMes();
+        };
+
+        window.exportarCSVFinanceiro = function() {
+            const ano=document.getElementById('filtro-ano').value;
+            const docs=[...financeiroAnoCache].sort((a,b)=>String(a.mes_ano||'').localeCompare(String(b.mes_ano||'')));
+            if(!docs.length) return showToast('Não há dados para exportar neste ano.', 'info');
+            const linhas=[['Competência','Tipo','Descrição','Status','Valor','Data','Forma de pagamento']];
+            docs.forEach(f=>linhas.push([f.mes_ano||'',f.tipo||'',f.descricao||'',f.tipo==='MENSALIDADE'?normalizarStatusFatura(f):'',Number(f.valor||0).toFixed(2).replace('.',','),f.data_pagamento||f.data||'',f.forma_pagamento||'']));
+            const csv='\uFEFF'+linhas.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+            const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Financeiro_${ano}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+            registrarLogAuditoria('EXPORTOU_FINANCEIRO', `Exportou CSV financeiro do ano ${ano}.`);
+        };
 
         window.abrirModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('hidden', 'flex');
         window.fecharModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('flex', 'hidden');
@@ -2274,7 +2403,7 @@
                             <td class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400">${dataFormatada}</td>
                             <td class="px-6 py-4 text-right text-sm font-black text-slate-700 dark:text-slate-300">R$ ${floatToStr(s.valor)}</td>
                             <td class="px-6 py-4 text-center">
-                                <div class="text-xs font-bold text-slate-600 dark:text-slate-300">${s.chave_pix}</div>
+                                <div class="text-xs font-bold text-slate-600 dark:text-slate-300">${mascararDadoSensivel(s.chave_pix)}</div>
                                 <div class="text-[9px] text-slate-400 uppercase tracking-widest">${s.tipo_chave}</div>
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -2288,6 +2417,11 @@
                 cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-rose-500 text-xs font-bold">Erro ao carregar histórico.</td></tr>';
             }
         }
+
+        document.addEventListener('keydown', (e) => {
+            if(e.key !== 'Escape') return;
+            ['modal-config-financeira','modal-gerar-faturas','modal-acoes-wrapper','modal-relatorio','modal-despesa','modal-receita'].forEach(id=>{ const m=document.getElementById(id); if(m && !m.classList.contains('hidden')) { m.classList.add('hidden'); m.classList.remove('flex'); } });
+        });
 
         window.onload = () => {
             mudarAba('tab-mensalidades');
@@ -2324,7 +2458,7 @@
                         
                         if(f.tipo === 'DESPESA') { 
                             dadosAgrupados[chave].d += f.valor; totDesp += f.valor; 
-                        } else if(f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status))) { 
+                        } else if(f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && statusEhPago(f))) { 
                             dadosAgrupados[chave].r += f.valor; totRec += f.valor; 
                         }
                     }
@@ -2381,7 +2515,7 @@
                         <div style="text-align: center; border-bottom: 2px solid #1E293B; padding-bottom: 20px; margin-bottom: 20px;">
                             ${logoHtmlRelatorio}
                             <h2 style="margin: 0; font-size: 22px;">${equipeNomeGlobal.toUpperCase()}</h2>
-                            <h3 style="margin: 5px 0; color: #64748B;">RELATÓRIO DE LUCRO REAL</h3>
+                            <h3 style="margin: 5px 0; color: #64748B;">RELATÓRIO FINANCEIRO</h3>
                             <p style="margin: 0; font-size: 14px;">Período: ${mIni}/${aIni} a ${mFim}/${aFim}</p>
                         </div>
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; text-align: left;">
@@ -2399,7 +2533,7 @@
                             <h3 style="margin: 0 0 10px 0;">RESUMO GERAL DO PERÍODO:</h3>
                             <p style="margin: 5px 0; font-size: 16px;">Total de Entradas: <b style="color: #16A34A;">R$ ${floatToStr(totRec)}</b></p>
                             <p style="margin: 5px 0; font-size: 16px;">Total de Saídas: <b style="color: #DC2626;">R$ ${floatToStr(totDesp)}</b></p>
-                            <h2 style="margin: 15px 0 0 0; font-size: 20px;">LUCRO REAL: <span style="color: ${(totRec - totDesp)>=0 ? '#16A34A' : '#DC2626'};">R$ ${floatToStr(totRec - totDesp)}</span></h2>
+                            <h2 style="margin: 15px 0 0 0; font-size: 20px;">RESULTADO REALIZADO: <span style="color: ${(totRec - totDesp)>=0 ? '#16A34A' : '#DC2626'};">R$ ${floatToStr(totRec - totDesp)}</span></h2>
                         </div>
                     </div>`;
 
