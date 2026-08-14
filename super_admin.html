@@ -3228,7 +3228,7 @@
             const conf=await confirmarCritico({title:'Acessar como academia',message:`Você abrirá ${eq?.nome_equipe||id} com privilégios administrativos. Todas as ações devem ser tratadas como operação de suporte.`,phrase:'ACESSAR',phraseLabel:'Digite ACESSAR para iniciar a sessão'}); if(!conf.ok)return;
             sessionStorage.setItem('admin_impersonate',id); sessionStorage.setItem('admin_impersonate_meta',JSON.stringify({masterUid,masterEmail:document.getElementById('master-email')?.innerText||'',startedAt:new Date().toISOString(),reason:conf.reason,academyName:eq?.nome_equipe||''}));
             await registrarAuditAdmin('INICIOU_IMPERSONACAO',conf.reason,{equipe_id:id,equipe_nome:eq?.nome_equipe||'',criticidade:'CRITICA'});
-            window.open(pagina,'_blank','noopener');fecharModalAcessoSistema();
+            window.open(pagina,'_blank');fecharModalAcessoSistema();
         };
 
         // ---------- Safer PIX confirmation ----------
