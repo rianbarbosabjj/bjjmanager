@@ -6,401 +6,285 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BJJ Manager">
     <meta name="theme-color" content="#0f172a">
-
+    
     <link rel="apple-touch-icon" href="logo_bjj_manager.png">
     <link rel="icon" type="image/png" href="logo_bjj_manager.png">
+    
     <link rel="manifest" href="manifest.json">
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Turmas | BJJ Manager</title>
-
+    
+    <link rel="icon" type="image/png" href="logo_bjj_manager.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-        :root {
-            color-scheme: light;
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
-        }
-
-        * { box-sizing: border-box; }
-        html { -webkit-text-size-adjust: 100%; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            color: #0f172a;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
         @keyframes fade-in {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .animate-fade-in { animation: fade-in .22s ease-out both; }
-        .animate-spin { animation: spin .85s linear infinite; }
-
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin { animation: spin 1s linear infinite; }
+        
+        /* Transições suaves */
         .card-turma {
-            transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+            transition: all 0.2s ease;
         }
-        .card-turma:hover { transform: translateY(-1px); }
-
-        .slide-in-mobile { transform: translateX(0) !important; }
-        .focus-ring:focus-visible { outline: 3px solid rgba(6,182,212,.25); outline-offset: 2px; }
-
-        .metric-card {
-            background: linear-gradient(180deg, #fff 0%, #fbfdff 100%);
-            box-shadow: 0 1px 2px rgba(15,23,42,.04);
+        .card-turma:hover {
+            transform: translateY(-2px);
         }
-
-        .toolbar-control {
-            min-height: 44px;
-        }
-
-        .view-button[aria-pressed="true"] {
-            background: #0f172a;
-            color: #fff;
-            border-color: #0f172a;
-        }
-
-        .menu-popover {
-            animation: fade-in .14s ease-out both;
-        }
-
-        .weekly-grid {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(175px, 1fr));
-            gap: 12px;
-            min-width: 1260px;
-        }
-
-        .weekly-column {
-            min-height: 420px;
-        }
-
-        @media (max-width: 767px) {
-            .mobile-bottom-sheet {
-                align-items: flex-end !important;
-                padding: 0 !important;
+        
+        /* Melhorias para mobile */
+        @media (max-width: 768px) {
+            .container-padding {
+                padding-left: 12px;
+                padding-right: 12px;
             }
-            .mobile-bottom-sheet > .sheet-panel {
-                width: 100% !important;
-                max-width: none !important;
-                max-height: min(92dvh, 760px) !important;
-                border-radius: 24px 24px 0 0 !important;
-                padding-bottom: var(--safe-bottom);
+            .btn-mobile-full {
+                width: 100%;
             }
-            .mobile-detail-safe { padding-bottom: calc(84px + var(--safe-bottom)); }
         }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                scroll-behavior: auto !important;
-                animation-duration: .01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: .01ms !important;
-            }
+        
+        /* Estilo para os badges de dias da semana */
+        .day-badge {
+            transition: all 0.2s ease;
+        }
+        .day-badge.active {
+            background-color: #06b6d4;
+            color: white;
+            border-color: #06b6d4;
         }
     </style>
 </head>
-<body class="flex flex-col h-[100dvh] overflow-hidden bg-slate-50">
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
-    <div id="toast-container" class="fixed top-4 right-4 left-4 sm:left-auto z-[300] flex flex-col gap-2 pointer-events-none sm:max-w-sm"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="loading-overlay" class="fixed inset-0 bg-slate-950/35 backdrop-blur-sm z-[250] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl px-6 py-5 flex items-center gap-4 shadow-2xl border border-slate-200 animate-fade-in">
-            <div class="w-9 h-9 border-[3px] border-cyan-500 border-t-transparent rounded-full animate-spin shrink-0"></div>
-            <div>
-                <p class="text-sm font-black text-slate-800">Atualizando turmas</p>
-                <p class="text-[11px] text-slate-400 mt-0.5">Só um instante...</p>
-            </div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center">
+        <div class="bg-white rounded-2xl p-6 flex flex-col items-center shadow-2xl animate-fade-in">
+            <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-sm font-bold text-slate-700">Carregando dados...</p>
         </div>
     </div>
 
     <div id="interface-sistema" class="flex-1 flex w-full h-full relative overflow-hidden">
-        <main class="flex-1 flex flex-col h-full overflow-hidden relative min-w-0">
-
-            <!-- Cabeçalho executivo -->
-            <header class="bg-white border-b border-slate-200 shrink-0 z-20">
-                <div class="max-w-[1500px] mx-auto px-4 sm:px-5 lg:px-7 pt-4 pb-3">
-                    <div class="flex items-start sm:items-center justify-between gap-3">
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3M16 2v3M3.5 9h17"/><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/></svg>
-                                </div>
-                                <div class="min-w-0">
-                                    <h1 class="text-xl sm:text-2xl lg:text-[28px] leading-tight font-black text-slate-900 tracking-tight">Gestão de Turmas</h1>
-                                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">Horários, professores, capacidade e alunos em um só lugar</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <button onclick="manualRefreshTurmas()" class="focus-ring h-11 w-11 sm:w-auto sm:px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center justify-center gap-2 text-xs font-bold transition-colors" aria-label="Atualizar dados" title="Atualizar">
-                                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 4v5h5M4 13a8.1 8.1 0 0 0 15.5 2M20 20v-5h-5"/></svg>
-                                <span class="hidden sm:inline">Atualizar</span>
-                            </button>
-                            <button onclick="abrirModalTurma()" class="hidden md:flex focus-ring h-11 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white items-center justify-center gap-2 text-xs font-black uppercase tracking-wider shadow-sm shadow-cyan-500/20 transition-colors">
-                                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                                Nova turma
-                            </button>
-                        </div>
+        
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            
+            <!-- Cabeçalho -->
+            <div class="bg-white border-b border-slate-200 px-4 py-3 shrink-0 shadow-sm">
+                <div class="flex items-center justify-between max-w-7xl mx-auto">
+                    <div>
+                        <h2 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Gestão de Turmas</h2>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-medium">Organize seus alunos por horários e faixas etárias</p>
                     </div>
-
-                    <!-- KPIs -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mt-4">
-                        <div class="metric-card border border-slate-200 rounded-2xl px-3.5 py-3 flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div>
-                            <div class="min-w-0"><p class="text-[8px] sm:text-[9px] uppercase tracking-[.14em] text-slate-400 font-black">Turmas ativas</p><p id="kpi-turmas" class="text-xl sm:text-2xl font-black text-slate-900 leading-none mt-1">0</p></div>
-                        </div>
-                        <button onclick="filtrarSomenteSemTurma()" class="metric-card border border-slate-200 rounded-2xl px-3.5 py-3 flex items-center gap-3 text-left hover:border-amber-300 transition-colors focus-ring">
-                            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
-                            <div class="min-w-0"><p class="text-[8px] sm:text-[9px] uppercase tracking-[.14em] text-slate-400 font-black">Sem turma</p><p id="kpi-sem-turma" class="text-xl sm:text-2xl font-black text-amber-600 leading-none mt-1">0</p></div>
-                        </button>
-                        <div class="metric-card border border-slate-200 rounded-2xl px-3.5 py-3 flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg></div>
-                            <div class="min-w-0"><p class="text-[8px] sm:text-[9px] uppercase tracking-[.14em] text-slate-400 font-black">Alocados</p><p id="kpi-alocados" class="text-xl sm:text-2xl font-black text-slate-900 leading-none mt-1">0</p></div>
-                        </div>
-                        <div class="metric-card border border-slate-200 rounded-2xl px-3.5 py-3 flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div>
-                            <div class="min-w-0"><p class="text-[8px] sm:text-[9px] uppercase tracking-[.14em] text-slate-400 font-black">Aulas hoje</p><p id="kpi-hoje" class="text-xl sm:text-2xl font-black text-emerald-600 leading-none mt-1">0</p></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Barra de ferramentas -->
-            <section class="bg-slate-50/95 border-b border-slate-200 shrink-0 z-10">
-                <div class="max-w-[1500px] mx-auto px-4 sm:px-5 lg:px-7 py-3">
-                    <div class="flex flex-col xl:flex-row gap-2.5 xl:items-center">
-                        <div class="relative flex-1 min-w-0">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-                            <input id="filtro-busca-turma" oninput="aplicarFiltrosTurmas()" type="search" placeholder="Buscar turma ou professor..." class="toolbar-control focus-ring w-full bg-white border border-slate-200 rounded-xl pl-10 pr-3 text-sm font-medium text-slate-700 outline-none focus:border-cyan-400 placeholder:text-slate-400">
-                        </div>
-                        <div class="grid grid-cols-2 sm:flex gap-2.5">
-                            <select id="filtro-dia" onchange="aplicarFiltrosTurmas()" class="toolbar-control focus-ring bg-white border border-slate-200 rounded-xl px-3 text-xs font-bold text-slate-600 outline-none focus:border-cyan-400 min-w-0 sm:min-w-[130px]">
-                                <option value="TODOS">Todos os dias</option><option value="1">Segunda</option><option value="2">Terça</option><option value="3">Quarta</option><option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option>
-                            </select>
-                            <select id="filtro-professor" onchange="aplicarFiltrosTurmas()" class="toolbar-control focus-ring bg-white border border-slate-200 rounded-xl px-3 text-xs font-bold text-slate-600 outline-none focus:border-cyan-400 min-w-0 sm:min-w-[150px]"><option value="TODOS">Todos professores</option></select>
-                            <select id="filtro-status" onchange="aplicarFiltrosTurmas()" class="toolbar-control focus-ring bg-white border border-slate-200 rounded-xl px-3 text-xs font-bold text-slate-600 outline-none focus:border-cyan-400 min-w-0 sm:min-w-[125px]">
-                                <option value="ATIVAS">Ativas</option><option value="ARQUIVADAS">Arquivadas</option><option value="TODAS">Todas</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-2.5 overflow-x-auto hide-scrollbar">
-                            <div class="flex p-1 bg-white border border-slate-200 rounded-xl shrink-0">
-                                <button id="btn-view-lista" onclick="alterarVisualizacao('lista')" aria-pressed="true" class="view-button focus-ring h-9 px-3 rounded-lg border border-transparent text-slate-500 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider transition-colors">
-                                    <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg> Lista
-                                </button>
-                                <button id="btn-view-grade" onclick="alterarVisualizacao('grade')" aria-pressed="false" class="view-button focus-ring h-9 px-3 rounded-lg border border-transparent text-slate-500 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider transition-colors">
-                                    <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 13h2M14 13h2M8 17h2M14 17h2"/></svg> Grade
-                                </button>
-                            </div>
-                            <button onclick="abrirPreviewDistribuicao()" class="focus-ring h-11 px-3.5 shrink-0 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 flex items-center gap-2 text-[10px] font-black uppercase tracking-wider transition-colors">
-                                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 1.4 3.6L17 8l-3.6 1.4L12 13l-1.4-3.6L7 8l3.6-1.4L12 3ZM5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14ZM19 13l.8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z"/></svg>
-                                Distribuir
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Lista / detalhe -->
-            <div id="view-lista" class="flex-1 overflow-hidden p-0 md:p-5 lg:p-6 flex max-w-[1500px] mx-auto w-full h-full relative min-h-0">
-                <aside id="painel-lista" class="w-full md:w-[39%] xl:w-[34%] flex flex-col h-full shrink-0 bg-slate-50 md:bg-transparent md:pr-4 min-w-0">
-                    <div id="lista-resumo" class="px-4 pt-3 md:px-0 md:pt-0 pb-2 text-[10px] text-slate-400 font-bold">Carregando...</div>
-                    <div class="flex-1 overflow-y-auto hide-scrollbar px-4 pb-24 md:px-0 md:pb-3" id="lista-turmas">
-                        <div class="space-y-3 animate-pulse"><div class="h-28 bg-white border border-slate-200 rounded-2xl"></div><div class="h-28 bg-white border border-slate-200 rounded-2xl"></div></div>
-                    </div>
-                </aside>
-
-                <section id="painel-detalhe" class="w-full md:w-[61%] xl:w-[66%] absolute md:relative inset-0 z-40 bg-slate-50 transform translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col h-full overflow-hidden md:pl-1">
-                    <div id="detalhe-vazio" class="flex-1 flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-3xl text-center p-8 h-full hidden md:flex mb-3">
-                        <div class="w-16 h-16 bg-cyan-50 text-cyan-500 rounded-2xl flex items-center justify-center mb-4">
-                            <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg>
-                        </div>
-                        <h3 class="text-lg font-black text-slate-800">Selecione uma turma</h3>
-                        <p class="text-sm text-slate-400 max-w-sm mt-2">Veja alunos, capacidade, horários e ações da turma sem sair desta tela.</p>
-                    </div>
-
-                    <div id="detalhe-conteudo" class="flex-col h-full overflow-hidden hidden mobile-detail-safe">
-                        <div class="bg-white md:rounded-t-3xl border border-slate-200 p-4 sm:p-5 lg:p-6 shrink-0 relative overflow-visible">
-                            <button onclick="fecharDetalhesMobile()" class="md:hidden focus-ring flex items-center gap-2 text-slate-500 hover:text-cyan-600 mb-4 font-bold text-sm bg-slate-100 px-3 py-2 rounded-xl w-fit">
-                                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Turmas
-                            </button>
-                            <div class="absolute top-0 right-8 w-28 h-28 bg-cyan-400/10 blur-3xl rounded-full pointer-events-none"></div>
-                            <div class="flex items-start justify-between gap-3 relative z-10">
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h2 id="turma-nome-detalhe" class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 uppercase truncate">Turma</h2>
-                                        <span id="turma-status-badge" class="hidden px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-500">Arquivada</span>
-                                    </div>
-                                    <div class="flex flex-wrap gap-2 mt-2.5">
-                                        <span id="turma-horario-badge" class="px-2.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-100">--</span>
-                                        <span id="turma-idade-badge" class="px-2.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase bg-slate-100 text-slate-600 border border-slate-200">--</span>
-                                        <span id="turma-professor-badge" class="px-2.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase bg-indigo-50 text-indigo-700 border border-indigo-100">Sem professor</span>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2 shrink-0">
-                                    <div class="bg-slate-900 text-white min-w-[70px] px-3 py-2 rounded-xl text-center shadow-sm">
-                                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Alunos</p>
-                                        <p id="turma-contagem" class="text-xl font-black leading-none mt-1">0</p>
-                                        <p id="turma-capacidade-mini" class="text-[8px] font-bold text-slate-400 mt-1">sem limite</p>
-                                    </div>
-                                    <div class="relative">
-                                        <button onclick="toggleMenuTurmaDetalhe(event)" class="focus-ring w-10 h-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 flex items-center justify-center" aria-label="Ações da turma">
-                                            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
-                                        </button>
-                                        <div id="menu-turma-detalhe" class="menu-popover hidden absolute right-0 top-12 z-[70] w-48 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5">
-                                            <button onclick="editarTurmaSelecionada()" class="w-full px-3 py-2.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-xs font-bold text-slate-600 text-left"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>Editar</button>
-                                            <button onclick="duplicarTurmaSelecionada()" class="w-full px-3 py-2.5 rounded-lg hover:bg-slate-50 flex items-center gap-2 text-xs font-bold text-slate-600 text-left"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar</button>
-                                            <button id="btn-arquivar-detalhe" onclick="arquivarTurmaSelecionada()" class="w-full px-3 py-2.5 rounded-lg hover:bg-amber-50 flex items-center gap-2 text-xs font-bold text-amber-700 text-left"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>Arquivar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1.5"><span>Ocupação</span><span id="turma-ocupacao-texto">0 alunos</span></div>
-                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="turma-ocupacao-barra" class="h-full bg-cyan-500 rounded-full transition-all" style="width:0%"></div></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white md:rounded-b-3xl border border-t-0 border-slate-200 flex-1 flex flex-col overflow-hidden min-h-0">
-                            <div class="p-4 border-b border-slate-100 bg-slate-50/70 shrink-0">
-                                <div class="flex items-center justify-between gap-3 mb-2.5">
-                                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-wider">Matricular aluno</label>
-                                    <button onclick="abrirModalMatriculaLote()" class="text-[9px] font-black uppercase tracking-wider text-cyan-600 hover:text-cyan-700">Selecionar vários</button>
-                                </div>
-                                <div class="flex gap-2">
-                                    <div class="flex-1 relative min-w-0">
-                                        <svg viewBox="0 0 24 24" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-                                        <input type="text" id="input-busca-matricular" placeholder="Busque pelo nome do aluno..." class="focus-ring w-full h-11 pl-10 pr-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:border-cyan-400" autocomplete="off" oninput="filtrarAlunosDropdown()" onkeydown="navegarDropdownAlunos(event)">
-                                        <ul id="dropdown-alunos" class="absolute z-50 w-full bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto hidden top-[calc(100%+6px)] left-0 p-1"></ul>
-                                    </div>
-                                    <button onclick="adicionarAlunoNaTurma()" class="focus-ring h-11 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl text-[10px] uppercase tracking-wider flex items-center gap-2 shrink-0">
-                                        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span class="hidden sm:inline">Matricular</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="px-4 pt-3 pb-2 bg-white flex items-center justify-between gap-3 shrink-0">
-                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Alunos matriculados</p>
-                                <input id="busca-matriculados" oninput="atualizarUIAlunosDaTurma()" type="search" placeholder="Filtrar alunos" class="focus-ring h-9 w-36 sm:w-48 bg-slate-50 border border-slate-200 rounded-lg px-3 text-xs outline-none focus:border-cyan-400">
-                            </div>
-                            <div class="flex-1 overflow-y-auto px-4 pb-5 hide-scrollbar bg-white" id="lista-matriculados"><div class="text-center text-slate-400 text-sm py-10">Selecione uma turma</div></div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Grade semanal -->
-            <div id="view-grade" class="hidden flex-1 min-h-0 overflow-auto p-4 sm:p-5 lg:p-6 bg-slate-50">
-                <div class="max-w-[1700px] mx-auto">
-                    <div class="flex items-center justify-between mb-3 gap-3">
-                        <div><h2 class="text-base font-black text-slate-800">Grade semanal</h2><p class="text-[11px] text-slate-400 mt-0.5">Role horizontalmente no celular para ver todos os dias.</p></div>
-                        <span id="grade-resumo" class="text-[10px] font-bold text-slate-400"></span>
-                    </div>
-                    <div id="grade-semanal" class="weekly-grid pb-4"></div>
+                    <button onclick="manualRefreshTurmas()" class="bg-slate-100 hover:bg-cyan-100 text-slate-600 hover:text-cyan-600 font-bold py-2 px-3 rounded-xl transition-all flex items-center gap-2 text-xs shadow-sm border border-slate-200">
+                        <span>🔄</span> <span class="hidden sm:inline">Atualizar</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- FAB mobile -->
-            <button onclick="abrirModalTurma()" class="md:hidden fixed right-4 z-30 w-14 h-14 bg-cyan-500 hover:bg-cyan-600 text-white rounded-2xl shadow-xl shadow-cyan-500/25 flex items-center justify-center active:scale-95 transition-transform" style="bottom:calc(18px + var(--safe-bottom))" aria-label="Nova turma">
-                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
+            <div class="flex-1 overflow-hidden p-3 md:p-6 pb-20 md:pb-6 flex flex-col md:flex-row gap-4 md:gap-6 max-w-7xl mx-auto w-full h-full">
+                
+                <!-- PAINEL ESQUERDO - FORMULÁRIO E LISTA -->
+                <div id="painel-lista" class="w-full md:w-[40%] lg:w-[35%] flex flex-col h-full gap-4 shrink-0 overflow-y-auto hide-scrollbar">
+                    
+                    <!-- FORMULÁRIO DE TURMA -->
+                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 shrink-0 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl drop-shadow-sm">🕒</span>
+                                <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form">Nova Turma</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 relative z-10">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Turma *</label>
+                                <input type="text" id="turma-nome" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Ex: ADULTO NOITE">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Mín.</label>
+                                    <input type="number" id="turma-idade-min" placeholder="Ex: 4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Máx.</label>
+                                    <input type="number" id="turma-idade-max" placeholder="Ex: 10" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dias de Treino *</label>
+                                <div class="grid grid-cols-7 gap-1">
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="1" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">SEG</div>
+                                    </label>
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="2" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">TER</div>
+                                    </label>
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="3" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">QUA</div>
+                                    </label>
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="4" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">QUI</div>
+                                    </label>
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="5" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500 transition-all">SEX</div>
+                                    </label>
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="6" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 transition-all">SÁB</div>
+                                    </label>
+                                    <label class="text-center cursor-pointer">
+                                        <input type="checkbox" value="0" class="chk-dia peer sr-only">
+                                        <div class="day-badge py-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-bold text-slate-400 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500 transition-all">DOM</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 mt-2">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Início *</label>
+                                    <input type="time" id="turma-hora-inicio" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Fim</label>
+                                    <input type="time" id="turma-hora-fim" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-4">
+                                <button onclick="cancelarEdicaoTurma()" id="btn-cancelar-turma" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                                <button onclick="salvarTurma()" id="btn-salvar-turma" class="flex-[2] bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-3 rounded-xl shadow-[0_4px_14px_-4px_rgba(6,182,212,0.5)] transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">➕ Criar Turma</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTÃO DISTRIBUIÇÃO AUTOMÁTICA -->
+                    <button onclick="autoDistribuirAlunos()" class="bg-purple-600 hover:bg-purple-500 text-white font-black py-3 px-4 rounded-2xl shadow-[0_4px_14px_-4px_rgba(147,51,234,0.5)] transition-all flex items-center justify-center text-sm shrink-0 group">
+                        <span class="mr-2 text-lg group-hover:animate-pulse">🤖</span> Distribuição Automática
+                    </button>
+
+                    <!-- LISTA DE TURMAS -->
+                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-[250px] overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50 shrink-0">
+                            <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">Turmas Cadastradas</h3>
+                            <p class="text-[9px] text-slate-400 mt-0.5">Clique em uma turma para gerenciar os alunos</p>
+                        </div>
+                        <div class="flex-1 overflow-y-auto hide-scrollbar p-3" id="lista-turmas">
+                            <div class="text-center text-slate-400 text-sm mt-5 animate-pulse">Carregando turmas...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAINEL DIREITO - DETALHES DA TURMA -->
+                <div id="painel-detalhe" class="w-full md:w-[60%] lg:w-[65%] hidden md:flex flex-col h-full gap-4 md:gap-6 overflow-hidden">
+                    
+                    <!-- MENSAGEM VAZIA -->
+                    <div id="detalhe-vazio" class="flex-1 flex flex-col items-center justify-center bg-white border-2 border-dashed border-slate-200 rounded-3xl text-center p-6 md:p-10 h-full hidden animate-fade-in">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center text-3xl md:text-4xl shadow-sm border border-slate-200 mb-4">🗓️</div>
+                        <h3 class="text-base md:text-xl font-black text-slate-700 mb-2">Nenhuma Turma Selecionada</h3>
+                        <p class="text-xs md:text-sm text-slate-400 max-w-sm">Clique em uma turma ao lado para ver os detalhes e gerenciar os alunos matriculados.</p>
+                    </div>
+
+                    <!-- CONTEÚDO DA TURMA SELECIONADA -->
+                    <div id="detalhe-conteudo" class="flex flex-col h-full gap-4 md:gap-6 overflow-hidden hidden">
+                        
+                        <!-- CABEÇALHO DA TURMA -->
+                        <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 md:w-40 md:h-40 bg-cyan-500/10 blur-[40px] rounded-full pointer-events-none"></div>
+                            
+                            <!-- Botão Voltar (Mobile) -->
+                            <button onclick="voltarLista()" class="md:hidden flex items-center gap-2 text-slate-500 mb-3 w-fit">
+                                <span class="text-lg">←</span> Voltar para turmas
+                            </button>
+                            
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-2 relative z-10">
+                                <div class="flex-1">
+                                    <h2 class="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 truncate uppercase" id="turma-nome-detalhe">Nome da Turma</h2>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <div id="turma-horario-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 inline-block shadow-sm">--</div>
+                                    <div id="turma-idade-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-slate-100 text-slate-600 border border-slate-200 inline-block shadow-sm">--</div>
+                                </div>
+                            </div>
+                            <p class="text-xs font-bold text-slate-500 relative z-10 flex items-center gap-1.5 mt-1">
+                                <span class="text-cyan-500 text-lg">👥</span> 
+                                <span id="turma-contagem">Matriculados: 0</span>
+                            </p>
+                        </div>
+
+                        <!-- LISTA DE ALUNOS MATRICULADOS -->
+                        <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
+                            <div class="p-3 md:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 items-center shrink-0">
+                                <div class="flex-1 w-full">
+                                    <label class="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Matricular novo aluno</label>
+                                    <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer shadow-sm">
+                                        <option value="">Selecionar atleta...</option>
+                                    </select>
+                                </div>
+                                <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-5 rounded-xl shadow-[0_4px_14px_-4px_rgba(16,185,129,0.5)] transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-2 mt-1 sm:mt-6">
+                                    <span>➕</span> Matricular
+                                </button>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-3 md:p-4 hide-scrollbar bg-slate-50/30" id="lista-matriculados">
+                                <div class="text-center text-slate-400 text-sm py-10 italic">Selecione uma turma para ver os alunos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </main>
     </div>
 
-    <!-- Modal turma -->
-    <div id="modal-turma" class="mobile-bottom-sheet fixed inset-0 bg-slate-950/55 backdrop-blur-sm hidden items-center justify-center z-[160] p-4" onclick="fecharModalAoClicarFora(event, 'modal-turma')">
-        <div class="sheet-panel bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[92vh] animate-fade-in" onclick="event.stopPropagation()">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
-                <div><p id="titulo-form" class="font-black text-slate-900 text-base">Nova turma</p><p class="text-[10px] text-slate-400 mt-0.5">Defina rotina, professor e capacidade</p></div>
-                <button onclick="fecharModalTurma()" class="focus-ring w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center" aria-label="Fechar"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    <!-- MODAL TRANSFERIR ALUNO -->
+    <div id="modal-trocar" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col animate-fade-in">
+            <div class="bg-slate-900 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center gap-2">
+                <span>🔄</span> Transferir Aluno
             </div>
-            <div class="p-5 overflow-y-auto hide-scrollbar space-y-5">
-                <div>
-                    <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Nome da turma *</label>
-                    <input type="text" id="turma-nome" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-bold text-slate-800 uppercase" placeholder="Ex: ADULTO NOITE">
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Professor responsável</label><input type="text" id="turma-professor" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="Ex: Carlos Silva"></div>
-                    <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Capacidade</label><input type="number" min="0" id="turma-capacidade" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="0 = sem limite"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Idade mínima</label><input type="number" min="0" id="turma-idade-min" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="Ex: 4"></div>
-                    <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Idade máxima</label><input type="number" min="0" id="turma-idade-max" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="Ex: 10"></div>
-                </div>
-                <div>
-                    <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-2">Dias de treino *</label>
-                    <div class="grid grid-cols-7 gap-1.5">
-                        <label class="cursor-pointer"><input type="checkbox" value="1" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500">SEG</div></label>
-                        <label class="cursor-pointer"><input type="checkbox" value="2" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500">TER</div></label>
-                        <label class="cursor-pointer"><input type="checkbox" value="3" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500">QUA</div></label>
-                        <label class="cursor-pointer"><input type="checkbox" value="4" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500">QUI</div></label>
-                        <label class="cursor-pointer"><input type="checkbox" value="5" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-cyan-500 peer-checked:text-white peer-checked:border-cyan-500">SEX</div></label>
-                        <label class="cursor-pointer"><input type="checkbox" value="6" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500">SÁB</div></label>
-                        <label class="cursor-pointer"><input type="checkbox" value="0" class="chk-dia peer sr-only"><div class="h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-[9px] font-black text-slate-400 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500">DOM</div></label>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Início *</label><input type="time" id="turma-hora-inicio" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700"></div>
-                    <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Fim</label><input type="time" id="turma-hora-fim" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700"></div>
-                </div>
-                <div id="alerta-conflito" class="hidden p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-medium"></div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-slate-500 font-medium">Transferir o(a) atleta <span id="lbl-atleta-troca" class="font-black text-cyan-600"></span> para qual turma?</p>
+                <select id="select-nova-turma" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-cyan-500"></select>
             </div>
-            <div class="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex gap-3 shrink-0">
-                <button onclick="fecharModalTurma()" class="focus-ring flex-1 h-12 bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 font-bold rounded-xl text-xs uppercase tracking-wider">Cancelar</button>
-                <button onclick="salvarTurma()" id="btn-salvar-turma" class="focus-ring flex-[1.6] h-12 bg-cyan-500 hover:bg-cyan-600 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-sm shadow-cyan-500/20">Criar turma</button>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalTrocar()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="confirmarTroca()" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Confirmar</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal transferir -->
-    <div id="modal-trocar" class="mobile-bottom-sheet fixed inset-0 bg-slate-950/55 backdrop-blur-sm hidden items-center justify-center z-[170] p-4" onclick="fecharModalAoClicarFora(event, 'modal-trocar')">
-        <div class="sheet-panel bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col animate-fade-in" onclick="event.stopPropagation()">
-            <div class="px-5 py-4 border-b border-slate-100"><h3 class="font-black text-slate-900">Transferir aluno</h3><p class="text-[11px] text-slate-400 mt-1">Mover <span id="lbl-atleta-troca" class="font-bold text-cyan-600"></span> para outra turma.</p></div>
-            <div class="p-5"><select id="select-nova-turma" class="focus-ring w-full h-12 px-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-cyan-400"></select></div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3"><button onclick="fecharModalTrocar()" class="flex-1 h-11 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600">Cancelar</button><button onclick="confirmarTroca()" class="flex-[1.4] h-11 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-black uppercase tracking-wider">Transferir</button></div>
-        </div>
-    </div>
-
-    <!-- Modal matrícula em lote -->
-    <div id="modal-matricula-lote" class="mobile-bottom-sheet fixed inset-0 bg-slate-950/55 backdrop-blur-sm hidden items-center justify-center z-[175] p-4" onclick="fecharModalAoClicarFora(event, 'modal-matricula-lote')">
-        <div class="sheet-panel bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[88vh] animate-fade-in" onclick="event.stopPropagation()">
-            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center"><div><h3 class="font-black text-slate-900">Matricular vários alunos</h3><p id="lote-subtitulo" class="text-[10px] text-slate-400 mt-0.5"></p></div><button onclick="fecharModalMatriculaLote()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-            <div class="p-4 border-b border-slate-100"><input id="busca-lote" oninput="renderizarListaLote()" type="search" placeholder="Buscar aluno..." class="focus-ring w-full h-11 px-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-cyan-400"></div>
-            <div id="lista-lote" class="flex-1 overflow-y-auto p-4 space-y-2 hide-scrollbar"></div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3"><p id="lote-selecionados" class="text-[10px] text-slate-500 font-bold flex-1">0 selecionados</p><button onclick="confirmarMatriculaLote()" class="h-11 px-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-wider">Matricular</button></div>
-        </div>
-    </div>
-
-    <!-- Modal prévia distribuição -->
-    <div id="modal-distribuicao" class="mobile-bottom-sheet fixed inset-0 bg-slate-950/55 backdrop-blur-sm hidden items-center justify-center z-[180] p-4" onclick="fecharModalAoClicarFora(event, 'modal-distribuicao')">
-        <div class="sheet-panel bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in" onclick="event.stopPropagation()">
-            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center"><div><h3 class="font-black text-slate-900">Prévia da distribuição</h3><p class="text-[10px] text-slate-400 mt-0.5">Nenhuma alteração será feita até você confirmar.</p></div><button onclick="fecharModalDistribuicao()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-            <div class="p-5 overflow-y-auto hide-scrollbar">
-                <div class="grid grid-cols-3 gap-2 mb-4"><div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-center"><p id="prev-alocar" class="text-xl font-black text-emerald-600">0</p><p class="text-[8px] uppercase font-black text-emerald-700 mt-1">Serão alocados</p></div><div class="p-3 rounded-xl bg-amber-50 border border-amber-100 text-center"><p id="prev-ambiguos" class="text-xl font-black text-amber-600">0</p><p class="text-[8px] uppercase font-black text-amber-700 mt-1">Múltiplas opções</p></div><div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center"><p id="prev-ignorar" class="text-xl font-black text-slate-600">0</p><p class="text-[8px] uppercase font-black text-slate-500 mt-1">Sem sugestão</p></div></div>
-                <div id="preview-distribuicao-lista" class="space-y-2"></div>
-            </div>
-            <div class="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex gap-3"><button onclick="fecharModalDistribuicao()" class="flex-1 h-11 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600">Cancelar</button><button id="btn-confirmar-distribuicao" onclick="confirmarDistribuicaoAutomatica()" class="flex-[1.5] h-11 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-wider disabled:opacity-40">Aplicar distribuição</button></div>
         </div>
     </div>
 
     <script src="menu.js"></script>
-
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, arrayUnion, arrayRemove, enableIndexedDbPersistence, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -415,599 +299,622 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        enableIndexedDbPersistence(db).catch((err) => {
-            if (err.code === 'failed-precondition') console.warn('Persistência offline disponível em apenas uma aba.');
-            else if (err.code === 'unimplemented') console.warn('Persistência offline não suportada neste navegador.');
-        });
-
+        // ===================== VARIÁVEIS GLOBAIS =====================
         let uid = null;
-        let teamId = null;
-        let equipeDados = { nome: "Sua Equipe", logo: "" };
+        let teamId = null; 
         let alunosCache = [];
         let turmasCache = [];
-        let turmasFiltradas = [];
         let turmaSelecionada = null;
         let turmaEditandoId = null;
         let alunoParaTrocaId = null;
-        let alunoSelecionadoBuscaId = null;
-        let dropdownAlunoIndex = -1;
-        let dropdownAlunoResultados = [];
+        let equipeDados = { nome: "Sua Equipe", logo: "" };
         let isLoading = false;
-        let visualizacaoAtual = 'lista';
-        let loteSelecionados = new Set();
-        let distribuicaoPreview = [];
-        let usuarioEhSuperAdmin = false;
 
-        const CACHE_TTL = 5 * 60 * 1000;
+        // ===================== CACHE =====================
         const CACHE_KEYS = { TURMAS: 'bjj_turmas_cache', ALUNOS: 'bjj_alunos_turmas_cache' };
+        const CACHE_TTL = 5 * 60 * 1000;
 
-        function scopedCacheKey(base) { return `${base}_${uid || 'sem_equipe'}`; }
         function saveToCache(key, data) {
-            if (!uid) return;
-            try { localStorage.setItem(scopedCacheKey(key), JSON.stringify({ data, timestamp: Date.now(), ttl: CACHE_TTL })); }
-            catch(e) { console.warn('Cache:', e); }
+            try { 
+                localStorage.setItem(key, JSON.stringify({ data: data, timestamp: Date.now(), ttl: CACHE_TTL })); 
+            } catch(e) { console.warn("Cache error:", e); }
         }
+
         function getFromCache(key) {
-            if (!uid) return null;
             try {
-                const cached = localStorage.getItem(scopedCacheKey(key));
+                const cached = localStorage.getItem(key);
                 if (!cached) return null;
-                const parsed = JSON.parse(cached);
-                if (Date.now() - parsed.timestamp > (parsed.ttl || CACHE_TTL)) { localStorage.removeItem(scopedCacheKey(key)); return null; }
-                return parsed.data;
+                const { data, timestamp, ttl } = JSON.parse(cached);
+                if (Date.now() - timestamp > ttl) { 
+                    localStorage.removeItem(key); 
+                    return null; 
+                }
+                return data;
             } catch(e) { return null; }
         }
-        function clearCache() {
-            Object.values(CACHE_KEYS).forEach(k => {
-                localStorage.removeItem(scopedCacheKey(k));
-                localStorage.removeItem(k); // limpeza das chaves antigas não isoladas
-            });
+
+        function clearCache() { 
+            localStorage.removeItem(CACHE_KEYS.TURMAS); 
+            localStorage.removeItem(CACHE_KEYS.ALUNOS); 
         }
 
-        function escapeHtml(value) {
-            return String(value ?? '')
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        // ===================== LOADING =====================
+        function showLoading() { 
+            const overlay = document.getElementById('loading-overlay'); 
+            overlay.classList.remove('hidden'); 
+            overlay.classList.add('flex'); 
+        }
+        function hideLoading() { 
+            const overlay = document.getElementById('loading-overlay'); 
+            overlay.classList.add('hidden'); 
+            overlay.classList.remove('flex'); 
         }
 
-        function showLoading() { const el = document.getElementById('loading-overlay'); el.classList.remove('hidden'); el.classList.add('flex'); }
-        function hideLoading() { const el = document.getElementById('loading-overlay'); el.classList.add('hidden'); el.classList.remove('flex'); }
-
+        // ===================== TOAST =====================
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const cfg = {
-                success: ['bg-emerald-600', 'Sucesso'], error: ['bg-rose-600', 'Erro'], warning: ['bg-amber-500', 'Atenção'], info: ['bg-slate-800', 'Informação']
-            }[type] || ['bg-slate-800', 'Informação'];
-            toast.className = `${cfg[0]} text-white px-4 py-3 rounded-xl shadow-xl flex items-start gap-3 pointer-events-auto animate-fade-in`;
-            const dot = document.createElement('span'); dot.className = 'w-2 h-2 rounded-full bg-white/80 mt-1.5 shrink-0';
-            const box = document.createElement('div'); box.className = 'min-w-0';
-            const title = document.createElement('p'); title.className = 'text-[9px] uppercase tracking-widest font-black opacity-75'; title.textContent = cfg[1];
-            const text = document.createElement('p'); text.className = 'text-xs sm:text-sm font-semibold mt-0.5 leading-snug'; text.textContent = String(message ?? '');
-            box.append(title, text); toast.append(dot, box); container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4200);
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-amber-500');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : '⚠️');
+            toast.className = `${bgColor} text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-sm pointer-events-auto animate-fade-in`;
+            toast.innerHTML = `<span class="text-lg">${icon}</span> <span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4500);
         };
 
-        // ================= TELEMETRIA =================
-        function sessaoContaComoUsoReal() {
-            return !!uid && !sessionStorage.getItem('admin_impersonate') && usuarioEhSuperAdmin !== true;
-        }
-        window.registrarAtividadeEquipe = async function(tipo) {
-            if (!sessaoContaComoUsoReal() || !tipo) return;
+        // ===================== MANUAL REFRESH =====================
+        window.manualRefreshTurmas = async function() {
+            if (isLoading) return;
+            isLoading = true;
+            showLoading();
+            clearCache();
             try {
-                await updateDoc(doc(db, 'equipes', uid), {
-                    ultima_atividade: new Date().toISOString(),
-                    tipo_ultima_atividade: String(tipo).toUpperCase()
-                });
-            } catch (e) { console.warn('Telemetria de turmas não registrada:', e); }
+                await Promise.all([carregarAlunos(true), carregarTurmas(true)]);
+                showToast("Dados atualizados!", "success");
+            } catch (error) {
+                showToast("Erro ao atualizar dados", "error");
+            } finally {
+                hideLoading();
+                isLoading = false;
+            }
         };
 
-        async function registrarUltimoAcessoReal() {
-            if (!sessaoContaComoUsoReal()) return;
-            const key = `bjj_last_access_write_${uid}`;
-            const ultima = Number(localStorage.getItem(key) || 0);
-            if (Date.now() - ultima < 4 * 60 * 60 * 1000) return;
-            try {
-                await updateDoc(doc(db, 'equipes', uid), { ultimo_acesso: new Date().toISOString() });
-                localStorage.setItem(key, String(Date.now()));
-            } catch (e) { console.warn('Último acesso não registrado:', e); }
-        }
-
-        // ================= AUXILIARES =================
-        const DIAS = { 0:'DOM', 1:'SEG', 2:'TER', 3:'QUA', 4:'QUI', 5:'SEX', 6:'SÁB' };
-        const DIAS_LONGOS = { 0:'Domingo', 1:'Segunda', 2:'Terça', 3:'Quarta', 4:'Quinta', 5:'Sexta', 6:'Sábado' };
-
+        // ===================== FUNÇÕES AUXILIARES =====================
         function formatarDiasSemanas(diasData) {
-            if (!diasData) return '--';
+            if (!diasData) return "--";
             if (typeof diasData === 'string') return diasData;
-            if (!Array.isArray(diasData) || !diasData.length) return '--';
-            return [...diasData].sort((a,b) => a-b).map(d => DIAS[d]).join(' • ');
+            if (Array.isArray(diasData)) {
+                if (diasData.length === 0) return "--";
+                const mapaDias = {0: 'DOM', 1: 'SEG', 2: 'TER', 3: 'QUA', 4: 'QUI', 5: 'SEX', 6: 'SÁB'};
+                return diasData.sort().map(d => mapaDias[d]).join('/');
+            }
+            return "--";
         }
-        function formatarHorarioBox(inicio, fim) { return inicio ? `${inicio}${fim ? `–${fim}` : ''}` : '--:--'; }
+
+        function formatarHorarioBox(h_inicio, h_fim) {
+            if (h_inicio) return `${h_inicio}${h_fim ? ` às ${h_fim}` : ''}`;
+            return '--:--';
+        }
+
+        function getEstiloFaixa(faixa) {
+            const faixasInfo = {
+                'Branca': 'background-color: #ffffff',
+                'Cinza e branca': 'background: linear-gradient(135deg, #94a3b8 50%, #ffffff 50%)',
+                'Cinza': 'background-color: #94a3b8',
+                'Cinza e preta': 'background: linear-gradient(135deg, #94a3b8 50%, #000000 50%)',
+                'Amarela e branca': 'background: linear-gradient(135deg, #eab308 50%, #ffffff 50%)',
+                'Amarela': 'background-color: #eab308',
+                'Amarela e preta': 'background: linear-gradient(135deg, #eab308 50%, #000000 50%)',
+                'Laranja e branca': 'background: linear-gradient(135deg, #f97316 50%, #ffffff 50%)',
+                'Laranja': 'background-color: #f97316',
+                'Laranja e preta': 'background: linear-gradient(135deg, #f97316 50%, #000000 50%)',
+                'Verde e branca': 'background: linear-gradient(135deg, #22c55e 50%, #ffffff 50%)',
+                'Verde': 'background-color: #22c55e',
+                'Verde e preta': 'background: linear-gradient(135deg, #22c55e 50%, #000000 50%)',
+                'Azul': 'background-color: #3b82f6',
+                'Roxa': 'background-color: #a855f7',
+                'Marrom': 'background-color: #78350f',
+                'Preta': 'background-color: #000000',
+                'Coral': 'background: linear-gradient(135deg, #ef4444 50%, #000000 50%)',
+                'Vermelha': 'background-color: #dc2626'
+            };
+            const f = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
+            return faixasInfo[f] || 'background-color: #cbd5e1';
+        }
+
         function calcularIdadeNum(data) {
             if (!data) return -1;
-            let dt;
-            if (/^\d{4}-\d{2}-\d{2}/.test(data)) { const [y,m,d] = data.slice(0,10).split('-').map(Number); dt = new Date(y,m-1,d); }
-            else dt = new Date(data);
-            if (isNaN(dt.getTime())) return -1;
-            const hoje = new Date(); let idade = hoje.getFullYear() - dt.getFullYear();
+            const dt = data.includes('-') ? new Date(data.split('-')[0], data.split('-')[1]-1, data.split('-')[2]) : new Date(data);
+            if(isNaN(dt.getTime())) return -1;
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - dt.getFullYear();
             if (hoje.getMonth() < dt.getMonth() || (hoje.getMonth() === dt.getMonth() && hoje.getDate() < dt.getDate())) idade--;
             return idade;
         }
+
         function formatarRegraIdade(min, max) {
-            min = Number(min || 0); max = Number(max || 999);
-            if (min === 0 && (max === 999 || max === 0)) return 'Todas as idades';
-            if (min > 0 && (max === 999 || max === 0)) return `${min}+ anos`;
-            if (min === 0 && max < 999) return `Até ${max} anos`;
-            return `${min} a ${max} anos`;
-        }
-        function getEstiloFaixa(faixa) {
-            const m = {
-                'Branca':'background:#fff','Cinza e branca':'background:linear-gradient(135deg,#94a3b8 50%,#fff 50%)','Cinza':'background:#94a3b8','Cinza e preta':'background:linear-gradient(135deg,#94a3b8 50%,#000 50%)',
-                'Amarela e branca':'background:linear-gradient(135deg,#eab308 50%,#fff 50%)','Amarela':'background:#eab308','Amarela e preta':'background:linear-gradient(135deg,#eab308 50%,#000 50%)','Laranja e branca':'background:linear-gradient(135deg,#f97316 50%,#fff 50%)','Laranja':'background:#f97316','Laranja e preta':'background:linear-gradient(135deg,#f97316 50%,#000 50%)',
-                'Verde e branca':'background:linear-gradient(135deg,#22c55e 50%,#fff 50%)','Verde':'background:#22c55e','Verde e preta':'background:linear-gradient(135deg,#22c55e 50%,#000 50%)','Azul':'background:#3b82f6','Roxa':'background:#a855f7','Marrom':'background:#78350f','Preta':'background:#000','Coral':'background:linear-gradient(135deg,#ef4444 50%,#000 50%)','Vermelha':'background:#dc2626'
-            };
-            const f = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
-            return m[f] || 'background:#cbd5e1';
-        }
-        function isArquivada(t) { return t?.status === 'ARQUIVADA' || t?.arquivada === true; }
-        function capacidadeTurma(t) { return Math.max(0, Number(t?.capacidade || 0)); }
-        function turmaLotada(t) { const cap = capacidadeTurma(t); return cap > 0 && (t.alunos_ids || []).length >= cap; }
-        function alunoEstaEmAlgumaTurma(id) { return turmasCache.some(t => !isArquivada(t) && (t.alunos_ids || []).includes(id)); }
-
-        function intervalosConflitam(aInicio, aFim, bInicio, bFim) {
-            if (!aInicio || !bInicio) return false;
-            const aEnd = aFim || aInicio, bEnd = bFim || bInicio;
-            return aInicio < bEnd && bInicio < aEnd;
+            if((!min || min === 0) && (!max || max === 999 || max === 0)) return "📊 Todas as idades";
+            if(min && (!max || max === 999)) return `📊 ${min}+ anos`;
+            if(!min && max) return `📊 Até ${max} anos`;
+            return `📊 ${min} a ${max} anos`;
         }
 
-        function detectarConflitos(dados, ignorarId = null) {
-            const conflitos = [];
-            for (const t of turmasCache) {
-                if (t.id === ignorarId || isArquivada(t)) continue;
-                const diasComuns = (dados.dias_semana || []).filter(d => (t.dias_semana || []).map(Number).includes(Number(d)));
-                if (!diasComuns.length) continue;
-                if (intervalosConflitam(dados.hora_inicio, dados.hora_fim, t.hora_inicio, t.hora_fim)) {
-                    const mesmoProfessor = dados.professor_responsavel && t.professor_responsavel && dados.professor_responsavel.trim().toLowerCase() === t.professor_responsavel.trim().toLowerCase();
-                    const mesmoNome = dados.nome && t.nome && dados.nome.trim().toLowerCase() === t.nome.trim().toLowerCase();
-                    if (mesmoProfessor) conflitos.push(`O professor ${dados.professor_responsavel} já está em ${t.nome} no mesmo horário.`);
-                    else if (mesmoNome) conflitos.push(`Já existe outra ${dados.nome} em horário sobreposto.`);
-                }
-            }
-            return [...new Set(conflitos)];
-        }
-
-        function conflitosDeHorarioDoAluno(alunoId, destino) {
-            if (!alunoId || !destino) return [];
-            const diasDestino = (destino.dias_semana || []).map(Number);
-            return turmasCache.filter(t => {
-                if (t.id === destino.id || isArquivada(t) || !(t.alunos_ids || []).includes(alunoId)) return false;
-                const temDiaComum = (t.dias_semana || []).map(Number).some(d => diasDestino.includes(d));
-                return temDiaComum && intervalosConflitam(destino.hora_inicio, destino.hora_fim, t.hora_inicio, t.hora_fim);
-            });
-        }
-
-        // ================= DADOS =================
-        async function carregarAlunos(force = false) {
-            if (!force) { const cached = getFromCache(CACHE_KEYS.ALUNOS); if (cached) { alunosCache = cached; return; } }
-            const q = query(collection(db, 'alunos'), where('equipe_id', '==', uid), where('status', '==', 'ATIVO'));
-            const snap = await getDocs(q);
-            alunosCache = snap.docs.map(d => ({ id:d.id, ...d.data() })).sort((a,b) => String(a.nome||'').localeCompare(String(b.nome||''), 'pt-BR'));
-            saveToCache(CACHE_KEYS.ALUNOS, alunosCache);
-        }
-        async function carregarTurmas(force = false) {
-            if (!force) { const cached = getFromCache(CACHE_KEYS.TURMAS); if (cached) { turmasCache = cached; atualizarTudo(); return; } }
-            const q = query(collection(db, 'turmas'), where('equipe_id', '==', uid));
-            const snap = await getDocs(q);
-            turmasCache = snap.docs.map(d => ({ id:d.id, ...d.data() })).sort((a,b) => String(a.nome||'').localeCompare(String(b.nome||''), 'pt-BR'));
-            saveToCache(CACHE_KEYS.TURMAS, turmasCache);
-            atualizarTudo();
-        }
-
-        window.manualRefreshTurmas = async function() {
-            if (isLoading) return;
-            isLoading = true; showLoading(); clearCache();
-            try { await Promise.all([carregarAlunos(true), carregarTurmas(true)]); atualizarTudo(); showToast('Dados atualizados.', 'success'); }
-            catch(e) { console.error(e); showToast('Não foi possível atualizar agora.', 'error'); }
-            finally { hideLoading(); isLoading = false; }
-        };
-
-        // ================= KPIs / FILTROS =================
-        function atualizarKpis() {
-            const ativas = turmasCache.filter(t => !isArquivada(t));
-            const ids = new Set(ativas.flatMap(t => t.alunos_ids || []));
-            const semTurma = alunosCache.filter(a => !ids.has(a.id));
-            const hoje = new Date().getDay();
-            const aulasHoje = ativas.filter(t => Array.isArray(t.dias_semana) && t.dias_semana.map(Number).includes(hoje)).length;
-            document.getElementById('kpi-turmas').textContent = ativas.length;
-            document.getElementById('kpi-alocados').textContent = ids.size;
-            document.getElementById('kpi-sem-turma').textContent = semTurma.length;
-            document.getElementById('kpi-hoje').textContent = aulasHoje;
-        }
-        function atualizarFiltroProfessor() {
-            const select = document.getElementById('filtro-professor');
-            const atual = select.value;
-            const nomes = [...new Set(turmasCache.map(t => String(t.professor_responsavel || '').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-            select.innerHTML = '<option value="TODOS">Todos professores</option>' + nomes.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-            if ([...select.options].some(o => o.value === atual)) select.value = atual;
-        }
-        window.aplicarFiltrosTurmas = function() {
-            const termo = document.getElementById('filtro-busca-turma').value.trim().toLowerCase();
-            const dia = document.getElementById('filtro-dia').value;
-            const professor = document.getElementById('filtro-professor').value;
-            const status = document.getElementById('filtro-status').value;
-            turmasFiltradas = turmasCache.filter(t => {
-                const texto = `${t.nome||''} ${t.professor_responsavel||''}`.toLowerCase();
-                const okBusca = !termo || texto.includes(termo);
-                const okDia = dia === 'TODOS' || (Array.isArray(t.dias_semana) && t.dias_semana.map(Number).includes(Number(dia)));
-                const okProf = professor === 'TODOS' || String(t.professor_responsavel||'') === professor;
-                const arq = isArquivada(t);
-                const okStatus = status === 'TODAS' || (status === 'ATIVAS' && !arq) || (status === 'ARQUIVADAS' && arq);
-                return okBusca && okDia && okProf && okStatus;
-            });
-            renderizarTurmas(); renderizarGradeSemanal();
-        };
-        function atualizarTudo() { atualizarKpis(); atualizarFiltroProfessor(); aplicarFiltrosTurmas(); }
-        window.filtrarSomenteSemTurma = function() {
-            const qtd = alunosCache.filter(a => !alunoEstaEmAlgumaTurma(a.id)).length;
-            if (!qtd) return showToast('Todos os alunos ativos já estão em alguma turma.', 'success');
-            if (turmaSelecionada) abrirModalMatriculaLote(true);
-            else showToast(`${qtd} aluno(s) ainda não estão em nenhuma turma. Selecione uma turma para matriculá-los.`, 'info');
-        };
-
-        // ================= VISUALIZAÇÕES =================
-        window.alterarVisualizacao = function(tipo) {
-            visualizacaoAtual = tipo;
-            const lista = document.getElementById('view-lista'), grade = document.getElementById('view-grade');
-            const bLista = document.getElementById('btn-view-lista'), bGrade = document.getElementById('btn-view-grade');
-            if (tipo === 'grade') { lista.classList.add('hidden'); grade.classList.remove('hidden'); bLista.setAttribute('aria-pressed','false'); bGrade.setAttribute('aria-pressed','true'); renderizarGradeSemanal(); }
-            else { grade.classList.add('hidden'); lista.classList.remove('hidden'); bGrade.setAttribute('aria-pressed','false'); bLista.setAttribute('aria-pressed','true'); renderizarTurmas(); }
-        };
-
-        function renderizarTurmas() {
-            const container = document.getElementById('lista-turmas');
-            document.getElementById('lista-resumo').textContent = `${turmasFiltradas.length} ${turmasFiltradas.length === 1 ? 'turma encontrada' : 'turmas encontradas'}`;
-            container.innerHTML = '';
-            if (!turmasFiltradas.length) {
-                const vazio = document.createElement('div'); vazio.className = 'bg-white border border-dashed border-slate-300 rounded-2xl p-7 text-center mt-1';
-                vazio.innerHTML = `<div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div><p class="text-sm font-black text-slate-700">Nenhuma turma encontrada</p><p class="text-[11px] text-slate-400 mt-1">Se você já possui turmas cadastradas, use Atualizar para buscar novamente no servidor.</p><button onclick="manualRefreshTurmas()" class="mt-4 h-10 px-4 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider">Buscar novamente</button>`;
-                container.appendChild(vazio);
-            } else {
-                const frag = document.createDocumentFragment();
-                turmasFiltradas.forEach(t => {
-                    const alunos = (t.alunos_ids || []).length, cap = capacidadeTurma(t), ocup = cap > 0 ? Math.min(100, Math.round(alunos/cap*100)) : 0;
-                    const arq = isArquivada(t), ativa = turmaSelecionada?.id === t.id;
-                    const card = document.createElement('article'); card.id = `card-turma-${t.id}`;
-                    card.className = `card-turma bg-white border rounded-2xl p-4 mb-3 shadow-sm cursor-pointer ${ativa ? 'border-cyan-400 ring-2 ring-cyan-100' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'} ${arq ? 'opacity-70' : ''}`;
-                    card.onclick = () => selecionarTurma(t.id);
-                    const badgeCap = cap > 0 ? `${alunos}/${cap}` : `${alunos}`;
-                    const estadoCap = cap > 0 && alunos >= cap ? 'Lotada' : cap > 0 && ocup >= 80 ? 'Quase cheia' : 'Disponível';
-                    card.innerHTML = `
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl ${arq?'bg-slate-100 text-slate-400':'bg-cyan-50 text-cyan-600'} flex items-center justify-center shrink-0"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div>
-                            <div class="min-w-0 flex-1"><div class="flex items-center gap-2"><h3 class="font-black text-sm text-slate-900 uppercase truncate">${escapeHtml(t.nome || 'SEM NOME')}</h3>${arq?'<span class="text-[7px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-black uppercase">Arquivada</span>':''}</div><p class="text-[10px] text-slate-400 font-bold mt-1 truncate">${escapeHtml(formatarDiasSemanas(t.dias_semana))} · ${escapeHtml(formatarHorarioBox(t.hora_inicio,t.hora_fim))}</p><p class="text-[10px] text-slate-500 mt-1 truncate">${escapeHtml(t.professor_responsavel || 'Professor não definido')}</p></div>
-                            <div class="shrink-0 text-right"><p class="text-sm font-black text-slate-800">${badgeCap}</p><p class="text-[8px] font-bold ${estadoCap==='Lotada'?'text-rose-500':estadoCap==='Quase cheia'?'text-amber-500':'text-emerald-500'} mt-0.5">${cap>0?estadoCap:'alunos'}</p></div>
-                        </div>
-                        ${cap>0?`<div class="mt-3 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div class="h-full ${ocup>=100?'bg-rose-500':ocup>=80?'bg-amber-500':'bg-cyan-500'} rounded-full" style="width:${ocup}%"></div></div>`:''}
-                    `;
-                    frag.appendChild(card);
-                });
-                container.appendChild(frag);
-            }
-
-            if (window.innerWidth >= 768) {
-                if (turmaSelecionada && turmasCache.some(t=>t.id===turmaSelecionada.id)) selecionarTurma(turmaSelecionada.id, false);
-                else {
-                    const primeira = turmasFiltradas.find(t => !isArquivada(t)) || turmasFiltradas[0];
-                    if (primeira) selecionarTurma(primeira.id, false);
-                    else mostrarDetalheVazio();
-                }
-            }
-        }
-
-        function renderizarGradeSemanal() {
-            const grade = document.getElementById('grade-semanal'); grade.innerHTML = '';
-            const ativas = turmasFiltradas.filter(t => !isArquivada(t));
-            document.getElementById('grade-resumo').textContent = `${ativas.length} turma(s) nos filtros atuais`;
-            [1,2,3,4,5,6,0].forEach(dia => {
-                const col = document.createElement('section'); col.className = 'weekly-column bg-white border border-slate-200 rounded-2xl p-3';
-                const aulas = ativas.filter(t => Array.isArray(t.dias_semana) && t.dias_semana.map(Number).includes(dia)).sort((a,b)=>String(a.hora_inicio||'').localeCompare(String(b.hora_inicio||'')));
-                col.innerHTML = `<div class="flex items-center justify-between pb-2.5 border-b border-slate-100"><h3 class="text-[10px] font-black uppercase tracking-widest text-slate-600">${DIAS_LONGOS[dia]}</h3><span class="text-[9px] font-bold text-slate-400">${aulas.length}</span></div>`;
-                const body = document.createElement('div'); body.className = 'space-y-2 mt-3';
-                if (!aulas.length) body.innerHTML = '<div class="py-8 text-center text-[10px] text-slate-300 font-medium">Sem aulas</div>';
-                aulas.forEach(t => {
-                    const a = document.createElement('button'); a.className = 'w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-cyan-50 border border-slate-100 hover:border-cyan-200 transition-colors focus-ring';
-                    a.onclick = () => { alterarVisualizacao('lista'); selecionarTurma(t.id); };
-                    a.innerHTML = `<p class="text-[9px] font-black text-cyan-600">${escapeHtml(formatarHorarioBox(t.hora_inicio,t.hora_fim))}</p><p class="text-[11px] font-black text-slate-800 uppercase mt-1 truncate">${escapeHtml(t.nome||'')}</p><p class="text-[9px] text-slate-400 mt-1 truncate">${escapeHtml(t.professor_responsavel||'Sem professor')} · ${(t.alunos_ids||[]).length}${capacidadeTurma(t)>0?'/'+capacidadeTurma(t):''}</p>`;
-                    body.appendChild(a);
-                });
-                col.appendChild(body); grade.appendChild(col);
-            });
-        }
-
-        function mostrarDetalheVazio() {
-            document.getElementById('detalhe-vazio').classList.remove('hidden');
-            const c = document.getElementById('detalhe-conteudo'); c.classList.add('hidden'); c.classList.remove('flex');
-        }
-
-        window.selecionarTurma = function(id, abrirMobile = true) {
-            turmaSelecionada = turmasCache.find(t => t.id === id);
-            if (!turmaSelecionada) return;
-            if (abrirMobile && window.innerWidth < 768) document.getElementById('painel-detalhe').classList.add('slide-in-mobile');
-            document.getElementById('detalhe-vazio').classList.add('hidden');
-            const content = document.getElementById('detalhe-conteudo'); content.classList.remove('hidden'); content.classList.add('flex');
-            document.getElementById('turma-nome-detalhe').textContent = turmaSelecionada.nome || 'Sem nome';
-            document.getElementById('turma-horario-badge').textContent = `${formatarDiasSemanas(turmaSelecionada.dias_semana)} · ${formatarHorarioBox(turmaSelecionada.hora_inicio,turmaSelecionada.hora_fim)}`;
-            document.getElementById('turma-idade-badge').textContent = formatarRegraIdade(turmaSelecionada.idade_min,turmaSelecionada.idade_max);
-            document.getElementById('turma-professor-badge').textContent = turmaSelecionada.professor_responsavel || 'Sem professor';
-            const qtd = (turmaSelecionada.alunos_ids||[]).length, cap = capacidadeTurma(turmaSelecionada);
-            document.getElementById('turma-contagem').textContent = qtd;
-            document.getElementById('turma-capacidade-mini').textContent = cap > 0 ? `de ${cap}` : 'sem limite';
-            document.getElementById('turma-ocupacao-texto').textContent = cap > 0 ? `${qtd} de ${cap} vagas` : `${qtd} aluno(s) · sem limite`;
-            const pct = cap>0 ? Math.min(100,Math.round(qtd/cap*100)) : 0;
-            const barra = document.getElementById('turma-ocupacao-barra'); barra.style.width = `${pct}%`; barra.className = `h-full rounded-full transition-all ${pct>=100?'bg-rose-500':pct>=80?'bg-amber-500':'bg-cyan-500'}`;
-            const arq = isArquivada(turmaSelecionada); document.getElementById('turma-status-badge').classList.toggle('hidden', !arq);
-            const btnArq = document.getElementById('btn-arquivar-detalhe'); btnArq.innerHTML = arq ? '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restaurar' : '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>Arquivar';
-            document.querySelectorAll('.card-turma').forEach(el => { el.classList.remove('border-cyan-400','ring-2','ring-cyan-100'); });
-            const card = document.getElementById(`card-turma-${id}`); if(card) card.classList.add('border-cyan-400','ring-2','ring-cyan-100');
-            atualizarUIAlunosDaTurma();
-        };
-        window.fecharDetalhesMobile = function() { document.getElementById('painel-detalhe').classList.remove('slide-in-mobile'); fecharMenuTurmaDetalhe(); };
-
-        // ================= TURMA CRUD =================
-        window.abrirModalTurma = function(modoEdicao = false) {
-            const modal = document.getElementById('modal-turma'); modal.classList.remove('hidden'); modal.classList.add('flex');
-            document.getElementById('alerta-conflito').classList.add('hidden');
-            if (!modoEdicao) {
-                turmaEditandoId = null;
-                document.getElementById('titulo-form').textContent = 'Nova turma';
-                document.getElementById('btn-salvar-turma').textContent = 'Criar turma';
-                ['turma-nome','turma-professor','turma-capacidade','turma-idade-min','turma-idade-max','turma-hora-inicio','turma-hora-fim'].forEach(id=>document.getElementById(id).value='');
-                document.querySelectorAll('.chk-dia').forEach(c=>c.checked=false);
-            }
-            setTimeout(()=>document.getElementById('turma-nome').focus(),100);
-        };
-        window.fecharModalTurma = function() { const m=document.getElementById('modal-turma');m.classList.add('hidden');m.classList.remove('flex'); };
-        window.fecharModalAoClicarFora = function(event,id) { if(event.target.id===id){ const fn={ 'modal-turma':fecharModalTurma,'modal-trocar':fecharModalTrocar,'modal-matricula-lote':fecharModalMatriculaLote,'modal-distribuicao':fecharModalDistribuicao }[id]; if(fn)fn(); } };
-
-        window.salvarTurma = async function() {
-            const nome = document.getElementById('turma-nome').value.toUpperCase().trim();
-            const professor = document.getElementById('turma-professor').value.trim();
-            const capacidade = Math.max(0, parseInt(document.getElementById('turma-capacidade').value)||0);
-            const min = Math.max(0, parseInt(document.getElementById('turma-idade-min').value)||0);
-            const maxRaw = parseInt(document.getElementById('turma-idade-max').value); const max = Number.isFinite(maxRaw) ? Math.max(0,maxRaw) : 999;
-            const hora_inicio = document.getElementById('turma-hora-inicio').value, hora_fim = document.getElementById('turma-hora-fim').value;
-            const dias_semana = [...document.querySelectorAll('.chk-dia:checked')].map(c=>Number(c.value));
-            if (!nome) return showToast('Informe o nome da turma.','error');
-            if (!dias_semana.length) return showToast('Selecione pelo menos um dia de treino.','error');
-            if (!hora_inicio) return showToast('Informe a hora de início.','error');
-            if (hora_fim && hora_inicio >= hora_fim) return showToast('A hora de início deve ser anterior à hora final.','error');
-            if (max !== 999 && max < min) return showToast('A idade máxima não pode ser menor que a mínima.','error');
-            if (turmaEditandoId && capacidade > 0) {
-                const atual = turmasCache.find(t => t.id === turmaEditandoId);
-                const matriculados = (atual?.alunos_ids || []).length;
-                if (matriculados > capacidade) return showToast(`A turma já possui ${matriculados} alunos. Defina capacidade igual ou superior.`, 'warning');
-            }
-            const dados = { nome, professor_responsavel: professor, capacidade, idade_min:min, idade_max:max, dias_semana, hora_inicio, hora_fim };
-            const conflitos = detectarConflitos(dados, turmaEditandoId);
-            if (conflitos.length) {
-                const box = document.getElementById('alerta-conflito'); box.textContent = conflitos.join(' '); box.classList.remove('hidden');
-                if (!confirm(`${conflitos.join('\n')}\n\nDeseja salvar mesmo assim?`)) return;
-            }
-            const btn=document.getElementById('btn-salvar-turma'), original=btn.textContent;btn.disabled=true;btn.textContent='Salvando...';
-            try {
-                if (turmaEditandoId) { await updateDoc(doc(db,'turmas',turmaEditandoId), dados); showToast('Turma atualizada.','success'); await registrarAtividadeEquipe('TURMA_EDITADA'); }
-                else { const ref=await addDoc(collection(db,'turmas'),{...dados,equipe_id:uid,alunos_ids:[],status:'ATIVA',data_criacao:new Date().toISOString()}); showToast('Turma criada.','success'); await registrarAtividadeEquipe('TURMA_CRIADA'); turmaSelecionada={id:ref.id,...dados,equipe_id:uid,alunos_ids:[],status:'ATIVA'}; }
-                fecharModalTurma(); clearCache(); await carregarTurmas(true);
-            } catch(e){console.error(e);showToast('Erro ao salvar turma.','error');}
-            finally{btn.disabled=false;btn.textContent=original;}
-        };
-
-        window.editarTurma = function(id) {
-            const t=turmasCache.find(x=>x.id===id);if(!t)return; abrirModalTurma(true); turmaEditandoId=id;
-            document.getElementById('titulo-form').textContent='Editar turma'; document.getElementById('btn-salvar-turma').textContent='Salvar alterações';
-            document.getElementById('turma-nome').value=t.nome||'';document.getElementById('turma-professor').value=t.professor_responsavel||'';document.getElementById('turma-capacidade').value=t.capacidade||'';document.getElementById('turma-idade-min').value=t.idade_min||'';document.getElementById('turma-idade-max').value=(t.idade_max===999?'':t.idade_max||'');document.getElementById('turma-hora-inicio').value=t.hora_inicio||'';document.getElementById('turma-hora-fim').value=t.hora_fim||'';
-            document.querySelectorAll('.chk-dia').forEach(c=>c.checked=false);(t.dias_semana||[]).forEach(d=>{const c=document.querySelector(`.chk-dia[value="${Number(d)}"]`);if(c)c.checked=true;});
-        };
-        window.editarTurmaSelecionada=()=>{if(turmaSelecionada){fecharMenuTurmaDetalhe();editarTurma(turmaSelecionada.id);}};
-        window.duplicarTurmaSelecionada=function(){
-            if(!turmaSelecionada)return; const t=turmaSelecionada; fecharMenuTurmaDetalhe(); abrirModalTurma();
-            document.getElementById('titulo-form').textContent='Duplicar turma';document.getElementById('turma-nome').value=`${t.nome||''} CÓPIA`;document.getElementById('turma-professor').value=t.professor_responsavel||'';document.getElementById('turma-capacidade').value=t.capacidade||'';document.getElementById('turma-idade-min').value=t.idade_min||'';document.getElementById('turma-idade-max').value=t.idade_max===999?'':t.idade_max||'';document.getElementById('turma-hora-inicio').value=t.hora_inicio||'';document.getElementById('turma-hora-fim').value=t.hora_fim||'';document.querySelectorAll('.chk-dia').forEach(c=>c.checked=false);(t.dias_semana||[]).forEach(d=>{const c=document.querySelector(`.chk-dia[value="${Number(d)}"]`);if(c)c.checked=true;});
-        };
-        window.arquivarTurmaSelecionada=async function(){
-            if(!turmaSelecionada)return; fecharMenuTurmaDetalhe(); const arq=isArquivada(turmaSelecionada);
-            if(!arq&&!confirm('Arquivar esta turma? Os alunos continuam cadastrados e a turma poderá ser restaurada depois.'))return;
-            try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),arq?{status:'ATIVA',arquivada:false,restaurada_em:new Date().toISOString()}:{status:'ARQUIVADA',arquivada:true,arquivada_em:new Date().toISOString()});showToast(arq?'Turma restaurada.':'Turma arquivada.','success');await registrarAtividadeEquipe(arq?'TURMA_RESTAURADA':'TURMA_ARQUIVADA');clearCache();turmaSelecionada=null;await carregarTurmas(true);}catch(e){showToast('Erro ao atualizar a turma.','error');}
-        };
-        window.toggleMenuTurmaDetalhe=function(e){e.stopPropagation();document.getElementById('menu-turma-detalhe').classList.toggle('hidden');};
-        function fecharMenuTurmaDetalhe(){document.getElementById('menu-turma-detalhe').classList.add('hidden');}
-
-        // ================= ALUNOS =================
-        function alunosDisponiveisParaTurma() {
-            if(!turmaSelecionada)return[]; const ids=new Set(turmaSelecionada.alunos_ids||[]);
-            return alunosCache.filter(a=>!ids.has(a.id));
-        }
-        window.filtrarAlunosDropdown=function(){
-            const termo=document.getElementById('input-busca-matricular').value.trim().toLowerCase(),dd=document.getElementById('dropdown-alunos');alunoSelecionadoBuscaId=null;dropdownAlunoIndex=-1;
-            if(!termo){dd.classList.add('hidden');return;}
-            dropdownAlunoResultados=alunosDisponiveisParaTurma().filter(a=>`${a.nome||''} ${a.faixa||''}`.toLowerCase().includes(termo)).slice(0,8);renderizarDropdownAlunos();
-        };
-        function renderizarDropdownAlunos(){
-            const dd=document.getElementById('dropdown-alunos');dd.innerHTML='';
-            if(!dropdownAlunoResultados.length){dd.innerHTML='<li class="p-3 text-xs text-slate-400 text-center">Nenhum aluno encontrado</li>';dd.classList.remove('hidden');return;}
-            dropdownAlunoResultados.forEach((al,i)=>{const li=document.createElement('li');li.className=`p-2.5 rounded-lg flex items-center gap-3 cursor-pointer ${i===dropdownAlunoIndex?'bg-cyan-50':'hover:bg-slate-50'}`;li.innerHTML=`<span class="w-7 h-7 rounded-full border border-slate-200 shrink-0" style="${getEstiloFaixa(al.faixa)}"></span><span class="min-w-0 flex-1"><span class="block text-xs font-bold text-slate-700 truncate">${escapeHtml(al.nome||'')}</span><span class="block text-[9px] text-slate-400 mt-0.5">${escapeHtml(al.faixa||'Branca')} · ${calcularIdadeNum(al.data_nascimento)>=0?calcularIdadeNum(al.data_nascimento)+' anos':'idade não informada'}</span></span>`;li.onclick=()=>selecionarAlunoDropdown(i);dd.appendChild(li);});dd.classList.remove('hidden');
-        }
-        function selecionarAlunoDropdown(i){const al=dropdownAlunoResultados[i];if(!al)return;document.getElementById('input-busca-matricular').value=al.nome;alunoSelecionadoBuscaId=al.id;document.getElementById('dropdown-alunos').classList.add('hidden');}
-        window.navegarDropdownAlunos=function(e){if(document.getElementById('dropdown-alunos').classList.contains('hidden'))return;if(e.key==='ArrowDown'){e.preventDefault();dropdownAlunoIndex=Math.min(dropdownAlunoResultados.length-1,dropdownAlunoIndex+1);renderizarDropdownAlunos();}else if(e.key==='ArrowUp'){e.preventDefault();dropdownAlunoIndex=Math.max(0,dropdownAlunoIndex-1);renderizarDropdownAlunos();}else if(e.key==='Enter'&&dropdownAlunoIndex>=0){e.preventDefault();selecionarAlunoDropdown(dropdownAlunoIndex);}else if(e.key==='Escape')document.getElementById('dropdown-alunos').classList.add('hidden');};
-
-        window.atualizarUIAlunosDaTurma=function(){
-            if(!turmaSelecionada)return; const ids=turmaSelecionada.alunos_ids||[],busca=String(document.getElementById('busca-matriculados')?.value||'').toLowerCase();
-            const container=document.getElementById('lista-matriculados'); const encontrados=alunosCache.filter(a=>ids.includes(a.id)&&(!busca||String(a.nome||'').toLowerCase().includes(busca)));
-            container.innerHTML='';
-            if(!ids.length){container.innerHTML='<div class="flex flex-col items-center justify-center text-center py-12 text-slate-400"><div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-3"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg></div><p class="text-sm font-bold">Nenhum aluno matriculado</p><p class="text-[10px] mt-1">Use a busca acima para começar.</p></div>';return;}
-            if(!encontrados.length){container.innerHTML='<p class="text-center text-xs text-slate-400 py-8">Nenhum aluno corresponde ao filtro.</p>';return;}
-            const frag=document.createDocumentFragment();encontrados.forEach(al=>{const idade=calcularIdadeNum(al.data_nascimento),item=document.createElement('div');item.className='py-3 border-b border-slate-100 flex items-center gap-3';item.innerHTML=`<div class="w-9 h-9 rounded-full border border-slate-200 shadow-sm shrink-0" style="${getEstiloFaixa(al.faixa)}"></div><div class="min-w-0 flex-1"><p class="text-xs sm:text-sm font-bold text-slate-800 truncate">${escapeHtml(al.nome||'')}</p><p class="text-[9px] text-slate-400 mt-0.5">${escapeHtml(al.faixa||'Branca')} · ${idade>=0?idade+' anos':'idade não informada'}</p></div><div class="flex gap-1.5"><button class="focus-ring w-9 h-9 rounded-lg bg-cyan-50 text-cyan-600 hover:bg-cyan-100 flex items-center justify-center" title="Transferir" aria-label="Transferir ${escapeHtml(al.nome||'')}" data-move="${al.id}"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="m17 3 4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg></button><button class="focus-ring w-9 h-9 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 flex items-center justify-center" title="Remover" aria-label="Remover ${escapeHtml(al.nome||'')}" data-remove="${al.id}"><svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></svg></button></div>`;
-                item.querySelector('[data-move]').onclick=()=>abrirModalTrocar(al.id,al.nome||'');item.querySelector('[data-remove]').onclick=()=>removerAlunoDaTurma(al.id);frag.appendChild(item);});container.appendChild(frag);
-        };
-
-        window.adicionarAlunoNaTurma=async function(){
-            if(!turmaSelecionada)return;if(isArquivada(turmaSelecionada))return showToast('Restaure a turma antes de matricular alunos.','warning');const id=alunoSelecionadoBuscaId;if(!id)return showToast('Selecione um aluno nos resultados da busca.','warning');if(turmaLotada(turmaSelecionada))return showToast('Esta turma atingiu a capacidade definida.','warning');
-            const conflitosAluno = conflitosDeHorarioDoAluno(id, turmaSelecionada);
-            if (conflitosAluno.length && !confirm(`Este aluno já está matriculado em ${conflitosAluno.map(t=>t.nome).join(', ')}, com horário sobreposto.\n\nDeseja matricular mesmo assim?`)) return;
-            try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayUnion(id)});turmaSelecionada.alunos_ids=[...(turmaSelecionada.alunos_ids||[]),id];showToast('Aluno matriculado.','success');await registrarAtividadeEquipe('ALUNO_MATRICULADO_TURMA');document.getElementById('input-busca-matricular').value='';alunoSelecionadoBuscaId=null;clearCache();await carregarTurmas(true);}catch(e){showToast('Erro ao matricular aluno.','error');}
-        };
-        window.removerAlunoDaTurma=async function(alunoId){if(!turmaSelecionada||!confirm('Remover este aluno da turma?'))return;try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayRemove(alunoId)});showToast('Aluno removido da turma.','success');await registrarAtividadeEquipe('ALUNO_REMOVIDO_TURMA');turmaSelecionada.alunos_ids=(turmaSelecionada.alunos_ids||[]).filter(id=>id!==alunoId);clearCache();await carregarTurmas(true);}catch(e){showToast('Erro ao remover aluno.','error');}};
-
-        // ================= MATRÍCULA EM LOTE =================
-        window.abrirModalMatriculaLote=function(apenasSemTurma=false){
-            if(!turmaSelecionada)return showToast('Selecione uma turma primeiro.','warning');if(isArquivada(turmaSelecionada))return showToast('Restaure a turma antes de matricular alunos.','warning');loteSelecionados=new Set();document.getElementById('busca-lote').value='';document.getElementById('modal-matricula-lote').dataset.onlyUnassigned=apenasSemTurma?'1':'0';document.getElementById('lote-subtitulo').textContent=`Destino: ${turmaSelecionada.nome}`;renderizarListaLote();const m=document.getElementById('modal-matricula-lote');m.classList.remove('hidden');m.classList.add('flex');
-        };
-        window.fecharModalMatriculaLote=function(){const m=document.getElementById('modal-matricula-lote');m.classList.add('hidden');m.classList.remove('flex');loteSelecionados.clear();};
-        window.renderizarListaLote=function(){
-            const termo=document.getElementById('busca-lote').value.toLowerCase(),only=document.getElementById('modal-matricula-lote').dataset.onlyUnassigned==='1',ids=new Set(turmaSelecionada?.alunos_ids||[]);let lista=alunosCache.filter(a=>!ids.has(a.id)&&(!only||!alunoEstaEmAlgumaTurma(a.id))&&(!termo||String(a.nome||'').toLowerCase().includes(termo)));
-            const box=document.getElementById('lista-lote');box.innerHTML='';if(!lista.length){box.innerHTML='<p class="text-center text-xs text-slate-400 py-8">Nenhum aluno disponível.</p>';}
-            lista.forEach(al=>{const label=document.createElement('label');label.className='flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer';const checked=loteSelecionados.has(al.id);label.innerHTML=`<input type="checkbox" ${checked?'checked':''} class="w-4 h-4 accent-cyan-500"><span class="w-8 h-8 rounded-full border border-slate-200 shrink-0" style="${getEstiloFaixa(al.faixa)}"></span><span class="min-w-0 flex-1"><span class="block text-xs font-bold text-slate-700 truncate">${escapeHtml(al.nome||'')}</span><span class="block text-[9px] text-slate-400 mt-0.5">${escapeHtml(al.faixa||'Branca')}</span></span>`;label.querySelector('input').onchange=e=>{if(e.target.checked)loteSelecionados.add(al.id);else loteSelecionados.delete(al.id);atualizarContagemLote();};box.appendChild(label);});atualizarContagemLote();
-        };
-        function atualizarContagemLote(){document.getElementById('lote-selecionados').textContent=`${loteSelecionados.size} selecionado(s)`;}
-        window.confirmarMatriculaLote=async function(){
-            if(!turmaSelecionada||!loteSelecionados.size)return showToast('Selecione pelo menos um aluno.','warning');const cap=capacidadeTurma(turmaSelecionada),atuais=(turmaSelecionada.alunos_ids||[]).length;if(cap>0&&atuais+loteSelecionados.size>cap)return showToast(`A turma comporta mais ${Math.max(0,cap-atuais)} aluno(s).`,'warning');
-            const comConflito = [...loteSelecionados].filter(id => conflitosDeHorarioDoAluno(id, turmaSelecionada).length > 0);
-            if (comConflito.length && !confirm(`${comConflito.length} aluno(s) selecionado(s) possuem outra turma em horário sobreposto.\n\nDeseja continuar mesmo assim?`)) return;
-            try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayUnion(...loteSelecionados)});showToast(`${loteSelecionados.size} aluno(s) matriculado(s).`,'success');await registrarAtividadeEquipe('MATRICULA_TURMA_EM_LOTE');fecharModalMatriculaLote();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro na matrícula em lote.','error');}
-        };
-
-        // ================= TRANSFERÊNCIA ATÔMICA =================
-        window.abrirModalTrocar=function(id,nome){alunoParaTrocaId=id;document.getElementById('lbl-atleta-troca').textContent=nome;const s=document.getElementById('select-nova-turma');s.innerHTML='<option value="">Selecione uma turma...</option>';turmasCache.filter(t=>t.id!==turmaSelecionada?.id&&!isArquivada(t)&&!turmaLotada(t)).forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=`${t.nome} (${(t.alunos_ids||[]).length}${capacidadeTurma(t)>0?'/'+capacidadeTurma(t):''})`;s.appendChild(o);});const m=document.getElementById('modal-trocar');m.classList.remove('hidden');m.classList.add('flex');};
-        window.fecharModalTrocar=function(){const m=document.getElementById('modal-trocar');m.classList.add('hidden');m.classList.remove('flex');alunoParaTrocaId=null;};
-        window.confirmarTroca=async function(){const novaId=document.getElementById('select-nova-turma').value;if(!novaId)return showToast('Selecione a turma de destino.','warning');if(!turmaSelecionada||!alunoParaTrocaId)return;const dest=turmasCache.find(t=>t.id===novaId);if(turmaLotada(dest))return showToast('A turma de destino está lotada.','warning');showLoading();try{const batch=writeBatch(db);batch.update(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayRemove(alunoParaTrocaId)});batch.update(doc(db,'turmas',novaId),{alunos_ids:arrayUnion(alunoParaTrocaId)});await batch.commit();showToast('Aluno transferido.','success');await registrarAtividadeEquipe('ALUNO_TRANSFERIDO_TURMA');fecharModalTrocar();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro ao transferir aluno.','error');}finally{hideLoading();}};
-
-        // ================= DISTRIBUIÇÃO COM PRÉVIA =================
-        function gerarPreviewDistribuicao(){
-            const ativas=turmasCache.filter(t=>!isArquivada(t)),jaAlocados=new Set(ativas.flatMap(t=>t.alunos_ids||[])),ocupacao=new Map(ativas.map(t=>[t.id,(t.alunos_ids||[]).length]));const resultado=[];
-            alunosCache.filter(a=>!jaAlocados.has(a.id)).forEach(al=>{const idade=calcularIdadeNum(al.data_nascimento);if(idade<0){resultado.push({aluno:al,destino:null,motivo:'Idade não informada',ambiguo:false});return;}const compativeis=ativas.filter(t=>{const min=Number(t.idade_min||0),max=Number(t.idade_max||999),cap=capacidadeTurma(t),occ=ocupacao.get(t.id)||0;return idade>=min&&idade<=max&&(cap===0||occ<cap);});if(!compativeis.length){resultado.push({aluno:al,destino:null,motivo:'Nenhuma turma compatível',ambiguo:false});return;}compativeis.sort((a,b)=>{const ca=capacidadeTurma(a),cb=capacidadeTurma(b),ra=ca?((ocupacao.get(a.id)||0)/ca):(ocupacao.get(a.id)||0)/1000,rb=cb?((ocupacao.get(b.id)||0)/cb):(ocupacao.get(b.id)||0)/1000;return ra-rb||String(a.hora_inicio||'').localeCompare(String(b.hora_inicio||''));});const destino=compativeis[0];ocupacao.set(destino.id,(ocupacao.get(destino.id)||0)+1);resultado.push({aluno:al,destino,motivo:'',ambiguo:compativeis.length>1});});return resultado;
-        }
-        window.abrirPreviewDistribuicao=function(){if(!turmasCache.some(t=>!isArquivada(t)))return showToast('Crie pelo menos uma turma ativa.','warning');distribuicaoPreview=gerarPreviewDistribuicao();const alocar=distribuicaoPreview.filter(x=>x.destino),ambiguos=distribuicaoPreview.filter(x=>x.destino&&x.ambiguo),ignorar=distribuicaoPreview.filter(x=>!x.destino);document.getElementById('prev-alocar').textContent=alocar.length;document.getElementById('prev-ambiguos').textContent=ambiguos.length;document.getElementById('prev-ignorar').textContent=ignorar.length;document.getElementById('btn-confirmar-distribuicao').disabled=!alocar.length;const box=document.getElementById('preview-distribuicao-lista');box.innerHTML='';if(!distribuicaoPreview.length)box.innerHTML='<p class="text-center text-xs text-slate-400 py-8">Todos os alunos ativos já estão em alguma turma.</p>';distribuicaoPreview.slice(0,100).forEach(x=>{const row=document.createElement('div');row.className='p-3 rounded-xl border border-slate-200 flex items-center gap-3';row.innerHTML=`<div class="min-w-0 flex-1"><p class="text-xs font-bold text-slate-700 truncate">${escapeHtml(x.aluno.nome||'')}</p><p class="text-[9px] text-slate-400 mt-0.5">${calcularIdadeNum(x.aluno.data_nascimento)>=0?calcularIdadeNum(x.aluno.data_nascimento)+' anos':'idade não informada'}</p></div><div class="text-right max-w-[48%]"><p class="text-[10px] font-black ${x.destino?'text-emerald-600':'text-slate-400'} truncate">${x.destino?escapeHtml(x.destino.nome):escapeHtml(x.motivo)}</p>${x.ambiguo?'<p class="text-[8px] text-amber-500 font-bold mt-0.5">mais de uma opção</p>':''}</div>`;box.appendChild(row);});const m=document.getElementById('modal-distribuicao');m.classList.remove('hidden');m.classList.add('flex');};
-        window.fecharModalDistribuicao=function(){const m=document.getElementById('modal-distribuicao');m.classList.add('hidden');m.classList.remove('flex');};
-        window.confirmarDistribuicaoAutomatica=async function(){const itens=distribuicaoPreview.filter(x=>x.destino);if(!itens.length)return;const porTurma=new Map();itens.forEach(x=>{if(!porTurma.has(x.destino.id))porTurma.set(x.destino.id,[]);porTurma.get(x.destino.id).push(x.aluno.id);});showLoading();try{const batch=writeBatch(db);porTurma.forEach((ids,tid)=>batch.update(doc(db,'turmas',tid),{alunos_ids:arrayUnion(...ids)}));await batch.commit();showToast(`${itens.length} aluno(s) distribuído(s).`,'success');await registrarAtividadeEquipe('DISTRIBUICAO_AUTOMATICA');fecharModalDistribuicao();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro ao aplicar distribuição.','error');}finally{hideLoading();}};
-        window.autoDistribuirAlunos=window.abrirPreviewDistribuicao; // compatibilidade com chamadas antigas
-
-        // Aliases locais para manter chamadas internas seguras dentro do script type="module".
-        const showToast = (...args) => window.showToast(...args);
-        const registrarAtividadeEquipe = (...args) => window.registrarAtividadeEquipe(...args);
-        const aplicarFiltrosTurmas = (...args) => window.aplicarFiltrosTurmas(...args);
-        const alterarVisualizacao = (...args) => window.alterarVisualizacao(...args);
-        const selecionarTurma = (...args) => window.selecionarTurma(...args);
-        const abrirModalTurma = (...args) => window.abrirModalTurma(...args);
-        const fecharModalTurma = (...args) => window.fecharModalTurma(...args);
-        const abrirModalMatriculaLote = (...args) => window.abrirModalMatriculaLote(...args);
-        const fecharModalMatriculaLote = (...args) => window.fecharModalMatriculaLote(...args);
-        const renderizarListaLote = (...args) => window.renderizarListaLote(...args);
-        const atualizarUIAlunosDaTurma = (...args) => window.atualizarUIAlunosDaTurma(...args);
-        const abrirModalTrocar = (...args) => window.abrirModalTrocar(...args);
-        const removerAlunoDaTurma = (...args) => window.removerAlunoDaTurma(...args);
-        const fecharModalTrocar = (...args) => window.fecharModalTrocar(...args);
-        const fecharModalDistribuicao = (...args) => window.fecharModalDistribuicao(...args);
-        const fecharDetalhesMobile = (...args) => window.fecharDetalhesMobile(...args);
-
-        window.abrirDetalhesMobile = function() { if (window.innerWidth < 768) document.getElementById('painel-detalhe').classList.add('slide-in-mobile'); };
-        window.excluirTurma = async function(id) { const t = turmasCache.find(x => x.id === id); if (!t) return; turmaSelecionada = t; await window.arquivarTurmaSelecionada(); };
-
-        // ================= EQUIPE / IMPERSONAÇÃO =================
-        async function carregarDadosEquipe(){try{const snap=await getDoc(doc(db,'equipes',teamId));if(snap.exists()){const d=snap.data();equipeDados.nome=d.nome_equipe||d.nome||'Sua Equipe';equipeDados.logo=d.url_logo||'';const nome=document.querySelector('aside h2')||document.getElementById('nome-equipe');if(nome)nome.textContent=equipeDados.nome.toUpperCase();const logo=document.getElementById('logo-equipe-menu')||document.getElementById('container-logo');if(logo){if(equipeDados.logo){logo.style.background='transparent';const img=document.createElement('img');img.src=equipeDados.logo;img.alt='Logo da equipe';img.className='w-full h-full object-cover rounded-xl shadow-md';logo.innerHTML='';logo.appendChild(img);}else{logo.innerHTML='';const span=document.createElement('span');span.className='text-white font-black text-2xl';span.textContent=equipeDados.nome.charAt(0).toUpperCase();logo.appendChild(span);}}}}catch(e){console.error('Equipe:',e);}}
-
-        window.sairModoSuporte=function(){sessionStorage.removeItem('admin_impersonate');sessionStorage.removeItem('admin_impersonate_reason');window.location.href='super_admin.html';};
-        function injetarAvisoSuporte(){setTimeout(()=>{const aside=document.querySelector('aside');if(!aside||document.getElementById('btn-sair-suporte-turmas'))return;const b=document.createElement('button');b.id='btn-sair-suporte-turmas';b.onclick=window.sairModoSuporte;b.className='mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2';b.textContent='MODO SUPORTE · SAIR';const sair=[...aside.querySelectorAll('button,a')].find(el=>el.textContent.toUpperCase().includes('SAIR'));if(sair?.parentNode)sair.parentNode.insertBefore(b,sair);else aside.appendChild(b);},700);}
-
-        // ================= AUTENTICAÇÃO / RESOLUÇÃO DA EQUIPE =================
-        // IMPORTANTE: a conexão normal preserva o fluxo original que já funcionava:
-        // 1) responsável da academia -> equipes/{user.uid}
-        // 2) colaborador -> colaboradores/{user.uid}.equipe_id
-        // A coleção super_admins só é consultada quando existe uma impersonação solicitada
-        // pelo Super Admin. Isso evita que regras mais restritivas de super_admins bloqueiem
-        // o carregamento de usuários comuns.
-        async function resolverEquipeDoUsuario(user) {
-            const impersonada = sessionStorage.getItem('admin_impersonate');
-
-            // No modo suporte, o Super Admin já escolheu a academia no Control Center.
-            // Não fazemos uma leitura prévia em super_admins aqui porque essa validação
-            // pode ser bloqueada pelas Rules e impedir justamente o carregamento da academia.
-            // As próprias regras do Firestore continuam sendo a barreira de autorização dos dados.
-            if (impersonada) {
-                usuarioEhSuperAdmin = true;
-                window.isSuperAdmin = true;
-                injetarAvisoSuporte();
-                return impersonada;
-            }
-
-            // Fluxo normal da academia: responsável -> equipes/{uid}.
-            const mestre = await getDoc(doc(db, 'equipes', user.uid));
-            if (mestre.exists()) return user.uid;
-
-            // Co-administrador/colaborador -> colaboradores/{uid}.equipe_id.
-            const colab = await getDoc(doc(db, 'colaboradores', user.uid));
-            if (colab.exists() && colab.data().equipe_id) return colab.data().equipe_id;
-
-            // Usuário que não pertence a uma academia. A consulta abaixo é apenas para
-            // direcionar um Super Admin ao Control Center; falha de permissão não quebra a tela.
-            try {
-                const superSnap = await getDoc(doc(db, 'super_admins', user.uid));
-                if (superSnap.exists()) {
-                    usuarioEhSuperAdmin = true;
-                    window.isSuperAdmin = true;
-                    window.location.href = 'super_admin.html';
-                    return null;
-                }
-            } catch (_) {}
-
-            return null;
-        }
-
-        onAuthStateChanged(auth, async user => {
-            if (!user) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            try {
-                teamId = await resolverEquipeDoUsuario(user);
-
-                if (!teamId) {
-                    // Se resolverEquipeDoUsuario já iniciou um redirecionamento, não troca a tela.
-                    if (window.location.pathname.endsWith('/super_admin.html')) return;
-                    const lista = document.getElementById('lista-turmas');
-                    if (lista) lista.innerHTML = '<div class="p-6 text-center text-rose-500 font-bold">Equipe não encontrada para este usuário.</div>';
+        // ===================== CARREGAR DADOS =====================
+        async function carregarAlunos(forceRefresh = false) {
+            if (!forceRefresh) {
+                const cached = getFromCache(CACHE_KEYS.ALUNOS);
+                if (cached) {
+                    alunosCache = cached;
                     return;
                 }
+            }
+            const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
+            const snap = await getDocs(q);
+            alunosCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
+            saveToCache(CACHE_KEYS.ALUNOS, alunosCache);
+        }
 
-                uid = teamId;
-
-                // Remove possíveis caches vazios/antigos deixados por versões anteriores.
-                // Na primeira abertura desta página, buscamos sempre a fonte real no Firestore.
-                clearCache();
-
-                // O carregamento dos dados não depende da telemetria. Se a gravação de
-                // último acesso for bloqueada pelas regras, a tela continua funcionando.
-                registrarUltimoAcessoReal().catch(() => {});
-
-                await carregarDadosEquipe();
-                await Promise.all([
-                    carregarAlunos(true),
-                    carregarTurmas(true)
-                ]);
-                atualizarTudo();
-            } catch (e) {
-                console.error('Erro ao resolver/carregar a equipe:', e);
-                const lista = document.getElementById('lista-turmas');
-                if (lista) {
-                    lista.innerHTML = `<div class="p-6 text-center"><p class="text-rose-500 font-bold">Não foi possível carregar os dados da academia.</p><p class="text-xs text-slate-400 mt-2">${escapeHtml(e?.message || 'Erro de conexão ou permissão.')}</p></div>`;
+        async function carregarTurmas(forceRefresh = false) {
+            if (!forceRefresh) {
+                const cached = getFromCache(CACHE_KEYS.TURMAS);
+                if (cached) {
+                    turmasCache = cached;
+                    renderizarTurmas();
+                    return;
                 }
+            }
+            const q = query(collection(db, "turmas"), where("equipe_id", "==", uid));
+            const snap = await getDocs(q);
+            turmasCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
+            saveToCache(CACHE_KEYS.TURMAS, turmasCache);
+            renderizarTurmas();
+        }
+
+        // ===================== RENDERIZAR TURMAS =====================
+        function renderizarTurmas() {
+            const container = document.getElementById('lista-turmas');
+            if (!container) return;
+            
+            if (turmasCache.length === 0) {
+                container.innerHTML = "<div class='text-center p-8 text-slate-400 text-sm'>Nenhuma turma criada ainda.<br>Use o formulário ao lado para começar.</div>";
+            } else {
+                container.innerHTML = '';
+                turmasCache.forEach(t => {
+                    const div = document.createElement('div');
+                    div.id = `card-turma-${t.id}`;
+                    const isActive = turmaSelecionada && turmaSelecionada.id === t.id;
+                    div.className = `card-turma p-3 mb-3 bg-white border rounded-xl cursor-pointer transition-all flex flex-col gap-2 shadow-sm ${isActive ? 'border-cyan-500 bg-cyan-50/30' : 'border-slate-200 hover:border-cyan-400'}`;
+                    
+                    let strDias = formatarDiasSemanas(t.dias_semana);
+                    let strHorario = formatarHorarioBox(t.hora_inicio, t.hora_fim);
+
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between" onclick="selecionarTurma('${t.id}')">
+                            <div class="flex-1">
+                                <h4 class='font-black text-xs uppercase text-slate-800 group-hover:text-cyan-600 transition-colors'>${t.nome}</h4>
+                                <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${strDias} | ${strHorario}</p>
+                            </div>
+                            <div class='bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-1 rounded-lg border border-slate-200 shadow-sm flex items-center gap-1'>
+                                👥 ${(t.alunos_ids || []).length}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 pt-2 border-t border-slate-100 mt-1">
+                            <button onclick="event.stopPropagation(); editarTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1">✏️ Editar</button>
+                            <button onclick="event.stopPropagation(); excluirTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1">🗑️ Excluir</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            if (turmasCache.length > 0) {
+                if (!turmaSelecionada || !turmasCache.find(t => t.id === turmaSelecionada.id)) {
+                    if (window.innerWidth >= 768) { selecionarTurma(turmasCache[0].id); }
+                } else {
+                    selecionarTurma(turmaSelecionada.id); 
+                }
+            } else {
+                document.getElementById('detalhe-vazio').classList.remove('hidden');
+                document.getElementById('detalhe-conteudo').classList.add('hidden');
+            }
+        }
+
+        // ===================== CRUD TURMAS =====================
+        window.salvarTurma = async function() {
+            const nome = document.getElementById('turma-nome').value.toUpperCase().trim();
+            const min = parseInt(document.getElementById('turma-idade-min').value) || 0;
+            const max = parseInt(document.getElementById('turma-idade-max').value) || 999;
+            const hora_inicio = document.getElementById('turma-hora-inicio').value;
+            const hora_fim = document.getElementById('turma-hora-fim').value;
+
+            const checkboxesDias = document.querySelectorAll('.chk-dia:checked');
+            const dias_semana = Array.from(checkboxesDias).map(cb => parseInt(cb.value));
+
+            if (!nome) return showToast("Nome da turma é obrigatório", "error");
+            if (dias_semana.length === 0) return showToast("Selecione os dias de treino", "error");
+            if (!hora_inicio) return showToast("Hora de início é obrigatória", "error");
+            
+            // Validação de horário
+            if (hora_inicio && hora_fim && hora_inicio >= hora_fim) {
+                return showToast("A hora de início deve ser menor que a hora de fim", "error");
+            }
+            
+            const btn = document.getElementById('btn-salvar-turma');
+            btn.disabled = true; 
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Salvando...";
+
+            try {
+                const dados = { 
+                    nome: nome, 
+                    dias_semana: dias_semana, 
+                    hora_inicio: hora_inicio, 
+                    hora_fim: hora_fim,
+                    idade_min: min, 
+                    idade_max: max 
+                };
+
+                if (turmaEditandoId) {
+                    await updateDoc(doc(db, "turmas", turmaEditandoId), dados);
+                    showToast("Turma atualizada!", "success");
+                } else {
+                    await addDoc(collection(db, "turmas"), { ...dados, equipe_id: uid, alunos_ids: [] });
+                    showToast("Turma criada!", "success");
+                }
+                
+                cancelarEdicaoTurma(); 
+                clearCache();
+                await carregarTurmas(true);
+                
+            } catch (e) { 
+                console.error(e);
+                showToast("Erro ao salvar turma", "error"); 
+            } finally {
+                btn.disabled = false; 
+                btn.innerHTML = originalText;
+            }
+        }
+
+        window.editarTurma = function(id) {
+            const t = turmasCache.find(x => x.id === id);
+            if(!t) return;
+            turmaEditandoId = id;
+            document.getElementById('turma-nome').value = t.nome || "";
+            document.getElementById('turma-idade-min').value = t.idade_min || "";
+            document.getElementById('turma-idade-max').value = t.idade_max || "";
+            document.getElementById('turma-hora-inicio').value = t.hora_inicio || "";
+            document.getElementById('turma-hora-fim').value = t.hora_fim || "";
+
+            document.querySelectorAll('.chk-dia').forEach(cb => cb.checked = false);
+            if(Array.isArray(t.dias_semana)) {
+                t.dias_semana.forEach(d => {
+                    const cb = document.querySelector(`.chk-dia[value="${d}"]`);
+                    if(cb) cb.checked = true;
+                });
+            }
+
+            document.getElementById('titulo-form').innerText = "✏️ Editar Turma";
+            document.getElementById('btn-salvar-turma').innerHTML = "💾 Salvar Alterações";
+            document.getElementById('btn-cancelar-turma').classList.remove('hidden');
+            
+            // Scroll suave para o topo do formulário
+            document.querySelector('#painel-lista').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.excluirTurma = async function(id) {
+            if(!confirm("⚠️ Tem certeza que deseja excluir esta turma?\n\nOs alunos não serão excluídos, apenas ficarão sem turma associada.")) return;
+            
+            showLoading();
+            try {
+                await deleteDoc(doc(db, "turmas", id));
+                showToast("Turma excluída com sucesso!", "success");
+                if (turmaSelecionada && turmaSelecionada.id === id) {
+                    voltarLista();
+                }
+                clearCache();
+                await carregarTurmas(true);
+            } catch(e) {
+                console.error(e);
+                showToast("Erro ao excluir turma.", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        window.cancelarEdicaoTurma = () => {
+            turmaEditandoId = null;
+            document.getElementById('turma-nome').value = "";
+            document.getElementById('turma-idade-min').value = "";
+            document.getElementById('turma-idade-max').value = "";
+            document.getElementById('turma-hora-inicio').value = "";
+            document.getElementById('turma-hora-fim').value = "";
+            document.querySelectorAll('.chk-dia').forEach(cb => cb.checked = false);
+            
+            document.getElementById('titulo-form').innerHTML = "Nova Turma";
+            document.getElementById('btn-salvar-turma').innerHTML = "➕ Criar Turma";
+            document.getElementById('btn-cancelar-turma').classList.add('hidden');
+        }
+
+        // ===================== SELEÇÃO DE TURMA =====================
+        window.selecionarTurma = (id) => {
+            turmaSelecionada = turmasCache.find(t => t.id === id);
+            if (!turmaSelecionada) return;
+            
+            if (window.innerWidth < 768) {
+                document.getElementById('painel-lista').classList.add('hidden');
+                document.getElementById('painel-detalhe').classList.remove('hidden');
+                document.getElementById('painel-detalhe').classList.add('flex');
+            }
+
+            document.getElementById('detalhe-vazio').classList.add('hidden');
+            document.getElementById('detalhe-conteudo').classList.remove('hidden');
+            document.getElementById('detalhe-conteudo').classList.add('flex');
+            
+            let strDias = formatarDiasSemanas(turmaSelecionada.dias_semana);
+            let strHorario = formatarHorarioBox(turmaSelecionada.hora_inicio, turmaSelecionada.hora_fim);
+
+            document.getElementById('turma-nome-detalhe').innerText = turmaSelecionada.nome;
+            document.getElementById('turma-horario-badge').innerHTML = `${strDias}<span class="hidden md:inline"> | ${strHorario}</span>`;
+            document.getElementById('turma-idade-badge').innerHTML = formatarRegraIdade(turmaSelecionada.idade_min, turmaSelecionada.idade_max);
+            
+            document.querySelectorAll('.card-turma').forEach(el => {
+                el.classList.remove('border-cyan-500', 'bg-cyan-50/30');
+            });
+            const cardAtivo = document.getElementById('card-turma-' + id);
+            if (cardAtivo) cardAtivo.classList.add('border-cyan-500', 'bg-cyan-50/30');
+
+            atualizarUIAlunosDaTurma();
+        }
+
+        window.voltarLista = () => {
+            if (window.innerWidth < 768) {
+                document.getElementById('painel-lista').classList.remove('hidden');
+                document.getElementById('painel-detalhe').classList.add('hidden');
+                document.getElementById('painel-detalhe').classList.remove('flex');
+            }
+            turmaSelecionada = null;
+        }
+
+        // ===================== GESTÃO DE ALUNOS NA TURMA =====================
+        function atualizarUIAlunosDaTurma() {
+            if(!turmaSelecionada) return;
+            const ids = turmaSelecionada.alunos_ids || [];
+            document.getElementById('turma-contagem').innerHTML = `👥 Matriculados: ${ids.length}`;
+            
+            const combo = document.getElementById('combo-add-aluno');
+            combo.innerHTML = '<option value="">Selecionar atleta para matricular...</option>';
+            alunosCache.filter(a => !ids.includes(a.id)).forEach(a => {
+                const option = document.createElement('option');
+                option.value = a.id;
+                const idade = calcularIdadeNum(a.data_nascimento);
+                option.textContent = `${a.nome} • ${a.faixa || 'Branca'} ${idade > 0 ? `(${idade} anos)` : ''}`;
+                combo.appendChild(option);
+            });
+            
+            const container = document.getElementById('lista-matriculados');
+            if (ids.length === 0) {
+                container.innerHTML = "<div class='flex flex-col items-center justify-center h-full text-slate-400 py-10'><span class='text-4xl mb-3'>👥</span><p class='text-sm font-medium'>Nenhum aluno matriculado nesta turma.</p><p class='text-[10px] mt-1'>Use o campo acima para adicionar alunos.</p></div>";
+                return;
+            }
+            
+            container.innerHTML = '';
+            alunosCache.filter(a => ids.includes(a.id)).forEach(al => {
+                const idade = calcularIdadeNum(al.data_nascimento);
+                const item = document.createElement('div');
+                item.className = "p-3 mb-2 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow animate-fade-in";
+                item.innerHTML = `
+                    <div class='flex items-center gap-3 flex-1 min-w-0'>
+                        <div class='w-8 h-8 rounded-full border border-slate-300 shadow-inner shrink-0' style='${getEstiloFaixa(al.faixa)}'></div>
+                        <div class='overflow-hidden flex-1'>
+                            <h4 class='font-black text-xs text-slate-800 truncate'>${al.nome}</h4>
+                            <p class='text-[9px] text-slate-400 uppercase font-medium mt-0.5 truncate'>${al.faixa || 'Branca'} • ${idade > 0 ? idade + ' anos' : 'Idade não informada'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 ml-2">
+                        <button onclick="abrirModalTrocar('${al.id}', '${al.nome.replace(/'/g, "\\'")}')" class='text-[10px] bg-cyan-50 hover:bg-cyan-100 text-cyan-600 border border-cyan-200 px-2 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Mover para outra turma">🔄</button>
+                        <button onclick="removerAlunoDaTurma('${al.id}')" class='text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 px-2 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Remover da turma">❌</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        window.adicionarAlunoNaTurma = async () => {
+            const id = document.getElementById('combo-add-aluno').value;
+            if(!id) return showToast("Selecione um aluno para matricular", "warning");
+            
+            showLoading();
+            try {
+                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayUnion(id) });
+                turmaSelecionada.alunos_ids = [...(turmaSelecionada.alunos_ids || []), id];
+                showToast("Atleta matriculado com sucesso!", "success"); 
+                atualizarUIAlunosDaTurma(); 
+                await carregarTurmas(true);
+            } catch(e) {
+                showToast("Erro ao matricular aluno", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        window.removerAlunoDaTurma = async function(alunoId) {
+            if(!confirm("Remover este atleta da turma?")) return;
+            
+            showLoading();
+            try {
+                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoId) });
+                turmaSelecionada.alunos_ids = (turmaSelecionada.alunos_ids || []).filter(id => id !== alunoId);
+                showToast("Atleta removido da turma!", "success");
+                atualizarUIAlunosDaTurma();
+                await carregarTurmas(true);
+            } catch(e) {
+                showToast("Erro ao remover aluno", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ===================== TRANSFERIR ALUNO =====================
+        window.abrirModalTrocar = (id, nome) => {
+            alunoParaTrocaId = id;
+            document.getElementById('lbl-atleta-troca').innerHTML = nome;
+            const s = document.getElementById('select-nova-turma');
+            s.innerHTML = '<option value="">Selecione uma turma...</option>';
+            turmasCache.filter(t => t.id !== turmaSelecionada.id).forEach(t => {
+                const option = document.createElement('option');
+                option.value = t.id;
+                option.textContent = `${t.nome} (${(t.alunos_ids || []).length} alunos)`;
+                s.appendChild(option);
+            });
+            document.getElementById('modal-trocar').classList.remove('hidden');
+            document.getElementById('modal-trocar').classList.add('flex');
+        }
+
+        window.fecharModalTrocar = () => {
+            document.getElementById('modal-trocar').classList.add('hidden');
+            document.getElementById('modal-trocar').classList.remove('flex');
+            alunoParaTrocaId = null;
+        }
+
+        window.confirmarTroca = async () => {
+            const novaId = document.getElementById('select-nova-turma').value;
+            if (!novaId) return showToast("Selecione uma turma de destino", "warning");
+            
+            showLoading();
+            try {
+                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoParaTrocaId) });
+                await updateDoc(doc(db, "turmas", novaId), { alunos_ids: arrayUnion(alunoParaTrocaId) });
+                
+                // Atualiza cache local
+                turmaSelecionada.alunos_ids = (turmaSelecionada.alunos_ids || []).filter(id => id !== alunoParaTrocaId);
+                const turmaDestino = turmasCache.find(t => t.id === novaId);
+                if (turmaDestino) {
+                    turmaDestino.alunos_ids = [...(turmaDestino.alunos_ids || []), alunoParaTrocaId];
+                }
+                
+                showToast("Aluno transferido com sucesso!", "success"); 
+                fecharModalTrocar(); 
+                await carregarTurmas(true);
+                atualizarUIAlunosDaTurma();
+            } catch(e) {
+                showToast("Erro ao transferir aluno", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ===================== DISTRIBUIÇÃO AUTOMÁTICA =====================
+        window.autoDistribuirAlunos = async () => {
+            if(turmasCache.length === 0) return showToast("Crie pelo menos uma turma primeiro!", "warning");
+            if(!confirm("🤖 O robô vai distribuir os alunos automaticamente baseado na idade de cada turma.\n\nAlunos sem idade cadastrada serão ignorados.\nContinuar?")) return;
+            
+            showLoading();
+            let count = 0;
+            try {
+                for(let al of alunosCache) {
+                    let idade = calcularIdadeNum(al.data_nascimento);
+                    if(idade === -1) continue;
+                    for(let t of turmasCache) {
+                        const idadeMin = t.idade_min || 0;
+                        const idadeMax = t.idade_max || 999;
+                        if(idade >= idadeMin && idade <= idadeMax) {
+                            if (!(t.alunos_ids && t.alunos_ids.includes(al.id))) {
+                                await updateDoc(doc(db, "turmas", t.id), { alunos_ids: arrayUnion(al.id) });
+                                t.alunos_ids = [...(t.alunos_ids || []), al.id];
+                                count++;
+                                break; // Aluno vai para a primeira turma compatível
+                            }
+                        }
+                    }
+                }
+                showToast(`${count} aluno(s) foram matriculados automaticamente!`, "success"); 
+                clearCache();
+                await carregarTurmas(true);
+                if (turmaSelecionada) atualizarUIAlunosDaTurma();
+            } catch(e) {
+                console.error(e);
+                showToast("Erro durante a distribuição automática", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ===================== CARREGAR DADOS DA EQUIPE =====================
+        async function carregarDadosEquipe() {
+            try {
+                const eqSnap = await getDoc(doc(db, "equipes", teamId));
+                if (eqSnap.exists()) {
+                    const d = eqSnap.data();
+                    equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
+                    equipeDados.logo = d.url_logo || "";
+                    
+                    const elNomeEquipe = document.querySelector('aside h2') || document.getElementById('nome-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = equipeDados.nome.toUpperCase();
+
+                    const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                    if (elLogoMenu) {
+                        if (equipeDados.logo) {
+                            elLogoMenu.style.background = 'transparent';
+                            elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo" crossorigin="anonymous">`;
+                        } else {
+                            elLogoMenu.style.background = '';
+                            elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                        }
+                    }
+                }
+            } catch(e) { console.error("Erro ao carregar dados da equipe:", e); }
+        }
+
+        // ===================== AUTENTICAÇÃO =====================
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Limpa o texto "Acessando..." do menu
+                const tentarLimpar = setInterval(() => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse');
+                                el.style.opacity = "1";
+                            }
+                        });
+                        clearInterval(tentarLimpar);
+                    }
+                }, 300);
+                setTimeout(() => clearInterval(tentarLimpar), 5000);
+
+                try {
+                    const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                    if (mestreDoc.exists()) { 
+                        teamId = user.uid; 
+                    } else {
+                        const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                        if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                    }
+
+                    if (teamId) {
+                        uid = teamId;
+                        await carregarDadosEquipe();
+                        await carregarAlunos();
+                        await carregarTurmas();
+                    } else {
+                        document.getElementById('lista-turmas').innerHTML = '<div class="text-center p-6 text-rose-500 font-bold">Equipe não encontrada</div>';
+                    }
+                } catch(e) {
+                    console.error("Erro na autenticação:", e);
+                    document.getElementById('lista-turmas').innerHTML = '<div class="text-center p-6 text-rose-500 font-bold">Erro de conexão</div>';
+                }
+            } else { 
+                window.location.href = "index.html"; 
             }
         });
 
-        // ================= EVENTOS GERAIS =================
-        document.addEventListener('click',e=>{const input=document.getElementById('input-busca-matricular'),dd=document.getElementById('dropdown-alunos');if(input&&dd&&!input.contains(e.target)&&!dd.contains(e.target))dd.classList.add('hidden');if(!e.target.closest('#menu-turma-detalhe')&&!e.target.closest('[onclick="toggleMenuTurmaDetalhe(event)"]'))fecharMenuTurmaDetalhe();});
-        document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const abertos=[['modal-distribuicao',fecharModalDistribuicao],['modal-matricula-lote',fecharModalMatriculaLote],['modal-trocar',fecharModalTrocar],['modal-turma',fecharModalTurma]];for(const[id,fn]of abertos){const el=document.getElementById(id);if(el&&!el.classList.contains('hidden')){fn();return;}}if(window.innerWidth<768)fecharDetalhesMobile();});
-        window.addEventListener('resize',()=>{if(window.innerWidth>=768)document.getElementById('painel-detalhe').classList.remove('slide-in-mobile');});
+        window.limparBusca = () => {
+
+        };
     </script>
 </body>
 </html>
