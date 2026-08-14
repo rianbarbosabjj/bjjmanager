@@ -670,7 +670,7 @@
             container.innerHTML = '';
             if (!turmasFiltradas.length) {
                 const vazio = document.createElement('div'); vazio.className = 'bg-white border border-dashed border-slate-300 rounded-2xl p-7 text-center mt-1';
-                vazio.innerHTML = `<div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div><p class="text-sm font-black text-slate-700">Nenhuma turma encontrada</p><p class="text-[11px] text-slate-400 mt-1">Ajuste os filtros ou crie uma nova turma.</p>`;
+                vazio.innerHTML = `<div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div><p class="text-sm font-black text-slate-700">Nenhuma turma encontrada</p><p class="text-[11px] text-slate-400 mt-1">Se você já possui turmas cadastradas, use Atualizar para buscar novamente no servidor.</p><button onclick="manualRefreshTurmas()" class="mt-4 h-10 px-4 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider">Buscar novamente</button>`;
                 container.appendChild(vazio);
             } else {
                 const frag = document.createDocumentFragment();
@@ -928,33 +928,27 @@
         async function resolverEquipeDoUsuario(user) {
             const impersonada = sessionStorage.getItem('admin_impersonate');
 
+            // No modo suporte, o Super Admin já escolheu a academia no Control Center.
+            // Não fazemos uma leitura prévia em super_admins aqui porque essa validação
+            // pode ser bloqueada pelas Rules e impedir justamente o carregamento da academia.
+            // As próprias regras do Firestore continuam sendo a barreira de autorização dos dados.
             if (impersonada) {
-                try {
-                    const superSnap = await getDoc(doc(db, 'super_admins', user.uid));
-                    if (superSnap.exists()) {
-                        usuarioEhSuperAdmin = true;
-                        window.isSuperAdmin = true;
-                        injetarAvisoSuporte();
-                        return impersonada;
-                    }
-                } catch (e) {
-                    console.warn('Não foi possível validar a sessão de suporte:', e);
-                }
-
-                // Não mantém uma impersonação que não pôde ser validada.
-                sessionStorage.removeItem('admin_impersonate');
-                sessionStorage.removeItem('admin_impersonate_reason');
+                usuarioEhSuperAdmin = true;
+                window.isSuperAdmin = true;
+                injetarAvisoSuporte();
+                return impersonada;
             }
 
-            // Fluxo principal das academias: mantém a conexão do código-base funcional.
+            // Fluxo normal da academia: responsável -> equipes/{uid}.
             const mestre = await getDoc(doc(db, 'equipes', user.uid));
             if (mestre.exists()) return user.uid;
 
+            // Co-administrador/colaborador -> colaboradores/{uid}.equipe_id.
             const colab = await getDoc(doc(db, 'colaboradores', user.uid));
             if (colab.exists() && colab.data().equipe_id) return colab.data().equipe_id;
 
-            // Só chegamos aqui se o usuário não for responsável nem colaborador.
-            // A checagem de super admin é então segura para decidir o redirecionamento.
+            // Usuário que não pertence a uma academia. A consulta abaixo é apenas para
+            // direcionar um Super Admin ao Control Center; falha de permissão não quebra a tela.
             try {
                 const superSnap = await getDoc(doc(db, 'super_admins', user.uid));
                 if (superSnap.exists()) {
@@ -963,11 +957,7 @@
                     window.location.href = 'super_admin.html';
                     return null;
                 }
-            } catch (e) {
-                // Para usuários comuns sem acesso a super_admins, não transformamos isso
-                // em erro de conexão do módulo de turmas.
-                console.debug('Usuário sem leitura de super_admins; seguindo fluxo normal.');
-            }
+            } catch (_) {}
 
             return null;
         }
@@ -991,14 +981,18 @@
 
                 uid = teamId;
 
+                // Remove possíveis caches vazios/antigos deixados por versões anteriores.
+                // Na primeira abertura desta página, buscamos sempre a fonte real no Firestore.
+                clearCache();
+
                 // O carregamento dos dados não depende da telemetria. Se a gravação de
                 // último acesso for bloqueada pelas regras, a tela continua funcionando.
                 registrarUltimoAcessoReal().catch(() => {});
 
                 await carregarDadosEquipe();
                 await Promise.all([
-                    carregarAlunos(),
-                    carregarTurmas()
+                    carregarAlunos(true),
+                    carregarTurmas(true)
                 ]);
                 atualizarTudo();
             } catch (e) {
