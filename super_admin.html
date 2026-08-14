@@ -302,7 +302,7 @@
                 <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl lg:col-span-2">
                     <div class="flex items-start justify-between gap-3 mb-4"><div><p class="cc-eyebrow">Coortes</p><h3 class="text-sm font-bold text-white mt-1">Retenção observada por mês de cadastro</h3></div><span class="cc-chip">base atual</span></div>
                     <div id="cohort-retention-bars" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
-                    <p class="text-[9px] text-slate-600 mt-4">Calculada sobre os registros que permanecem na base. Para churn histórico exato, preserve cancelamentos/arquivamentos e mantenha eventos de assinatura no backend.</p>
+                    <p class="text-[9px] text-slate-600 mt-4">A retenção por uso considera somente academias com telemetria real. Data de cadastro nunca é usada como atividade. Para churn histórico exato, preserve cancelamentos/arquivamentos e eventos de assinatura.</p>
                 </div>
             </div>
 
@@ -317,7 +317,8 @@
                             <option value="TODAS">Todas as situações</option>
                             <option value="ATIVAS">Com alunos</option>
                             <option value="INATIVAS">Sem alunos</option>
-                            <option value="AUSENTES">Sem acesso há 20 dias</option>
+                            <option value="AUSENTES">Sem atividade há 20 dias</option>
+                            <option value="SEM_ATIVIDADE">Sem registro de atividade</option>
                             <option value="ISENTAS">Isentas</option>
                             <option value="ARQUIVADAS">Arquivadas</option>
                         </select>
@@ -350,7 +351,7 @@
                             <tr class="bg-slate-950/50 border-b border-slate-800 text-slate-500">
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Equipe / Cadastro</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Saúde (Uso)</th>
-                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Último Acesso</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Atividade Recente</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Assinatura & Vencimento</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status Asaas</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ações</th>
@@ -1978,7 +1979,7 @@
                 const planoAtual = (eq.status_plano || 'TESTE').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
                 const isIsento = (eq.isento === true || String(eq.isento) === 'true');
                 const totalAlunos = Number(eq.total_alunos || 0);
-                const ultimoAcesso = eq.ultimo_acesso || eq.data_cadastro;
+                const ultimoAcesso = eq.ultima_atividade || eq.ultimo_acesso || null;
                 const diffDias = ultimoAcesso ? Math.floor((new Date() - new Date(ultimoAcesso)) / (1000 * 60 * 60 * 24)) : 9999;
 
                 const passaBusca = textoBusca.includes(termo);
@@ -2014,8 +2015,8 @@
                 else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Sem Alunos (0)</span>`;
 
                 let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registro</span>`;
-                if (eq.ultimo_acesso || eq.data_cadastro) {
-                    const lastLogin = new Date(eq.ultimo_acesso || eq.data_cadastro);
+                if (eq.ultima_atividade || eq.ultimo_acesso) {
+                    const lastLogin = normalizeDate(eq.ultima_atividade || eq.ultimo_acesso);
                     const diffDias = Math.floor((new Date() - lastLogin) / (1000 * 60 * 60 * 24));
                     
                     if(diffDias < 7) {
@@ -2924,10 +2925,36 @@
             return Math.max(0, Math.floor((Date.now()-d.getTime())/3600000));
         }
 
+        // Telemetria de uso: nunca usa data_cadastro como substituto de atividade.
+        // Campos suportados:
+        // - ultima_atividade: atividade mais recente no sistema (preferencial)
+        // - tipo_ultima_atividade: LOGIN, FREQUENCIA_REGISTRADA, ALUNO_CADASTRADO etc.
+        // - ultimo_acesso: último login real da academia
+        function getUltimaAtividade(eq) {
+            return eq?.ultima_atividade || eq?.ultimo_acesso || null;
+        }
+        function getUltimoLogin(eq) {
+            return eq?.ultimo_acesso || null;
+        }
+        function hasAtividadeRegistrada(eq) {
+            return Boolean(normalizeDate(getUltimaAtividade(eq)));
+        }
+        function formatarAtividadeRecente(eq) {
+            const valor = getUltimaAtividade(eq);
+            const d = normalizeDate(valor);
+            if (!d) return { texto:'Sem registro', detalhe:'Telemetria ainda não registrada', dias:null, classe:'text-slate-500' };
+            const dias = daysFrom(valor);
+            const texto = dias === 0 ? 'Hoje' : dias === 1 ? 'Há 1 dia' : `Há ${dias}d`;
+            const tipo = String(eq?.tipo_ultima_atividade || (eq?.ultima_atividade ? 'ATIVIDADE' : 'LOGIN')).replace(/_/g,' ').toLowerCase();
+            const classe = dias > 20 ? 'text-rose-300' : dias > 7 ? 'text-amber-300' : 'text-emerald-300';
+            return { texto, detalhe:tipo, dias, classe, data:d };
+        }
+
         function calcularHealthScore(eq) {
             let score = 100;
             const alunos = Number(eq.total_alunos || 0);
-            const diasSemAcesso = daysFrom(eq.ultimo_acesso || eq.data_cadastro);
+            const atividadeReal = getUltimaAtividade(eq);
+            const diasSemAtividade = atividadeReal ? daysFrom(atividadeReal) : null;
             const plano = String(eq.status_plano || 'TESTE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
             const isento = eq.isento === true || String(eq.isento) === 'true';
             const diasVenc = daysUntil(eq.data_pagamento_plano);
@@ -2936,10 +2963,14 @@
             else if (alunos <= 3) score -= 12;
             else if (alunos >= 10) score += 4;
 
-            if (diasSemAcesso > 45) score -= 34;
-            else if (diasSemAcesso > 30) score -= 24;
-            else if (diasSemAcesso > 20) score -= 16;
-            else if (diasSemAcesso > 10) score -= 7;
+            // Só penaliza inatividade quando existe telemetria real.
+            // Ausência de rastreamento não é tratada como ausência de uso.
+            if (diasSemAtividade !== null) {
+                if (diasSemAtividade > 45) score -= 34;
+                else if (diasSemAtividade > 30) score -= 24;
+                else if (diasSemAtividade > 20) score -= 16;
+                else if (diasSemAtividade > 10) score -= 7;
+            }
 
             if (plano === 'BLOQUEADO') score -= 35;
             if (diasVenc !== null && diasVenc < 0 && !isento && plano !== 'TESTE') score -= 22;
@@ -2999,6 +3030,8 @@
             if (blocked.length) alerts.push({icon:'credit-card', tone:'rose', title:`${blocked.length} academia${blocked.length>1?'s':''} bloqueada${blocked.length>1?'s':''}`, desc:`MRR potencial em risco: ${formatarMoeda(inadValor)}.`, action:"filtrarRapido('INADIMPLENTES')"});
             const semAsaas = paid.filter(e => !e.asaas_customer_id).length;
             if (semAsaas) alerts.push({icon:'unplug', tone:'amber', title:`${semAsaas} pagante${semAsaas>1?'s':''} sem automação`, desc:'Sem vínculo recorrente com Asaas.', action:"filtrarRapido('SEMASAAS')"});
+            const semTelemetria = base.filter(e => !hasAtividadeRegistrada(e)).length;
+            if (semTelemetria) alerts.push({icon:'activity', tone:'indigo', title:`${semTelemetria} academia${semTelemetria>1?'s':''} sem telemetria de uso`, desc:'Ainda não há atividade real registrada; o Health Score dessas academias usa dados parciais.', action:"mudarAbaMaster('academias');document.getElementById('filtro-status-equipe').value='SEM_ATIVIDADE';resetPaginacaoEquipes()"});
             if (ticketsPend.length) alerts.push({icon:'headphones', tone:'indigo', title:`${ticketsPend.length} ticket${ticketsPend.length>1?'s':''} pendente${ticketsPend.length>1?'s':''}`, desc:`${sla} ultrapassaram ${ADMIN_V2.supportSlaHours}h.`, action:"mudarAbaMaster('suporte')"});
             if (!alerts.length) alerts.push({icon:'circle-check-big', tone:'emerald', title:'Nenhuma pendência crítica agora', desc:'Os principais sinais operacionais estão dentro do esperado.', action:''});
             const tones = {rose:'text-rose-400 bg-rose-500/10', amber:'text-amber-400 bg-amber-500/10', indigo:'text-indigo-400 bg-indigo-500/10', emerald:'text-emerald-400 bg-emerald-500/10'};
@@ -3012,16 +3045,17 @@
                 ['Academias cadastradas', base.length, base.length],
                 ['Com alunos ativos', base.filter(e=>Number(e.total_alunos||0)>0).length, base.length],
                 ['Pagantes', paid.length, base.length],
-                ['Uso recente (≤ 7d)', base.filter(e=>daysFrom(e.ultimo_acesso||e.data_cadastro)<=7).length, base.length]
+                ['Com telemetria de uso', base.filter(hasAtividadeRegistrada).length, base.length],
+                ['Atividade recente (≤ 7d)', base.filter(e=>{const a=getUltimaAtividade(e);return a&&daysFrom(a)<=7;}).length, base.length]
             ];
             const f = document.getElementById('funil-base');
             if(f) f.innerHTML = funnel.map(([label,value,total])=>{ const pct=total?Math.round(value/total*100):0; return `<div><div class="flex justify-between text-[10px] mb-1.5"><span class="text-slate-400">${label}</span><span class="font-bold text-slate-200">${value} · ${pct}%</span></div><div class="h-1.5 rounded-full bg-slate-800 overflow-hidden"><div class="h-full rounded-full bg-slate-500" style="width:${pct}%"></div></div></div>`; }).join('');
             const cohortEl=document.getElementById('cohort-retention-bars');
             if(cohortEl){
                 const groups=new Map();
-                base.forEach(e=>{const d=normalizeDate(e.data_cadastro);if(!d)return;const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(!groups.has(key))groups.set(key,{total:0,retidos:0});const g=groups.get(key);g.total++;const plano=String(e.status_plano||'TESTE').toUpperCase();if(plano!=='BLOQUEADO'&&!e.arquivada&&daysFrom(e.ultimo_acesso||e.data_cadastro)<=45)g.retidos++;});
+                base.forEach(e=>{const d=normalizeDate(e.data_cadastro);if(!d)return;const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(!groups.has(key))groups.set(key,{total:0,rastreados:0,retidos:0});const g=groups.get(key);g.total++;const atividade=getUltimaAtividade(e);if(!atividade)return;g.rastreados++;const plano=String(e.status_plano||'TESTE').toUpperCase();if(plano!=='BLOQUEADO'&&!e.arquivada&&daysFrom(atividade)<=45)g.retidos++;});
                 const items=[...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6).reverse();
-                cohortEl.innerHTML=items.length?items.map(([key,g])=>{const [y,m]=key.split('-');const nome=new Date(Number(y),Number(m)-1,1).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});const pct=g.total?Math.round(g.retidos/g.total*100):0;return `<div class="cc-stat-mini"><div class="flex justify-between"><span class="text-xs text-slate-300 capitalize">${escapeHTML(nome)}</span><span class="text-xs font-bold ${pct>=70?'text-emerald-300':pct>=45?'text-amber-300':'text-rose-300'}">${pct}%</span></div><div class="h-1.5 rounded bg-slate-800 overflow-hidden mt-2"><div class="h-full bg-slate-500" style="width:${pct}%"></div></div><p class="text-[9px] text-slate-600 mt-2">${g.retidos}/${g.total} com uso recente</p></div>`;}).join(''):'<p class="text-xs text-slate-500">Ainda não há datas de cadastro suficientes para formar coortes.</p>';
+                cohortEl.innerHTML=items.length?items.map(([key,g])=>{const [y,m]=key.split('-');const nome=new Date(Number(y),Number(m)-1,1).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});const pct=g.rastreados?Math.round(g.retidos/g.rastreados*100):null;return `<div class="cc-stat-mini"><div class="flex justify-between"><span class="text-xs text-slate-300 capitalize">${escapeHTML(nome)}</span><span class="text-xs font-bold ${pct===null?'text-slate-500':pct>=70?'text-emerald-300':pct>=45?'text-amber-300':'text-rose-300'}">${pct===null?'—':pct+'%'}</span></div><div class="h-1.5 rounded bg-slate-800 overflow-hidden mt-2"><div class="h-full bg-slate-500" style="width:${pct===null?0:pct}%"></div></div><p class="text-[9px] text-slate-600 mt-2">${g.rastreados?`${g.retidos}/${g.rastreados} com atividade recente`:`0/${g.total} com telemetria`} · ${g.total} cadastradas</p></div>`;}).join(''):'<p class="text-xs text-slate-500">Ainda não há datas de cadastro suficientes para formar coortes.</p>';
             }
             if(window.lucide) lucide.createIcons();
         }
@@ -3061,8 +3095,8 @@
                 const text = [eq.nome_equipe,eq.responsavel_nome,eq.email_responsavel,eq.telefone,eq.id].join(' ').toLowerCase();
                 const plano = String(eq.status_plano||'TESTE').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
                 const isento = eq.isento === true || String(eq.isento)==='true';
-                const alunos=Number(eq.total_alunos||0); const diff=daysFrom(eq.ultimo_acesso||eq.data_cadastro); const score=calcularHealthScore(eq);
-                const passaStatus = filtroStatus==='TODAS' || (filtroStatus==='ATIVAS'&&alunos>0) || (filtroStatus==='INATIVAS'&&alunos===0) || (filtroStatus==='AUSENTES'&&diff>20) || (filtroStatus==='ISENTAS'&&isento) || (filtroStatus==='ARQUIVADAS'&&(eq.arquivada||eq.status_admin==='ARQUIVADA'));
+                const alunos=Number(eq.total_alunos||0); const atividade=getUltimaAtividade(eq); const diff=atividade?daysFrom(atividade):null; const score=calcularHealthScore(eq);
+                const passaStatus = filtroStatus==='TODAS' || (filtroStatus==='ATIVAS'&&alunos>0) || (filtroStatus==='INATIVAS'&&alunos===0) || (filtroStatus==='AUSENTES'&&diff!==null&&diff>20) || (filtroStatus==='SEM_ATIVIDADE'&&diff===null) || (filtroStatus==='ISENTAS'&&isento) || (filtroStatus==='ARQUIVADAS'&&(eq.arquivada||eq.status_admin==='ARQUIVADA'));
                 const passaPlano = filtroPlano==='TODOS'||plano===filtroPlano;
                 const passaHealth = filtroHealth==='TODOS'||(filtroHealth==='RISCO'&&score<45)||(filtroHealth==='ATENCAO'&&score>=45&&score<70)||(filtroHealth==='SAUDAVEL'&&score>=70);
                 let passaQuick=true;
@@ -3086,18 +3120,18 @@
             if(!page.length){ tabela.innerHTML='<tr><td colspan="6" class="text-center p-10 text-slate-500 text-xs">Nenhuma academia corresponde aos filtros.</td></tr>'; }
             page.forEach(eq=>{
                 const score=calcularHealthScore(eq), meta=healthMeta(score), plano=String(eq.status_plano||'TESTE');
-                const isento=eq.isento===true||String(eq.isento)==='true'; const dias=daysFrom(eq.ultimo_acesso||eq.data_cadastro); const venc=daysUntil(eq.data_pagamento_plano);
+                const isento=eq.isento===true||String(eq.isento)==='true'; const atividadeMeta=formatarAtividadeRecente(eq); const dias=atividadeMeta.dias; const venc=daysUntil(eq.data_pagamento_plano);
                 let planoLabel=plano; let planoTone='bg-slate-800 text-slate-300 border-slate-700';
                 if(/PREMIUM/i.test(plano)) planoTone='bg-purple-500/10 text-purple-300 border-purple-500/20'; else if(/INTER/i.test(plano)) planoTone='bg-cyan-500/10 text-cyan-300 border-cyan-500/20'; else if(/BLOQ/i.test(plano)) planoTone='bg-rose-500/10 text-rose-300 border-rose-500/20'; else if(/TESTE/i.test(plano)) planoTone='bg-amber-500/10 text-amber-300 border-amber-500/20';
                 const row=document.createElement('tr'); row.className=`border-b border-slate-800/50 hover:bg-slate-800/35 transition-colors ${score<45?'cc-row-risk':'cc-row-healthy'}`;
                 const logo = eq.url_logo ? `<img src="${escapeHTML(eq.url_logo)}" alt="" class="h-full w-full object-cover">` : escapeHTML((eq.nome_equipe||'A').charAt(0).toUpperCase());
-                const last = dias===9999?'Sem registro':dias===0?'Hoje':`Há ${dias}d`;
+                const last = atividadeMeta.texto;
                 const vencTxt = venc===null?'':venc<0?`Atrasado ${Math.abs(venc)}d`:venc===0?'Vence hoje':`Vence em ${venc}d`;
                 const asaas = (eq.status_asaas==='ATIVO'||eq.status_baas==='ATIVA') ? '<span class="cc-chip text-emerald-300">● Conectado</span>' : (eq.status_asaas==='PENDENTE'||eq.status_baas==='PENDENTE') ? '<span class="cc-chip text-amber-300">● Pendente</span>' : '<span class="cc-chip text-slate-400">○ Sem Asaas</span>';
                 row.innerHTML=`
                     <td class="px-6 py-4"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="flex items-center gap-3 text-left group"><span class="h-10 w-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 grid place-items-center font-bold">${logo}</span><span><span class="font-semibold text-slate-100 text-xs group-hover:text-rose-300 transition block max-w-[220px] truncate">${escapeHTML(eq.nome_equipe||'Sem nome')}</span><span class="text-[9px] text-slate-500 mt-1 block max-w-[220px] truncate">${escapeHTML(eq.responsavel_nome||eq.email_responsavel||'Responsável não informado')}</span></span></button></td>
-                    <td class="px-6 py-4 text-center"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="mx-auto">${renderHealthRing(score,true)}</button><span class="text-[9px] ${meta.text} font-semibold mt-1 block">${meta.label}</span></td>
-                    <td class="px-6 py-4 text-center"><span class="text-xs ${dias>20?'text-rose-300':dias>7?'text-amber-300':'text-slate-300'}">${last}</span></td>
+                    <td class="px-6 py-4 text-center"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="mx-auto">${renderHealthRing(score,true)}</button><span class="text-[9px] ${meta.text} font-semibold mt-1 block">${meta.label}</span>${!hasAtividadeRegistrada(eq)?'<span class="text-[8px] text-slate-600 block mt-0.5">dados parciais</span>':''}</td>
+                    <td class="px-6 py-4 text-center"><span class="text-xs ${atividadeMeta.classe}">${last}</span><span class="text-[9px] text-slate-600 block mt-1 capitalize">${escapeHTML(atividadeMeta.detalhe)}</span></td>
                     <td class="px-6 py-4 text-center"><span class="cc-chip border ${planoTone}">${escapeHTML(planoLabel)}${isento?' · ISENTO':''}</span>${vencTxt?`<span class="text-[9px] ${venc<0?'text-rose-400':'text-slate-500'} block mt-1">${escapeHTML(vencTxt)}</span>`:''}</td>
                     <td class="px-6 py-4 text-center">${asaas}</td>
                     <td class="px-6 py-4"><div class="flex gap-1.5 justify-center"><button onclick="abrirAcademia360('${escapeHTML(eq.id)}')" class="cc-btn cc-btn-secondary !min-h-8 !px-2 cc-tooltip" data-tooltip="Abrir visão 360º"><i data-lucide="panel-right-open" class="w-3.5 h-3.5"></i></button><button onclick="abrirModalEditarEquipe('${escapeHTML(eq.id)}')" class="cc-btn cc-btn-secondary !min-h-8 !px-2 cc-tooltip" data-tooltip="Editar licença"><i data-lucide="settings-2" class="w-3.5 h-3.5"></i></button><button onclick="abrirModalAcessoSistema('${escapeHTML(eq.id)}')" class="cc-btn cc-btn-secondary !min-h-8 !px-2 cc-tooltip" data-tooltip="Acessar como academia"><i data-lucide="log-in" class="w-3.5 h-3.5"></i></button></div></td>`;
@@ -3142,14 +3176,15 @@
         };
         function renderAcademia360Content(){
             const eq=equipesCache.find(e=>e.id===ADMIN_V2.academia360Id), out=document.getElementById('academia-360-conteudo'); if(!eq||!out)return;
-            const score=calcularHealthScore(eq), plan=String(eq.status_plano||'TESTE'), dias=daysFrom(eq.ultimo_acesso||eq.data_cadastro), venc=daysUntil(eq.data_pagamento_plano);
+            const score=calcularHealthScore(eq), plan=String(eq.status_plano||'TESTE'), atividade=formatarAtividadeRecente(eq), dias=atividade.dias, venc=daysUntil(eq.data_pagamento_plano);
             if(ADMIN_V2.academia360Tab==='resumo'){
-                out.innerHTML=`<div class="grid md:grid-cols-4 gap-3 mb-5"><div class="cc-stat-mini"><p class="cc-eyebrow">Alunos ativos</p><p class="text-2xl font-bold mt-2">${Number(eq.total_alunos||0)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Plano</p><p class="text-lg font-bold mt-2">${escapeHTML(plan)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Último acesso</p><p class="text-lg font-bold mt-2">${dias===9999?'—':dias===0?'Hoje':`${dias}d`}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Health Score</p><p class="text-lg font-bold mt-2 ${healthMeta(score).text}">${score}/100</p></div></div><div class="grid md:grid-cols-2 gap-4"><div class="cc-card p-4"><p class="cc-eyebrow mb-3">Cadastro</p>${[['Responsável',eq.responsavel_nome],['E-mail',eq.email_responsavel],['Telefone',eq.telefone],['ID',eq.id]].map(([a,b])=>`<div class="flex justify-between gap-4 py-2 border-b border-slate-800/50 last:border-0"><span class="text-xs text-slate-500">${a}</span><span class="text-xs text-slate-200 text-right break-all">${escapeHTML(b||'—')}</span></div>`).join('')}</div><div class="cc-card p-4"><p class="cc-eyebrow mb-3">Sinais de saúde</p><div class="space-y-2">${score<45?'<div class="cc-alert-item"><span class="text-rose-400">●</span><span class="text-xs text-slate-300">Risco elevado de churn. Recomendada abordagem ativa.</span></div>':''}${Number(eq.total_alunos||0)===0?'<div class="cc-alert-item"><span class="text-amber-400">●</span><span class="text-xs text-slate-300">Nenhum aluno ativo cadastrado.</span></div>':''}${dias>20?`<div class="cc-alert-item"><span class="text-rose-400">●</span><span class="text-xs text-slate-300">Sem acesso há ${dias} dias.</span></div>`:''}${!eq.asaas_customer_id&&plan!=='TESTE'?'<div class="cc-alert-item"><span class="text-amber-400">●</span><span class="text-xs text-slate-300">Sem automação recorrente do Asaas.</span></div>':''}${score>=70?'<div class="cc-alert-item"><span class="text-emerald-400">●</span><span class="text-xs text-slate-300">Uso e situação geral saudáveis.</span></div>':''}</div></div></div>`;
+                out.innerHTML=`<div class="grid md:grid-cols-4 gap-3 mb-5"><div class="cc-stat-mini"><p class="cc-eyebrow">Alunos ativos</p><p class="text-2xl font-bold mt-2">${Number(eq.total_alunos||0)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Plano</p><p class="text-lg font-bold mt-2">${escapeHTML(plan)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Atividade recente</p><p class="text-lg font-bold mt-2 ${atividade.classe}">${escapeHTML(atividade.texto)}</p><p class="text-[9px] text-slate-600 mt-1 capitalize">${escapeHTML(atividade.detalhe)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Health Score</p><p class="text-lg font-bold mt-2 ${healthMeta(score).text}">${score}/100</p></div></div><div class="grid md:grid-cols-2 gap-4"><div class="cc-card p-4"><p class="cc-eyebrow mb-3">Cadastro</p>${[['Responsável',eq.responsavel_nome],['E-mail',eq.email_responsavel],['Telefone',eq.telefone],['ID',eq.id]].map(([a,b])=>`<div class="flex justify-between gap-4 py-2 border-b border-slate-800/50 last:border-0"><span class="text-xs text-slate-500">${a}</span><span class="text-xs text-slate-200 text-right break-all">${escapeHTML(b||'—')}</span></div>`).join('')}</div><div class="cc-card p-4"><p class="cc-eyebrow mb-3">Sinais de saúde</p><div class="space-y-2">${score<45?'<div class="cc-alert-item"><span class="text-rose-400">●</span><span class="text-xs text-slate-300">Risco elevado de churn. Recomendada abordagem ativa.</span></div>':''}${Number(eq.total_alunos||0)===0?'<div class="cc-alert-item"><span class="text-amber-400">●</span><span class="text-xs text-slate-300">Nenhum aluno ativo cadastrado.</span></div>':''}${dias!==null&&dias>20?`<div class="cc-alert-item"><span class="text-rose-400">●</span><span class="text-xs text-slate-300">Sem atividade registrada há ${dias} dias.</span></div>`:''}${dias===null?'<div class="cc-alert-item"><span class="text-slate-500">●</span><span class="text-xs text-slate-400">Telemetria de atividade ainda não registrada. Isso não reduz o Health Score.</span></div>':''}${!eq.asaas_customer_id&&plan!=='TESTE'?'<div class="cc-alert-item"><span class="text-amber-400">●</span><span class="text-xs text-slate-300">Sem automação recorrente do Asaas.</span></div>':''}${score>=70?'<div class="cc-alert-item"><span class="text-emerald-400">●</span><span class="text-xs text-slate-300">Uso e situação geral saudáveis.</span></div>':''}</div></div></div>`;
             } else if(ADMIN_V2.academia360Tab==='financeiro'){
                 const bruto=Number(eq.valor_plano||0), desc=Number(eq.desconto_plano||0), liquido=Math.max(0,bruto*(1-desc/100));
                 out.innerHTML=`<div class="grid md:grid-cols-3 gap-3"><div class="cc-stat-mini"><p class="cc-eyebrow">MRR líquido</p><p class="text-2xl font-bold mt-2">${formatarMoeda(liquido)}</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Desconto</p><p class="text-2xl font-bold mt-2">${Number(desc).toLocaleString('pt-BR')}%</p></div><div class="cc-stat-mini"><p class="cc-eyebrow">Vencimento</p><p class="text-xl font-bold mt-2 ${venc!==null&&venc<0?'text-rose-400':''}">${venc===null?'—':venc<0?`${Math.abs(venc)}d atrasado`:venc===0?'Hoje':`${venc}d`}</p></div></div><div class="cc-card p-4 mt-4"><p class="cc-eyebrow mb-3">Integração financeira</p><p class="text-sm text-slate-300">Asaas customer: <span class="font-mono text-xs">${escapeHTML(eq.asaas_customer_id||'não vinculado')}</span></p><p class="text-sm text-slate-300 mt-2">Status Asaas/BaaS: ${escapeHTML(eq.status_asaas||eq.status_baas||'não informado')}</p><p class="text-sm text-slate-300 mt-2">Créditos certificados: ${Number(eq.creditos_certificados||0)}</p></div>`;
             } else if(ADMIN_V2.academia360Tab==='atividade'){
-                out.innerHTML=`<div class="cc-card p-4"><p class="cc-eyebrow mb-3">Atividade conhecida</p><div class="space-y-3"><div class="flex gap-3"><i data-lucide="log-in" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Último acesso</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(eq.ultimo_acesso?new Date(eq.ultimo_acesso).toLocaleString('pt-BR'):'não registrado')}</p></div></div><div class="flex gap-3"><i data-lucide="user-plus" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Cadastro da academia</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(eq.data_cadastro?new Date(eq.data_cadastro).toLocaleString('pt-BR'):'não registrado')}</p></div></div><div class="flex gap-3"><i data-lucide="users" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Alunos ativos</p><p class="text-[10px] text-slate-500 mt-1">${Number(eq.total_alunos||0)} na leitura atual.</p></div></div></div></div>`;
+                const ultimaAtividade=normalizeDate(getUltimaAtividade(eq)), ultimoLogin=normalizeDate(getUltimoLogin(eq));
+                out.innerHTML=`<div class="cc-card p-4"><div class="flex items-start justify-between gap-3 mb-4"><div><p class="cc-eyebrow">Telemetria de uso</p><p class="text-xs text-slate-400 mt-1">Cadastro e atividade são informações diferentes. Cadastro nunca é usado como acesso.</p></div><span class="cc-chip ${ultimaAtividade?'text-emerald-300':'text-slate-500'}">${ultimaAtividade?'Rastreando':'Sem telemetria'}</span></div><div class="space-y-3"><div class="flex gap-3"><i data-lucide="activity" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Última atividade</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(ultimaAtividade?ultimaAtividade.toLocaleString('pt-BR'):'não registrada')}</p><p class="text-[9px] text-slate-600 mt-1 capitalize">${escapeHTML(eq.tipo_ultima_atividade?String(eq.tipo_ultima_atividade).replace(/_/g,' ').toLowerCase():'—')}</p></div></div><div class="flex gap-3"><i data-lucide="log-in" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Último login real</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(ultimoLogin?ultimoLogin.toLocaleString('pt-BR'):'não registrado')}</p></div></div><div class="flex gap-3"><i data-lucide="user-plus" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Cadastro da academia</p><p class="text-[10px] text-slate-500 mt-1">${escapeHTML(normalizeDate(eq.data_cadastro)?.toLocaleString('pt-BR')||'não registrado')}</p><p class="text-[9px] text-slate-600 mt-1">Apenas informativo; não entra como atividade.</p></div></div><div class="flex gap-3"><i data-lucide="users" class="w-4 h-4 text-slate-500"></i><div><p class="text-xs text-slate-200">Alunos ativos</p><p class="text-[10px] text-slate-500 mt-1">${Number(eq.total_alunos||0)} na leitura atual.</p></div></div></div></div>`;
             } else if(ADMIN_V2.academia360Tab==='suporte'){
                 const list=chamadosCache.filter(t=>t.equipe_id===eq.id||String(t.equipe_nome||'').toLowerCase()===String(eq.nome_equipe||'').toLowerCase());
                 out.innerHTML=list.length?`<div class="space-y-2">${list.map(t=>`<button onclick="fecharAcademia360();mudarAbaMaster('suporte');setTimeout(()=>abrirModalTicket('${escapeHTML(t.id)}'),100)" class="cc-alert-item w-full text-left"><span class="cc-chip">${escapeHTML(t.status||'ABERTO')}</span><span><span class="text-xs text-slate-200 block">${escapeHTML(t.assunto||'Sem assunto')}</span><span class="text-[10px] text-slate-500 mt-1 block">${escapeHTML(t.data_criacao?new Date(t.data_criacao).toLocaleString('pt-BR'):'')}</span></span></button>`).join('')}</div>`:'<div class="text-center py-12 text-slate-500 text-sm">Nenhum chamado relacionado encontrado.</div>';
