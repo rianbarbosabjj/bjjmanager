@@ -232,7 +232,16 @@
                         <div class="section-card rounded-[28px] overflow-hidden animate-fade-in">
                             <div class="bg-gradient-to-br from-cyan-500 via-cyan-600 to-indigo-600 p-6 sm:p-8 md:p-11 text-center relative overflow-hidden">
                                 <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
-                                <span class="text-5xl sm:text-6xl mb-4 block relative z-10">🥋</span>
+                                <div class="mb-4 flex justify-center relative z-10" aria-hidden="true">
+                                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="w-9 h-9 sm:w-11 sm:h-11 text-white" fill="none">
+                                            <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" fill="currentColor" opacity="0.18"/>
+                                            <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                                            <path d="M28 10l4 6 4-6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M26 32h12M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
                                 <h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2>
                                 <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipe ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
                             </div>
@@ -318,7 +327,14 @@
                         </div>
 
                         <div class="section-card rounded-[24px] p-4 sm:p-5 md:p-6 mb-5 md:mb-6">
-                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3>
+                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="w-4 h-4 text-cyan-600 shrink-0" fill="none" aria-hidden="true">
+                                    <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" fill="currentColor" opacity="0.15"/>
+                                    <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                                    <path d="M28 10l4 6 4-6M26 32h12M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Raio-X da Equipe (Ativos)</span>
+                            </h3>
                             <div class="flex flex-wrap gap-3" id="grid-faixas">
                                 <!-- Skeleton loader -->
                                 <div class="w-16 h-6 bg-slate-200 animate-pulse rounded-md"></div>
@@ -549,7 +565,14 @@
                     </div>
                 </div>
                 <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-                    <h4 class="text-xs font-black text-emerald-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">🥋</span> Para Alunos</h4>
+                    <h4 class="text-xs font-black text-emerald-700 uppercase mb-1 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="w-4 h-4 text-emerald-600 shrink-0" fill="none" aria-hidden="true">
+                            <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" fill="currentColor" opacity="0.15"/>
+                            <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                            <path d="M28 10l4 6 4-6M26 32h12M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Para Alunos</span>
+                    </h4>
                     <p class="text-[10px] text-emerald-500/80 font-medium mb-3 leading-relaxed">Envie no grupo do WhatsApp. Os alunos preenchem os próprios dados e caem direto na sua lista.</p>
                     <div class="flex gap-2">
                         <input type="text" id="link-convite-aluno" readonly class="w-full p-2.5 bg-white border border-emerald-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
@@ -684,6 +707,14 @@
             const div = document.createElement('div');
             div.textContent = texto;
             return div.innerHTML;
+        }
+
+        function kimonoSvg(classes = 'w-4 h-4 text-cyan-600') {
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="${classes}" fill="none" aria-hidden="true">
+                <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" fill="currentColor" opacity="0.15"/>
+                <path d="M24 10h16l10 12-8 6-6-7v33H28V21l-6 7-8-6 10-12Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M28 10l4 6 4-6M26 32h12M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
         }
 
         // ==========================================================
@@ -1402,12 +1433,12 @@
                     
                     const divTurma = document.createElement('div');
                     const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
-                    const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
+                    const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? `<span class="text-base">⚠️</span>` : kimonoSvg("w-4 h-4 text-cyan-600 shrink-0");
                     const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
                     
                     divTurma.className = `p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm`;
                     
-                    let innerHTMLStr = `<h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2"><span class="text-base">${iconeTurma}</span> ${escapeHtml(turmaNome)}<span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span></h4><div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">`;
+                    let innerHTMLStr = `<h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">${iconeTurma} ${escapeHtml(turmaNome)}<span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span></h4><div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">`;
                     
                     if (alunosDaTurma.length === 0) innerHTMLStr += `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
                     else {
@@ -1422,7 +1453,7 @@
                 
                 const listaTurmasEl = document.getElementById('lista-turmas');
                 listaTurmasEl.innerHTML = '';
-                if(!temTurmas) listaTurmasEl.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p></div>`;
+                if(!temTurmas) listaTurmasEl.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8"><div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mb-2">${kimonoSvg("w-5 h-5 text-slate-400")}</div><p class="text-sm font-medium">Nenhuma turma mapeada</p></div>`;
                 else listaTurmasEl.appendChild(fragTurmas);
             }
         }
@@ -1542,7 +1573,7 @@
                               
                                 const fallbackDivs = aside.querySelectorAll('div.rounded-full'); 
                                 fallbackDivs.forEach(div => { 
-                                    if (div.innerText.trim().length <= 2 && div.innerText.trim() !== "🥋") { 
+                                    if (div.innerText.trim().length <= 2 && div.innerText.trim() !== String.fromCodePoint(0x1F94B)) { 
                                         div.innerHTML = `<img src="${escapeHtml(logoEquipeAnterior)}" class="w-full h-full object-cover rounded-full shadow-sm" crossorigin="anonymous">`; 
                                         div.classList.remove('bg-slate-800', 'border', 'border-slate-700/50'); 
                                         div.classList.add('bg-transparent'); 
