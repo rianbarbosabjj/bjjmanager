@@ -1527,7 +1527,7 @@
 
         window.fecharModalSenhaSaque = () => document.getElementById('modal-senha-saque').classList.replace('flex', 'hidden');
 
-        window.salvarSenhaSaque = async function() {
+window.salvarSenhaSaque = async function() {
             const senhaAtual = document.getElementById('input-senha-atual').value;
             const novaSenha = document.getElementById('input-nova-senha').value;
 
@@ -1543,7 +1543,8 @@
 
             try {
                 const defSenha = httpsCallable(functions, 'definirSenhaSaque');
-                const res = await defSenha({ senhaAtual, novaSenha });
+                // 🔥 CORREÇÃO AQUI: Agora estamos enviando o 'uid' (ID da academia) para o backend
+                const res = await defSenha({ uid: uid, senhaAtual: senhaAtual, novaSenha: novaSenha });
 
                 if(res.data.success) {
                     showToast(res.data.message, "success");
@@ -1558,7 +1559,6 @@
                 btn.innerText = origTxt; btn.disabled = false;
             }
         }
-
         window.buscarCEPAsaas = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
