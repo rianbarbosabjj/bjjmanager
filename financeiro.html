@@ -1744,17 +1744,18 @@ window.salvarSenhaSaque = async function() {
                 if (window.filtroStatusMens === 'TODOS') {
                     matchStatus = true;
                 } else if (window.filtroStatusMens === 'PAGO_MANUAL') {
-                    // Pagos via PIX direto ou Dinheiro
+                    // Pagos na mão: estritamente PIX (manual) ou Dinheiro
                     matchStatus = calc.status === 'PAGO' && (f.forma_pagamento === 'PIX' || f.forma_pagamento === 'Dinheiro');
                 } else if (window.filtroStatusMens === 'PAGO_AUTO') {
-                    // Pagos via Asaas (PIX_ASAAS, BOLETO, CREDIT_CARD) ou que tenham asaas_id
-                    matchStatus = calc.status === 'PAGO' && (f.forma_pagamento === 'PIX_ASAAS' || f.forma_pagamento === 'CREDIT_CARD' || f.forma_pagamento === 'BOLETO' || f.asaas_id);
+                    // Pagos no Asaas: Tudo que for pago, desde que NÃO seja PIX manual nem Dinheiro
+                    matchStatus = calc.status === 'PAGO' && (f.forma_pagamento !== 'PIX' && f.forma_pagamento !== 'Dinheiro');
                 } else {
                     matchStatus = calc.status === window.filtroStatusMens;
                 }
 
                 return matchTermo && matchStatus;
             });
+        
             exibidos.sort((x,y)=>{
                 if(window.ordenacaoMens==='VENCIMENTO') return x.calc.vencimento-y.calc.vencimento || (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
                 if(window.ordenacaoMens==='VALOR_DESC') return y.calc.valor-x.calc.valor || (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
