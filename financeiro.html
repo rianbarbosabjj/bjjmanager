@@ -1831,7 +1831,7 @@ window.salvarSenhaSaque = async function() {
             });
         }
 
-        window.abrirModalAcoes = function(alunoId, calcData) {
+window.abrirModalAcoes = function(alunoId, calcData) {
             const aluno = alunosTodosCache.find(a => a.id === alunoId) || { id:alunoId, nome:calcData?.reg?.aluno_nome_snapshot || String(calcData?.reg?.descricao||'').replace(/^Mensalidade\s*-\s*/i,'') || 'Aluno não localizado', telefone:calcData?.reg?.telefone_snapshot || '', bolsa_perc:calcData?.reg?.bolsa_aplicada || 0, dia_vencimento:calcData?.reg?.dia_vencimento_snapshot || 10, _somenteHistorico:true };
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
 
@@ -1848,6 +1848,7 @@ window.salvarSenhaSaque = async function() {
                 btnRegPag.disabled = true; btnRegPag.innerHTML = "✅ Pagamento Registrado";
                 btnRegPag.className = "w-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-slate-200 dark:border-slate-700";
 
+                // 🔥 CORREÇÃO: Garante que o botão DESFAZER sempre fique LIVRE e clicável
                 btnDesfazer.disabled = false;
                 btnDesfazer.className = "flex-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors cursor-pointer";
                 
@@ -1858,10 +1859,12 @@ window.salvarSenhaSaque = async function() {
                 let forma = calcData.reg.forma_pagamento;
                 if(forma === 'CREDIT_CARD') selectForma.value = 'CREDIT_CARD'; else if(forma === 'BOLETO') selectForma.value = 'BOLETO'; else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; else if(forma) selectForma.value = forma; else selectForma.value = 'PIX';
                 
-                if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
-                    selectForma.disabled = true; inputData.disabled = true; btnDesfazer.disabled = true; 
-                    btnDesfazer.className = "flex-1 bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
-                } else { selectForma.disabled = false; inputData.disabled = false; }
+                // Trava apenas os inputs para não editar a data acidentalmente
+                if(calcData.status === 'PAGO') {
+                    selectForma.disabled = true; inputData.disabled = true;
+                } else { 
+                    selectForma.disabled = false; inputData.disabled = false; 
+                }
 
             } else {
                 document.getElementById('acao-alerta-divida').innerText = calcData.status === 'ATRASADO' ? "⚠️ MENSALIDADE EM ATRASO" : "PENDENTE DE PAGAMENTO";
