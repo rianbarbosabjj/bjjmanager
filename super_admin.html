@@ -1926,6 +1926,9 @@
                 }
 
                 const snapEquipes = await getDocs(collection(db, "equipes"));
+                    equipesCache = snapEquipes.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .filter(eq => eq.email_responsavel !== 'bjjmanager@teste.com.br');
                 
                 equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
