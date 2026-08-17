@@ -1922,18 +1922,36 @@ window.salvarSenhaSaque = async function() {
             } catch(e) { showToast("Erro ao salvar regras.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
         }
 
-        window.registrarPagamento = async function() {
+window.registrarPagamento = async function() {
             if(!alunoSelecionadoMens) return;
             if(alunoSelecionadoMens._calc.status === 'PAGO' || alunoSelecionadoMens._calc.status === 'ISENTO') return showToast("Esta fatura já está paga ou é isenta.", "info");
             
-            const dtPag = document.getElementById('acao-data-pag').value; const forma = document.getElementById('acao-forma-pag').value;
+            const dtPag = document.getElementById('acao-data-pag').value; 
+            const forma = document.getElementById('acao-forma-pag').value;
             if(forma === 'PIX_ASAAS' || forma === 'CREDIT_CARD' || forma === 'BOLETO') return showToast("Estas formas de pagamento só podem ser baixadas automaticamente pelo sistema.", "error");
 
             const valorCalculado = alunoSelecionadoMens._calc.valor;
-            const btn = document.getElementById('btn-reg-pagamento'); const origTxt = btn.innerHTML; btn.innerHTML = "⏳ Processando..."; btn.disabled = true;
+            const btn = document.getElementById('btn-reg-pagamento'); 
+            const origTxt = btn.innerHTML; 
+            btn.innerHTML = "⏳ Processando..."; btn.disabled = true;
 
             try {
-                await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), { status: 'PAGO', data_pagamento: dtPag, forma_pagamento: forma, valor: valorCalculado });
+                if (alunoSelecionadoMens._calc.reg.asaas_id) {
+                    try {
+                        const removerCobranca = httpsCallable(functions, 'removerCobrancaAsaas');
+                        await removerCobranca({ uid: uid, asaasId: alunoSelecionadoMens._calc.reg.asaas_id });
+                    } catch(errAsaas) { console.log("Erro ao remover no Asaas ignorado.", errAsaas); }
+                }
+
+                await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), { 
+                    status: 'PAGO', 
+                    data_pagamento: dtPag, 
+                    forma_pagamento: forma, 
+                    valor: valorCalculado,
+                    link_pagamento: null,
+                    asaas_id: null 
+                });
+                
                 showToast("Pagamento Registrado!", "success");
                 registrarLogAuditoria("BAIXOU_MENSALIDADE", `Deu baixa manual para ${alunoSelecionadoMens.nome} (R$ ${valorCalculado}) via ${forma}`);
                 carregarDados(); 
@@ -1962,12 +1980,19 @@ window.salvarSenhaSaque = async function() {
             const btn = document.getElementById('btn-excluir-pag'); const origTxt = btn.innerText; btn.innerText = "..."; btn.disabled = true;
 
             try {
+                if (alunoSelecionadoMens._calc.reg.asaas_id) {
+                    try {
+                        const removerCobranca = httpsCallable(functions, 'removerCobrancaAsaas');
+                        await removerCobranca({ uid: uid, asaasId: alunoSelecionadoMens._calc.reg.asaas_id });
+                    } catch(errAsaas) {}
+                }
+
                 await deleteDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id));
                 showToast("Fatura excluída com sucesso.", "success");
                 registrarLogAuditoria("EXCLUIU_FATURA", `Excluiu a fatura de ${alunoSelecionadoMens.nome} (Ref: ${alunoSelecionadoMens._calc.reg.mes_ano})`);
                 carregarDados(); 
             } catch (e) { showToast("Erro ao excluir.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
-        } 
+        }
 
         window.enviarWhatsApp = function() {
             if(!alunoSelecionadoMens) return; const a = alunoSelecionadoMens;
