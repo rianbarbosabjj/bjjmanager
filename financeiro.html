@@ -1740,15 +1740,25 @@ window.salvarSenhaSaque = async function() {
             let exibidos = registros.filter(({f, aluno, calc}) => {
                 const matchTermo = (!termo || (aluno.nome || '').toLowerCase().includes(termo));
                 let matchStatus = false;
+                
+                // Padroniza a forma de pagamento para evitar erros (ex: 'Dinheiro' vira 'DINHEIRO')
+                const forma = f.forma_pagamento ? String(f.forma_pagamento).toUpperCase() : '';
 
                 if (window.filtroStatusMens === 'TODOS') {
                     matchStatus = true;
                 } else if (window.filtroStatusMens === 'PAGO_MANUAL') {
-                    // Pagos na mão: estritamente PIX (manual) ou Dinheiro
-                    matchStatus = calc.status === 'PAGO' && (f.forma_pagamento === 'PIX' || f.forma_pagamento === 'Dinheiro');
+                    matchStatus = calc.status === 'PAGO' && (
+                        forma === '' || 
+                        forma === 'DINHEIRO' || 
+                        (forma === 'PIX' && !f.asaas_id) 
+                    );
                 } else if (window.filtroStatusMens === 'PAGO_AUTO') {
-                    // Pagos no Asaas: Tudo que for pago, desde que NÃO seja PIX manual nem Dinheiro
-                    matchStatus = calc.status === 'PAGO' && (f.forma_pagamento !== 'PIX' && f.forma_pagamento !== 'Dinheiro');
+                    matchStatus = calc.status === 'PAGO' && (
+                        forma === 'CREDIT_CARD' || 
+                        forma === 'BOLETO' || 
+                        forma === 'PIX_ASAAS' || 
+                        (forma === 'PIX' && !!f.asaas_id)
+                    );
                 } else {
                     matchStatus = calc.status === window.filtroStatusMens;
                 }
