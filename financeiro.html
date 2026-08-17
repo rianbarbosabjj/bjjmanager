@@ -263,6 +263,8 @@
                                 <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="PENDENTE" onclick="setFiltroMensalidade('PENDENTE')">Pendentes</button>
                                 <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="ATRASADO" onclick="setFiltroMensalidade('ATRASADO')">Atrasados</button>
                                 <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="PAGO" onclick="setFiltroMensalidade('PAGO')">Pagos</button>
+                                <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="PAGO_MANUAL" onclick="setFiltroMensalidade('PAGO_MANUAL')">Manual</button>
+                                <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="PAGO_AUTO" onclick="setFiltroMensalidade('PAGO_AUTO')">Digital (Asaas)</button>
                                 <button class="status-chip shrink-0 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest" data-status="ISENTO" onclick="setFiltroMensalidade('ISENTO')">Isentos</button>
                             </div>
                         </div>
@@ -1735,7 +1737,24 @@ window.salvarSenhaSaque = async function() {
                 else { rPendentes+=calc.valor; if(calc.status==='ATRASADO') rAtrasados+=calc.valor; else { const v=new Date(calc.vencimento); v.setHours(0,0,0,0); if(v>=hoje && v<=limite) vencemBreve++; } }
             });
 
-            let exibidos=registros.filter(({aluno,calc}) => (!termo || (aluno.nome||'').toLowerCase().includes(termo)) && (window.filtroStatusMens==='TODOS' || calc.status===window.filtroStatusMens));
+            let exibidos = registros.filter(({f, aluno, calc}) => {
+                const matchTermo = (!termo || (aluno.nome || '').toLowerCase().includes(termo));
+                let matchStatus = false;
+
+                if (window.filtroStatusMens === 'TODOS') {
+                    matchStatus = true;
+                } else if (window.filtroStatusMens === 'PAGO_MANUAL') {
+                    // Pagos via PIX direto ou Dinheiro
+                    matchStatus = calc.status === 'PAGO' && (f.forma_pagamento === 'PIX' || f.forma_pagamento === 'Dinheiro');
+                } else if (window.filtroStatusMens === 'PAGO_AUTO') {
+                    // Pagos via Asaas (PIX_ASAAS, BOLETO, CREDIT_CARD) ou que tenham asaas_id
+                    matchStatus = calc.status === 'PAGO' && (f.forma_pagamento === 'PIX_ASAAS' || f.forma_pagamento === 'CREDIT_CARD' || f.forma_pagamento === 'BOLETO' || f.asaas_id);
+                } else {
+                    matchStatus = calc.status === window.filtroStatusMens;
+                }
+
+                return matchTermo && matchStatus;
+            });
             exibidos.sort((x,y)=>{
                 if(window.ordenacaoMens==='VENCIMENTO') return x.calc.vencimento-y.calc.vencimento || (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
                 if(window.ordenacaoMens==='VALOR_DESC') return y.calc.valor-x.calc.valor || (x.aluno.nome||'').localeCompare(y.aluno.nome||'');
