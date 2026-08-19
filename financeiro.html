@@ -606,7 +606,7 @@
                                 <div>
                                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Plano padrão da academia</label>
                                     <select id="select-plano-padrao-equipe" onchange="salvarPlanoPadraoEquipe(this.value)" class="mt-2 w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-white">
-                                        <option value="">Utilizar valor padrão de mensalidade</option>
+                                        <option value="">Usar mensalidade geral (fallback)</option>
                                     </select>
                                 </div>
                                 <div class="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-4">
@@ -1036,7 +1036,7 @@
 
             const sel = document.getElementById('select-plano-padrao-equipe');
             if (sel) {
-                sel.innerHTML = '<option value=""Utilizar valor padrão de mensalidade</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
+                sel.innerHTML = '<option value="">Usar mensalidade geral (fallback)</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
                 sel.value = equipeDados?.plano_padrao_id || '';
             }
 
