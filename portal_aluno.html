@@ -1521,79 +1521,83 @@
         // ==========================================
         // 💳 FINANCEIRO E MENSALIDADES
         // ==========================================
-    function calcularValorFatura(fatura, aluno, equipe) {
-        const status = String(fatura?.status || 'PENDENTE').toUpperCase();
+        function calcularValorFatura(fatura, aluno, equipe) {
+            const status = String(fatura?.status || 'PENDENTE').toUpperCase();
+            const valorRegistrado = Number(fatura?.valor);
 
-        if (status === 'ISENTO') return 0;
+            if (status === 'ISENTO') return 0;
 
-        const valorAtual = Number(fatura?.valor);
-
-        if (status === 'PAGO') {
-            return Number.isFinite(valorAtual) ? valorAtual : 0;
-        }
-
-    // =====================================================
-    // NOVO MODELO — FATURAS COM SNAPSHOT DO PLANO
-    // =====================================================
-        const temSnapshotPrazo =
-            fatura?.valor_prazo_snapshot !== undefined &&
-            fatura?.valor_prazo_snapshot !== null;
-
-        const temSnapshotAtraso =
-            fatura?.valor_atraso_snapshot !== undefined &&
-            fatura?.valor_atraso_snapshot !== null;
-
-        if (temSnapshotPrazo || temSnapshotAtraso) {
-
-            const valorPrazo = temSnapshotPrazo
-                ? Number(fatura.valor_prazo_snapshot || 0)
-                : (Number.isFinite(valorAtual) ? valorAtual : 0);
-
-            const valorAtraso = temSnapshotAtraso
-                ? Number(fatura.valor_atraso_snapshot || valorPrazo)
-                : valorPrazo;
-
-        // Quando o Asaas acrescentou uma taxa ao valor da cobrança,
-        // fatura.valor já contém esse acréscimo.
-            const acrescimoIntegracao =
-                Number.isFinite(valorAtual)
-                    ? Math.max(0, valorAtual - valorPrazo)
-                    : 0;
-
-            if (status === 'ATRASADO') {
-                return valorAtraso + acrescimoIntegracao;
+            // Se a cobrança já foi emitida no Asaas, o campo "valor" foi
+            // atualizado pelo backend com o valor efetivamente cobrado.
+            // Esse passa a ser a fonte de verdade para o Portal do Atleta.
+            if ((fatura?.asaas_id || fatura?.link_pagamento) && Number.isFinite(valorRegistrado)) {
+                return valorRegistrado;
             }
 
-            return Number.isFinite(valorAtual)
-                ? valorAtual
-                : valorPrazo;
+            if (status === 'PAGO') {
+                return Number.isFinite(valorRegistrado) ? valorRegistrado : 0;
+            }
+
+            // =====================================================
+            // NOVO MODELO — FATURAS COM SNAPSHOT DO PLANO
+            // =====================================================
+            const temSnapshotPrazo =
+                fatura?.valor_prazo_snapshot !== undefined &&
+                fatura?.valor_prazo_snapshot !== null;
+
+            const temSnapshotAtraso =
+                fatura?.valor_atraso_snapshot !== undefined &&
+                fatura?.valor_atraso_snapshot !== null;
+
+            if (temSnapshotPrazo || temSnapshotAtraso) {
+                const valorPrazo = temSnapshotPrazo
+                    ? Number(fatura.valor_prazo_snapshot || 0)
+                    : (Number.isFinite(valorRegistrado) ? valorRegistrado : 0);
+
+                const valorAtraso = temSnapshotAtraso
+                    ? Number(fatura.valor_atraso_snapshot || valorPrazo)
+                    : valorPrazo;
+
+                // Os snapshots já trazem a bolsa aplicada. A taxa do Asaas,
+                // quando repassada ao aluno, é acrescentada apenas aqui
+                // enquanto a cobrança digital ainda não tiver sido emitida.
+                let valorCalculado = status === 'ATRASADO' ? valorAtraso : valorPrazo;
+
+                const repassarTaxa =
+                    equipe?.asaas_repassar_taxa === true ||
+                    String(equipe?.asaas_repassar_taxa) === "true";
+
+                if (repassarTaxa && Number(equipe?.asaas_valor_taxa) > 0) {
+                    valorCalculado += Number(equipe.asaas_valor_taxa);
+                }
+
+                return valorCalculado;
+            }
+
+            // =====================================================
+            // MODELO LEGADO — COMPATIBILIDADE COM FATURAS ANTIGAS
+            // =====================================================
+            const bolsa = Number(aluno?.bolsa_perc || 0);
+            if (bolsa >= 100) return 0;
+
+            const valorBase = status === 'ATRASADO'
+                ? Number(equipe?.valor_atraso || equipe?.valor_prazo || 100)
+                : Number(equipe?.valor_prazo || 70);
+
+            let valorCalculado = valorBase * (1 - bolsa / 100);
+
+            const repassarTaxa =
+                equipe?.asaas_repassar_taxa === true ||
+                String(equipe?.asaas_repassar_taxa) === "true";
+
+            if (repassarTaxa && Number(equipe?.asaas_valor_taxa) > 0) {
+                valorCalculado += Number(equipe.asaas_valor_taxa);
+            }
+
+            return valorCalculado;
         }
 
-    // =====================================================
-    // MODELO ANTIGO — COMPATIBILIDADE COM FATURAS LEGADAS
-    // =====================================================
-        const bolsa = Number(aluno?.bolsa_perc || 0);
-
-        if (bolsa >= 100) return 0;
-
-        const valorBase = status === 'ATRASADO'
-            ? Number(equipe?.valor_atraso || equipe?.valor_prazo || 100)
-            : Number(equipe?.valor_prazo || 70);
-
-        let valorCalculado = valorBase * (1 - bolsa / 100);
-
-        const repassarTaxa =
-            equipe?.asaas_repassar_taxa === true ||
-            String(equipe?.asaas_repassar_taxa) === 'true';
-
-        if (repassarTaxa && Number(equipe?.asaas_valor_taxa) > 0) {
-            valorCalculado += Number(equipe.asaas_valor_taxa);
-        }
-
-        return valorCalculado;
-    }
-
-      window.abrirPagamento = async function(faturaId) {
+        window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);
             if (!fat) return showToast("Fatura não encontrada.", "error");
 
@@ -1637,9 +1641,12 @@
                     const token = localStorage.getItem('bjj_aluno_token');
                     const resultado = await gerarCobranca({
                         alunoId: alunoLogado.id,
-                        valor: valorCobrar,   
+                        faturaId: fat.id,
+                        valor: valorCobrar,
                         mesAno: fat.mes_ano,
                         descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`,
+                        aceitaBoleto: equipeDados?.asaas_aceita_boleto === true,
+                        aceitaCartao: equipeDados?.asaas_aceita_cartao === true,
                         _token: token
                     });
                     if (resultado.data.success) {
