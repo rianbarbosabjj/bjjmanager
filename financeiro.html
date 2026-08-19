@@ -746,6 +746,8 @@
                 
                 <button id="btn-gerar-asaas" class="hidden w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600">💳 Gerar Link Digital</button>
 
+                <button id="btn-estornar-asaas" onclick="estornarPagamentoAsaas()" class="hidden w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-rose-700">↩ Estornar pagamento no Asaas</button>
+
                 <div class="flex gap-3 mt-4">
                     <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Desfazer</button>
                     <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-50 dark:bg-rose-500/10 text-rose-500 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors">Excluir Fatura</button>
@@ -887,6 +889,39 @@
         </div>
     </div>
 
+
+    <!-- MODAL PADRÃO DO SISTEMA -->
+    <div id="modal-sistema" class="fixed inset-0 z-[600] bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div id="modal-sistema-card" class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div class="p-6 pb-4 flex items-start gap-4">
+                <div id="modal-sistema-icone" class="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center text-xl font-black">!</div>
+                <div class="min-w-0 flex-1">
+                    <h3 id="modal-sistema-titulo" class="font-black text-slate-800 dark:text-white text-base">Confirmar ação</h3>
+                    <p id="modal-sistema-mensagem" class="mt-2 text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+
+            <div id="modal-sistema-campo-wrap" class="hidden px-6 pb-5">
+                <label id="modal-sistema-campo-label" for="modal-sistema-campo" class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Informação</label>
+                <textarea id="modal-sistema-campo" rows="3" maxlength="250"
+                    class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 text-sm font-medium text-slate-700 dark:text-white resize-none"
+                    placeholder=""></textarea>
+                <p id="modal-sistema-campo-ajuda" class="hidden mt-2 text-[10px] text-slate-400 font-medium"></p>
+            </div>
+
+            <div class="p-5 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+                <button id="modal-sistema-cancelar" type="button"
+                    class="flex-1 py-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800">
+                    Cancelar
+                </button>
+                <button id="modal-sistema-confirmar" type="button"
+                    class="flex-[1.2] py-3.5 rounded-xl text-white text-xs font-black uppercase tracking-widest shadow-md">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="menu.js"></script>
 
     <script type="module">
@@ -927,6 +962,135 @@
         window.planosFinanceirosCache = [];
         window.turmasFinanceiroCache = [];
         window.planoEditandoId = null;
+
+
+        // ==========================================================
+        // MODAL PADRÃO REUTILIZÁVEL DO SISTEMA
+        // ==========================================================
+        let modalSistemaResolver = null;
+        let modalSistemaModo = 'confirmacao';
+
+        function aplicarEstiloModalSistema(tipo = 'principal') {
+            const icone = document.getElementById('modal-sistema-icone');
+            const btn = document.getElementById('modal-sistema-confirmar');
+
+            const estilos = {
+                perigo: {
+                    icone: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400',
+                    botao: 'bg-rose-600 hover:bg-rose-700'
+                },
+                aviso: {
+                    icone: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+                    botao: 'bg-amber-500 hover:bg-amber-600'
+                },
+                principal: {
+                    icone: 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400',
+                    botao: 'bg-cyan-600 hover:bg-cyan-700'
+                }
+            };
+
+            const estilo = estilos[tipo] || estilos.principal;
+            icone.className = `shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center text-xl font-black ${estilo.icone}`;
+            btn.className = `flex-[1.2] py-3.5 rounded-xl text-white text-xs font-black uppercase tracking-widest shadow-md transition-colors ${estilo.botao}`;
+        }
+
+        function abrirModalSistema({
+            titulo = 'Confirmar ação',
+            mensagem = '',
+            confirmarTexto = 'Confirmar',
+            cancelarTexto = 'Cancelar',
+            tipo = 'principal',
+            icone = '!',
+            campo = false,
+            campoLabel = 'Informação',
+            campoValor = '',
+            campoPlaceholder = '',
+            campoAjuda = ''
+        } = {}) {
+            return new Promise((resolve) => {
+                if (modalSistemaResolver) {
+                    modalSistemaResolver(modalSistemaModo === 'texto' ? null : false);
+                    modalSistemaResolver = null;
+                }
+
+                modalSistemaResolver = resolve;
+                modalSistemaModo = campo ? 'texto' : 'confirmacao';
+
+                const modal = document.getElementById('modal-sistema');
+                const campoWrap = document.getElementById('modal-sistema-campo-wrap');
+                const campoEl = document.getElementById('modal-sistema-campo');
+                const ajudaEl = document.getElementById('modal-sistema-campo-ajuda');
+
+                document.getElementById('modal-sistema-titulo').textContent = titulo;
+                document.getElementById('modal-sistema-mensagem').textContent = mensagem;
+                document.getElementById('modal-sistema-confirmar').textContent = confirmarTexto;
+                document.getElementById('modal-sistema-cancelar').textContent = cancelarTexto;
+                document.getElementById('modal-sistema-icone').textContent = icone;
+
+                aplicarEstiloModalSistema(tipo);
+
+                if (campo) {
+                    campoWrap.classList.remove('hidden');
+                    document.getElementById('modal-sistema-campo-label').textContent = campoLabel;
+                    campoEl.value = campoValor || '';
+                    campoEl.placeholder = campoPlaceholder || '';
+                    ajudaEl.textContent = campoAjuda || '';
+                    ajudaEl.classList.toggle('hidden', !campoAjuda);
+                } else {
+                    campoWrap.classList.add('hidden');
+                    campoEl.value = '';
+                    ajudaEl.classList.add('hidden');
+                }
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                setTimeout(() => {
+                    if (campo) campoEl.focus();
+                    else document.getElementById('modal-sistema-confirmar')?.focus();
+                }, 60);
+            });
+        }
+
+        function resolverModalSistema(confirmado) {
+            if (!modalSistemaResolver) return;
+
+            const resolver = modalSistemaResolver;
+            const modo = modalSistemaModo;
+            modalSistemaResolver = null;
+
+            const modal = document.getElementById('modal-sistema');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
+            if (modo === 'texto') {
+                const valor = document.getElementById('modal-sistema-campo').value;
+                resolver(confirmado ? valor : null);
+            } else {
+                resolver(Boolean(confirmado));
+            }
+        }
+
+        function confirmarAcaoModal(opcoes = {}) {
+            return abrirModalSistema({ ...opcoes, campo: false });
+        }
+
+        function solicitarTextoModal(opcoes = {}) {
+            return abrirModalSistema({ ...opcoes, campo: true });
+        }
+
+        window.confirmarAcaoModal = confirmarAcaoModal;
+        window.solicitarTextoModal = solicitarTextoModal;
+        window.resolverModalSistema = resolverModalSistema;
+
+        document.getElementById('modal-sistema-confirmar')?.addEventListener('click', () => resolverModalSistema(true));
+        document.getElementById('modal-sistema-cancelar')?.addEventListener('click', () => resolverModalSistema(false));
+        document.getElementById('modal-sistema')?.addEventListener('click', (event) => {
+            if (event.target === event.currentTarget) resolverModalSistema(false);
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modalSistemaResolver) resolverModalSistema(false);
+        });
 
         function escapeHtml(texto) {
             const div = document.createElement('div');
@@ -1110,8 +1274,24 @@
             if (ativar) {
                 const padrao = planoFinanceiroPorId(equipeDados?.plano_padrao_id);
                 if (!padrao || padrao.ativo === false) return showToast('Cadastre e selecione um plano padrão ativo antes de ativar o recurso.', 'error');
-                if (!confirm('Ativar Planos de Cobrança? As mensalidades futuras passarão a usar o plano do aluno/turma. Cobranças já geradas não serão alteradas.')) return;
-            } else if (!confirm('Desativar Planos de Cobrança? As próximas mensalidades voltarão a usar o valor geral da academia. Nenhuma cobrança existente será alterada.')) return;
+                const confirmouAtivacao = await confirmarAcaoModal({
+                    titulo: 'Ativar Planos de Cobrança?',
+                    mensagem: 'As mensalidades futuras passarão a usar o plano do aluno/turma. Cobranças já geradas não serão alteradas.',
+                    confirmarTexto: 'Ativar',
+                    tipo: 'principal',
+                    icone: '✓'
+                });
+                if (!confirmouAtivacao) return;
+            } else {
+                const confirmouDesativacao = await confirmarAcaoModal({
+                    titulo: 'Desativar Planos de Cobrança?',
+                    mensagem: 'As próximas mensalidades voltarão a usar o valor padrão de mensalidade da academia. Nenhuma cobrança existente será alterada.',
+                    confirmarTexto: 'Desativar',
+                    tipo: 'aviso',
+                    icone: '!'
+                });
+                if (!confirmouDesativacao) return;
+            }
             try {
                 await updateDoc(doc(db,'equipes',uid),{usa_planos_financeiros:ativar,regra_multiplas_turmas:'MAIOR_VALOR'});
                 equipeDados.usa_planos_financeiros=ativar; equipeDados.regra_multiplas_turmas='MAIOR_VALOR';
@@ -1689,7 +1869,14 @@
             if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
             if(!senha) return showToast("Digite a sua senha de saque.", "error");
             
-            if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
+            const confirmouSaque = await confirmarAcaoModal({
+                titulo: 'Confirmar transferência PIX',
+                mensagem: `Você está prestes a transferir R$ ${floatToStr(valorNum)} para a chave:\n${chave}`,
+                confirmarTexto: 'Transferir',
+                tipo: 'aviso',
+                icone: '↗'
+            });
+            if (!confirmouSaque) return;
 
             const btn = document.getElementById('btn-sacar-asaas');
             const origTxt = btn.innerHTML;
@@ -2057,8 +2244,14 @@ window.salvarSenhaSaque = async function() {
             document.getElementById('acao-aluno-nome').innerText = aluno.nome;
             const btnWhats = document.getElementById('btn-whats-lateral'); const btnRegPag = document.getElementById('btn-reg-pagamento');
             const btnDesfazer = document.getElementById('btn-desfazer-pag'); const btnAsaas = document.getElementById('btn-gerar-asaas');
+            const btnEstornoAsaas = document.getElementById('btn-estornar-asaas');
             const inputData = document.getElementById('acao-data-pag'); const selectForma = document.getElementById('acao-forma-pag');
             const inputValorPago = document.getElementById('acao-valor-pago');
+
+            if (btnEstornoAsaas) {
+                btnEstornoAsaas.classList.add('hidden');
+                btnEstornoAsaas.disabled = true;
+            }
 
             if(calcData.status === 'PAGO' || calcData.status === 'ISENTO') {
                 document.getElementById('acao-alerta-divida').innerText = "";
@@ -2084,16 +2277,41 @@ window.salvarSenhaSaque = async function() {
                     inputValorPago.disabled = true;
                 }
 
-                // 🔥 TRAVA DE SEGURANÇA REATIVADA: Bloqueia se for do Asaas, libera se for manual
+                // Pagamento Asaas: "Desfazer" continua bloqueado porque movimentação financeira
+                // deve passar pelo endpoint de estorno real. PIX e cartão podem ser estornados aqui.
                 if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
                     btnDesfazer.disabled = true;
                     btnDesfazer.className = "flex-1 bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
+
+                    const formaAsaas = String(calcData.reg.forma_pagamento || '').toUpperCase();
+                    const estornoStatus = String(calcData.reg.estorno_status || '').toUpperCase();
+                    const formaPermiteEstorno = ['PIX', 'CREDIT_CARD'].includes(formaAsaas);
+
+                    if (btnEstornoAsaas && formaPermiteEstorno) {
+                        btnEstornoAsaas.classList.remove('hidden');
+
+                        if (['SOLICITADO', 'EM_PROCESSAMENTO'].includes(estornoStatus)) {
+                            btnEstornoAsaas.disabled = true;
+                            btnEstornoAsaas.innerHTML = "⏳ Estorno em processamento";
+                            btnEstornoAsaas.className = "w-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-amber-200 dark:border-amber-800";
+                        } else {
+                            btnEstornoAsaas.disabled = false;
+                            btnEstornoAsaas.innerHTML = formaAsaas === 'CREDIT_CARD'
+                                ? "↩ Estornar pagamento no cartão"
+                                : "↩ Estornar pagamento PIX";
+                            btnEstornoAsaas.className = "w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-rose-700";
+                        }
+                    }
                 } else {
                     btnDesfazer.disabled = false;
                     btnDesfazer.className = "flex-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors cursor-pointer";
                 }
 
             } else {
+                if (btnEstornoAsaas) {
+                    btnEstornoAsaas.classList.add('hidden');
+                    btnEstornoAsaas.disabled = true;
+                }
                 document.getElementById('acao-alerta-divida').innerText = calcData.status === 'ATRASADO' ? "⚠️ MENSALIDADE EM ATRASO" : "PENDENTE DE PAGAMENTO";
                 
                 btnWhats.innerHTML = `<span class="mr-2">💬</span> Cobrar`;
@@ -2244,10 +2462,115 @@ window.registrarPagamento = async function() {
             }
         }
 
+        window.estornarPagamentoAsaas = async function() {
+            if (!alunoSelecionadoMens) return;
+
+            const calc = alunoSelecionadoMens._calc || {};
+            const reg = calc.reg || {};
+            const faturaId = calc.fatura_id;
+            const forma = String(reg.forma_pagamento || '').toUpperCase();
+
+            if (calc.status !== 'PAGO') {
+                return showToast("Somente pagamentos confirmados podem ser estornados.", "error");
+            }
+
+            if (!reg.asaas_id || !faturaId) {
+                return showToast("Esta fatura não possui uma cobrança Asaas válida para estorno.", "error");
+            }
+
+            if (!['PIX', 'CREDIT_CARD'].includes(forma)) {
+                return showToast("O estorno pelo sistema está disponível para PIX e cartão de crédito.", "error");
+            }
+
+            const meioTxt = forma === 'CREDIT_CARD' ? 'cartão de crédito' : 'PIX';
+            const valorTxt = floatToStr(Number(reg.valor_pago ?? reg.valor ?? calc.valor ?? 0));
+
+            const confirmou = await confirmarAcaoModal({
+                titulo: 'Estornar pagamento no Asaas?',
+                mensagem:
+                    `Este estorno movimentará dinheiro de verdade.\n\n` +
+                    `Aluno: ${alunoSelecionadoMens.nome}\n` +
+                    `Forma: ${meioTxt}\n` +
+                    `Valor da cobrança: R$ ${valorTxt}\n\n` +
+                    `O estorno solicitado será integral.`,
+                confirmarTexto: 'Continuar',
+                tipo: 'perigo',
+                icone: '↩'
+            });
+            if (!confirmou) return;
+
+            const motivoInformado = await solicitarTextoModal({
+                titulo: 'Motivo do estorno',
+                mensagem: 'Informe o motivo para registro da operação. Este campo é opcional.',
+                confirmarTexto: 'Solicitar estorno',
+                tipo: 'perigo',
+                icone: '↩',
+                campoLabel: 'Motivo',
+                campoValor: 'Estorno solicitado pela academia no BJJ Manager',
+                campoPlaceholder: 'Descreva o motivo do estorno',
+                campoAjuda: 'O motivo ficará registrado na trilha de auditoria.'
+            });
+            if (motivoInformado === null) return;
+
+            const btn = document.getElementById('btn-estornar-asaas');
+            const textoOriginal = btn ? btn.innerHTML : '';
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = "⏳ Solicitando estorno...";
+                btn.className = "w-full bg-slate-200 dark:bg-slate-800 text-slate-500 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-slate-300 dark:border-slate-700";
+            }
+
+            try {
+                const estornar = httpsCallable(functions, 'estornarCobrancaAsaas');
+                const resposta = await estornar({
+                    faturaId,
+                    motivo: String(motivoInformado || '').trim()
+                });
+
+                const resultado = resposta?.data || {};
+                if (!resultado.success) {
+                    throw new Error(resultado.error || "O Asaas não aceitou a solicitação de estorno.");
+                }
+
+                showToast(
+                    forma === 'CREDIT_CARD'
+                        ? "Estorno do cartão solicitado. Aguarde a confirmação do Asaas."
+                        : "Estorno PIX solicitado. Aguarde a confirmação do Asaas.",
+                    "success"
+                );
+
+                registrarLogAuditoria(
+                    "SOLICITOU_ESTORNO_ASAAS",
+                    `Solicitou estorno integral de ${alunoSelecionadoMens.nome} (R$ ${valorTxt}) via ${meioTxt}`
+                );
+
+                fecharModalAcoes();
+                await carregarDados();
+
+            } catch (e) {
+                console.error("Erro ao solicitar estorno Asaas:", e);
+                showToast(e.message || "Erro ao solicitar estorno no Asaas.", "error");
+
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = textoOriginal || "↩ Estornar pagamento no Asaas";
+                    btn.className = "w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-rose-700";
+                }
+            }
+        }
+
         window.cancelarPagamento = async function() {
             if(!alunoSelecionadoMens) return;
             if(alunoSelecionadoMens._calc.status !== 'PAGO') return showToast("O aluno não possui pagamento registrado nesta fatura.", "error");
-            if(!confirm("Deseja ESTORNAR este pagamento?\nA fatura voltará a ficar Pendente.")) return;
+            const confirmouDesfazer = await confirmarAcaoModal({
+                titulo: 'Desfazer pagamento manual?',
+                mensagem: 'A baixa manual será removida e a fatura voltará a ficar Pendente. Nenhum valor será movimentado no Asaas.',
+                confirmarTexto: 'Desfazer',
+                tipo: 'aviso',
+                icone: '↶'
+            });
+            if (!confirmouDesfazer) return;
 
             const btn = document.getElementById('btn-desfazer-pag'); 
             const origTxt = btn.innerText; 
@@ -2289,7 +2612,14 @@ window.registrarPagamento = async function() {
 
         window.excluirPagamento = async function() {
             if(!alunoSelecionadoMens) return;
-            if(!confirm("Deseja EXCLUIR completamente esta fatura do sistema?")) return;
+            const confirmouExclusao = await confirmarAcaoModal({
+                titulo: 'Excluir fatura?',
+                mensagem: 'Esta fatura será removida completamente do sistema. Esta ação não pode ser desfeita.',
+                confirmarTexto: 'Excluir fatura',
+                tipo: 'perigo',
+                icone: '×'
+            });
+            if (!confirmouExclusao) return;
 
             const btn = document.getElementById('btn-excluir-pag'); const origTxt = btn.innerText; btn.innerText = "..."; btn.disabled = true;
 
@@ -2701,7 +3031,14 @@ window.registrarPagamento = async function() {
         }
 
         window.excluirLancamento = async function(id) {
-            if(!confirm("Deseja apagar este registo financeiro?")) return;
+            const confirmouExclusao = await confirmarAcaoModal({
+                titulo: 'Apagar lançamento financeiro?',
+                mensagem: 'O registro será excluído do histórico financeiro. Esta ação não pode ser desfeita.',
+                confirmarTexto: 'Apagar',
+                tipo: 'perigo',
+                icone: '×'
+            });
+            if (!confirmouExclusao) return;
             try { 
                 await deleteDoc(doc(db, "financeiro", id)); 
                 carregarDados(); showToast("Registo apagado com sucesso.", "success");
