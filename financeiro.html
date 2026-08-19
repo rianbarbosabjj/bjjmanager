@@ -2085,6 +2085,40 @@ window.salvarSenhaSaque = async function() {
             } finally { btn.innerText=originalTxt; btn.disabled=false; }
         };
 
+        // Sincroniza estornos que ainda estão aguardando resultado no Asaas.
+        // Isso também corrige tentativas antigas que ficaram presas em "EM_PROCESSAMENTO".
+        async function sincronizarEstornosPendentes(registrosFinanceiros) {
+            const pendentes = (registrosFinanceiros || []).filter(f => {
+                const st = String(f.estorno_status || '').toUpperCase();
+                return ['SOLICITADO', 'EM_PROCESSAMENTO'].includes(st) && (f.asaas_id || f.estorno_asaas_id);
+            });
+
+            if (!pendentes.length) return false;
+
+            const sincronizarEstorno = httpsCallable(functions, 'sincronizarEstornoAsaas');
+            let houveAlteracao = false;
+
+            for (const fatura of pendentes) {
+                try {
+                    const resposta = await sincronizarEstorno({ faturaId: fatura.id });
+                    const resultado = resposta?.data || {};
+
+                    if (!resultado.success) {
+                        console.warn('Falha ao sincronizar estorno:', fatura.id, resultado.error);
+                        continue;
+                    }
+
+                    if (['CONCLUIDO', 'FALHOU'].includes(String(resultado.estado || '').toUpperCase())) {
+                        houveAlteracao = true;
+                    }
+                } catch (erro) {
+                    console.warn('Erro ao consultar estado do estorno:', fatura.id, erro);
+                }
+            }
+
+            return houveAlteracao;
+        }
+
         window.carregarDados = async function() {
             const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value; const mesAnoFiltro = `${ano}-${mes}`; 
 
@@ -2103,12 +2137,29 @@ window.salvarSenhaSaque = async function() {
             } else window.turmasFinanceiroCache = [];
 
             const qFinMes = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
-            const snapFinMes = await getDocs(qFinMes);
+            let snapFinMes = await getDocs(qFinMes);
             financeiroMesCache = snapFinMes.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            // Antes de renderizar, consulta no Asaas qualquer estorno que ainda esteja
+            // SOLICITADO/EM_PROCESSAMENTO. Se o refund virou DONE ou CANCELLED,
+            // a Cloud Function atualiza a fatura e relermos o Firestore.
+            const estornoAtualizado = await sincronizarEstornosPendentes(financeiroMesCache);
+            if (estornoAtualizado) {
+                snapFinMes = await getDocs(qFinMes);
+                financeiroMesCache = snapFinMes.docs.map(d => ({ id: d.id, ...d.data() }));
+            }
 
             const qFinAno = query(collection(db, "financeiro"), where("equipe_id", "==", uid));
             const snapFinAno = await getDocs(qFinAno);
             financeiroAnoCache = snapFinAno.docs.map(d => ({ id: d.id, ...d.data() })).filter(f => f.mes_ano && f.mes_ano.startsWith(ano));
+
+            // Se uma tentativa de estorno falhou, informa uma vez após a atualização.
+            const falhasEstorno = financeiroMesCache.filter(f => String(f.estorno_status || '').toUpperCase() === 'FALHOU');
+            if (falhasEstorno.length && estornoAtualizado) {
+                const ultimaFalha = falhasEstorno[0];
+                const motivo = ultimaFalha.estorno_erro || ultimaFalha.estorno_erro_transferencia || 'O Asaas não conseguiu concluir o estorno.';
+                showToast(`Estorno não concluído: ${motivo}`, 'error');
+            }
 
             renderizarTabelas(); atualizarDashboardMes(); atualizarAnaliseAnual(); fecharModalAcoes();
         }
@@ -2296,9 +2347,17 @@ window.salvarSenhaSaque = async function() {
                             btnEstornoAsaas.className = "w-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-amber-200 dark:border-amber-800";
                         } else {
                             btnEstornoAsaas.disabled = false;
-                            btnEstornoAsaas.innerHTML = formaAsaas === 'CREDIT_CARD'
-                                ? "↩ Estornar pagamento no cartão"
-                                : "↩ Estornar pagamento PIX";
+
+                            if (estornoStatus === 'FALHOU') {
+                                btnEstornoAsaas.innerHTML = "↻ Tentar estorno novamente";
+                                btnEstornoAsaas.title = calcData.reg.estorno_erro || calcData.reg.estorno_erro_transferencia || 'A tentativa anterior de estorno não foi concluída.';
+                            } else {
+                                btnEstornoAsaas.innerHTML = formaAsaas === 'CREDIT_CARD'
+                                    ? "↩ Estornar pagamento no cartão"
+                                    : "↩ Estornar pagamento PIX";
+                                btnEstornoAsaas.title = '';
+                            }
+
                             btnEstornoAsaas.className = "w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-rose-700";
                         }
                     }
