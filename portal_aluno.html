@@ -1521,26 +1521,79 @@
         // ==========================================
         // 💳 FINANCEIRO E MENSALIDADES
         // ==========================================
-        function calcularValorFatura(fatura, aluno, equipe) {
-            if (fatura.status === 'PAGO') return fatura.valor;
-            const bolsa = aluno.bolsa_perc || 0;
-            if (bolsa === 100) return 0;
-            
-            const valorBase = (fatura.status === 'ATRASADO') 
-                ? (equipe.valor_atraso || 100)
-                : (equipe.valor_prazo || 70);
-            
-            let valorCalculado = valorBase * (1 - bolsa / 100);
+    function calcularValorFatura(fatura, aluno, equipe) {
+        const status = String(fatura?.status || 'PENDENTE').toUpperCase();
 
-            const repassarTaxa = equipe.asaas_repassar_taxa === true || String(equipe.asaas_repassar_taxa) === "true";
-            if (repassarTaxa && equipe.asaas_valor_taxa > 0) {
-                valorCalculado += parseFloat(equipe.asaas_valor_taxa);
-            }
+        if (status === 'ISENTO') return 0;
 
-            return valorCalculado;
+        const valorAtual = Number(fatura?.valor);
+
+        if (status === 'PAGO') {
+            return Number.isFinite(valorAtual) ? valorAtual : 0;
         }
 
-        window.abrirPagamento = async function(faturaId) {
+    // =====================================================
+    // NOVO MODELO — FATURAS COM SNAPSHOT DO PLANO
+    // =====================================================
+        const temSnapshotPrazo =
+            fatura?.valor_prazo_snapshot !== undefined &&
+            fatura?.valor_prazo_snapshot !== null;
+
+        const temSnapshotAtraso =
+            fatura?.valor_atraso_snapshot !== undefined &&
+            fatura?.valor_atraso_snapshot !== null;
+
+        if (temSnapshotPrazo || temSnapshotAtraso) {
+
+            const valorPrazo = temSnapshotPrazo
+                ? Number(fatura.valor_prazo_snapshot || 0)
+                : (Number.isFinite(valorAtual) ? valorAtual : 0);
+
+            const valorAtraso = temSnapshotAtraso
+                ? Number(fatura.valor_atraso_snapshot || valorPrazo)
+                : valorPrazo;
+
+        // Quando o Asaas acrescentou uma taxa ao valor da cobrança,
+        // fatura.valor já contém esse acréscimo.
+            const acrescimoIntegracao =
+                Number.isFinite(valorAtual)
+                    ? Math.max(0, valorAtual - valorPrazo)
+                    : 0;
+
+            if (status === 'ATRASADO') {
+                return valorAtraso + acrescimoIntegracao;
+            }
+
+            return Number.isFinite(valorAtual)
+                ? valorAtual
+                : valorPrazo;
+        }
+
+    // =====================================================
+    // MODELO ANTIGO — COMPATIBILIDADE COM FATURAS LEGADAS
+    // =====================================================
+        const bolsa = Number(aluno?.bolsa_perc || 0);
+
+        if (bolsa >= 100) return 0;
+
+        const valorBase = status === 'ATRASADO'
+            ? Number(equipe?.valor_atraso || equipe?.valor_prazo || 100)
+            : Number(equipe?.valor_prazo || 70);
+
+        let valorCalculado = valorBase * (1 - bolsa / 100);
+
+        const repassarTaxa =
+            equipe?.asaas_repassar_taxa === true ||
+            String(equipe?.asaas_repassar_taxa) === 'true';
+
+        if (repassarTaxa && Number(equipe?.asaas_valor_taxa) > 0) {
+            valorCalculado += Number(equipe.asaas_valor_taxa);
+        }
+
+        return valorCalculado;
+    }
+
+      window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);
             if (!fat) return showToast("Fatura não encontrada.", "error");
 
