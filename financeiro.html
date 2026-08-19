@@ -1036,7 +1036,7 @@
 
             const sel = document.getElementById('select-plano-padrao-equipe');
             if (sel) {
-                sel.innerHTML = '<option value="">Usar mensalidade geral (fallback)</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
+                sel.innerHTML = '<option value=""Utilizar valor padrão de mensalidade</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
                 sel.value = equipeDados?.plano_padrao_id || '';
             }
 
