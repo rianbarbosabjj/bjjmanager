@@ -215,6 +215,7 @@
                     <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap">Mensalidades</button>
                     <button onclick="if(verificarAcesso('asaas')) mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 transition-all whitespace-nowrap">Conta Digital</button>
                     <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">Fluxo de Caixa</button>
+                    <button onclick="mudarAba('tab-planos')" id="btn-tab-planos" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">Planos de Cobrança</button>
                     <button onclick="mudarRelatorio('mensal')" id="btn-tab-relatorios" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all whitespace-nowrap">Relatórios</button>
                 </div>
             </div>
@@ -584,6 +585,43 @@
                         </div>
 </div>
 
+                    <!-- TAB PLANOS DE COBRANÇA -->
+                    <div id="tab-planos" class="aba-content hidden flex-col gap-6">
+                        <div class="card-premium bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 md:p-6">
+                            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">Planos de Cobrança</h2>
+                                        <span id="badge-status-planos" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">Modo legado</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">Cadastre valores por perfil de turma. Enquanto este recurso estiver desativado, todas as cobranças continuam usando os valores gerais atuais da academia.</p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+                                    <button id="btn-toggle-planos" onclick="toggleSistemaPlanos()" class="px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white text-[10px] font-black uppercase tracking-widest hover:border-cyan-400 transition-all">Ativar planos</button>
+                                    <button onclick="abrirModalPlano()" class="px-4 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-black uppercase tracking-widest shadow-md">+ Novo plano</button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Plano padrão da academia</label>
+                                    <select id="select-plano-padrao-equipe" onchange="salvarPlanoPadraoEquipe(this.value)" class="mt-2 w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-white">
+                                        <option value="">Usar mensalidade geral (fallback)</option>
+                                    </select>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-4">
+                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Regra automática para múltiplas turmas</p>
+                                    <p class="text-sm font-black text-slate-700 dark:text-white mt-1">Maior valor entre os planos das turmas</p>
+                                    <p class="text-[10px] text-slate-400 mt-1">Condições excepcionais podem ser definidas manualmente na ficha do aluno.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="lista-planos-cobranca" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <div class="card-premium bg-white dark:bg-slate-900 p-6 text-center text-sm text-slate-400">Carregando planos...</div>
+                        </div>
+                    </div>
+
                     <div id="tab-fluxo" class="aba-content hidden flex-col gap-6">
                         <div class="flex flex-col sm:flex-row gap-4 justify-end">
                             <button onclick="abrirModalReceita()" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-2xl shadow-md transition-all text-xs flex items-center justify-center uppercase tracking-widest">
@@ -821,6 +859,28 @@
         </div>
     </div>
 
+    <!-- MODAL PLANO DE COBRANÇA -->
+    <div id="modal-plano-cobranca" class="fixed inset-0 z-[320] bg-slate-900/65 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div class="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
+                <div><h3 id="titulo-modal-plano" class="font-black text-sm uppercase tracking-widest">Novo plano de cobrança</h3><p class="text-[10px] text-slate-400 mt-1">A alteração vale apenas para mensalidades futuras.</p></div>
+                <button onclick="fecharModalPlano()" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nome do plano *</label><input id="plano-nome" type="text" placeholder="Ex: Infantil" class="mt-1.5 w-full p-3 bg-slate-50 dark:bg-slate-950 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl font-bold"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Valor em dia *</label><input id="plano-valor-prazo" type="text" oninput="mascaraMoeda(this)" placeholder="120,00" class="mt-1.5 w-full p-3 bg-slate-50 dark:bg-slate-950 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl font-bold"></div>
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Após vencimento</label><input id="plano-valor-atraso" type="text" oninput="mascaraMoeda(this)" placeholder="140,00" class="mt-1.5 w-full p-3 bg-slate-50 dark:bg-slate-950 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl font-bold"></div>
+                </div>
+                <label class="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer"><div><p class="text-xs font-black text-slate-700 dark:text-white">Plano ativo</p><p class="text-[10px] text-slate-400">Planos inativos permanecem no histórico, mas não são sugeridos para novas turmas.</p></div><input id="plano-ativo" type="checkbox" checked class="w-5 h-5 rounded text-cyan-600"></label>
+            </div>
+            <div class="p-5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex gap-3">
+                <button onclick="fecharModalPlano()" class="flex-1 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">Cancelar</button>
+                <button id="btn-salvar-plano" onclick="salvarPlanoCobranca()" class="flex-[1.4] py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black uppercase tracking-widest">Salvar plano</button>
+            </div>
+        </div>
+    </div>
+
     <script src="menu.js"></script>
 
     <script type="module">
@@ -858,6 +918,9 @@
         window.filtroStatusMens = 'TODOS';
         window.ordenacaoMens = 'NOME';
         window.previewGeracaoFaturas = null;
+        window.planosFinanceirosCache = [];
+        window.turmasFinanceiroCache = [];
+        window.planoEditandoId = null;
 
         function escapeHtml(texto) {
             const div = document.createElement('div');
@@ -923,6 +986,140 @@
         window.chartAcumuladoAno = null;
 
         // Função Genérica de Auditoria
+        function planoFinanceiroPorId(id) {
+            return (window.planosFinanceirosCache || []).find(p => p.id === id) || null;
+        }
+
+        function resolverPlanoAlunoLocal(aluno) {
+            const legado = {
+                id: null,
+                nome: 'Mensalidade padrão',
+                valor_prazo: Number(equipeBaseConfig.prazo || 0),
+                valor_atraso: Number(equipeBaseConfig.atraso || equipeBaseConfig.prazo || 0),
+                origem: 'LEGADO'
+            };
+            if (!equipeDados?.usa_planos_financeiros) return legado;
+
+            // Condição explicitamente definida na ficha do aluno tem prioridade.
+            if (aluno?.plano_financeiro_id) {
+                const direto = planoFinanceiroPorId(aluno.plano_financeiro_id);
+                if (direto && direto.ativo !== false) return { ...direto, origem: aluno.plano_modo === 'MANUAL' ? 'MANUAL' : 'ALUNO' };
+            }
+
+            // Para registros antigos ainda não sincronizados, deriva automaticamente pelas turmas.
+            const planosTurmas = (window.turmasFinanceiroCache || [])
+                .filter(t => t.status !== 'ARQUIVADA' && t.arquivada !== true && Array.isArray(t.alunos_ids) && t.alunos_ids.map(String).includes(String(aluno?.id)))
+                .map(t => planoFinanceiroPorId(t.plano_padrao_id))
+                .filter(p => p && p.ativo !== false)
+                .sort((a,b) => Number(b.valor_prazo || 0) - Number(a.valor_prazo || 0));
+            const padrao = planoFinanceiroPorId(equipeDados?.plano_padrao_id);
+            const custom = planosTurmas[0] || null;
+            if (custom && (!padrao || Number(custom.valor_prazo||0) > Number(padrao.valor_prazo||0))) return { ...custom, origem: 'TURMA' };
+            if (padrao && padrao.ativo !== false) return { ...padrao, origem: 'EQUIPE' };
+            if (custom) return { ...custom, origem: 'TURMA' };
+            return legado;
+        }
+
+        function renderizarPlanosCobranca() {
+            const lista = document.getElementById('lista-planos-cobranca');
+            if (!lista) return;
+            const ativos = (window.planosFinanceirosCache || []).filter(p => p.ativo !== false);
+            const todos = [...(window.planosFinanceirosCache || [])].sort((a,b) => (a.ativo===false)-(b.ativo===false) || String(a.nome||'').localeCompare(String(b.nome||'')));
+            const ativoSistema = equipeDados?.usa_planos_financeiros === true;
+            const badge = document.getElementById('badge-status-planos');
+            const btnToggle = document.getElementById('btn-toggle-planos');
+            if (badge) {
+                badge.textContent = ativoSistema ? 'Planos ativos' : 'Modo legado';
+                badge.className = `px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${ativoSistema ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300'}`;
+            }
+            if (btnToggle) btnToggle.textContent = ativoSistema ? 'Desativar planos' : 'Ativar planos';
+
+            const sel = document.getElementById('select-plano-padrao-equipe');
+            if (sel) {
+                sel.innerHTML = '<option value="">Usar mensalidade geral (fallback)</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
+                sel.value = equipeDados?.plano_padrao_id || '';
+            }
+
+            if (!todos.length) {
+                lista.innerHTML = '<div class="md:col-span-2 xl:col-span-3 card-premium bg-white dark:bg-slate-900 p-8 text-center"><p class="text-sm font-black text-slate-600 dark:text-slate-300">Nenhum plano cadastrado</p><p class="text-xs text-slate-400 mt-1">Crie o primeiro plano. O sistema continuará no modo atual até você ativá-lo.</p></div>';
+                return;
+            }
+            lista.innerHTML = todos.map(p => {
+                const isPadrao = equipeDados?.plano_padrao_id === p.id;
+                const atraso = Number(p.valor_atraso ?? p.valor_prazo ?? 0);
+                return `<div class="card-premium bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 ${p.ativo===false?'opacity-60':''}">
+                    <div class="flex items-start justify-between gap-3"><div class="min-w-0"><div class="flex gap-2 items-center flex-wrap"><h3 class="font-black text-slate-800 dark:text-white truncate">${escapeHtml(p.nome||'Plano')}</h3>${isPadrao?'<span class="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700 text-[8px] font-black uppercase">Padrão</span>':''}${p.ativo===false?'<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[8px] font-black uppercase">Inativo</span>':''}</div><p class="text-2xl font-black text-cyan-600 mt-3">R$ ${floatToStr(Number(p.valor_prazo||0))}<span class="text-[10px] text-slate-400 font-bold">/mês</span></p><p class="text-[10px] text-slate-400 mt-1">Após vencimento: R$ ${floatToStr(atraso)}</p></div><button onclick="abrirModalPlano('${p.id}')" class="shrink-0 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[9px] font-black uppercase">Editar</button></div>
+                </div>`;
+            }).join('');
+        }
+
+        window.abrirModalPlano = function(id = null) {
+            window.planoEditandoId = id;
+            const plano = id ? planoFinanceiroPorId(id) : null;
+            document.getElementById('titulo-modal-plano').textContent = plano ? 'Editar plano de cobrança' : 'Novo plano de cobrança';
+            document.getElementById('plano-nome').value = plano?.nome || '';
+            document.getElementById('plano-valor-prazo').value = plano ? floatToStr(Number(plano.valor_prazo||0)) : '';
+            document.getElementById('plano-valor-atraso').value = plano ? floatToStr(Number(plano.valor_atraso ?? plano.valor_prazo ?? 0)) : '';
+            document.getElementById('plano-ativo').checked = plano ? plano.ativo !== false : true;
+            const m = document.getElementById('modal-plano-cobranca'); m.classList.remove('hidden'); m.classList.add('flex');
+            setTimeout(() => document.getElementById('plano-nome')?.focus(), 80);
+        };
+
+        window.fecharModalPlano = function() {
+            const m=document.getElementById('modal-plano-cobranca'); m.classList.add('hidden'); m.classList.remove('flex'); window.planoEditandoId=null;
+        };
+
+        window.salvarPlanoCobranca = async function() {
+            const nome = document.getElementById('plano-nome').value.trim();
+            const valorPrazo = strToFloat(document.getElementById('plano-valor-prazo').value);
+            let valorAtraso = strToFloat(document.getElementById('plano-valor-atraso').value);
+            const ativo = document.getElementById('plano-ativo').checked;
+            if (!nome) return showToast('Informe o nome do plano.', 'error');
+            if (!(valorPrazo > 0)) return showToast('Informe um valor mensal válido.', 'error');
+            if (!(valorAtraso > 0)) valorAtraso = valorPrazo;
+            if (valorAtraso < valorPrazo) return showToast('O valor após vencimento não pode ser menor que o valor em dia.', 'error');
+            const btn=document.getElementById('btn-salvar-plano'); const txt=btn.textContent; btn.disabled=true; btn.textContent='Salvando...';
+            try {
+                const dados={equipe_id:uid,nome,valor_prazo:valorPrazo,valor_atraso:valorAtraso,tipo:'MENSAL',ativo,atualizado_em:new Date().toISOString()};
+                let id=window.planoEditandoId;
+                if(id) await updateDoc(doc(db,'planos_financeiros',id),dados);
+                else { const ref=await addDoc(collection(db,'planos_financeiros'),{...dados,criado_em:new Date().toISOString()}); id=ref.id; }
+                if (!equipeDados?.plano_padrao_id && ativo) {
+                    await updateDoc(doc(db,'equipes',uid),{plano_padrao_id:id});
+                    equipeDados.plano_padrao_id=id;
+                }
+                registrarLogAuditoria('PLANO_COBRANCA', `${window.planoEditandoId?'Atualizou':'Criou'} plano ${nome} (R$ ${valorPrazo}).`);
+                fecharModalPlano(); await carregarPlanosFinanceiros(); showToast('Plano salvo com sucesso.', 'success');
+            } catch(e){ console.error(e); showToast('Erro ao salvar o plano de cobrança.', 'error'); }
+            finally{btn.disabled=false;btn.textContent=txt;}
+        };
+
+        window.salvarPlanoPadraoEquipe = async function(id) {
+            try { await updateDoc(doc(db,'equipes',uid),{plano_padrao_id:id||null}); equipeDados.plano_padrao_id=id||null; renderizarPlanosCobranca(); showToast('Plano padrão atualizado.','success'); }
+            catch(e){ console.error(e); showToast('Erro ao atualizar o plano padrão.','error'); }
+        };
+
+        window.toggleSistemaPlanos = async function() {
+            const ativar = equipeDados?.usa_planos_financeiros !== true;
+            if (ativar) {
+                const padrao = planoFinanceiroPorId(equipeDados?.plano_padrao_id);
+                if (!padrao || padrao.ativo === false) return showToast('Cadastre e selecione um plano padrão ativo antes de ativar o recurso.', 'error');
+                if (!confirm('Ativar Planos de Cobrança? As mensalidades futuras passarão a usar o plano do aluno/turma. Cobranças já geradas não serão alteradas.')) return;
+            } else if (!confirm('Desativar Planos de Cobrança? As próximas mensalidades voltarão a usar o valor geral da academia. Nenhuma cobrança existente será alterada.')) return;
+            try {
+                await updateDoc(doc(db,'equipes',uid),{usa_planos_financeiros:ativar,regra_multiplas_turmas:'MAIOR_VALOR'});
+                equipeDados.usa_planos_financeiros=ativar; equipeDados.regra_multiplas_turmas='MAIOR_VALOR';
+                renderizarPlanosCobranca(); showToast(ativar?'Planos de Cobrança ativados.':'Planos de Cobrança desativados.','success');
+            } catch(e){ console.error(e); showToast('Não foi possível alterar o modo de cobrança.','error'); }
+        };
+
+        async function carregarPlanosFinanceiros() {
+            if (!uid) return;
+            const snap=await getDocs(query(collection(db,'planos_financeiros'),where('equipe_id','==',uid)));
+            window.planosFinanceirosCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+            renderizarPlanosCobranca();
+        }
+
         async function registrarLogAuditoria(acao, detalhes) {
             try {
                 await addDoc(collection(db, "auditoria"), {
@@ -1188,6 +1385,7 @@
                 document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
                 document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
                 await carregarInfoEquipe(user);
+                await carregarPlanosFinanceiros();
                 document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
                 document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
                 await carregarDados();
@@ -1600,14 +1798,19 @@ window.salvarSenhaSaque = async function() {
         // GERAÇÃO DE FATURAS COM PREVIEW + SNAPSHOT
         // ==========================================
         window.gerarFaturas = function() {
-            if (equipeBaseConfig.prazo <= 0) return showToast("Defina o valor da mensalidade antes de gerar faturas.", "error");
+            if (!equipeDados?.usa_planos_financeiros && equipeBaseConfig.prazo <= 0) return showToast("Defina o valor da mensalidade antes de gerar faturas.", "error");
+            if (equipeDados?.usa_planos_financeiros && !planoFinanceiroPorId(equipeDados?.plano_padrao_id) && !(window.planosFinanceirosCache||[]).some(p=>p.ativo!==false)) return showToast("Cadastre um plano de cobrança antes de gerar faturas.", "error");
             const mes = document.getElementById('filtro-mes').value;
             const ano = document.getElementById('filtro-ano').value;
             const mesAno = `${ano}-${mes}`;
             const existentesIds = new Set(financeiroMesCache.filter(f => f.tipo === 'MENSALIDADE').map(f => f.aluno_id));
             const novas = alunosCache.filter(a => !existentesIds.has(a.id));
             const isentos = novas.filter(a => Number(a.bolsa_perc || 0) >= 100).length;
-            const valorPrevisto = novas.reduce((tot,a) => tot + (Number(a.bolsa_perc||0)>=100 ? 0 : equipeBaseConfig.prazo * (1-Number(a.bolsa_perc||0)/100)),0);
+            const valorPrevisto = novas.reduce((tot,a) => {
+                if (Number(a.bolsa_perc||0)>=100) return tot;
+                const plano = resolverPlanoAlunoLocal(a);
+                return tot + Number(plano.valor_prazo||0) * (1-Number(a.bolsa_perc||0)/100);
+            },0);
             if (!novas.length) return showToast("Todas as mensalidades dos alunos ativos já foram geradas para este mês.", "info");
 
             window.previewGeracaoFaturas = { mes, ano, mesAno, novas };
@@ -1636,8 +1839,9 @@ window.salvarSenhaSaque = async function() {
                     const diaOriginal = Number(aluno.dia_vencimento || 10);
                     const vencimento = obterDataVencimento(preview.ano, preview.mes, diaOriginal);
                     const status = bolsa >= 100 ? 'ISENTO' : 'PENDENTE';
-                    const valorPrazo = status === 'ISENTO' ? 0 : Number(equipeBaseConfig.prazo) * (1 - bolsa/100);
-                    const valorAtraso = status === 'ISENTO' ? 0 : Number(equipeBaseConfig.atraso || equipeBaseConfig.prazo) * (1 - bolsa/100);
+                    const planoResolvido = resolverPlanoAlunoLocal(aluno);
+                    const valorPrazo = status === 'ISENTO' ? 0 : Number(planoResolvido.valor_prazo || 0) * (1 - bolsa/100);
+                    const valorAtraso = status === 'ISENTO' ? 0 : Number(planoResolvido.valor_atraso ?? planoResolvido.valor_prazo ?? 0) * (1 - bolsa/100);
                     const faturaId = `mens_${uid}_${aluno.id}_${preview.mesAno}`;
                     const ref = doc(db, 'financeiro', faturaId);
                     const data = {
@@ -1646,7 +1850,9 @@ window.salvarSenhaSaque = async function() {
                         valor_atraso_snapshot: valorAtraso, bolsa_aplicada: bolsa,
                         dia_vencimento_snapshot: Math.min(diaOriginal || 10, new Date(Number(preview.ano), Number(preview.mes), 0).getDate()),
                         data_vencimento: formatarDataISO(vencimento), mes_ano: preview.mesAno,
-                        descricao: `Mensalidade - ${aluno.nome}`, aluno_nome_snapshot: aluno.nome || '', telefone_snapshot: aluno.telefone || '', data_criacao: new Date().toISOString(), versao_fatura: 2
+                        descricao: `Mensalidade - ${aluno.nome}`, aluno_nome_snapshot: aluno.nome || '', telefone_snapshot: aluno.telefone || '',
+                        plano_financeiro_id_snapshot: planoResolvido.id || null, plano_nome_snapshot: planoResolvido.nome || 'Mensalidade padrão', plano_origem_snapshot: planoResolvido.origem || 'LEGADO',
+                        data_criacao: new Date().toISOString(), versao_fatura: 3
                     };
                     if (!temAsaas && status !== 'ISENTO' && equipeBaseConfig.chave_pix) data.chave_pix_manual = equipeBaseConfig.chave_pix;
                     return { aluno, ref, data, status, valorPrazo };
@@ -1695,6 +1901,13 @@ window.salvarSenhaSaque = async function() {
             const snapAlunos = await getDocs(qAlunos);
             alunosTodosCache = snapAlunos.docs.map(d => ({ id: d.id, ...d.data() }));
             alunosCache = alunosTodosCache.filter(a => String(a.status || '').toUpperCase() === 'ATIVO');
+
+            // Turmas são carregadas para resolver automaticamente o plano de alunos ainda não sincronizados.
+            if (equipeDados?.usa_planos_financeiros) {
+                const snapTurmas = await getDocs(query(collection(db, 'turmas'), where('equipe_id', '==', uid)));
+                window.turmasFinanceiroCache = snapTurmas.docs.map(d => ({id:d.id,...d.data()}));
+                if (!window.planosFinanceirosCache?.length) await carregarPlanosFinanceiros();
+            } else window.turmasFinanceiroCache = [];
 
             const qFinMes = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
             const snapFinMes = await getDocs(qFinMes);
@@ -1831,7 +2044,7 @@ window.salvarSenhaSaque = async function() {
             });
         }
 
-window.abrirModalAcoes = function(alunoId, calcData) {
+        window.abrirModalAcoes = function(alunoId, calcData) {
             const aluno = alunosTodosCache.find(a => a.id === alunoId) || { id:alunoId, nome:calcData?.reg?.aluno_nome_snapshot || String(calcData?.reg?.descricao||'').replace(/^Mensalidade\s*-\s*/i,'') || 'Aluno não localizado', telefone:calcData?.reg?.telefone_snapshot || '', bolsa_perc:calcData?.reg?.bolsa_aplicada || 0, dia_vencimento:calcData?.reg?.dia_vencimento_snapshot || 10, _somenteHistorico:true };
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
 
@@ -1847,10 +2060,6 @@ window.abrirModalAcoes = function(alunoId, calcData) {
                 
                 btnRegPag.disabled = true; btnRegPag.innerHTML = "✅ Pagamento Registrado";
                 btnRegPag.className = "w-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-slate-200 dark:border-slate-700";
-
-                // 🔥 CORREÇÃO: Garante que o botão DESFAZER sempre fique LIVRE e clicável
-                btnDesfazer.disabled = false;
-                btnDesfazer.className = "flex-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors cursor-pointer";
                 
                 btnAsaas.classList.add('hidden');
 
@@ -1859,11 +2068,17 @@ window.abrirModalAcoes = function(alunoId, calcData) {
                 let forma = calcData.reg.forma_pagamento;
                 if(forma === 'CREDIT_CARD') selectForma.value = 'CREDIT_CARD'; else if(forma === 'BOLETO') selectForma.value = 'BOLETO'; else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; else if(forma) selectForma.value = forma; else selectForma.value = 'PIX';
                 
-                // Trava apenas os inputs para não editar a data acidentalmente
-                if(calcData.status === 'PAGO') {
-                    selectForma.disabled = true; inputData.disabled = true;
-                } else { 
-                    selectForma.disabled = false; inputData.disabled = false; 
+                // Trava os inputs de data e forma para não editar acidentalmente
+                selectForma.disabled = true; 
+                inputData.disabled = true;
+
+                // 🔥 TRAVA DE SEGURANÇA REATIVADA: Bloqueia se for do Asaas, libera se for manual
+                if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
+                    btnDesfazer.disabled = true;
+                    btnDesfazer.className = "flex-1 bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
+                } else {
+                    btnDesfazer.disabled = false;
+                    btnDesfazer.className = "flex-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors cursor-pointer";
                 }
 
             } else {
