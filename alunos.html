@@ -464,6 +464,16 @@
 
                 <!-- ABA FINANCEIRO -->
                 <div id="aba-financeiro" class="aba-content hidden space-y-5">
+                    <div id="box-plano-financeiro" class="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div class="min-w-0"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Plano de cobrança</p><p id="aluno-plano-resumo" class="text-sm font-black text-slate-800 mt-1">Mensalidade padrão da academia</p><p id="aluno-plano-origem" class="text-[10px] text-slate-400 mt-1">Definido automaticamente.</p></div>
+                            <button id="btn-personalizar-plano" type="button" onclick="window.togglePersonalizarPlano()" class="px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-[9px] font-black uppercase tracking-widest">Personalizar condição</button>
+                        </div>
+                        <div id="box-personalizar-plano" class="hidden mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div><label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Modo</label><select id="aluno-plano-modo" onchange="window.atualizarModoPlanoAluno()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700"><option value="AUTO">Automático pela turma</option><option value="MANUAL">Plano específico</option></select></div>
+                            <div><label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Plano específico</label><select id="aluno-plano-id" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700"><option value="">Plano padrão da academia</option></select></div>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div>
                             <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label>
@@ -736,6 +746,8 @@
         window.idadeAtual = 0;
         window.ordemDasAbas = [];
         window.abaIndexAtual = 0;
+        window.planosFinanceirosCache = [];
+        window.turmasPlanosCache = [];
         
         let chartMensal = null;
         let chartAnual = null;
@@ -1152,6 +1164,41 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
         }
 
         // ===================== BUSCAR ALUNOS =====================
+        function planoAlunoPorId(id) { return (window.planosFinanceirosCache||[]).find(p=>p.id===id)||null; }
+        function planoAutomaticoEstimado(aluno) {
+            if (!window.dadosEquipeCompleto?.usa_planos_financeiros) return null;
+            const candidatos=(window.turmasPlanosCache||[]).filter(t=>t.status!=='ARQUIVADA'&&t.arquivada!==true&&Array.isArray(t.alunos_ids)&&t.alunos_ids.map(String).includes(String(aluno?.id)))
+                .map(t=>planoAlunoPorId(t.plano_padrao_id)).filter(p=>p&&p.ativo!==false).sort((a,b)=>Number(b.valor_prazo||0)-Number(a.valor_prazo||0));
+            const custom=candidatos[0]||null; const padrao=planoAlunoPorId(window.dadosEquipeCompleto?.plano_padrao_id)||null;
+            if(custom && (!padrao || Number(custom.valor_prazo||0)>Number(padrao.valor_prazo||0))) return custom;
+            return padrao || custom || null;
+        }
+        async function carregarPlanosParaAlunos() {
+            if (!window.teamId) return;
+            const [sp,st]=await Promise.all([
+                getDocs(query(collection(db,'planos_financeiros'),where('equipe_id','==',window.teamId))),
+                getDocs(query(collection(db,'turmas'),where('equipe_id','==',window.teamId)))
+            ]);
+            window.planosFinanceirosCache=sp.docs.map(d=>({id:d.id,...d.data()}));
+            window.turmasPlanosCache=st.docs.map(d=>({id:d.id,...d.data()}));
+            const sel=document.getElementById('aluno-plano-id'); if(sel) sel.innerHTML='<option value="">Plano padrão da academia</option>'+window.planosFinanceirosCache.filter(p=>p.ativo!==false).map(p=>`<option value="${p.id}">${String(p.nome||'Plano')} — R$ ${Number(p.valor_prazo||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</option>`).join('');
+        }
+        function preencherPlanoFinanceiroAluno(aluno) {
+            const ativo=window.dadosEquipeCompleto?.usa_planos_financeiros===true;
+            const box=document.getElementById('box-plano-financeiro'); if(!box)return;
+            const btn=document.getElementById('btn-personalizar-plano');
+            const modo=document.getElementById('aluno-plano-modo'); const sel=document.getElementById('aluno-plano-id');
+            if(!ativo){ document.getElementById('aluno-plano-resumo').textContent='Mensalidade padrão da academia'; document.getElementById('aluno-plano-origem').textContent='Planos de Cobrança ainda não estão ativados no Financeiro.'; if(btn)btn.classList.add('hidden'); document.getElementById('box-personalizar-plano')?.classList.add('hidden'); return; }
+            if(btn)btn.classList.remove('hidden');
+            const manual=aluno?.plano_modo==='MANUAL';
+            const p=manual ? planoAlunoPorId(aluno?.plano_financeiro_id) : (planoAutomaticoEstimado(aluno)||planoAlunoPorId(aluno?.plano_financeiro_id));
+            document.getElementById('aluno-plano-resumo').textContent=p?`${p.nome} — R$ ${Number(p.valor_prazo||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}/mês`:'Mensalidade padrão da academia';
+            document.getElementById('aluno-plano-origem').textContent=manual?'Condição definida manualmente para este aluno.':(p?'Definido automaticamente pela turma ou plano padrão da academia.':'Usando mensalidade geral como fallback.');
+            if(modo)modo.value=manual?'MANUAL':'AUTO'; if(sel)sel.value=manual?(aluno?.plano_financeiro_id||''):(p?.id||''); window.atualizarModoPlanoAluno();
+        }
+        window.togglePersonalizarPlano=function(){document.getElementById('box-personalizar-plano')?.classList.toggle('hidden');};
+        window.atualizarModoPlanoAluno=function(){const manual=document.getElementById('aluno-plano-modo')?.value==='MANUAL';const sel=document.getElementById('aluno-plano-id');if(sel){sel.disabled=!manual;sel.classList.toggle('opacity-60',!manual);}};
+
         async function buscarAlunosFirebase(forceRefresh = false) { 
             const table = document.getElementById('tabela-alunos'); 
             if(table) table.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-slate-400 font-bold">Buscando alunos no banco de dados...</td></tr>';
@@ -1360,6 +1407,7 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
                 }
                 if(vencimentoEl) vencimentoEl.value = aluno.dia_vencimento || '10';
                 if(statusEl) statusEl.value = aluno.status || 'ATIVO';
+                preencherPlanoFinanceiroAluno(aluno);
                 
                 // Preencher responsável (se menor de idade)
                 if (window.idadeAtual < 18) {
@@ -1496,6 +1544,7 @@ const simNao = (val) => val === true || val === 'Sim' || val === 'sim' || val ==
             if(blocoEmerg) blocoEmerg.classList.add('hidden'); 
             
             window.idadeAtual = 0; 
+            preencherPlanoFinanceiroAluno({id:null,plano_modo:'AUTO',plano_financeiro_id:null});
             atualizarAbasPorPlano();
             window.mudarAba('aba-pessoal'); 
             const modalAluno = document.getElementById('modal-aluno');
@@ -1743,7 +1792,15 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 emergencia_telefone: telEmergencia, 
                 emergencia_parentesco: parentescoEmergencia, 
                 bolsa_perc: parseInt(document.getElementById('aluno-bolsa')?.value || '0'), 
-                dia_vencimento: parseInt(document.getElementById('aluno-vencimento')?.value || '10'), 
+                dia_vencimento: parseInt(document.getElementById('aluno-vencimento')?.value || '10'),
+                ...(window.dadosEquipeCompleto?.usa_planos_financeiros ? {
+                    plano_modo: document.getElementById('aluno-plano-modo')?.value === 'MANUAL' ? 'MANUAL' : 'AUTO',
+                    plano_financeiro_id: document.getElementById('aluno-plano-modo')?.value === 'MANUAL'
+                        ? (document.getElementById('aluno-plano-id')?.value || null)
+                        : (() => { const p=planoAutomaticoEstimado({id:window.alunoEditandoId}); const padrao=planoAlunoPorId(window.dadosEquipeCompleto?.plano_padrao_id); return p && (!padrao || p.id!==padrao.id) ? p.id : null; })(),
+                    plano_origem: document.getElementById('aluno-plano-modo')?.value === 'MANUAL' ? 'MANUAL' : 'AUTO',
+                    plano_atualizado_em: new Date().toISOString()
+                } : {}),
                 status: document.getElementById('aluno-status')?.value || 'ATIVO', 
                 lgpd_concordo: lgpdConcordo ? lgpdConcordo.checked : false, 
                 lgpd_redes: document.getElementById('lgpd-redes')?.checked || false, 
@@ -2252,6 +2309,7 @@ onAuthStateChanged(auth, async (user) => {
                                 }
                             }
                             
+                            await carregarPlanosParaAlunos();
                             await buscarAlunosFirebase(false);
                             window.mudarAbaDashboard('lista');
                     } else {
