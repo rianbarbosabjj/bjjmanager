@@ -718,6 +718,7 @@
                                         <span id="turma-horario-badge" class="px-2.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-100">--</span>
                                         <span id="turma-idade-badge" class="px-2.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase bg-slate-100 text-slate-600 border border-slate-200">--</span>
                                         <span id="turma-professor-badge" class="px-2.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase bg-indigo-50 text-indigo-700 border border-indigo-100">Sem professor</span>
+                                <span id="turma-plano-badge" class="px-2.5 py-1 rounded-lg bg-cyan-50 text-cyan-700 border border-cyan-100 text-[9px] font-black uppercase tracking-wider hidden"></span>
                                     </div>
                                 </div>
                                 <div class="turma-detail-actions flex items-start gap-2 shrink-0">
@@ -805,6 +806,13 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Professor responsável</label><input type="text" id="turma-professor" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="Ex: Carlos Silva"></div>
                     <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Capacidade</label><input type="number" min="0" id="turma-capacidade" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="0 = sem limite"></div>
+                </div>
+                <div id="bloco-plano-turma">
+                    <label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Plano de cobrança padrão</label>
+                    <select id="turma-plano-padrao" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700">
+                        <option value="">Plano padrão da academia</option>
+                    </select>
+                    <p id="turma-plano-ajuda" class="text-[9px] text-slate-400 mt-1.5">Quando os planos estiverem ativados, novos vínculos desta turma poderão definir automaticamente a cobrança do aluno.</p>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="block text-[9px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Idade mínima</label><input type="number" min="0" id="turma-idade-min" class="focus-ring w-full h-12 px-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-400 font-semibold text-slate-700" placeholder="Ex: 4"></div>
@@ -908,6 +916,7 @@
         let loteSelecionados = new Set();
         let distribuicaoPreview = [];
         let usuarioEhSuperAdmin = false;
+        let planosFinanceirosCache = [];
 
         const CACHE_TTL = 5 * 60 * 1000;
         const CACHE_KEYS = { TURMAS: 'bjj_turmas_cache', ALUNOS: 'bjj_alunos_turmas_cache' };
@@ -1124,6 +1133,48 @@
         }
 
         // ================= DADOS =================
+        function planoPorId(id) { return planosFinanceirosCache.find(p => p.id === id) || null; }
+        function formatarPlanoTurma(turma) {
+            if (!equipeDados?.usa_planos_financeiros) return null;
+            const p = planoPorId(turma?.plano_padrao_id) || planoPorId(equipeDados?.plano_padrao_id);
+            return p && p.ativo !== false ? p : null;
+        }
+        function atualizarSelectPlanosTurma() {
+            const sel=document.getElementById('turma-plano-padrao'); if(!sel) return;
+            const ativos=planosFinanceirosCache.filter(p=>p.ativo!==false).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
+            sel.innerHTML='<option value="">Plano padrão da academia</option>'+ativos.map(p=>`<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${Number(p.valor_prazo||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</option>`).join('');
+            sel.disabled = equipeDados?.usa_planos_financeiros !== true;
+            const ajuda=document.getElementById('turma-plano-ajuda'); if(ajuda) ajuda.textContent = sel.disabled ? 'Planos de Cobrança ainda não estão ativados no Financeiro. A turma continuará usando a mensalidade geral.' : 'O aluno seguirá este plano automaticamente, salvo quando possuir uma condição financeira manual.';
+        }
+        async function carregarPlanosFinanceiros() {
+            const snap=await getDocs(query(collection(db,'planos_financeiros'),where('equipe_id','==',uid)));
+            planosFinanceirosCache=snap.docs.map(d=>({id:d.id,...d.data()})); atualizarSelectPlanosTurma();
+        }
+        async function sincronizarPlanoAutomaticoAluno(alunoId) {
+            if (!equipeDados?.usa_planos_financeiros || !alunoId) return;
+            const aluno=alunosCache.find(a=>String(a.id)===String(alunoId));
+            if (!aluno || aluno.plano_modo === 'MANUAL') return;
+            const candidatos=turmasCache
+                .filter(t=>!isArquivada(t) && idsAlunosDaTurma(t).map(String).includes(String(alunoId)))
+                .map(t=>planoPorId(t.plano_padrao_id))
+                .filter(p=>p && p.ativo!==false)
+                .sort((a,b)=>Number(b.valor_prazo||0)-Number(a.valor_prazo||0));
+            const custom=candidatos[0] || null;
+            const padrao=planoPorId(equipeDados?.plano_padrao_id);
+            // Quando o plano padrão da academia vence a comparação, mantemos plano_financeiro_id nulo.
+            // Isso evita gravar um ID padrão que pode ficar obsoleto se a academia trocar o plano padrão depois.
+            const escolhido = custom && (!padrao || Number(custom.valor_prazo||0) > Number(padrao.valor_prazo||0)) ? custom : null;
+            const novoId=escolhido?.id || null;
+            if ((aluno.plano_financeiro_id||null) === novoId && aluno.plano_modo === 'AUTO') return;
+            await updateDoc(doc(db,'alunos',alunoId),{
+                plano_financeiro_id: novoId,
+                plano_modo: 'AUTO',
+                plano_origem: novoId ? 'TURMA' : (padrao ? 'EQUIPE' : 'LEGADO'),
+                plano_atualizado_em: new Date().toISOString()
+            });
+            aluno.plano_financeiro_id=novoId; aluno.plano_modo='AUTO';
+        }
+
         async function carregarAlunos(force = false) {
             if (!force) { const cached = getFromCache(CACHE_KEYS.ALUNOS); if (cached) { alunosCache = cached; return; } }
             const q = query(collection(db, 'alunos'), where('equipe_id', '==', uid), where('status', '==', 'ATIVO'));
@@ -1316,6 +1367,9 @@
             document.getElementById('turma-horario-badge').textContent = `${formatarDiasSemanas(turmaSelecionada.dias_semana)} · ${formatarHorarioBox(turmaSelecionada.hora_inicio,turmaSelecionada.hora_fim)}`;
             document.getElementById('turma-idade-badge').textContent = formatarRegraIdade(turmaSelecionada.idade_min,turmaSelecionada.idade_max);
             document.getElementById('turma-professor-badge').textContent = turmaSelecionada.professor_responsavel || 'Sem professor';
+            const planoTurma = formatarPlanoTurma(turmaSelecionada);
+            const badgePlano = document.getElementById('turma-plano-badge');
+            if (badgePlano) { if (planoTurma) { badgePlano.textContent = `${planoTurma.nome} · R$ ${Number(planoTurma.valor_prazo||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}`; badgePlano.classList.remove('hidden'); } else badgePlano.classList.add('hidden'); }
             const qtd = qtdAtivosNaTurma(turmaSelecionada), cap = capacidadeTurma(turmaSelecionada);
             document.getElementById('turma-contagem').textContent = qtd;
             document.getElementById('turma-capacidade-mini').textContent = cap > 0 ? `de ${cap}` : 'sem limite';
@@ -1339,6 +1393,7 @@
                 document.getElementById('titulo-form').textContent = 'Nova turma';
                 document.getElementById('btn-salvar-turma').textContent = 'Criar turma';
                 ['turma-nome','turma-professor','turma-capacidade','turma-idade-min','turma-idade-max','turma-hora-inicio','turma-hora-fim'].forEach(id=>document.getElementById(id).value='');
+                document.getElementById('turma-plano-padrao').value='';
                 document.querySelectorAll('.chk-dia').forEach(c=>c.checked=false);
             }
             setTimeout(()=>document.getElementById('turma-nome').focus(),100);
@@ -1364,7 +1419,8 @@
                 const matriculados = atual ? qtdAtivosNaTurma(atual) : 0;
                 if (matriculados > capacidade) return showToast(`A turma já possui ${matriculados} alunos. Defina capacidade igual ou superior.`, 'warning');
             }
-            const dados = { nome, professor_responsavel: professor, capacidade, idade_min:min, idade_max:max, dias_semana, hora_inicio, hora_fim };
+            const plano_padrao_id = document.getElementById('turma-plano-padrao')?.value || null;
+            const dados = { nome, professor_responsavel: professor, capacidade, idade_min:min, idade_max:max, dias_semana, hora_inicio, hora_fim, plano_padrao_id };
             const conflitos = detectarConflitos(dados, turmaEditandoId);
             if (conflitos.length) {
                 const box = document.getElementById('alerta-conflito'); box.textContent = conflitos.join(' '); box.classList.remove('hidden');
@@ -1372,7 +1428,12 @@
             }
             const btn=document.getElementById('btn-salvar-turma'), original=btn.textContent;btn.disabled=true;btn.textContent='Salvando...';
             try {
-                if (turmaEditandoId) { await updateDoc(doc(db,'turmas',turmaEditandoId), dados); showToast('Turma atualizada.','success'); await registrarAtividadeEquipe('TURMA_EDITADA'); }
+                if (turmaEditandoId) { 
+                    await updateDoc(doc(db,'turmas',turmaEditandoId), dados); 
+                    const atual=turmasCache.find(t=>t.id===turmaEditandoId); 
+                    if(atual){ Object.assign(atual,dados); for(const alunoId of idsAtivosDaTurma(atual)) await sincronizarPlanoAutomaticoAluno(alunoId); }
+                    showToast('Turma atualizada.','success'); await registrarAtividadeEquipe('TURMA_EDITADA'); 
+                }
                 else { const ref=await addDoc(collection(db,'turmas'),{...dados,equipe_id:uid,alunos_ids:[],status:'ATIVA',data_criacao:new Date().toISOString()}); showToast('Turma criada.','success'); await registrarAtividadeEquipe('TURMA_CRIADA'); turmaSelecionada={id:ref.id,...dados,equipe_id:uid,alunos_ids:[],status:'ATIVA'}; }
                 fecharModalTurma(); clearCache(); await carregarTurmas(true);
             } catch(e){console.error(e);showToast('Erro ao salvar turma.','error');}
@@ -1382,7 +1443,7 @@
         window.editarTurma = function(id) {
             const t=turmasCache.find(x=>x.id===id);if(!t)return; abrirModalTurma(true); turmaEditandoId=id;
             document.getElementById('titulo-form').textContent='Editar turma'; document.getElementById('btn-salvar-turma').textContent='Salvar alterações';
-            document.getElementById('turma-nome').value=t.nome||'';document.getElementById('turma-professor').value=t.professor_responsavel||'';document.getElementById('turma-capacidade').value=t.capacidade||'';document.getElementById('turma-idade-min').value=t.idade_min||'';document.getElementById('turma-idade-max').value=(t.idade_max===999?'':t.idade_max||'');document.getElementById('turma-hora-inicio').value=t.hora_inicio||'';document.getElementById('turma-hora-fim').value=t.hora_fim||'';
+            document.getElementById('turma-nome').value=t.nome||'';document.getElementById('turma-professor').value=t.professor_responsavel||'';document.getElementById('turma-capacidade').value=t.capacidade||'';document.getElementById('turma-idade-min').value=t.idade_min||'';document.getElementById('turma-idade-max').value=(t.idade_max===999?'':t.idade_max||'');document.getElementById('turma-hora-inicio').value=t.hora_inicio||'';document.getElementById('turma-hora-fim').value=t.hora_fim||'';document.getElementById('turma-plano-padrao').value=t.plano_padrao_id||'';
             document.querySelectorAll('.chk-dia').forEach(c=>c.checked=false);(t.dias_semana||[]).forEach(d=>{const c=document.querySelector(`.chk-dia[value="${Number(d)}"]`);if(c)c.checked=true;});
         };
         window.editarTurmaSelecionada=()=>{if(turmaSelecionada){fecharMenuTurmaDetalhe();editarTurma(turmaSelecionada.id);}};
@@ -1430,9 +1491,9 @@
             if(!turmaSelecionada)return;if(isArquivada(turmaSelecionada))return showToast('Restaure a turma antes de matricular alunos.','warning');const id=alunoSelecionadoBuscaId;if(!id)return showToast('Selecione um aluno nos resultados da busca.','warning');if(turmaLotada(turmaSelecionada))return showToast('Esta turma atingiu a capacidade definida.','warning');
             const conflitosAluno = conflitosDeHorarioDoAluno(id, turmaSelecionada);
             if (conflitosAluno.length && !confirm(`Este aluno já está matriculado em ${conflitosAluno.map(t=>t.nome).join(', ')}, com horário sobreposto.\n\nDeseja matricular mesmo assim?`)) return;
-            try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayUnion(id)});turmaSelecionada.alunos_ids=[...(turmaSelecionada.alunos_ids||[]),id];showToast('Aluno matriculado.','success');await registrarAtividadeEquipe('ALUNO_MATRICULADO_TURMA');document.getElementById('input-busca-matricular').value='';alunoSelecionadoBuscaId=null;clearCache();await carregarTurmas(true);}catch(e){showToast('Erro ao matricular aluno.','error');}
+            try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayUnion(id)});turmaSelecionada.alunos_ids=[...(turmaSelecionada.alunos_ids||[]),id];await sincronizarPlanoAutomaticoAluno(id);showToast('Aluno matriculado.','success');await registrarAtividadeEquipe('ALUNO_MATRICULADO_TURMA');document.getElementById('input-busca-matricular').value='';alunoSelecionadoBuscaId=null;clearCache();await carregarTurmas(true);}catch(e){showToast('Erro ao matricular aluno.','error');}
         };
-        window.removerAlunoDaTurma=async function(alunoId){if(!turmaSelecionada||!confirm('Remover este aluno da turma?'))return;try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayRemove(alunoId)});showToast('Aluno removido da turma.','success');await registrarAtividadeEquipe('ALUNO_REMOVIDO_TURMA');turmaSelecionada.alunos_ids=(turmaSelecionada.alunos_ids||[]).filter(id=>id!==alunoId);clearCache();await carregarTurmas(true);}catch(e){showToast('Erro ao remover aluno.','error');}};
+        window.removerAlunoDaTurma=async function(alunoId){if(!turmaSelecionada||!confirm('Remover este aluno da turma?'))return;try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayRemove(alunoId)});showToast('Aluno removido da turma.','success');await registrarAtividadeEquipe('ALUNO_REMOVIDO_TURMA');turmaSelecionada.alunos_ids=(turmaSelecionada.alunos_ids||[]).filter(id=>id!==alunoId);await sincronizarPlanoAutomaticoAluno(alunoId);clearCache();await carregarTurmas(true);}catch(e){showToast('Erro ao remover aluno.','error');}};
 
         // ================= MATRÍCULA EM LOTE =================
         window.abrirModalMatriculaLote=function(apenasSemTurma=false){
@@ -1449,13 +1510,13 @@
             if(!turmaSelecionada||!loteSelecionados.size)return showToast('Selecione pelo menos um aluno.','warning');const cap=capacidadeTurma(turmaSelecionada),atuais=qtdAtivosNaTurma(turmaSelecionada);if(cap>0&&atuais+loteSelecionados.size>cap)return showToast(`A turma comporta mais ${Math.max(0,cap-atuais)} aluno(s).`,'warning');
             const comConflito = [...loteSelecionados].filter(id => conflitosDeHorarioDoAluno(id, turmaSelecionada).length > 0);
             if (comConflito.length && !confirm(`${comConflito.length} aluno(s) selecionado(s) possuem outra turma em horário sobreposto.\n\nDeseja continuar mesmo assim?`)) return;
-            try{await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayUnion(...loteSelecionados)});showToast(`${loteSelecionados.size} aluno(s) matriculado(s).`,'success');await registrarAtividadeEquipe('MATRICULA_TURMA_EM_LOTE');fecharModalMatriculaLote();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro na matrícula em lote.','error');}
+            try{const idsLote=[...loteSelecionados];await updateDoc(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayUnion(...idsLote)});turmaSelecionada.alunos_ids=[...new Set([...(turmaSelecionada.alunos_ids||[]),...idsLote])];for(const alunoId of idsLote) await sincronizarPlanoAutomaticoAluno(alunoId);showToast(`${idsLote.length} aluno(s) matriculado(s).`,'success');await registrarAtividadeEquipe('MATRICULA_TURMA_EM_LOTE');fecharModalMatriculaLote();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro na matrícula em lote.','error');}
         };
 
         // ================= TRANSFERÊNCIA ATÔMICA =================
         window.abrirModalTrocar=function(id,nome){alunoParaTrocaId=id;document.getElementById('lbl-atleta-troca').textContent=nome;const s=document.getElementById('select-nova-turma');s.innerHTML='<option value="">Selecione uma turma...</option>';turmasCache.filter(t=>t.id!==turmaSelecionada?.id&&!isArquivada(t)&&!turmaLotada(t)).forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=`${t.nome} (${qtdAtivosNaTurma(t)}${capacidadeTurma(t)>0?'/'+capacidadeTurma(t):''})`;s.appendChild(o);});const m=document.getElementById('modal-trocar');m.classList.remove('hidden');m.classList.add('flex');};
         window.fecharModalTrocar=function(){const m=document.getElementById('modal-trocar');m.classList.add('hidden');m.classList.remove('flex');alunoParaTrocaId=null;};
-        window.confirmarTroca=async function(){const novaId=document.getElementById('select-nova-turma').value;if(!novaId)return showToast('Selecione a turma de destino.','warning');if(!turmaSelecionada||!alunoParaTrocaId)return;const dest=turmasCache.find(t=>t.id===novaId);if(turmaLotada(dest))return showToast('A turma de destino está lotada.','warning');showLoading();try{const batch=writeBatch(db);batch.update(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayRemove(alunoParaTrocaId)});batch.update(doc(db,'turmas',novaId),{alunos_ids:arrayUnion(alunoParaTrocaId)});await batch.commit();showToast('Aluno transferido.','success');await registrarAtividadeEquipe('ALUNO_TRANSFERIDO_TURMA');fecharModalTrocar();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro ao transferir aluno.','error');}finally{hideLoading();}};
+        window.confirmarTroca=async function(){const novaId=document.getElementById('select-nova-turma').value;if(!novaId)return showToast('Selecione a turma de destino.','warning');if(!turmaSelecionada||!alunoParaTrocaId)return;const dest=turmasCache.find(t=>t.id===novaId);if(turmaLotada(dest))return showToast('A turma de destino está lotada.','warning');showLoading();try{const batch=writeBatch(db);batch.update(doc(db,'turmas',turmaSelecionada.id),{alunos_ids:arrayRemove(alunoParaTrocaId)});batch.update(doc(db,'turmas',novaId),{alunos_ids:arrayUnion(alunoParaTrocaId)});await batch.commit();turmaSelecionada.alunos_ids=(turmaSelecionada.alunos_ids||[]).filter(id=>id!==alunoParaTrocaId);dest.alunos_ids=[...new Set([...(dest.alunos_ids||[]),alunoParaTrocaId])];await sincronizarPlanoAutomaticoAluno(alunoParaTrocaId);showToast('Aluno transferido.','success');await registrarAtividadeEquipe('ALUNO_TRANSFERIDO_TURMA');fecharModalTrocar();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro ao transferir aluno.','error');}finally{hideLoading();}};
 
         // ================= DISTRIBUIÇÃO COM PRÉVIA =================
         function gerarPreviewDistribuicao(){
@@ -1464,7 +1525,7 @@
         }
         window.abrirPreviewDistribuicao=function(){if(!turmasCache.some(t=>!isArquivada(t)))return showToast('Crie pelo menos uma turma ativa.','warning');distribuicaoPreview=gerarPreviewDistribuicao();const alocar=distribuicaoPreview.filter(x=>x.destino),ambiguos=distribuicaoPreview.filter(x=>x.destino&&x.ambiguo),ignorar=distribuicaoPreview.filter(x=>!x.destino);document.getElementById('prev-alocar').textContent=alocar.length;document.getElementById('prev-ambiguos').textContent=ambiguos.length;document.getElementById('prev-ignorar').textContent=ignorar.length;document.getElementById('btn-confirmar-distribuicao').disabled=!alocar.length;const box=document.getElementById('preview-distribuicao-lista');box.innerHTML='';if(!distribuicaoPreview.length)box.innerHTML='<p class="text-center text-xs text-slate-400 py-8">Todos os alunos ativos já estão em alguma turma.</p>';distribuicaoPreview.slice(0,100).forEach(x=>{const row=document.createElement('div');row.className='p-3 rounded-xl border border-slate-200 flex items-center gap-3';row.innerHTML=`<div class="min-w-0 flex-1"><p class="text-xs font-bold text-slate-700 truncate">${escapeHtml(x.aluno.nome||'')}</p><p class="text-[9px] text-slate-400 mt-0.5">${calcularIdadeNum(x.aluno.data_nascimento)>=0?calcularIdadeNum(x.aluno.data_nascimento)+' anos':'idade não informada'}</p></div><div class="text-right max-w-[48%]"><p class="text-[10px] font-black ${x.destino?'text-emerald-600':'text-slate-400'} truncate">${x.destino?escapeHtml(x.destino.nome):escapeHtml(x.motivo)}</p>${x.ambiguo?'<p class="text-[8px] text-amber-500 font-bold mt-0.5">mais de uma opção</p>':''}</div>`;box.appendChild(row);});const m=document.getElementById('modal-distribuicao');m.classList.remove('hidden');m.classList.add('flex');};
         window.fecharModalDistribuicao=function(){const m=document.getElementById('modal-distribuicao');m.classList.add('hidden');m.classList.remove('flex');};
-        window.confirmarDistribuicaoAutomatica=async function(){const itens=distribuicaoPreview.filter(x=>x.destino);if(!itens.length)return;const porTurma=new Map();itens.forEach(x=>{if(!porTurma.has(x.destino.id))porTurma.set(x.destino.id,[]);porTurma.get(x.destino.id).push(x.aluno.id);});showLoading();try{const batch=writeBatch(db);porTurma.forEach((ids,tid)=>batch.update(doc(db,'turmas',tid),{alunos_ids:arrayUnion(...ids)}));await batch.commit();showToast(`${itens.length} aluno(s) distribuído(s).`,'success');await registrarAtividadeEquipe('DISTRIBUICAO_AUTOMATICA');fecharModalDistribuicao();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro ao aplicar distribuição.','error');}finally{hideLoading();}};
+        window.confirmarDistribuicaoAutomatica=async function(){const itens=distribuicaoPreview.filter(x=>x.destino);if(!itens.length)return;const porTurma=new Map();itens.forEach(x=>{if(!porTurma.has(x.destino.id))porTurma.set(x.destino.id,[]);porTurma.get(x.destino.id).push(x.aluno.id);});showLoading();try{const batch=writeBatch(db);porTurma.forEach((ids,tid)=>batch.update(doc(db,'turmas',tid),{alunos_ids:arrayUnion(...ids)}));await batch.commit();porTurma.forEach((ids,tid)=>{const t=turmasCache.find(x=>x.id===tid);if(t)t.alunos_ids=[...new Set([...(t.alunos_ids||[]),...ids])];});for(const x of itens) await sincronizarPlanoAutomaticoAluno(x.aluno.id);showToast(`${itens.length} aluno(s) distribuído(s).`,'success');await registrarAtividadeEquipe('DISTRIBUICAO_AUTOMATICA');fecharModalDistribuicao();clearCache();await carregarTurmas(true);}catch(e){console.error(e);showToast('Erro ao aplicar distribuição.','error');}finally{hideLoading();}};
         window.autoDistribuirAlunos=window.abrirPreviewDistribuicao; // compatibilidade com chamadas antigas
 
         // Aliases locais para manter chamadas internas seguras dentro do script type="module".
@@ -1489,7 +1550,7 @@
         window.excluirTurma = async function(id) { const t = turmasCache.find(x => x.id === id); if (!t) return; turmaSelecionada = t; await window.arquivarTurmaSelecionada(); };
 
         // ================= EQUIPE / IMPERSONAÇÃO =================
-        async function carregarDadosEquipe(){try{const snap=await getDoc(doc(db,'equipes',teamId));if(snap.exists()){const d=snap.data();equipeDados.nome=d.nome_equipe||d.nome||'Sua Equipe';equipeDados.logo=d.url_logo||'';const nome=document.getElementById('nome-equipe')||document.querySelector('body > aside h2')||document.querySelector('aside h2');if(nome)nome.textContent=equipeDados.nome.toUpperCase();const logo=document.getElementById('logo-equipe-menu')||document.getElementById('container-logo');if(logo){if(equipeDados.logo){logo.style.background='transparent';const img=document.createElement('img');img.src=equipeDados.logo;img.alt='Logo da equipe';img.className='w-full h-full object-cover rounded-xl shadow-md';logo.innerHTML='';logo.appendChild(img);}else{logo.innerHTML='';const span=document.createElement('span');span.className='text-white font-black text-2xl';span.textContent=equipeDados.nome.charAt(0).toUpperCase();logo.appendChild(span);}}}}catch(e){console.error('Equipe:',e);}}
+        async function carregarDadosEquipe(){try{const snap=await getDoc(doc(db,'equipes',teamId));if(snap.exists()){const d=snap.data();equipeDados={...d,nome:d.nome_equipe||d.nome||'Sua Equipe',logo:d.url_logo||''};const nome=document.getElementById('nome-equipe')||document.querySelector('body > aside h2')||document.querySelector('aside h2');if(nome)nome.textContent=equipeDados.nome.toUpperCase();const logo=document.getElementById('logo-equipe-menu')||document.getElementById('container-logo');if(logo){if(equipeDados.logo){logo.style.background='transparent';const img=document.createElement('img');img.src=equipeDados.logo;img.alt='Logo da equipe';img.className='w-full h-full object-cover rounded-xl shadow-md';logo.innerHTML='';logo.appendChild(img);}else{logo.innerHTML='';const span=document.createElement('span');span.className='text-white font-black text-2xl';span.textContent=equipeDados.nome.charAt(0).toUpperCase();logo.appendChild(span);}}}}catch(e){console.error('Equipe:',e);}}
 
         window.sairModoSuporte=function(){sessionStorage.removeItem('admin_impersonate');sessionStorage.removeItem('admin_impersonate_reason');window.location.href='super_admin.html';};
         function injetarAvisoSuporte(){setTimeout(()=>{const aside=document.querySelector('body > aside')||document.querySelector('aside');if(!aside||document.getElementById('btn-sair-suporte-turmas'))return;const b=document.createElement('button');b.id='btn-sair-suporte-turmas';b.onclick=window.sairModoSuporte;b.className='mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2';b.textContent='MODO SUPORTE · SAIR';const sair=[...aside.querySelectorAll('button,a')].find(el=>el.textContent.toUpperCase().includes('SAIR'));if(sair?.parentNode)sair.parentNode.insertBefore(b,sair);else aside.appendChild(b);},700);}
@@ -1568,8 +1629,10 @@
                 await carregarDadosEquipe();
                 await Promise.all([
                     carregarAlunos(true),
-                    carregarTurmas(true)
+                    carregarTurmas(true),
+                    carregarPlanosFinanceiros()
                 ]);
+                atualizarSelectPlanosTurma();
                 window.resetarFiltrosTurmas();
                 atualizarTudo();
             } catch (e) {
