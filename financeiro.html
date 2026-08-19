@@ -606,7 +606,7 @@
                                 <div>
                                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Plano padrão da academia</label>
                                     <select id="select-plano-padrao-equipe" onchange="salvarPlanoPadraoEquipe(this.value)" class="mt-2 w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-white">
-                                        <option value="">Usar mensalidade geral (fallback)</option>
+                                        <option value="">Usar valor padrão de mensalidade</option>
                                     </select>
                                 </div>
                                 <div class="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-4">
@@ -730,11 +730,22 @@
 
             <div class="space-y-4 border-b border-slate-100 dark:border-slate-800 pb-6 mb-6">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💸 Registrar Pagamento</h4>
-                <div class="flex gap-2">
-                    <input type="date" id="acao-data-pag" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-white outline-none">
-                    <select id="acao-forma-pag" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-white outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
-                        <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">PIX (Automático)</option><option value="CREDIT_CARD">Cartão de Crédito</option><option value="BOLETO">Boleto Bancário</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Data do pagamento</span>
+                        <input type="date" id="acao-data-pag" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-white outline-none">
+                    </div>
+                    <div>
+                        <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Forma</span>
+                        <select id="acao-forma-pag" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-white outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                            <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">PIX (Automático)</option><option value="CREDIT_CARD">Cartão de Crédito</option><option value="BOLETO">Boleto Bancário</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Valor pago (R$)</span>
+                    <input type="text" id="acao-valor-pago" inputmode="decimal" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-base font-black text-emerald-600 dark:text-emerald-400 outline-none focus:border-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <p class="text-[9px] text-slate-400 font-medium mt-1.5 ml-1">O valor sugerido é o valor da fatura. Altere somente se o valor efetivamente recebido for diferente.</p>
                 </div>
                 <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
                 
@@ -1036,7 +1047,7 @@
 
             const sel = document.getElementById('select-plano-padrao-equipe');
             if (sel) {
-                sel.innerHTML = '<option value="">Usar mensalidade geral (fallback)</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
+                sel.innerHTML = '<option value="">Usar valor padrão de mensalidade</option>' + ativos.map(p => `<option value="${p.id}">${escapeHtml(p.nome)} — R$ ${floatToStr(Number(p.valor_prazo||0))}</option>`).join('');
                 sel.value = equipeDados?.plano_padrao_id || '';
             }
 
@@ -2052,6 +2063,7 @@ window.salvarSenhaSaque = async function() {
             const btnWhats = document.getElementById('btn-whats-lateral'); const btnRegPag = document.getElementById('btn-reg-pagamento');
             const btnDesfazer = document.getElementById('btn-desfazer-pag'); const btnAsaas = document.getElementById('btn-gerar-asaas');
             const inputData = document.getElementById('acao-data-pag'); const selectForma = document.getElementById('acao-forma-pag');
+            const inputValorPago = document.getElementById('acao-valor-pago');
 
             if(calcData.status === 'PAGO' || calcData.status === 'ISENTO') {
                 document.getElementById('acao-alerta-divida').innerText = "";
@@ -2068,9 +2080,14 @@ window.salvarSenhaSaque = async function() {
                 let forma = calcData.reg.forma_pagamento;
                 if(forma === 'CREDIT_CARD') selectForma.value = 'CREDIT_CARD'; else if(forma === 'BOLETO') selectForma.value = 'BOLETO'; else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; else if(forma) selectForma.value = forma; else selectForma.value = 'PIX';
                 
-                // Trava os inputs de data e forma para não editar acidentalmente
+                // Trava os dados de um pagamento já registrado para não editar acidentalmente
                 selectForma.disabled = true; 
                 inputData.disabled = true;
+                if (inputValorPago) {
+                    const valorPagoRegistrado = Number(calcData.reg.valor_pago ?? calcData.reg.valor ?? calcData.valor ?? 0);
+                    inputValorPago.value = floatToStr(valorPagoRegistrado);
+                    inputValorPago.disabled = true;
+                }
 
                 // 🔥 TRAVA DE SEGURANÇA REATIVADA: Bloqueia se for do Asaas, libera se for manual
                 if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
@@ -2094,6 +2111,10 @@ window.salvarSenhaSaque = async function() {
                 btnDesfazer.className = "flex-1 bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
 
                 inputData.valueAsDate = new Date(); inputData.disabled = false; selectForma.value = 'PIX'; selectForma.disabled = false;
+                if (inputValorPago) {
+                    inputValorPago.value = floatToStr(Number(calcData.valor || 0));
+                    inputValorPago.disabled = false;
+                }
 
                 if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.status_baas === 'ATIVA') && verificarAcesso('asaas', true)) {
                     btnAsaas.classList.remove('hidden'); btnAsaas.onclick = gerarLinkAsaasAdmin; 
@@ -2173,37 +2194,59 @@ window.salvarSenhaSaque = async function() {
 window.registrarPagamento = async function() {
             if(!alunoSelecionadoMens) return;
             if(alunoSelecionadoMens._calc.status === 'PAGO' || alunoSelecionadoMens._calc.status === 'ISENTO') return showToast("Esta fatura já está paga ou é isenta.", "info");
-            
+
             const dtPag = document.getElementById('acao-data-pag').value; 
             const forma = document.getElementById('acao-forma-pag').value;
+            const valorPago = strToFloat(document.getElementById('acao-valor-pago').value);
+
+            if (!dtPag) return showToast("Informe a data do pagamento.", "error");
+            if (!(valorPago > 0)) return showToast("Informe o valor efetivamente pago.", "error");
             if(forma === 'PIX_ASAAS' || forma === 'CREDIT_CARD' || forma === 'BOLETO') return showToast("Estas formas de pagamento só podem ser baixadas automaticamente pelo sistema.", "error");
 
-            const valorCalculado = alunoSelecionadoMens._calc.valor;
+            const regAtual = alunoSelecionadoMens._calc.reg || {};
+            const valorCobradoNoMomento = Number(alunoSelecionadoMens._calc.valor || 0);
+            const valorAntesBaixa = Number(regAtual.valor ?? valorCobradoNoMomento ?? 0);
+
             const btn = document.getElementById('btn-reg-pagamento'); 
             const origTxt = btn.innerHTML; 
             btn.innerHTML = "⏳ Processando..."; btn.disabled = true;
 
             try {
-                if (alunoSelecionadoMens._calc.reg.asaas_id) {
+                if (regAtual.asaas_id) {
                     try {
                         const removerCobranca = httpsCallable(functions, 'removerCobrancaAsaas');
-                        await removerCobranca({ uid: uid, asaasId: alunoSelecionadoMens._calc.reg.asaas_id });
+                        await removerCobranca({ uid: uid, asaasId: regAtual.asaas_id });
                     } catch(errAsaas) { console.log("Erro ao remover no Asaas ignorado.", errAsaas); }
                 }
 
                 await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), { 
                     status: 'PAGO', 
                     data_pagamento: dtPag, 
-                    forma_pagamento: forma, 
-                    valor: valorCalculado,
+                    forma_pagamento: forma,
+
+                    // O campo "valor" continua representando a entrada efetiva para
+                    // manter dashboards, relatórios, recibos e exportações compatíveis.
+                    valor: valorPago,
+                    valor_pago: valorPago,
+
+                    // Preserva a referência da cobrança para auditoria e eventual estorno.
+                    valor_cobrado_no_momento_baixa: valorCobradoNoMomento,
+                    valor_antes_baixa_manual: valorAntesBaixa,
+
                     link_pagamento: null,
                     asaas_id: null 
                 });
-                
-                showToast("Pagamento Registrado!", "success");
-                registrarLogAuditoria("BAIXOU_MENSALIDADE", `Deu baixa manual para ${alunoSelecionadoMens.nome} (R$ ${valorCalculado}) via ${forma}`);
+
+                showToast("Pagamento registrado com o valor recebido!", "success");
+                registrarLogAuditoria("BAIXOU_MENSALIDADE", `Deu baixa manual para ${alunoSelecionadoMens.nome} (R$ ${valorPago}) via ${forma}`);
                 carregarDados(); 
-            } catch (e) { showToast("Erro ao dar baixa na mensalidade.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+            } catch (e) { 
+                console.error(e);
+                showToast("Erro ao dar baixa na mensalidade.", "error"); 
+            } finally { 
+                btn.innerHTML = origTxt; 
+                btn.disabled = false; 
+            }
         }
 
         window.cancelarPagamento = async function() {
@@ -2211,14 +2254,42 @@ window.registrarPagamento = async function() {
             if(alunoSelecionadoMens._calc.status !== 'PAGO') return showToast("O aluno não possui pagamento registrado nesta fatura.", "error");
             if(!confirm("Deseja ESTORNAR este pagamento?\nA fatura voltará a ficar Pendente.")) return;
 
-            const btn = document.getElementById('btn-desfazer-pag'); const origTxt = btn.innerText; btn.innerText = "..."; btn.disabled = true;
+            const btn = document.getElementById('btn-desfazer-pag'); 
+            const origTxt = btn.innerText; 
+            btn.innerText = "..."; 
+            btn.disabled = true;
 
             try {
-                await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), { status: 'PENDENTE', data_pagamento: null, forma_pagamento: null });
+                const reg = alunoSelecionadoMens._calc.reg || {};
+                const valorRestaurado = Number(
+                    reg.valor_antes_baixa_manual ??
+                    reg.valor_original ??
+                    reg.valor_prazo_snapshot ??
+                    reg.valor_cobrado_no_momento_baixa ??
+                    reg.valor ??
+                    0
+                );
+
+                await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), { 
+                    status: 'PENDENTE', 
+                    data_pagamento: null, 
+                    forma_pagamento: null,
+                    valor: valorRestaurado,
+                    valor_pago: null,
+                    valor_cobrado_no_momento_baixa: null,
+                    valor_antes_baixa_manual: null
+                });
+
                 showToast("Pagamento cancelado com sucesso.", "success");
                 registrarLogAuditoria("ESTORNOU_MENSALIDADE", `Estornou o pagamento de ${alunoSelecionadoMens.nome} do mês ${alunoSelecionadoMens._calc.reg.mes_ano}`);
                 carregarDados(); 
-            } catch (e) { showToast("Erro ao cancelar.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
+            } catch (e) { 
+                console.error(e);
+                showToast("Erro ao cancelar.", "error"); 
+            } finally { 
+                btn.innerText = origTxt; 
+                btn.disabled = false; 
+            }
         }
 
         window.excluirPagamento = async function() {
