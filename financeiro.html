@@ -2596,7 +2596,7 @@ window.registrarPagamento = async function() {
                 tipo: 'perigo',
                 icone: '↩',
                 campoLabel: 'Motivo',
-                campoValor: `Estorno solicitado pela ${equipeDados?.nome || equipeDados?.nome_academia || 'academia'} no BJJ Manager`,
+                campoValor: `Estorno solicitado por ${equipeDados?.nome_equipe || equipeDados?.nome || equipeDados?.nome_academia || 'Academia'} via BJJ Manager`,
                 campoPlaceholder: 'Descreva o motivo do estorno',
                 campoAjuda: 'O motivo ficará registrado na trilha de auditoria.'
             });
