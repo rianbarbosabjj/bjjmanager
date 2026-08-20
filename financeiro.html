@@ -906,6 +906,9 @@
                 <textarea id="modal-sistema-campo" rows="3" maxlength="250"
                     class="w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 text-sm font-medium text-slate-700 dark:text-white resize-none"
                     placeholder=""></textarea>
+                <input id="modal-sistema-senha" type="password" inputmode="numeric" autocomplete="current-password"
+                    class="hidden w-full p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-cyan-500 text-sm font-bold text-slate-700 dark:text-white"
+                    placeholder="Digite sua senha de saque">
                 <p id="modal-sistema-campo-ajuda" class="hidden mt-2 text-[10px] text-slate-400 font-medium"></p>
             </div>
 
@@ -1002,6 +1005,7 @@
             tipo = 'principal',
             icone = '!',
             campo = false,
+            campoTipo = 'texto',
             campoLabel = 'Informação',
             campoValor = '',
             campoPlaceholder = '',
@@ -1014,11 +1018,12 @@
                 }
 
                 modalSistemaResolver = resolve;
-                modalSistemaModo = campo ? 'texto' : 'confirmacao';
+                modalSistemaModo = campo ? (campoTipo === 'senha' ? 'senha' : 'texto') : 'confirmacao';
 
                 const modal = document.getElementById('modal-sistema');
                 const campoWrap = document.getElementById('modal-sistema-campo-wrap');
                 const campoEl = document.getElementById('modal-sistema-campo');
+                const senhaEl = document.getElementById('modal-sistema-senha');
                 const ajudaEl = document.getElementById('modal-sistema-campo-ajuda');
 
                 document.getElementById('modal-sistema-titulo').textContent = titulo;
@@ -1032,13 +1037,27 @@
                 if (campo) {
                     campoWrap.classList.remove('hidden');
                     document.getElementById('modal-sistema-campo-label').textContent = campoLabel;
-                    campoEl.value = campoValor || '';
-                    campoEl.placeholder = campoPlaceholder || '';
                     ajudaEl.textContent = campoAjuda || '';
                     ajudaEl.classList.toggle('hidden', !campoAjuda);
+
+                    if (campoTipo === 'senha') {
+                        campoEl.classList.add('hidden');
+                        senhaEl.classList.remove('hidden');
+                        senhaEl.value = '';
+                        senhaEl.placeholder = campoPlaceholder || 'Digite sua senha de saque';
+                    } else {
+                        senhaEl.classList.add('hidden');
+                        senhaEl.value = '';
+                        campoEl.classList.remove('hidden');
+                        campoEl.value = campoValor || '';
+                        campoEl.placeholder = campoPlaceholder || '';
+                    }
                 } else {
                     campoWrap.classList.add('hidden');
                     campoEl.value = '';
+                    senhaEl.value = '';
+                    campoEl.classList.remove('hidden');
+                    senhaEl.classList.add('hidden');
                     ajudaEl.classList.add('hidden');
                 }
 
@@ -1046,7 +1065,8 @@
                 modal.classList.add('flex');
 
                 setTimeout(() => {
-                    if (campo) campoEl.focus();
+                    if (campo && campoTipo === 'senha') senhaEl.focus();
+                    else if (campo) campoEl.focus();
                     else document.getElementById('modal-sistema-confirmar')?.focus();
                 }, 60);
             });
@@ -1065,6 +1085,12 @@
 
             if (modo === 'texto') {
                 const valor = document.getElementById('modal-sistema-campo').value;
+                document.getElementById('modal-sistema-campo').value = '';
+                resolver(confirmado ? valor : null);
+            } else if (modo === 'senha') {
+                const senhaEl = document.getElementById('modal-sistema-senha');
+                const valor = senhaEl.value;
+                senhaEl.value = '';
                 resolver(confirmado ? valor : null);
             } else {
                 resolver(Boolean(confirmado));
@@ -1076,11 +1102,16 @@
         }
 
         function solicitarTextoModal(opcoes = {}) {
-            return abrirModalSistema({ ...opcoes, campo: true });
+            return abrirModalSistema({ ...opcoes, campo: true, campoTipo: 'texto' });
+        }
+
+        function solicitarSenhaSaqueModal(opcoes = {}) {
+            return abrirModalSistema({ ...opcoes, campo: true, campoTipo: 'senha' });
         }
 
         window.confirmarAcaoModal = confirmarAcaoModal;
         window.solicitarTextoModal = solicitarTextoModal;
+        window.solicitarSenhaSaqueModal = solicitarSenhaSaqueModal;
         window.resolverModalSistema = resolverModalSistema;
 
         document.getElementById('modal-sistema-confirmar')?.addEventListener('click', () => resolverModalSistema(true));
@@ -2565,11 +2596,26 @@ window.registrarPagamento = async function() {
                 tipo: 'perigo',
                 icone: '↩',
                 campoLabel: 'Motivo',
-                campoValor: 'Estorno solicitado pela academia no BJJ Manager',
+                campoValor: `Estorno solicitado pela ${equipeDados?.nome || equipeDados?.nome_academia || 'academia'} no BJJ Manager`,
                 campoPlaceholder: 'Descreva o motivo do estorno',
                 campoAjuda: 'O motivo ficará registrado na trilha de auditoria.'
             });
             if (motivoInformado === null) return;
+
+            const senhaDigitada = await solicitarSenhaSaqueModal({
+                titulo: 'Autorizar estorno',
+                mensagem: `Digite a senha de saque da academia para autorizar o estorno integral de R$ ${valorTxt}.`,
+                confirmarTexto: 'Autorizar estorno',
+                tipo: 'perigo',
+                icone: '🔐',
+                campoLabel: 'Senha de saque',
+                campoPlaceholder: 'Digite sua senha de saque',
+                campoAjuda: 'A senha é validada de forma segura e não será armazenada neste formulário.'
+            });
+            if (senhaDigitada === null) return;
+            if (!String(senhaDigitada).trim()) {
+                return showToast('Informe a senha de saque para autorizar o estorno.', 'error');
+            }
 
             const btn = document.getElementById('btn-estornar-asaas');
             const textoOriginal = btn ? btn.innerHTML : '';
@@ -2584,7 +2630,8 @@ window.registrarPagamento = async function() {
                 const estornar = httpsCallable(functions, 'estornarCobrancaAsaas');
                 const resposta = await estornar({
                     faturaId,
-                    motivo: String(motivoInformado || '').trim()
+                    motivo: String(motivoInformado || '').trim(),
+                    senhaDigitada: String(senhaDigitada)
                 });
 
                 const resultado = resposta?.data || {};
