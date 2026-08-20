@@ -1888,44 +1888,100 @@
         // ==========================================
         // 📅 CHECK-IN E MURAL
         // ==========================================
-        window.registrarCheckin = async function(turmaId, nomeTurma) { 
-            const btn = document.getElementById(`btn-checkin-${turmaId}`); 
-            if(btn) { btn.innerHTML = '⏳ Localizando...'; btn.disabled = true; } 
-            try { 
-                const hoje = new Date().toISOString().split('T')[0]; 
-                const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje), where("equipe_id", "==", alunoLogado.equipe_id), where("turma_id", "==", turmaId)); 
-                const snap = await getDocs(q); 
-                if (!snap.empty) { 
-                    showToast("Você já fez check-in nesta turma hoje!", "error"); 
-                    if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; } 
-                    return; 
-                } 
-                const getPosicao = () => new Promise((resolve, reject) => { 
-                    if (!navigator.geolocation) reject("Geolocalização não suportada."); 
-                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 }); 
-                }); 
-                let lat = null, lng = null; 
-                try { 
-                    const pos = await getPosicao(); 
-                    lat = pos.coords.latitude; lng = pos.coords.longitude; 
-                } catch(e) { 
-                    showToast("Para fazer check-in, precisa permitir o acesso à sua localização.", "error"); 
-                    if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; } 
-                    return; 
-                } 
-                if(btn) btn.innerHTML = '⏳ Registando...'; 
-                await addDoc(collection(db, "checkins"), { 
-                    aluno_id: alunoLogado.id, aluno_nome: alunoLogado.nome, equipe_id: alunoLogado.equipe_id, 
-                    turma_id: turmaId, turma_nome: nomeTurma, data: hoje, timestamp: new Date().toISOString(), 
-                    localizacao: { lat: lat, lng: lng } 
-                }); 
-                showToast("Check-in realizado com sucesso! Oss!", "success"); 
-                buscarMuralEHorarios(); buscarCurriculoAluno(); 
-            } catch(e) { 
-                showToast("Erro ao registrar check-in.", "error"); 
-                if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; } 
-            } 
-        };
+window.registrarCheckin = async function(turmaId, nomeTurma) {
+    const btn = document.getElementById(`btn-checkin-${turmaId}`);
+
+    if (btn) {
+        btn.innerHTML = '⏳ Localizando...';
+        btn.disabled = true;
+    }
+
+    const restaurarBotao = () => {
+        if (btn) {
+            btn.innerHTML = '📍 Fazer Check-in';
+            btn.disabled = false;
+        }
+    };
+
+    try {
+        const getPosicao = () => new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error("Geolocalização não suportada."));
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                resolve,
+                reject,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        });
+
+        let posicao;
+
+        try {
+            posicao = await getPosicao();
+        } catch (erroLocalizacao) {
+            showToast(
+                "Para fazer check-in, permita o acesso à sua localização.",
+                "error"
+            );
+            restaurarBotao();
+            return;
+        }
+
+        if (btn) btn.innerHTML = '⏳ Validando...';
+
+        const registrarCheckinSeguro = httpsCallable(
+            functions,
+            'registrarCheckinSeguro'
+        );
+
+        const resultado = await registrarCheckinSeguro({
+            turmaId: turmaId,
+            localizacao: {
+                lat: posicao.coords.latitude,
+                lng: posicao.coords.longitude,
+                accuracy: Number.isFinite(posicao.coords.accuracy)
+                    ? posicao.coords.accuracy
+                    : null
+            }
+        });
+
+        const retorno = resultado.data || {};
+
+        if (!retorno.success) {
+            showToast(
+                retorno.error || "Não foi possível realizar o check-in.",
+                "error"
+            );
+            restaurarBotao();
+            return;
+        }
+
+        showToast(
+            retorno.message || "Check-in realizado com sucesso! Oss!",
+            "success"
+        );
+
+        buscarMuralEHorarios();
+        buscarCurriculoAluno();
+
+    } catch (error) {
+        console.error("Erro no check-in seguro:", error);
+
+        showToast(
+            "Erro ao registrar check-in. Tente novamente.",
+            "error"
+        );
+
+        restaurarBotao();
+    }
+};
         
         window.filtrarCheckins = function() { 
             const valFiltro = document.getElementById('filtro-mes-checkin').value; 
