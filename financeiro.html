@@ -747,6 +747,9 @@
                 <button id="btn-gerar-asaas" class="hidden w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600">💳 Gerar Link Digital</button>
 
                 <button id="btn-estornar-asaas" onclick="estornarPagamentoAsaas()" class="hidden w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-rose-700">↩ Estornar pagamento no Asaas</button>
+                <p id="aviso-estorno-falhou" class="hidden -mt-1 text-[9px] leading-relaxed text-rose-500 dark:text-rose-400 font-semibold text-center">
+                    A tentativa anterior de estorno não foi concluída pelo Asaas.
+                </p>
 
                 <div class="flex gap-3 mt-4">
                     <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Desfazer</button>
@@ -2327,12 +2330,16 @@ window.salvarSenhaSaque = async function() {
             const btnWhats = document.getElementById('btn-whats-lateral'); const btnRegPag = document.getElementById('btn-reg-pagamento');
             const btnDesfazer = document.getElementById('btn-desfazer-pag'); const btnAsaas = document.getElementById('btn-gerar-asaas');
             const btnEstornoAsaas = document.getElementById('btn-estornar-asaas');
+            const avisoEstornoFalhou = document.getElementById('aviso-estorno-falhou');
             const inputData = document.getElementById('acao-data-pag'); const selectForma = document.getElementById('acao-forma-pag');
             const inputValorPago = document.getElementById('acao-valor-pago');
 
             if (btnEstornoAsaas) {
                 btnEstornoAsaas.classList.add('hidden');
                 btnEstornoAsaas.disabled = true;
+            }
+            if (avisoEstornoFalhou) {
+                avisoEstornoFalhou.classList.add('hidden');
             }
 
             if(calcData.status === 'PAGO' || calcData.status === 'ISENTO') {
@@ -2375,18 +2382,27 @@ window.salvarSenhaSaque = async function() {
                         if (['SOLICITADO', 'EM_PROCESSAMENTO'].includes(estornoStatus)) {
                             btnEstornoAsaas.disabled = true;
                             btnEstornoAsaas.innerHTML = "⏳ Estorno em processamento";
+                            if (avisoEstornoFalhou) {
+                                avisoEstornoFalhou.classList.add('hidden');
+                            }
                             btnEstornoAsaas.className = "w-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-amber-200 dark:border-amber-800";
                         } else {
                             btnEstornoAsaas.disabled = false;
 
                             if (estornoStatus === 'FALHOU') {
-                                btnEstornoAsaas.innerHTML = "↻ Tentar estorno novamente";
+                                btnEstornoAsaas.innerHTML = "↻ Tentar novamente";
                                 btnEstornoAsaas.title = calcData.reg.estorno_erro || calcData.reg.estorno_erro_transferencia || 'A tentativa anterior de estorno não foi concluída.';
+                                if (avisoEstornoFalhou) {
+                                    avisoEstornoFalhou.classList.remove('hidden');
+                                }
                             } else {
                                 btnEstornoAsaas.innerHTML = formaAsaas === 'CREDIT_CARD'
                                     ? "↩ Estornar pagamento no cartão"
                                     : "↩ Estornar pagamento PIX";
                                 btnEstornoAsaas.title = '';
+                                if (avisoEstornoFalhou) {
+                                    avisoEstornoFalhou.classList.add('hidden');
+                                }
                             }
 
                             btnEstornoAsaas.className = "w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-rose-700";
@@ -2401,6 +2417,9 @@ window.salvarSenhaSaque = async function() {
                 if (btnEstornoAsaas) {
                     btnEstornoAsaas.classList.add('hidden');
                     btnEstornoAsaas.disabled = true;
+                }
+                if (avisoEstornoFalhou) {
+                    avisoEstornoFalhou.classList.add('hidden');
                 }
                 document.getElementById('acao-alerta-divida').innerText = calcData.status === 'ATRASADO' ? "⚠️ MENSALIDADE EM ATRASO" : "PENDENTE DE PAGAMENTO";
                 
