@@ -716,7 +716,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
@@ -1893,6 +1893,31 @@ async function carregarFrequenciaDoAluno(idAluno) {
             } 
         };
 
+        // ===================== INTEGRIDADE: VÍNCULO COM TURMAS =====================
+        // Remove o ID do aluno de todas as turmas da equipe antes da exclusão definitiva.
+        // A inativação NÃO remove a matrícula, preservando a turma para eventual reativação.
+        async function removerAlunoDeTodasTurmas(alunoId) {
+            const qTurmas = query(
+                collection(db, "turmas"),
+                where("equipe_id", "==", window.teamId)
+            );
+            const snapTurmas = await getDocs(qTurmas);
+
+            const atualizacoes = snapTurmas.docs
+                .filter(turmaDoc => {
+                    const dadosTurma = turmaDoc.data() || {};
+                    return Array.isArray(dadosTurma.alunos_ids) && dadosTurma.alunos_ids.includes(alunoId);
+                })
+                .map(turmaDoc =>
+                    updateDoc(doc(db, "turmas", turmaDoc.id), {
+                        alunos_ids: arrayRemove(alunoId)
+                    })
+                );
+
+            await Promise.all(atualizacoes);
+            return atualizacoes.length;
+        }
+
         // ===================== EXCLUIR ALUNO =====================
         window.excluirAluno = async (id) => { 
             if(confirm("Deseja excluir este atleta da sua equipe? Esta ação apagará a ficha, a foto e TODO o histórico (mensalidades, check-ins, graduações) do sistema.")) { 
@@ -1920,6 +1945,10 @@ async function carregarFrequenciaDoAluno(idAluno) {
                             await Promise.all(promessasDeletar); 
                         } catch(errLimpeza) { console.log(`Erro ao limpar ${nomeColecao}:`, errLimpeza); }
                     }
+
+                    // Remove qualquer vínculo residual do aluno nas turmas antes de apagar a ficha.
+                    // Se a limpeza falhar, a exclusão é interrompida para não criar IDs órfãos.
+                    await removerAlunoDeTodasTurmas(id);
 
                     await deleteDoc(doc(db, "alunos", id)); 
                     
