@@ -195,24 +195,32 @@
                     <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                         <div class="flex items-center bg-slate-800/90 border border-slate-700 rounded-xl p-1 flex-1 sm:flex-none">
                            <select id="filtro-mes"
-                            onchange="carregarDados()"
-                            class="bg-transparent border-none text-white text-xs sm:text-sm font-bold rounded-lg py-2 px-2 outline-none cursor-pointer flex-1 sm:flex-none">
-                            <option value="01" class="text-slate-900 bg-white">Jan</option>
-                            <option value="02" class="text-slate-900 bg-white">Fev</option>
-                            <option value="03" class="text-slate-900 bg-white">Mar</option>
-                            <option value="04" class="text-slate-900 bg-white">Abr</option>
-                            <option value="05" class="text-slate-900 bg-white">Mai</option>
-                            <option value="06" class="text-slate-900 bg-white">Jun</option>
-                            <option value="07" class="text-slate-900 bg-white">Jul</option>
-                            <option value="08" class="text-slate-900 bg-white">Ago</option>
-                            <option value="09" class="text-slate-900 bg-white">Set</option>
-                            <option value="10" class="text-slate-900 bg-white">Out</option>
-                            <option value="11" class="text-slate-900 bg-white">Nov</option>
-                            <option value="12" class="text-slate-900 bg-white">Dez</option>
+                                    onchange="carregarDados()"
+                                    class="bg-transparent border-none text-white text-xs sm:text-sm font-bold rounded-lg py-2 px-2 outline-none cursor-pointer flex-1 sm:flex-none">
+                                <option value="01" class="text-slate-900 bg-white">Jan</option>
+                                <option value="02" class="text-slate-900 bg-white">Fev</option>
+                                <option value="03" class="text-slate-900 bg-white">Mar</option>
+                                <option value="04" class="text-slate-900 bg-white">Abr</option>
+                                <option value="05" class="text-slate-900 bg-white">Mai</option>
+                                <option value="06" class="text-slate-900 bg-white">Jun</option>
+                                <option value="07" class="text-slate-900 bg-white">Jul</option>
+                                <option value="08" class="text-slate-900 bg-white">Ago</option>
+                                <option value="09" class="text-slate-900 bg-white">Set</option>
+                                <option value="10" class="text-slate-900 bg-white">Out</option>
+                                <option value="11" class="text-slate-900 bg-white">Nov</option>
+                                <option value="12" class="text-slate-900 bg-white">Dez</option>
                            </select>
                             <span class="text-slate-600 px-1">/</span>
-                            <select id="filtro-ano" onchange="carregarDados()" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold rounded-lg py-2 px-2 outline-none cursor-pointer flex-1 sm:flex-none">
-                                <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                            <select id="filtro-ano"
+                                    onchange="carregarDados()"
+                                    class="bg-transparent border-none text-white text-xs sm:text-sm font-bold rounded-lg py-2 px-2 outline-none cursor-pointer flex-1 sm:flex-none">
+                                <option value="2024" class="text-slate-900 bg-white">2024</option>
+                                <option value="2025" class="text-slate-900 bg-white">2025</option>
+                                <option value="2026" class="text-slate-900 bg-white">2026</option>
+                                <option value="2027" class="text-slate-900 bg-white">2027</option>
+                                <option value="2028" class="text-slate-900 bg-white">2028</option>
+                                <option value="2029" class="text-slate-900 bg-white">2029</option>
+                                <option value="2030" class="text-slate-900 bg-white">2030</option>
                             </select>
                         </div>
                         <button onclick="carregarDados()" class="h-10 px-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-xl text-xs transition-colors" title="Atualizar dados">↻ <span class="hidden sm:inline ml-1">Atualizar</span></button>
