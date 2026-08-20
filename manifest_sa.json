@@ -9,12 +9,12 @@
   "theme_color": "#020617",
   "icons": [
     {
-      "src": "bjj_manager.png",
+      "src": "logo_bjj_manager.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "bjj_manager.png",
+      "src": "logo_bjj_manager.png",
       "sizes": "512x512",
       "type": "image/png"
     }
