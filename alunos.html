@@ -294,7 +294,7 @@
                                 <p class="text-2xl font-black text-amber-500" id="ano-fundacao-card">---</p>
                             </div>
                         </div>
-                        <p id="nota-evolucao-dados" class="text-[10px] text-slate-400 text-center px-2">O histórico considera a data de cadastro/matrícula disponível. Inativações não são reconstruídas retroativamente.</p>
+                        <p id="nota-evolucao-dados" class="text-[10px] text-slate-400 text-center px-2">O histórico considera a data de cadastro/matrícula disponível. Mudanças de status passam a ser registradas a partir da v3.4; períodos anteriores não são reconstruídos retroativamente.</p>
                     </div>
                 </div>
             </div>
@@ -717,7 +717,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
@@ -1094,8 +1094,8 @@
             if (anoCard) anoCard.innerText = datasValidas.length ? primeiroAno : '---';
             if (notaDados) {
                 notaDados.innerText = semData > 0
-                    ? `O histórico usa a data de cadastro/matrícula disponível. ${semData} aluno(s) sem data ficaram fora dos gráficos. Inativações não são reconstruídas retroativamente.`
-                    : 'O histórico usa a data de cadastro/matrícula disponível. Inativações não são reconstruídas retroativamente.';
+                    ? `O histórico usa a data de cadastro/matrícula disponível. ${semData} aluno(s) sem data ficaram fora dos gráficos. Mudanças de status passam a ser registradas a partir da v3.4; períodos anteriores não são reconstruídos retroativamente.`
+                    : 'O histórico usa a data de cadastro/matrícula disponível. Mudanças de status passam a ser registradas a partir da v3.4; períodos anteriores não são reconstruídos retroativamente.';
             }
 
             const ctxMensal = document.getElementById('chartEvolucaoMensal')?.getContext('2d');
@@ -2141,6 +2141,24 @@ async function carregarFrequenciaDoAluno(idAluno) {
             btnSalvar.innerHTML = "⏳ SALVANDO..."; 
             btnSalvar.disabled = true; 
             
+            // ===================== HISTÓRICO DE STATUS V3.4 =====================
+            // Não reconstrói mudanças anteriores à implantação desta versão.
+            // Daqui em diante, toda transição ATIVO <-> INATIVO fica registrada.
+            const agoraIso = new Date().toISOString();
+            const novoStatus = String(
+                document.getElementById('aluno-status')?.value || 'ATIVO'
+            ).toUpperCase();
+
+            const alunoAnterior = id
+                ? (window.todosAlunosCache.find(a => a.id === id) || null)
+                : null;
+
+            const statusAnterior = alunoAnterior
+                ? String(alunoAnterior.status || 'ATIVO').toUpperCase()
+                : null;
+
+            const statusMudou = !!id && statusAnterior !== novoStatus;
+
             const dados = { 
                 equipe_id: window.teamId, 
                 nome: nome, 
@@ -2175,13 +2193,13 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     plano_origem: document.getElementById('aluno-plano-modo')?.value === 'MANUAL' ? 'MANUAL' : 'AUTO',
                     plano_atualizado_em: new Date().toISOString()
                 } : {}),
-                status: document.getElementById('aluno-status')?.value || 'ATIVO', 
+                status: novoStatus, 
                 lgpd_concordo: lgpdConcordo ? lgpdConcordo.checked : false, 
                 lgpd_redes: document.getElementById('lgpd-redes')?.checked || false, 
                 lgpd_site: document.getElementById('lgpd-site')?.checked || false, 
                 lgpd_promo: document.getElementById('lgpd-promo')?.checked || false, 
                 lgpd_relatorios: document.getElementById('lgpd-relatorio')?.checked || false,
-                updated_at: new Date().toISOString()
+                updated_at: agoraIso
             }; 
             
             const campoSenha = document.getElementById('aluno-senha-portal'); 
@@ -2192,8 +2210,20 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 
                 if (!id) { 
                     dados.matricula = `${new Date().getFullYear()}${Math.floor(1000 + Math.random() * 9000)}`; 
-                    dados.data_cadastro = new Date().toISOString(); 
-                    dados.created_at = new Date().toISOString();
+                    dados.data_cadastro = agoraIso; 
+                    dados.created_at = agoraIso;
+                    dados.status_atualizado_em = agoraIso;
+                    dados.historico_status = [{
+                        de: null,
+                        para: novoStatus,
+                        data: agoraIso,
+                        origem: "MATRICULA",
+                        usuario_email: auth.currentUser?.email || null
+                    }];
+
+                    if (novoStatus === "INATIVO") {
+                        dados.inativado_em = agoraIso;
+                    }
                     
                     const docRef = await addDoc(collection(db, "alunos"), dados); 
                     docRefId = docRef.id;
@@ -2207,7 +2237,26 @@ async function carregarFrequenciaDoAluno(idAluno) {
                         }
                     }
                 } else { 
-                    await updateDoc(doc(db, "alunos", id), dados); 
+                    const dadosAtualizacao = { ...dados };
+
+                    if (statusMudou) {
+                        dadosAtualizacao.status_atualizado_em = agoraIso;
+                        dadosAtualizacao.historico_status = arrayUnion({
+                            de: statusAnterior,
+                            para: novoStatus,
+                            data: agoraIso,
+                            origem: "PAINEL_ALUNOS",
+                            usuario_email: auth.currentUser?.email || null
+                        });
+
+                        if (novoStatus === "INATIVO") {
+                            dadosAtualizacao.inativado_em = agoraIso;
+                        } else if (statusAnterior === "INATIVO" && novoStatus === "ATIVO") {
+                            dadosAtualizacao.reativado_em = agoraIso;
+                        }
+                    }
+
+                    await updateDoc(doc(db, "alunos", id), dadosAtualizacao); 
                     docRefId = id;
                     
                     if (novaSenha) {
@@ -2249,11 +2298,30 @@ async function carregarFrequenciaDoAluno(idAluno) {
                         usuario_email: auth.currentUser.email, 
                         acao: id ? "EDITOU_ALUNO" : "NOVA_MATRICULA",
                         detalhes: `${id ? "Atualizou" : "Cadastrou"} o aluno: ${nome}`,
-                        timestamp: new Date().toISOString()
+                        timestamp: agoraIso
                     });
+
+                    if (statusMudou) {
+                        await addDoc(collection(db, "auditoria"), {
+                            equipe_id: window.teamId,
+                            equipe_nome: window.equipeDados.nome,
+                            usuario_email: auth.currentUser.email,
+                            acao: novoStatus === "INATIVO" ? "INATIVOU_ALUNO" : "REATIVOU_ALUNO",
+                            detalhes: `${nome}: ${statusAnterior} → ${novoStatus}`,
+                            aluno_id: id,
+                            timestamp: agoraIso
+                        });
+                    }
                 } catch(e) {}
 
-                showToast(id ? "Ficha atualizada com sucesso!" : "Matrícula criada com sucesso!", "success"); 
+                showToast(
+                    statusMudou
+                        ? (novoStatus === "INATIVO"
+                            ? "Aluno inativado e histórico registrado!"
+                            : "Aluno reativado e histórico registrado!")
+                        : (id ? "Ficha atualizada com sucesso!" : "Matrícula criada com sucesso!"),
+                    "success"
+                ); 
                 window.fecharModal(); 
                 clearCache();
                 await buscarAlunosFirebase(true); 
