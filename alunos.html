@@ -812,7 +812,7 @@
                     <div class="flex gap-2 items-start">
                         <span class="text-sm">ℹ️</span>
                         <p class="text-[10px] leading-relaxed text-slate-500">
-                            O PDF incluirá logo e nome da equipe, data de emissão e as colunas Nome, Faixa, Idade, Telefone, Responsável e Status.
+                            O PDF incluirá logo e nome da equipe, data de emissão e Nome com situação (ativo/inativo), Faixa, Idade, Telefone e Responsável.
                         </p>
                     </div>
                 </div>
@@ -3130,7 +3130,12 @@ async function carregarFrequenciaDoAluno(idAluno) {
             return `
                 <tr style="border-bottom:1px solid #e2e8f0; page-break-inside:avoid;">
                     <td style="padding:7px 5px; font-size:9.2px; font-weight:700; color:#0f172a; vertical-align:top;">
-                        ${escaparHtmlRelacao(aluno?.nome || 'Sem nome')}
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span>${escaparHtmlRelacao(aluno?.nome || 'Sem nome')}</span>
+                            <span style="display:inline-block; padding:2px 6px; border-radius:999px; font-size:7px; line-height:1.2; font-weight:800; background:${statusFundo}; color:${statusCor}; white-space:nowrap;">
+                                ${escaparHtmlRelacao(status)}
+                            </span>
+                        </div>
                     </td>
                     <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
                         ${escaparHtmlRelacao(faixa)}
@@ -3143,11 +3148,6 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     </td>
                     <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
                         ${escaparHtmlRelacao(responsavel || '-')}
-                    </td>
-                    <td style="padding:7px 5px; font-size:8.8px; text-align:center; vertical-align:top;">
-                        <span style="display:inline-block; padding:3px 7px; border-radius:999px; font-size:8px; font-weight:800; background:${statusFundo}; color:${statusCor};">
-                            ${escaparHtmlRelacao(status)}
-                        </span>
                     </td>
                 </tr>
             `;
@@ -3168,12 +3168,11 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                     <thead style="display:table-header-group;">
                         <tr style="background:#f8fafc; border-top:1px solid #cbd5e1; border-bottom:2px solid #cbd5e1;">
-                            <th style="width:26%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Nome</th>
-                            <th style="width:14%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Faixa</th>
-                            <th style="width:7%; padding:7px 5px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Idade</th>
-                            <th style="width:17%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Telefone</th>
-                            <th style="width:24%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Responsável</th>
-                            <th style="width:12%; padding:7px 4px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.04em;">Status</th>
+                            <th style="width:31%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Nome</th>
+                            <th style="width:15%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Faixa</th>
+                            <th style="width:8%; padding:7px 5px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Idade</th>
+                            <th style="width:18%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Telefone</th>
+                            <th style="width:28%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Responsável</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -3411,7 +3410,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
                 elemento.innerHTML = `
                     <div style="font-family:Arial,Helvetica,sans-serif; color:#0f172a; padding:16px 18px 22px 18px; background:#ffffff; box-sizing:border-box;">
-                        <header style="display:flex; align-items:center; gap:16px; padding-bottom:14px; border-bottom:2px solid #0f172a; margin-bottom:16px;">
+                        <header style="display:flex; align-items:center; gap:14px; padding:0 8px 14px 0; border-bottom:2px solid #0f172a; margin-bottom:16px; box-sizing:border-box;">
                             <div style="width:72px; height:72px; flex:0 0 72px; display:flex; align-items:center; justify-content:center;">
                                 ${
                                     logo
@@ -3432,7 +3431,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                                 </p>
                             </div>
 
-                            <div style="text-align:right; width:92px; flex:0 0 92px;">
+                            <div style="text-align:right; width:110px; flex:0 0 110px; padding-right:14px; box-sizing:border-box;">
                                 <div style="font-size:8px; color:#94a3b8; text-transform:uppercase; font-weight:800;">Data de emissão</div>
                                 <div style="font-size:10px; color:#334155; font-weight:800; margin-top:3px;">${dataEmissao}</div>
                                 <div style="font-size:8px; color:#94a3b8; text-transform:uppercase; font-weight:800; margin-top:8px;">Total</div>
@@ -3450,7 +3449,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 // branco quando o alvo está muito fora da viewport.
                 // O relatório de Frequência já usa com sucesso um elemento
                 // desconectado do DOM, então seguimos o mesmo padrão.
-                elemento.style.width = '740px';
+                elemento.style.width = '690px';
                 elemento.style.background = '#ffffff';
 
                 await aguardarImagensRelatorio(elemento);
