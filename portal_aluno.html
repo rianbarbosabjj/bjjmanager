@@ -1306,8 +1306,28 @@
         // ==========================================
         // 🔐 AUTENTICAÇÃO E LOGIN
         // ==========================================
-        function salvarSessaoAluno(token, alunoData) { localStorage.setItem('bjj_aluno_token', token); localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoData)); }
-        function limparSessaoAluno() { localStorage.removeItem('bjj_aluno_token'); localStorage.removeItem('bjj_aluno_auth'); }
+        function sanitizarAlunoParaSessao(alunoData) {
+            if (!alunoData || typeof alunoData !== 'object') return alunoData;
+
+            const seguro = { ...alunoData };
+
+            // Campos legados de credencial nunca devem permanecer no navegador.
+            delete seguro.senha_portal;
+            delete seguro.senha_hash;
+
+            return seguro;
+        }
+
+        function salvarSessaoAluno(token, alunoData) {
+            const alunoSeguro = sanitizarAlunoParaSessao(alunoData);
+            localStorage.setItem('bjj_aluno_token', token);
+            localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoSeguro));
+        }
+
+        function limparSessaoAluno() {
+            localStorage.removeItem('bjj_aluno_token');
+            localStorage.removeItem('bjj_aluno_auth');
+        }
         async function validarTokenAtual() {
             const token = localStorage.getItem('bjj_aluno_token');
             if (!token) return false;
@@ -1360,7 +1380,7 @@
                 if (alunoDoc) {
                     let dadosAluno = alunoDoc.data();
                     if (!dadosAluno.uid) { await updateDoc(doc(db, "alunos", alunoId), { uid: uid }); console.log("🔧 UID sincronizado no banco de dados."); }
-                    alunoLogado = { id: alunoId, ...dadosAluno };
+                    alunoLogado = sanitizarAlunoParaSessao({ id: alunoId, ...dadosAluno });
                     salvarSessaoAluno(user.accessToken, alunoLogado);
                     showToast("Acesso liberado! Oss!", "success");
                     iniciarPortal();
@@ -1368,9 +1388,24 @@
             } catch (error) {
                 console.error("Erro no login:", error);
                 let mensagemErro = "E-mail ou senha incorretos.";
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') mensagemErro = "E-mail não cadastrado ou senha incorreta.";
-                else if (error.code === 'auth/wrong-password') mensagemErro = "Senha incorreta.";
-                else if (error.code === 'auth/too-many-requests') mensagemErro = "Muitas tentativas. Tente mais tarde.";
+
+                if (
+                    error.code === 'auth/user-disabled' ||
+                    String(error.message || '').toLowerCase().includes('user-disabled') ||
+                    String(error.message || '').toLowerCase().includes('user disabled')
+                ) {
+                    mensagemErro = "🔒 Seu cadastro está inativo. Entre em contato com sua academia para regularizar o acesso.";
+                } else if (
+                    error.code === 'auth/user-not-found' ||
+                    error.code === 'auth/invalid-credential'
+                ) {
+                    mensagemErro = "E-mail não cadastrado ou senha incorreta.";
+                } else if (error.code === 'auth/wrong-password') {
+                    mensagemErro = "Senha incorreta.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    mensagemErro = "Muitas tentativas. Tente mais tarde.";
+                }
+
                 showToast(mensagemErro, "error");
                 btn.disabled = false;
                 btn.innerHTML = "Entrar no Portal";
@@ -1380,7 +1415,16 @@
         const sessaoToken = localStorage.getItem('bjj_aluno_token');
         const sessaoAluno = localStorage.getItem('bjj_aluno_auth');
         if (sessaoToken && sessaoAluno) {
-            validarTokenAtual().then(isValid => { if (isValid) { alunoLogado = JSON.parse(sessaoAluno); iniciarPortal(); } else { limparSessaoAluno(); console.log("Sessão expirada, faça login novamente."); } }).catch(() => { limparSessaoAluno(); });
+            validarTokenAtual().then(isValid => {
+                if (isValid) {
+                    alunoLogado = sanitizarAlunoParaSessao(JSON.parse(sessaoAluno));
+                    salvarSessaoAluno(sessaoToken, alunoLogado);
+                    iniciarPortal();
+                } else {
+                    limparSessaoAluno();
+                    console.log("Sessão expirada, faça login novamente.");
+                }
+            }).catch(() => { limparSessaoAluno(); });
         }
 
         window.sairDoPortal = async function() {
@@ -1469,7 +1513,7 @@
                 }
                 await updateDoc(doc(db, "alunos", alunoLogado.id), dadosAtualizados);
                 const alunoAtualizado = { ...alunoLogado, ...dadosAtualizados };
-                delete alunoAtualizado.senha_portal; delete alunoLogado.senha_portal;
+                delete alunoAtualizado.senha_portal; delete alunoAtualizado.senha_hash; delete alunoLogado.senha_portal; delete alunoLogado.senha_hash;
                 salvarSessaoAluno(localStorage.getItem('bjj_aluno_token'), alunoAtualizado);
                 alunoLogado = alunoAtualizado;
                 showToast("Dados atualizados com sucesso!", "success"); preencherCarteirinha();
