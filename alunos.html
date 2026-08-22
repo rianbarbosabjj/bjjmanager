@@ -259,8 +259,13 @@
                                         </h3>
                                         <p class="text-[10px] text-slate-400 mt-1">Entradas, mudanças de status e ativos no fechamento disponível</p>
                                     </div>
-                                    <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold self-start sm:self-auto">
-                                    </select>
+                                    <div class="flex flex-col items-start sm:items-end gap-2 self-start sm:self-auto">
+                                        <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold">
+                                        </select>
+                                        <span id="historico-confiavel-badge" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-slate-500">
+                                            🕘 Histórico confiável: aguardando dados
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="chart-container">
                                     <canvas id="chartEvolucaoMensal"></canvas>
@@ -280,8 +285,8 @@
                                 <div class="chart-container">
                                     <canvas id="chartEvolucaoAnual"></canvas>
                                 </div>
-                                <p class="text-[10px] text-slate-400 text-center mt-3">
-                                    Anos anteriores ao início do histórico de status permanecem sem estimativa de ativos.
+                                <p id="nota-evolucao-anual" class="text-[10px] text-slate-400 text-center mt-3">
+                                    O ano corrente representa a posição atual, não o fechamento anual.
                                 </p>
                             </div>
                         </div>
@@ -1228,6 +1233,44 @@
             });
         }
 
+        function formatarMesAnoCurto(data) {
+            if (!(data instanceof Date) || isNaN(data.getTime())) return null;
+
+            const meses = [
+                'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
+                'jul', 'ago', 'set', 'out', 'nov', 'dez'
+            ];
+
+            return `${meses[data.getMonth()]}/${data.getFullYear()}`;
+        }
+
+        function criarEstiloSerieAtivos(valores) {
+            const quantidadeValidos = valores.filter(valor => valor !== null && valor !== undefined).length;
+            const unicoPonto = quantidadeValidos === 1;
+
+            return {
+                showLine: quantidadeValidos > 1,
+                pointRadius: valores.map(valor => {
+                    if (valor === null || valor === undefined) return 0;
+                    return unicoPonto ? 7 : 4;
+                }),
+                pointHoverRadius: valores.map(valor => {
+                    if (valor === null || valor === undefined) return 0;
+                    return unicoPonto ? 9 : 6;
+                }),
+                pointBackgroundColor: valores.map(valor =>
+                    valor === null || valor === undefined ? 'transparent' : '#ffffff'
+                ),
+                pointBorderColor: valores.map(valor =>
+                    valor === null || valor === undefined ? 'transparent' : '#0f172a'
+                ),
+                pointBorderWidth: valores.map(valor => {
+                    if (valor === null || valor === undefined) return 0;
+                    return unicoPonto ? 3 : 2;
+                })
+            };
+        }
+
         window.atualizarGraficos = function() {
             const {
                 alunos,
@@ -1311,6 +1354,20 @@
                 );
             });
 
+            const labelsAnuais = anos.map(ano =>
+                ano === anoAtual
+                    ? [String(ano), 'posição atual']
+                    : String(ano)
+            );
+
+            const estiloAtivosMensal = criarEstiloSerieAtivos(
+                ativosFechamentoMensal
+            );
+
+            const estiloAtivosAnual = criarEstiloSerieAtivos(
+                ativosFechamentoAnual
+            );
+
             const ativosHoje = alunos.filter(
                 a => normalizarStatusEvolucao(a.status) === 'ATIVO'
             ).length;
@@ -1341,6 +1398,8 @@
             const crescimentoCard = document.getElementById('maior-crescimento-card');
             const anoCard = document.getElementById('ano-fundacao-card');
             const notaDados = document.getElementById('nota-evolucao-dados');
+            const historicoBadge = document.getElementById('historico-confiavel-badge');
+            const notaAnual = document.getElementById('nota-evolucao-anual');
 
             if (totalCard) totalCard.innerText = ativosHoje;
             if (matriculasCard) matriculasCard.innerText = matriculasNoAno;
@@ -1351,6 +1410,26 @@
                 anoCard.innerText = datasValidas.length
                     ? primeiroAno
                     : '---';
+            }
+
+            if (historicoBadge) {
+                if (inicioHistoricoStatus) {
+                    historicoBadge.innerText =
+                        `🕘 Histórico confiável desde: ${formatarMesAnoCurto(inicioHistoricoStatus)}`;
+                    historicoBadge.className =
+                        "inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-700";
+                } else {
+                    historicoBadge.innerText =
+                        "🕘 Histórico confiável: ainda indisponível";
+                    historicoBadge.className =
+                        "inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-amber-700";
+                }
+            }
+
+            if (notaAnual) {
+                notaAnual.innerText = inicioHistoricoStatus
+                    ? `${anoAtual} representa a posição atual em ${formatarDataCurta(agora)}, não o fechamento anual. Anos anteriores ao início do histórico de status permanecem sem estimativa de ativos.`
+                    : `${anoAtual} representa a posição atual em ${formatarDataCurta(agora)}, não o fechamento anual. Ainda não há histórico suficiente para reconstruir ativos de períodos anteriores.`;
             }
 
             if (notaDados) {
@@ -1427,8 +1506,12 @@
                                 backgroundColor: 'rgba(15, 23, 42, 0.08)',
                                 borderWidth: 3,
                                 tension: 0.3,
-                                pointRadius: 4,
-                                pointHoverRadius: 6,
+                                showLine: estiloAtivosMensal.showLine,
+                                pointRadius: estiloAtivosMensal.pointRadius,
+                                pointHoverRadius: estiloAtivosMensal.pointHoverRadius,
+                                pointBackgroundColor: estiloAtivosMensal.pointBackgroundColor,
+                                pointBorderColor: estiloAtivosMensal.pointBorderColor,
+                                pointBorderWidth: estiloAtivosMensal.pointBorderWidth,
                                 spanGaps: false,
                                 fill: false,
                                 yAxisID: 'y'
@@ -1482,7 +1565,7 @@
 
                 chartAnual = new Chart(ctxAnual, {
                     data: {
-                        labels: anos,
+                        labels: labelsAnuais,
                         datasets: [
                             {
                                 type: 'bar',
@@ -1502,8 +1585,12 @@
                                 backgroundColor: 'rgba(15, 23, 42, 0.08)',
                                 borderWidth: 3,
                                 tension: 0.25,
-                                pointRadius: 4,
-                                pointHoverRadius: 6,
+                                showLine: estiloAtivosAnual.showLine,
+                                pointRadius: estiloAtivosAnual.pointRadius,
+                                pointHoverRadius: estiloAtivosAnual.pointHoverRadius,
+                                pointBackgroundColor: estiloAtivosAnual.pointBackgroundColor,
+                                pointBorderColor: estiloAtivosAnual.pointBorderColor,
+                                pointBorderWidth: estiloAtivosAnual.pointBorderWidth,
                                 spanGaps: false,
                                 fill: false,
                                 yAxisID: 'y'
