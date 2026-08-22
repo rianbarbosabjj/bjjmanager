@@ -3129,22 +3129,22 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
             return `
                 <tr style="border-bottom:1px solid #e2e8f0; page-break-inside:avoid;">
-                    <td style="padding:8px 6px; font-size:9.5px; font-weight:700; color:#0f172a; vertical-align:top;">
+                    <td style="padding:7px 5px; font-size:9.2px; font-weight:700; color:#0f172a; vertical-align:top;">
                         ${escaparHtmlRelacao(aluno?.nome || 'Sem nome')}
                     </td>
-                    <td style="padding:8px 6px; font-size:9px; color:#475569; vertical-align:top;">
+                    <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
                         ${escaparHtmlRelacao(faixa)}
                     </td>
-                    <td style="padding:8px 6px; font-size:9px; color:#475569; text-align:center; vertical-align:top;">
+                    <td style="padding:7px 5px; font-size:8.8px; color:#475569; text-align:center; vertical-align:top;">
                         ${idade === '?' ? '-' : escaparHtmlRelacao(idade)}
                     </td>
-                    <td style="padding:8px 6px; font-size:9px; color:#475569; vertical-align:top;">
+                    <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
                         ${escaparHtmlRelacao(telefone || '-')}
                     </td>
-                    <td style="padding:8px 6px; font-size:9px; color:#475569; vertical-align:top;">
+                    <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
                         ${escaparHtmlRelacao(responsavel || '-')}
                     </td>
-                    <td style="padding:8px 6px; font-size:9px; text-align:center; vertical-align:top;">
+                    <td style="padding:7px 5px; font-size:8.8px; text-align:center; vertical-align:top;">
                         <span style="display:inline-block; padding:3px 7px; border-radius:999px; font-size:8px; font-weight:800; background:${statusFundo}; color:${statusCor};">
                             ${escaparHtmlRelacao(status)}
                         </span>
@@ -3168,12 +3168,12 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                     <thead style="display:table-header-group;">
                         <tr style="background:#f8fafc; border-top:1px solid #cbd5e1; border-bottom:2px solid #cbd5e1;">
-                            <th style="width:27%; padding:8px 6px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Nome</th>
-                            <th style="width:15%; padding:8px 6px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Faixa</th>
-                            <th style="width:7%; padding:8px 6px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Idade</th>
-                            <th style="width:17%; padding:8px 6px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Telefone</th>
-                            <th style="width:24%; padding:8px 6px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Responsável</th>
-                            <th style="width:10%; padding:8px 6px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Status</th>
+                            <th style="width:26%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Nome</th>
+                            <th style="width:14%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Faixa</th>
+                            <th style="width:7%; padding:7px 5px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Idade</th>
+                            <th style="width:17%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Telefone</th>
+                            <th style="width:24%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Responsável</th>
+                            <th style="width:12%; padding:7px 4px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.04em;">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -3410,7 +3410,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 const elemento = document.createElement('div');
 
                 elemento.innerHTML = `
-                    <div style="font-family:Arial,Helvetica,sans-serif; color:#0f172a; padding:20px 24px 28px 24px; background:#ffffff;">
+                    <div style="font-family:Arial,Helvetica,sans-serif; color:#0f172a; padding:16px 18px 22px 18px; background:#ffffff; box-sizing:border-box;">
                         <header style="display:flex; align-items:center; gap:16px; padding-bottom:14px; border-bottom:2px solid #0f172a; margin-bottom:16px;">
                             <div style="width:72px; height:72px; flex:0 0 72px; display:flex; align-items:center; justify-content:center;">
                                 ${
@@ -3424,7 +3424,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                                 <div style="font-size:9px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:.10em; margin-bottom:4px;">
                                     ${escaparHtmlRelacao(equipeNome)}
                                 </div>
-                                <h1 style="font-size:17px; line-height:1.2; font-weight:900; margin:0; color:#0f172a; text-transform:uppercase;">
+                                <h1 style="font-size:15.5px; line-height:1.2; font-weight:900; margin:0; color:#0f172a; text-transform:uppercase;">
                                     ${escaparHtmlRelacao(relatorio.titulo)}
                                 </h1>
                                 <p style="font-size:9.5px; color:#64748b; margin:5px 0 0 0;">
@@ -3432,7 +3432,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                                 </p>
                             </div>
 
-                            <div style="text-align:right; min-width:115px;">
+                            <div style="text-align:right; width:92px; flex:0 0 92px;">
                                 <div style="font-size:8px; color:#94a3b8; text-transform:uppercase; font-weight:800;">Data de emissão</div>
                                 <div style="font-size:10px; color:#334155; font-weight:800; margin-top:3px;">${dataEmissao}</div>
                                 <div style="font-size:8px; color:#94a3b8; text-transform:uppercase; font-weight:800; margin-top:8px;">Total</div>
@@ -3442,9 +3442,6 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
                         ${relatorio.corpo}
 
-                        <footer style="margin-top:18px; padding-top:8px; border-top:1px solid #e2e8f0; text-align:center; font-size:7.5px; color:#94a3b8;">
-                            Documento gerado pelo BJJ Manager para uso administrativo da equipe.
-                        </footer>
                     </div>
                 `;
 
@@ -3453,7 +3450,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 // branco quando o alvo está muito fora da viewport.
                 // O relatório de Frequência já usa com sucesso um elemento
                 // desconectado do DOM, então seguimos o mesmo padrão.
-                elemento.style.width = '794px';
+                elemento.style.width = '740px';
                 elemento.style.background = '#ffffff';
 
                 await aguardarImagensRelatorio(elemento);
@@ -3464,7 +3461,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 }
 
                 const opcoes = {
-                    margin: [7, 7, 8, 7],
+                    margin: [7, 7, 10, 7],
                     filename: nomeArquivoRelacaoAlunos(
                         tipo,
                         detalhe
@@ -3493,10 +3490,34 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     }
                 };
 
-                await html2pdf()
+                const workerPdf = html2pdf()
                     .set(opcoes)
                     .from(elemento)
-                    .save();
+                    .toPdf();
+
+                await workerPdf.get('pdf').then(pdf => {
+                    const totalPaginas = pdf.internal.getNumberOfPages();
+                    const larguraPagina = pdf.internal.pageSize.getWidth();
+                    const alturaPagina = pdf.internal.pageSize.getHeight();
+
+                    for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+                        pdf.setPage(pagina);
+
+                        // Identificação extremamente discreta do sistema.
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.setFontSize(6.5);
+                        pdf.setTextColor(180, 188, 200);
+
+                        pdf.text(
+                            `BJJ Manager  •  pág. ${pagina}/${totalPaginas}`,
+                            larguraPagina / 2,
+                            alturaPagina - 4.5,
+                            { align: 'center' }
+                        );
+                    }
+                });
+
+                await workerPdf.save();
 
                 window.fecharModalRelacaoAlunos();
 
