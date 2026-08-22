@@ -252,31 +252,41 @@
                     <div id="aba-evolucao" class="aba-dashboard-content hidden space-y-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div class="chart-wrapper">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                                        <span class="text-base">📊</span> Evolução Mensal
-                                    </h3>
-                                    <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                                    <div>
+                                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                            <span class="text-base">📊</span> Movimentação Mensal
+                                        </h3>
+                                        <p class="text-[10px] text-slate-400 mt-1">Entradas, mudanças de status e ativos no fechamento disponível</p>
+                                    </div>
+                                    <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold self-start sm:self-auto">
                                     </select>
                                 </div>
                                 <div class="chart-container">
                                     <canvas id="chartEvolucaoMensal"></canvas>
                                 </div>
-                                <p class="text-[10px] text-slate-400 text-center mt-3">Novas matrículas e total acumulado de cadastros no ano selecionado</p>
+                                <p class="text-[10px] text-slate-400 text-center mt-3">
+                                    A linha de ativos só aparece nos períodos que podem ser reconstruídos pelo histórico de status.
+                                </p>
                             </div>
 
                             <div class="chart-wrapper">
-                                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4">
-                                    <span class="text-base">📈</span> Evolução Anual
-                                </h3>
+                                <div class="mb-4">
+                                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <span class="text-base">📈</span> Evolução Anual
+                                    </h3>
+                                    <p class="text-[10px] text-slate-400 mt-1">Novas matrículas e alunos ativos no fechamento disponível de cada ano</p>
+                                </div>
                                 <div class="chart-container">
                                     <canvas id="chartEvolucaoAnual"></canvas>
                                 </div>
-                                <p class="text-[10px] text-slate-400 text-center mt-3">Quantidade de novas matrículas registradas em cada ano</p>
+                                <p class="text-[10px] text-slate-400 text-center mt-3">
+                                    Anos anteriores ao início do histórico de status permanecem sem estimativa de ativos.
+                                </p>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                             <div class="bg-white rounded-xl p-4 text-center border border-slate-200 shadow-sm">
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ativos Hoje</p>
                                 <p class="text-2xl font-black text-slate-800" id="total-alunos-card">0</p>
@@ -286,15 +296,31 @@
                                 <p class="text-2xl font-black text-cyan-500" id="media-mensal-card">0</p>
                             </div>
                             <div class="bg-white rounded-xl p-4 text-center border border-slate-200 shadow-sm">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inativações Registradas</p>
+                                <p class="text-2xl font-black text-rose-500" id="inativacoes-ano-card">0</p>
+                            </div>
+                            <div class="bg-white rounded-xl p-4 text-center border border-slate-200 shadow-sm">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reativações Registradas</p>
+                                <p class="text-2xl font-black text-emerald-500" id="reativacoes-ano-card">0</p>
+                            </div>
+                            <div class="bg-white rounded-xl p-4 text-center border border-slate-200 shadow-sm">
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Maior Entrada Mensal</p>
-                                <p class="text-2xl font-black text-emerald-500" id="maior-crescimento-card">0</p>
+                                <p class="text-2xl font-black text-indigo-500" id="maior-crescimento-card">0</p>
                             </div>
                             <div class="bg-white rounded-xl p-4 text-center border border-slate-200 shadow-sm">
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Primeiro Cadastro</p>
                                 <p class="text-2xl font-black text-amber-500" id="ano-fundacao-card">---</p>
                             </div>
                         </div>
-                        <p id="nota-evolucao-dados" class="text-[10px] text-slate-400 text-center px-2">O histórico considera a data de cadastro/matrícula disponível. Mudanças de status são registradas desde a v3.4; a partir da v3.5 também ficam sincronizadas com o acesso ao Portal do Atleta.</p>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm">ℹ️</span>
+                                <p id="nota-evolucao-dados" class="text-[10px] leading-relaxed text-slate-500">
+                                    O histórico usa a data de cadastro/matrícula disponível. A série de alunos ativos começa apenas quando existe histórico de status suficiente para reconstrução confiável.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -992,7 +1018,7 @@
             if (aba === 'evolucao') window.atualizarGraficos(); 
         };
 
-        // ===================== GRÁFICOS =====================
+        // ===================== GRÁFICOS / EVOLUÇÃO V3.6 =====================
         function converterDataCadastro(valor) {
             if (!valor) return null;
             try {
@@ -1007,32 +1033,113 @@
             }
         }
 
+        function normalizarStatusEvolucao(valor) {
+            return String(valor || 'ATIVO').trim().toUpperCase();
+        }
+
+        function eventosStatusDoAluno(aluno) {
+            if (!Array.isArray(aluno?.historico_status)) return [];
+
+            return aluno.historico_status
+                .map(evento => {
+                    const data = converterDataCadastro(evento?.data);
+                    if (!data) return null;
+
+                    return {
+                        ...evento,
+                        dataObj: data,
+                        de: evento?.de == null ? null : normalizarStatusEvolucao(evento.de),
+                        para: normalizarStatusEvolucao(evento?.para)
+                    };
+                })
+                .filter(Boolean)
+                .sort((a, b) => a.dataObj - b.dataObj);
+        }
+
         function processarDadosEvolucao() {
             const alunos = Array.isArray(window.todosAlunosCache) ? window.todosAlunosCache : [];
+
             const matriculasMensais = {};
             const matriculasAnuais = {};
+            const inativacoesMensais = {};
+            const reativacoesMensais = {};
             const datasValidas = [];
+            const eventosStatusGlobais = [];
+
             let semData = 0;
 
             alunos.forEach(aluno => {
-                const data = converterDataCadastro(aluno.data_cadastro || aluno.data_matricula || aluno.created_at);
-                if (!data) {
+                const dataCadastro = converterDataCadastro(
+                    aluno.data_cadastro ||
+                    aluno.data_matricula ||
+                    aluno.created_at
+                );
+
+                if (!dataCadastro) {
                     semData++;
-                    return;
+                } else {
+                    datasValidas.push(dataCadastro);
+
+                    const ano = dataCadastro.getFullYear();
+                    const mes = dataCadastro.getMonth() + 1;
+                    const chaveMensal = `${ano}-${String(mes).padStart(2, '0')}`;
+
+                    matriculasMensais[chaveMensal] =
+                        (matriculasMensais[chaveMensal] || 0) + 1;
+
+                    matriculasAnuais[ano] =
+                        (matriculasAnuais[ano] || 0) + 1;
                 }
 
-                datasValidas.push(data);
-                const ano = data.getFullYear();
-                const mes = data.getMonth() + 1;
-                const chaveMensal = `${ano}-${String(mes).padStart(2, '0')}`;
-                matriculasMensais[chaveMensal] = (matriculasMensais[chaveMensal] || 0) + 1;
-                matriculasAnuais[ano] = (matriculasAnuais[ano] || 0) + 1;
+                const eventos = eventosStatusDoAluno(aluno);
+
+                eventos.forEach(evento => {
+                    eventosStatusGlobais.push(evento);
+
+                    // A matrícula inicial (de=null) não é uma inativação/reativação.
+                    if (evento.de === null) return;
+
+                    const ano = evento.dataObj.getFullYear();
+                    const mes = evento.dataObj.getMonth() + 1;
+                    const chave = `${ano}-${String(mes).padStart(2, '0')}`;
+
+                    if (evento.para === 'INATIVO' && evento.de !== 'INATIVO') {
+                        inativacoesMensais[chave] =
+                            (inativacoesMensais[chave] || 0) + 1;
+                    }
+
+                    if (evento.de === 'INATIVO' && evento.para === 'ATIVO') {
+                        reativacoesMensais[chave] =
+                            (reativacoesMensais[chave] || 0) + 1;
+                    }
+                });
             });
 
             datasValidas.sort((a, b) => a - b);
-            const primeiroAno = datasValidas.length ? datasValidas[0].getFullYear() : new Date().getFullYear();
+            eventosStatusGlobais.sort((a, b) => a.dataObj - b.dataObj);
 
-            return { matriculasMensais, matriculasAnuais, primeiroAno, semData, datasValidas };
+            const primeiroAno = datasValidas.length
+                ? datasValidas[0].getFullYear()
+                : new Date().getFullYear();
+
+            // Conservador: a série de ativos históricos só começa no primeiro
+            // evento real de mudança de status (de != null).
+            const eventosMudanca = eventosStatusGlobais.filter(e => e.de !== null);
+            const inicioHistoricoStatus = eventosMudanca.length
+                ? eventosMudanca[0].dataObj
+                : null;
+
+            return {
+                alunos,
+                matriculasMensais,
+                matriculasAnuais,
+                inativacoesMensais,
+                reativacoesMensais,
+                primeiroAno,
+                semData,
+                datasValidas,
+                inicioHistoricoStatus
+            };
         }
 
         function atualizarOpcoesAnoGrafico(primeiroAno) {
@@ -1042,65 +1149,242 @@
             const anoAtual = new Date().getFullYear();
             const selecaoAnterior = Number(anoSelect.value) || anoAtual;
             const inicio = Math.min(Number(primeiroAno) || anoAtual, anoAtual);
+
             const anos = [];
-            for (let ano = inicio; ano <= anoAtual; ano++) anos.push(ano);
+            for (let ano = inicio; ano <= anoAtual; ano++) {
+                anos.push(ano);
+            }
+
             if (!anos.length) anos.push(anoAtual);
 
             const assinatura = anos.join(',');
+
             if (anoSelect.dataset.anos !== assinatura) {
-                anoSelect.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
+                anoSelect.innerHTML = anos
+                    .map(ano => `<option value="${ano}">${ano}</option>`)
+                    .join('');
+
                 anoSelect.dataset.anos = assinatura;
             }
 
-            anoSelect.value = anos.includes(selecaoAnterior) ? String(selecaoAnterior) : String(anoAtual);
+            anoSelect.value = anos.includes(selecaoAnterior)
+                ? String(selecaoAnterior)
+                : String(anoAtual);
+
             return Number(anoSelect.value) || anoAtual;
         }
 
+        function statusAlunoNoCorte(aluno, corte) {
+            const dataCadastro = converterDataCadastro(
+                aluno.data_cadastro ||
+                aluno.data_matricula ||
+                aluno.created_at
+            );
+
+            // Sem data de matrícula não é possível posicionar o aluno
+            // com segurança em uma série histórica.
+            if (!dataCadastro || dataCadastro > corte) return null;
+
+            let status = normalizarStatusEvolucao(aluno.status);
+
+            // Partimos do status atual e "desfazemos" as mudanças posteriores
+            // ao corte. Isso é confiável dentro da janela em que todas as
+            // mudanças já estavam sendo registradas.
+            const eventos = eventosStatusDoAluno(aluno)
+                .filter(evento => evento.dataObj > corte)
+                .sort((a, b) => b.dataObj - a.dataObj);
+
+            for (const evento of eventos) {
+                if (evento.de !== null) {
+                    status = evento.de;
+                }
+            }
+
+            return status;
+        }
+
+        function contarAtivosNoCorte(alunos, corte, inicioHistoricoStatus) {
+            if (!inicioHistoricoStatus || corte < inicioHistoricoStatus) {
+                return null;
+            }
+
+            let total = 0;
+
+            alunos.forEach(aluno => {
+                const status = statusAlunoNoCorte(aluno, corte);
+                if (status === 'ATIVO') total++;
+            });
+
+            return total;
+        }
+
+        function formatarDataCurta(data) {
+            if (!(data instanceof Date) || isNaN(data.getTime())) return null;
+
+            return data.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
         window.atualizarGraficos = function() {
-            const { matriculasMensais, matriculasAnuais, primeiroAno, semData, datasValidas } = processarDadosEvolucao();
+            const {
+                alunos,
+                matriculasMensais,
+                matriculasAnuais,
+                inativacoesMensais,
+                reativacoesMensais,
+                primeiroAno,
+                semData,
+                datasValidas,
+                inicioHistoricoStatus
+            } = processarDadosEvolucao();
+
             const anoSelecionado = atualizarOpcoesAnoGrafico(primeiroAno);
-            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const agora = new Date();
+            const anoAtual = agora.getFullYear();
+            const mesAtual = agora.getMonth() + 1;
+
+            const meses = [
+                'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+            ];
 
             const novasMatriculas = [];
-            const cadastrosAcumulados = [];
-
-            // Base acumulada existente antes de janeiro do ano selecionado.
-            const inicioAno = new Date(anoSelecionado, 0, 1);
-            let acumulado = datasValidas.filter(data => data < inicioAno).length;
+            const inativacoes = [];
+            const reativacoes = [];
+            const ativosFechamentoMensal = [];
 
             for (let mes = 1; mes <= 12; mes++) {
                 const chave = `${anoSelecionado}-${String(mes).padStart(2, '0')}`;
-                const entradas = matriculasMensais[chave] || 0;
-                novasMatriculas.push(entradas);
-                acumulado += entradas;
-                cadastrosAcumulados.push(acumulado);
+
+                novasMatriculas.push(matriculasMensais[chave] || 0);
+                inativacoes.push(inativacoesMensais[chave] || 0);
+                reativacoes.push(reativacoesMensais[chave] || 0);
+
+                // Não projetamos meses futuros.
+                if (
+                    anoSelecionado > anoAtual ||
+                    (anoSelecionado === anoAtual && mes > mesAtual)
+                ) {
+                    ativosFechamentoMensal.push(null);
+                    continue;
+                }
+
+                const corte =
+                    anoSelecionado === anoAtual && mes === mesAtual
+                        ? agora
+                        : new Date(anoSelecionado, mes, 0, 23, 59, 59, 999);
+
+                ativosFechamentoMensal.push(
+                    contarAtivosNoCorte(
+                        alunos,
+                        corte,
+                        inicioHistoricoStatus
+                    )
+                );
             }
 
-            const anos = Object.keys(matriculasAnuais).map(Number).sort((a, b) => a - b);
-            const dadosAnuais = anos.map(ano => matriculasAnuais[ano] || 0);
-            const ativosHoje = window.todosAlunosCache.filter(a => (a.status || 'ATIVO') === 'ATIVO').length;
-            const matriculasNoAno = novasMatriculas.reduce((soma, valor) => soma + valor, 0);
-            const maiorEntradaMensal = novasMatriculas.length ? Math.max(...novasMatriculas) : 0;
+            // Anos contínuos desde o primeiro cadastro até hoje.
+            const anos = [];
+            for (let ano = primeiroAno; ano <= anoAtual; ano++) {
+                anos.push(ano);
+            }
+
+            if (!anos.length) anos.push(anoAtual);
+
+            const dadosAnuais = anos.map(
+                ano => matriculasAnuais[ano] || 0
+            );
+
+            const ativosFechamentoAnual = anos.map(ano => {
+                const corte =
+                    ano === anoAtual
+                        ? agora
+                        : new Date(ano, 11, 31, 23, 59, 59, 999);
+
+                return contarAtivosNoCorte(
+                    alunos,
+                    corte,
+                    inicioHistoricoStatus
+                );
+            });
+
+            const ativosHoje = alunos.filter(
+                a => normalizarStatusEvolucao(a.status) === 'ATIVO'
+            ).length;
+
+            const matriculasNoAno = novasMatriculas.reduce(
+                (soma, valor) => soma + valor,
+                0
+            );
+
+            const inativacoesNoAno = inativacoes.reduce(
+                (soma, valor) => soma + valor,
+                0
+            );
+
+            const reativacoesNoAno = reativacoes.reduce(
+                (soma, valor) => soma + valor,
+                0
+            );
+
+            const maiorEntradaMensal = novasMatriculas.length
+                ? Math.max(...novasMatriculas)
+                : 0;
 
             const totalCard = document.getElementById('total-alunos-card');
-            const mediaCard = document.getElementById('media-mensal-card');
+            const matriculasCard = document.getElementById('media-mensal-card');
+            const inativacoesCard = document.getElementById('inativacoes-ano-card');
+            const reativacoesCard = document.getElementById('reativacoes-ano-card');
             const crescimentoCard = document.getElementById('maior-crescimento-card');
             const anoCard = document.getElementById('ano-fundacao-card');
             const notaDados = document.getElementById('nota-evolucao-dados');
 
             if (totalCard) totalCard.innerText = ativosHoje;
-            if (mediaCard) mediaCard.innerText = matriculasNoAno;
+            if (matriculasCard) matriculasCard.innerText = matriculasNoAno;
+            if (inativacoesCard) inativacoesCard.innerText = inativacoesNoAno;
+            if (reativacoesCard) reativacoesCard.innerText = reativacoesNoAno;
             if (crescimentoCard) crescimentoCard.innerText = maiorEntradaMensal;
-            if (anoCard) anoCard.innerText = datasValidas.length ? primeiroAno : '---';
-            if (notaDados) {
-                notaDados.innerText = semData > 0
-                    ? `O histórico usa a data de cadastro/matrícula disponível. ${semData} aluno(s) sem data ficaram fora dos gráficos. Mudanças de status são registradas desde a v3.4; a partir da v3.5 também ficam sincronizadas com o acesso ao Portal do Atleta.`
-                    : 'O histórico usa a data de cadastro/matrícula disponível. Mudanças de status são registradas desde a v3.4; a partir da v3.5 também ficam sincronizadas com o acesso ao Portal do Atleta.';
+            if (anoCard) {
+                anoCard.innerText = datasValidas.length
+                    ? primeiroAno
+                    : '---';
             }
 
-            const ctxMensal = document.getElementById('chartEvolucaoMensal')?.getContext('2d');
+            if (notaDados) {
+                const partes = [];
+
+                partes.push(
+                    'Matrículas são apuradas pela data de cadastro/matrícula disponível.'
+                );
+
+                if (semData > 0) {
+                    partes.push(
+                        `${semData} aluno(s) sem data ficaram fora das séries históricas de matrícula e de ativos.`
+                    );
+                }
+
+                if (inicioHistoricoStatus) {
+                    partes.push(
+                        `A série histórica de ativos é exibida somente a partir de ${formatarDataCurta(inicioHistoricoStatus)}, primeiro evento de mudança de status disponível neste ambiente. Períodos anteriores não são estimados.`
+                    );
+                } else {
+                    partes.push(
+                        'Ainda não há evento de mudança de status suficiente para reconstruir uma série histórica de ativos. O total de Ativos Hoje continua sendo exibido normalmente.'
+                    );
+                }
+
+                notaDados.innerText = partes.join(' ');
+            }
+
+            const ctxMensal =
+                document.getElementById('chartEvolucaoMensal')?.getContext('2d');
+
             if (ctxMensal) {
                 if (chartMensal) chartMensal.destroy();
+
                 chartMensal = new Chart(ctxMensal, {
                     data: {
                         labels: meses,
@@ -1116,15 +1400,36 @@
                                 yAxisID: 'y'
                             },
                             {
+                                type: 'bar',
+                                label: 'Inativações',
+                                data: inativacoes,
+                                backgroundColor: 'rgba(244, 63, 94, 0.22)',
+                                borderColor: '#f43f5e',
+                                borderWidth: 1,
+                                borderRadius: 6,
+                                yAxisID: 'y'
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Reativações',
+                                data: reativacoes,
+                                backgroundColor: 'rgba(16, 185, 129, 0.22)',
+                                borderColor: '#10b981',
+                                borderWidth: 1,
+                                borderRadius: 6,
+                                yAxisID: 'y'
+                            },
+                            {
                                 type: 'line',
-                                label: 'Cadastros acumulados',
-                                data: cadastrosAcumulados,
+                                label: 'Alunos ativos',
+                                data: ativosFechamentoMensal,
                                 borderColor: '#0f172a',
                                 backgroundColor: 'rgba(15, 23, 42, 0.08)',
                                 borderWidth: 3,
-                                tension: 0.35,
-                                pointRadius: 3,
-                                pointHoverRadius: 5,
+                                tension: 0.3,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                spanGaps: false,
                                 fill: false,
                                 yAxisID: 'y'
                             }
@@ -1133,40 +1438,113 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false },
-                        plugins: {
-                            legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } },
-                            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}` } }
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
                         },
-                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 10,
+                                        weight: 'bold'
+                                    },
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => {
+                                        if (ctx.raw == null) {
+                                            return `${ctx.dataset.label}: histórico indisponível`;
+                                        }
+                                        return `${ctx.dataset.label}: ${ctx.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            }
+                        }
                     }
                 });
             }
 
-            const ctxAnual = document.getElementById('chartEvolucaoAnual')?.getContext('2d');
+            const ctxAnual =
+                document.getElementById('chartEvolucaoAnual')?.getContext('2d');
+
             if (ctxAnual) {
                 if (chartAnual) chartAnual.destroy();
+
                 chartAnual = new Chart(ctxAnual, {
-                    type: 'bar',
                     data: {
-                        labels: anos.length ? anos : [new Date().getFullYear()],
-                        datasets: [{
-                            label: 'Novas matrículas',
-                            data: anos.length ? dadosAnuais : [0],
-                            backgroundColor: 'rgba(16, 185, 129, 0.45)',
-                            borderColor: '#10b981',
-                            borderWidth: 1,
-                            borderRadius: 8
-                        }]
+                        labels: anos,
+                        datasets: [
+                            {
+                                type: 'bar',
+                                label: 'Novas matrículas',
+                                data: dadosAnuais,
+                                backgroundColor: 'rgba(6, 182, 212, 0.35)',
+                                borderColor: '#06b6d4',
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                yAxisID: 'y'
+                            },
+                            {
+                                type: 'line',
+                                label: 'Alunos ativos',
+                                data: ativosFechamentoAnual,
+                                borderColor: '#0f172a',
+                                backgroundColor: 'rgba(15, 23, 42, 0.08)',
+                                borderWidth: 3,
+                                tension: 0.25,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                spanGaps: false,
+                                fill: false,
+                                yAxisID: 'y'
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } },
-                            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}` } }
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
                         },
-                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 10,
+                                        weight: 'bold'
+                                    },
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => {
+                                        if (ctx.raw == null) {
+                                            return `${ctx.dataset.label}: histórico indisponível`;
+                                        }
+                                        return `${ctx.dataset.label}: ${ctx.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            }
+                        }
                     }
                 });
             }
