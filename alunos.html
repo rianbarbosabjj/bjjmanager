@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- BJJ Manager | alunos.html v3.9.9 | Integridade Auth/Portal -->
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -2650,14 +2651,119 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     
                     const docRef = await addDoc(collection(db, "alunos"), dados); 
                     docRefId = docRef.id;
-                    
+
+                    // ======================================================
+                    // INTEGRIDADE DO ACESSO AO PORTAL - V3.9.9
+                    // Se houver senha de acesso, a matrícula só é considerada
+                    // concluída depois que o backend confirmar Firebase Auth + UID.
+                    // Em falha real, o documento provisório é removido para não
+                    // deixar uma matrícula órfã no Firestore.
+                    // ======================================================
                     if (novaSenha) {
+                        btnSalvar.innerHTML = "⏳ CRIANDO ACESSO...";
+
                         try {
-                            const criarAluno = httpsCallable(functions, 'criarAlunoComHash');
-                            await criarAluno({ alunoId: docRefId, senha: novaSenha });
-                        } catch(e) {
-                            console.warn("Cloud function não disponível, senha não foi salva:", e);
+                            const criarAluno = httpsCallable(functions, "criarAlunoComHash");
+                            const respostaCriacao = await criarAluno({
+                                alunoId: docRefId,
+                                senha: novaSenha
+                            });
+
+                            const retornoCriacao = respostaCriacao?.data || {};
+
+                            // Uma callable pode responder HTTP normalmente e, ainda
+                            // assim, informar falha de negócio em success:false.
+                            if (!retornoCriacao.success) {
+                                throw new Error(
+                                    retornoCriacao.error ||
+                                    "Não foi possível criar o acesso do aluno ao Portal."
+                                );
+                            }
+
+                            // O backend seguro devolve o UID criado/conciliado.
+                            if (!retornoCriacao.uid) {
+                                throw new Error(
+                                    "A conta do aluno foi processada, mas o UID não foi confirmado."
+                                );
+                            }
+
+                        } catch (erroPortal) {
+                            console.error(
+                                "[MATRÍCULA] Falha ao criar acesso ao Portal:",
+                                erroPortal
+                            );
+
+                            // Uma falha de rede pode acontecer depois de o backend já
+                            // ter concluído Auth + Firestore. Antes de desfazer a ficha,
+                            // verificamos se o UID já foi gravado pelo servidor.
+                            let acessoConfirmadoPeloBackend = false;
+
+                            try {
+                                const verificacaoSnap = await getDoc(
+                                    doc(db, "alunos", docRefId)
+                                );
+
+                                const dadosVerificacao = verificacaoSnap.exists()
+                                    ? (verificacaoSnap.data() || {})
+                                    : {};
+
+                                acessoConfirmadoPeloBackend = Boolean(
+                                    String(dadosVerificacao.uid || "").trim()
+                                );
+
+                                if (acessoConfirmadoPeloBackend) {
+                                    console.warn(
+                                        "[MATRÍCULA] A resposta da callable falhou, mas o UID foi confirmado no Firestore. O cadastro será preservado."
+                                    );
+                                }
+                            } catch (erroVerificacao) {
+                                console.error(
+                                    "[MATRÍCULA] Não foi possível confirmar o estado do cadastro após a falha:",
+                                    erroVerificacao
+                                );
+
+                                // Estado incerto: não apagamos nada automaticamente,
+                                // pois o backend pode ter concluído a operação.
+                                throw new Error(
+                                    "Não foi possível confirmar a criação do acesso ao Portal. A matrícula não será apagada automaticamente. Não tente cadastrar novamente antes de verificar o registro."
+                                );
+                            }
+
+                            if (!acessoConfirmadoPeloBackend) {
+                                try {
+                                    await deleteDoc(
+                                        doc(db, "alunos", docRefId)
+                                    );
+
+                                    console.warn(
+                                        `[MATRÍCULA] Cadastro provisório ${docRefId} removido após falha na criação do Auth.`
+                                    );
+                                } catch (erroRollback) {
+                                    console.error(
+                                        "[MATRÍCULA] ATENÇÃO: falha ao remover cadastro provisório:",
+                                        erroRollback
+                                    );
+
+                                    throw new Error(
+                                        "O acesso ao Portal não foi criado e não foi possível desfazer automaticamente a matrícula. Não tente cadastrar novamente; verifique o registro antes."
+                                    );
+                                }
+
+                                // Interrompe o restante do salvamento. Assim não há
+                                // foto, auditoria nem mensagem falsa de sucesso.
+                                throw new Error(
+                                    "Matrícula não concluída: " +
+                                    (
+                                        erroPortal?.message ||
+                                        "não foi possível criar o acesso ao Portal."
+                                    )
+                                );
+                            }
                         }
+                    } else {
+                        console.warn(
+                            "[MATRÍCULA] Aluno criado sem senha de acesso ao Portal."
+                        );
                     }
 
                     // Nova matrícula INATIVA: sincroniza o bloqueio da conta no Firebase Auth.
