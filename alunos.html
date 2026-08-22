@@ -257,37 +257,58 @@
                                         <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                                             <span class="text-base">📊</span> Movimentação Mensal
                                         </h3>
-                                        <p class="text-[10px] text-slate-400 mt-1">Entradas, mudanças de status e ativos no fechamento disponível</p>
+                                        <p class="text-[10px] text-slate-400 mt-1">
+                                            Entradas e mudanças de status registradas no período
+                                        </p>
                                     </div>
-                                    <div class="flex flex-col items-start sm:items-end gap-2 self-start sm:self-auto">
-                                        <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold">
-                                        </select>
-                                        <span id="historico-confiavel-badge" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-slate-500">
-                                            🕘 Histórico confiável: aguardando dados
-                                        </span>
-                                    </div>
+                                    <select id="ano-grafico" onchange="window.atualizarGraficos()" class="bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold self-start sm:self-auto">
+                                    </select>
                                 </div>
+
                                 <div class="chart-container">
                                     <canvas id="chartEvolucaoMensal"></canvas>
                                 </div>
-                                <p class="text-[10px] text-slate-400 text-center mt-3">
-                                    A linha de ativos só aparece nos períodos que podem ser reconstruídos pelo histórico de status.
-                                </p>
+
+                                <div class="grid grid-cols-3 gap-2 mt-4">
+                                    <div class="rounded-lg border border-cyan-100 bg-cyan-50/60 px-3 py-2 text-center">
+                                        <p class="text-[9px] font-black uppercase tracking-wide text-slate-400">Matrículas</p>
+                                        <p id="resumo-matriculas-grafico" class="text-lg font-black text-cyan-600">0</p>
+                                    </div>
+                                    <div class="rounded-lg border border-rose-100 bg-rose-50/60 px-3 py-2 text-center">
+                                        <p class="text-[9px] font-black uppercase tracking-wide text-slate-400">Inativações</p>
+                                        <p id="resumo-inativacoes-grafico" class="text-lg font-black text-rose-500">0</p>
+                                    </div>
+                                    <div class="rounded-lg border border-emerald-100 bg-emerald-50/60 px-3 py-2 text-center">
+                                        <p class="text-[9px] font-black uppercase tracking-wide text-slate-400">Reativações</p>
+                                        <p id="resumo-reativacoes-grafico" class="text-lg font-black text-emerald-500">0</p>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="chart-wrapper">
                                 <div class="mb-4">
                                     <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                                        <span class="text-base">📈</span> Evolução Anual
+                                        <span class="text-base">🍩</span> Situação Atual
                                     </h3>
-                                    <p class="text-[10px] text-slate-400 mt-1">Novas matrículas e alunos ativos no fechamento disponível de cada ano</p>
+                                    <p class="text-[10px] text-slate-400 mt-1">
+                                        Distribuição atual da base de alunos
+                                    </p>
                                 </div>
+
                                 <div class="chart-container">
-                                    <canvas id="chartEvolucaoAnual"></canvas>
+                                    <canvas id="chartSituacaoAtual"></canvas>
                                 </div>
-                                <p id="nota-evolucao-anual" class="text-[10px] text-slate-400 text-center mt-3">
-                                    O ano corrente representa a posição atual, não o fechamento anual.
-                                </p>
+
+                                <div class="grid grid-cols-2 gap-3 mt-4">
+                                    <div class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 text-center">
+                                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Ativos</p>
+                                        <p id="situacao-ativos" class="text-xl font-black text-emerald-600">0</p>
+                                    </div>
+                                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
+                                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Inativos</p>
+                                        <p id="situacao-inativos" class="text-xl font-black text-slate-600">0</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -322,7 +343,7 @@
                             <div class="flex items-start gap-2">
                                 <span class="text-sm">ℹ️</span>
                                 <p id="nota-evolucao-dados" class="text-[10px] leading-relaxed text-slate-500">
-                                    O histórico usa a data de cadastro/matrícula disponível. A série de alunos ativos começa apenas quando existe histórico de status suficiente para reconstrução confiável.
+                                    Matrículas consideram a data de cadastro/matrícula disponível. Inativações e reativações consideram apenas os movimentos registrados no histórico de status.
                                 </p>
                             </div>
                         </div>
@@ -1023,15 +1044,22 @@
             if (aba === 'evolucao') window.atualizarGraficos(); 
         };
 
-        // ===================== GRÁFICOS / EVOLUÇÃO V3.6 =====================
+        // ===================== GRÁFICOS / EVOLUÇÃO GERENCIAL V3.8 =====================
         function converterDataCadastro(valor) {
             if (!valor) return null;
             try {
                 let data = null;
-                if (typeof valor?.toDate === 'function') data = valor.toDate();
-                else if (typeof valor?.seconds === 'number') data = new Date(valor.seconds * 1000);
-                else if (valor instanceof Date) data = valor;
-                else if (typeof valor === 'string' || typeof valor === 'number') data = new Date(valor);
+
+                if (typeof valor?.toDate === 'function') {
+                    data = valor.toDate();
+                } else if (typeof valor?.seconds === 'number') {
+                    data = new Date(valor.seconds * 1000);
+                } else if (valor instanceof Date) {
+                    data = valor;
+                } else if (typeof valor === 'string' || typeof valor === 'number') {
+                    data = new Date(valor);
+                }
+
                 return data && !isNaN(data.getTime()) ? data : null;
             } catch (_) {
                 return null;
@@ -1053,7 +1081,9 @@
                     return {
                         ...evento,
                         dataObj: data,
-                        de: evento?.de == null ? null : normalizarStatusEvolucao(evento.de),
+                        de: evento?.de == null
+                            ? null
+                            : normalizarStatusEvolucao(evento.de),
                         para: normalizarStatusEvolucao(evento?.para)
                     };
                 })
@@ -1062,14 +1092,14 @@
         }
 
         function processarDadosEvolucao() {
-            const alunos = Array.isArray(window.todosAlunosCache) ? window.todosAlunosCache : [];
+            const alunos = Array.isArray(window.todosAlunosCache)
+                ? window.todosAlunosCache
+                : [];
 
             const matriculasMensais = {};
-            const matriculasAnuais = {};
             const inativacoesMensais = {};
             const reativacoesMensais = {};
             const datasValidas = [];
-            const eventosStatusGlobais = [];
 
             let semData = 0;
 
@@ -1087,33 +1117,32 @@
 
                     const ano = dataCadastro.getFullYear();
                     const mes = dataCadastro.getMonth() + 1;
-                    const chaveMensal = `${ano}-${String(mes).padStart(2, '0')}`;
+                    const chave = `${ano}-${String(mes).padStart(2, '0')}`;
 
-                    matriculasMensais[chaveMensal] =
-                        (matriculasMensais[chaveMensal] || 0) + 1;
-
-                    matriculasAnuais[ano] =
-                        (matriculasAnuais[ano] || 0) + 1;
+                    matriculasMensais[chave] =
+                        (matriculasMensais[chave] || 0) + 1;
                 }
 
-                const eventos = eventosStatusDoAluno(aluno);
-
-                eventos.forEach(evento => {
-                    eventosStatusGlobais.push(evento);
-
-                    // A matrícula inicial (de=null) não é uma inativação/reativação.
+                eventosStatusDoAluno(aluno).forEach(evento => {
+                    // Eventos iniciais (de = null) representam apenas o estado de entrada.
                     if (evento.de === null) return;
 
                     const ano = evento.dataObj.getFullYear();
                     const mes = evento.dataObj.getMonth() + 1;
                     const chave = `${ano}-${String(mes).padStart(2, '0')}`;
 
-                    if (evento.para === 'INATIVO' && evento.de !== 'INATIVO') {
+                    if (
+                        evento.para === 'INATIVO' &&
+                        evento.de !== 'INATIVO'
+                    ) {
                         inativacoesMensais[chave] =
                             (inativacoesMensais[chave] || 0) + 1;
                     }
 
-                    if (evento.de === 'INATIVO' && evento.para === 'ATIVO') {
+                    if (
+                        evento.de === 'INATIVO' &&
+                        evento.para === 'ATIVO'
+                    ) {
                         reativacoesMensais[chave] =
                             (reativacoesMensais[chave] || 0) + 1;
                     }
@@ -1121,29 +1150,20 @@
             });
 
             datasValidas.sort((a, b) => a - b);
-            eventosStatusGlobais.sort((a, b) => a.dataObj - b.dataObj);
 
+            const anoAtual = new Date().getFullYear();
             const primeiroAno = datasValidas.length
                 ? datasValidas[0].getFullYear()
-                : new Date().getFullYear();
-
-            // Conservador: a série de ativos históricos só começa no primeiro
-            // evento real de mudança de status (de != null).
-            const eventosMudanca = eventosStatusGlobais.filter(e => e.de !== null);
-            const inicioHistoricoStatus = eventosMudanca.length
-                ? eventosMudanca[0].dataObj
-                : null;
+                : anoAtual;
 
             return {
                 alunos,
                 matriculasMensais,
-                matriculasAnuais,
                 inativacoesMensais,
                 reativacoesMensais,
                 primeiroAno,
                 semData,
-                datasValidas,
-                inicioHistoricoStatus
+                datasValidas
             };
         }
 
@@ -1153,9 +1173,13 @@
 
             const anoAtual = new Date().getFullYear();
             const selecaoAnterior = Number(anoSelect.value) || anoAtual;
-            const inicio = Math.min(Number(primeiroAno) || anoAtual, anoAtual);
+            const inicio = Math.min(
+                Number(primeiroAno) || anoAtual,
+                anoAtual
+            );
 
             const anos = [];
+
             for (let ano = inicio; ano <= anoAtual; ano++) {
                 anos.push(ano);
             }
@@ -1179,95 +1203,34 @@
             return Number(anoSelect.value) || anoAtual;
         }
 
-        function statusAlunoNoCorte(aluno, corte) {
-            const dataCadastro = converterDataCadastro(
-                aluno.data_cadastro ||
-                aluno.data_matricula ||
-                aluno.created_at
-            );
-
-            // Sem data de matrícula não é possível posicionar o aluno
-            // com segurança em uma série histórica.
-            if (!dataCadastro || dataCadastro > corte) return null;
-
-            let status = normalizarStatusEvolucao(aluno.status);
-
-            // Partimos do status atual e "desfazemos" as mudanças posteriores
-            // ao corte. Isso é confiável dentro da janela em que todas as
-            // mudanças já estavam sendo registradas.
-            const eventos = eventosStatusDoAluno(aluno)
-                .filter(evento => evento.dataObj > corte)
-                .sort((a, b) => b.dataObj - a.dataObj);
-
-            for (const evento of eventos) {
-                if (evento.de !== null) {
-                    status = evento.de;
-                }
-            }
-
-            return status;
-        }
-
-        function contarAtivosNoCorte(alunos, corte, inicioHistoricoStatus) {
-            if (!inicioHistoricoStatus || corte < inicioHistoricoStatus) {
-                return null;
-            }
-
-            let total = 0;
-
-            alunos.forEach(aluno => {
-                const status = statusAlunoNoCorte(aluno, corte);
-                if (status === 'ATIVO') total++;
-            });
-
-            return total;
-        }
-
-        function formatarDataCurta(data) {
-            if (!(data instanceof Date) || isNaN(data.getTime())) return null;
-
-            return data.toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        }
-
-        function formatarMesAnoCurto(data) {
-            if (!(data instanceof Date) || isNaN(data.getTime())) return null;
-
-            const meses = [
-                'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-                'jul', 'ago', 'set', 'out', 'nov', 'dez'
-            ];
-
-            return `${meses[data.getMonth()]}/${data.getFullYear()}`;
-        }
-
-        function criarEstiloSerieAtivos(valores) {
-            const quantidadeValidos = valores.filter(valor => valor !== null && valor !== undefined).length;
-            const unicoPonto = quantidadeValidos === 1;
-
+        function criarPluginCentroDonut(total) {
             return {
-                showLine: quantidadeValidos > 1,
-                pointRadius: valores.map(valor => {
-                    if (valor === null || valor === undefined) return 0;
-                    return unicoPonto ? 7 : 4;
-                }),
-                pointHoverRadius: valores.map(valor => {
-                    if (valor === null || valor === undefined) return 0;
-                    return unicoPonto ? 9 : 6;
-                }),
-                pointBackgroundColor: valores.map(valor =>
-                    valor === null || valor === undefined ? 'transparent' : '#ffffff'
-                ),
-                pointBorderColor: valores.map(valor =>
-                    valor === null || valor === undefined ? 'transparent' : '#0f172a'
-                ),
-                pointBorderWidth: valores.map(valor => {
-                    if (valor === null || valor === undefined) return 0;
-                    return unicoPonto ? 3 : 2;
-                })
+                id: 'textoCentroDonut',
+                afterDraw(chart) {
+                    if (!chart?.chartArea) return;
+
+                    const { ctx, chartArea } = chart;
+                    const centroX = (chartArea.left + chartArea.right) / 2;
+                    const centroY = (chartArea.top + chartArea.bottom) / 2;
+
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = '900 26px Arial';
+                    ctx.fillText(String(total), centroX, centroY - 7);
+
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '700 10px Arial';
+                    ctx.fillText(
+                        total === 1 ? 'ALUNO' : 'ALUNOS',
+                        centroX,
+                        centroY + 16
+                    );
+
+                    ctx.restore();
+                }
             };
         }
 
@@ -1275,19 +1238,14 @@
             const {
                 alunos,
                 matriculasMensais,
-                matriculasAnuais,
                 inativacoesMensais,
                 reativacoesMensais,
                 primeiroAno,
                 semData,
-                datasValidas,
-                inicioHistoricoStatus
+                datasValidas
             } = processarDadosEvolucao();
 
             const anoSelecionado = atualizarOpcoesAnoGrafico(primeiroAno);
-            const agora = new Date();
-            const anoAtual = agora.getFullYear();
-            const mesAtual = agora.getMonth() + 1;
 
             const meses = [
                 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
@@ -1297,79 +1255,32 @@
             const novasMatriculas = [];
             const inativacoes = [];
             const reativacoes = [];
-            const ativosFechamentoMensal = [];
 
             for (let mes = 1; mes <= 12; mes++) {
-                const chave = `${anoSelecionado}-${String(mes).padStart(2, '0')}`;
+                const chave =
+                    `${anoSelecionado}-${String(mes).padStart(2, '0')}`;
 
-                novasMatriculas.push(matriculasMensais[chave] || 0);
-                inativacoes.push(inativacoesMensais[chave] || 0);
-                reativacoes.push(reativacoesMensais[chave] || 0);
+                novasMatriculas.push(
+                    matriculasMensais[chave] || 0
+                );
 
-                // Não projetamos meses futuros.
-                if (
-                    anoSelecionado > anoAtual ||
-                    (anoSelecionado === anoAtual && mes > mesAtual)
-                ) {
-                    ativosFechamentoMensal.push(null);
-                    continue;
-                }
+                inativacoes.push(
+                    inativacoesMensais[chave] || 0
+                );
 
-                const corte =
-                    anoSelecionado === anoAtual && mes === mesAtual
-                        ? agora
-                        : new Date(anoSelecionado, mes, 0, 23, 59, 59, 999);
-
-                ativosFechamentoMensal.push(
-                    contarAtivosNoCorte(
-                        alunos,
-                        corte,
-                        inicioHistoricoStatus
-                    )
+                reativacoes.push(
+                    reativacoesMensais[chave] || 0
                 );
             }
-
-            // Anos contínuos desde o primeiro cadastro até hoje.
-            const anos = [];
-            for (let ano = primeiroAno; ano <= anoAtual; ano++) {
-                anos.push(ano);
-            }
-
-            if (!anos.length) anos.push(anoAtual);
-
-            const dadosAnuais = anos.map(
-                ano => matriculasAnuais[ano] || 0
-            );
-
-            const ativosFechamentoAnual = anos.map(ano => {
-                const corte =
-                    ano === anoAtual
-                        ? agora
-                        : new Date(ano, 11, 31, 23, 59, 59, 999);
-
-                return contarAtivosNoCorte(
-                    alunos,
-                    corte,
-                    inicioHistoricoStatus
-                );
-            });
-
-            const labelsAnuais = anos.map(ano =>
-                ano === anoAtual
-                    ? [String(ano), 'posição atual']
-                    : String(ano)
-            );
-
-            const estiloAtivosMensal = criarEstiloSerieAtivos(
-                ativosFechamentoMensal
-            );
-
-            const estiloAtivosAnual = criarEstiloSerieAtivos(
-                ativosFechamentoAnual
-            );
 
             const ativosHoje = alunos.filter(
-                a => normalizarStatusEvolucao(a.status) === 'ATIVO'
+                aluno =>
+                    normalizarStatusEvolucao(aluno.status) === 'ATIVO'
+            ).length;
+
+            const inativosHoje = alunos.filter(
+                aluno =>
+                    normalizarStatusEvolucao(aluno.status) === 'INATIVO'
             ).length;
 
             const matriculasNoAno = novasMatriculas.reduce(
@@ -1391,6 +1302,7 @@
                 ? Math.max(...novasMatriculas)
                 : 0;
 
+            // Cards principais.
             const totalCard = document.getElementById('total-alunos-card');
             const matriculasCard = document.getElementById('media-mensal-card');
             const inativacoesCard = document.getElementById('inativacoes-ano-card');
@@ -1398,123 +1310,93 @@
             const crescimentoCard = document.getElementById('maior-crescimento-card');
             const anoCard = document.getElementById('ano-fundacao-card');
             const notaDados = document.getElementById('nota-evolucao-dados');
-            const historicoBadge = document.getElementById('historico-confiavel-badge');
-            const notaAnual = document.getElementById('nota-evolucao-anual');
 
             if (totalCard) totalCard.innerText = ativosHoje;
             if (matriculasCard) matriculasCard.innerText = matriculasNoAno;
             if (inativacoesCard) inativacoesCard.innerText = inativacoesNoAno;
             if (reativacoesCard) reativacoesCard.innerText = reativacoesNoAno;
             if (crescimentoCard) crescimentoCard.innerText = maiorEntradaMensal;
+
             if (anoCard) {
                 anoCard.innerText = datasValidas.length
                     ? primeiroAno
                     : '---';
             }
 
-            if (historicoBadge) {
-                if (inicioHistoricoStatus) {
-                    historicoBadge.innerText =
-                        `🕘 Histórico confiável desde: ${formatarMesAnoCurto(inicioHistoricoStatus)}`;
-                    historicoBadge.className =
-                        "inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-700";
-                } else {
-                    historicoBadge.innerText =
-                        "🕘 Histórico confiável: ainda indisponível";
-                    historicoBadge.className =
-                        "inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-amber-700";
-                }
-            }
+            // Resumos dos gráficos.
+            const resumoMatriculas = document.getElementById(
+                'resumo-matriculas-grafico'
+            );
+            const resumoInativacoes = document.getElementById(
+                'resumo-inativacoes-grafico'
+            );
+            const resumoReativacoes = document.getElementById(
+                'resumo-reativacoes-grafico'
+            );
+            const situacaoAtivos = document.getElementById('situacao-ativos');
+            const situacaoInativos = document.getElementById('situacao-inativos');
 
-            if (notaAnual) {
-                notaAnual.innerText = inicioHistoricoStatus
-                    ? `${anoAtual} representa a posição atual em ${formatarDataCurta(agora)}, não o fechamento anual. Anos anteriores ao início do histórico de status permanecem sem estimativa de ativos.`
-                    : `${anoAtual} representa a posição atual em ${formatarDataCurta(agora)}, não o fechamento anual. Ainda não há histórico suficiente para reconstruir ativos de períodos anteriores.`;
-            }
+            if (resumoMatriculas) resumoMatriculas.innerText = matriculasNoAno;
+            if (resumoInativacoes) resumoInativacoes.innerText = inativacoesNoAno;
+            if (resumoReativacoes) resumoReativacoes.innerText = reativacoesNoAno;
+            if (situacaoAtivos) situacaoAtivos.innerText = ativosHoje;
+            if (situacaoInativos) situacaoInativos.innerText = inativosHoje;
 
             if (notaDados) {
-                const partes = [];
-
-                partes.push(
-                    'Matrículas são apuradas pela data de cadastro/matrícula disponível.'
-                );
+                const partes = [
+                    'Matrículas consideram a data de cadastro/matrícula disponível.',
+                    'Inativações e reativações consideram somente movimentos registrados no histórico de status.'
+                ];
 
                 if (semData > 0) {
                     partes.push(
-                        `${semData} aluno(s) sem data ficaram fora das séries históricas de matrícula e de ativos.`
-                    );
-                }
-
-                if (inicioHistoricoStatus) {
-                    partes.push(
-                        `A série histórica de ativos é exibida somente a partir de ${formatarDataCurta(inicioHistoricoStatus)}, primeiro evento de mudança de status disponível neste ambiente. Períodos anteriores não são estimados.`
-                    );
-                } else {
-                    partes.push(
-                        'Ainda não há evento de mudança de status suficiente para reconstruir uma série histórica de ativos. O total de Ativos Hoje continua sendo exibido normalmente.'
+                        `${semData} aluno(s) sem data ficaram fora da série de matrículas.`
                     );
                 }
 
                 notaDados.innerText = partes.join(' ');
             }
 
+            // Gráfico mensal: barras agrupadas.
             const ctxMensal =
-                document.getElementById('chartEvolucaoMensal')?.getContext('2d');
+                document
+                    .getElementById('chartEvolucaoMensal')
+                    ?.getContext('2d');
 
             if (ctxMensal) {
                 if (chartMensal) chartMensal.destroy();
 
                 chartMensal = new Chart(ctxMensal, {
+                    type: 'bar',
                     data: {
                         labels: meses,
                         datasets: [
                             {
-                                type: 'bar',
                                 label: 'Novas matrículas',
                                 data: novasMatriculas,
-                                backgroundColor: 'rgba(6, 182, 212, 0.32)',
+                                backgroundColor: 'rgba(6, 182, 212, 0.42)',
                                 borderColor: '#06b6d4',
                                 borderWidth: 1,
                                 borderRadius: 6,
-                                yAxisID: 'y'
+                                maxBarThickness: 24
                             },
                             {
-                                type: 'bar',
                                 label: 'Inativações',
                                 data: inativacoes,
-                                backgroundColor: 'rgba(244, 63, 94, 0.22)',
+                                backgroundColor: 'rgba(244, 63, 94, 0.28)',
                                 borderColor: '#f43f5e',
                                 borderWidth: 1,
                                 borderRadius: 6,
-                                yAxisID: 'y'
+                                maxBarThickness: 24
                             },
                             {
-                                type: 'bar',
                                 label: 'Reativações',
                                 data: reativacoes,
-                                backgroundColor: 'rgba(16, 185, 129, 0.22)',
+                                backgroundColor: 'rgba(16, 185, 129, 0.28)',
                                 borderColor: '#10b981',
                                 borderWidth: 1,
                                 borderRadius: 6,
-                                yAxisID: 'y'
-                            },
-                            {
-                                type: 'line',
-                                label: 'Alunos ativos',
-                                data: ativosFechamentoMensal,
-                                borderColor: '#0f172a',
-                                backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                                borderWidth: 3,
-                                tension: 0.3,
-                                showLine: estiloAtivosMensal.showLine,
-                                pointRadius: estiloAtivosMensal.pointRadius,
-                                pointHoverRadius: estiloAtivosMensal.pointHoverRadius,
-                                pointBackgroundColor: estiloAtivosMensal.pointBackgroundColor,
-                                pointBorderColor: estiloAtivosMensal.pointBorderColor,
-                                pointBorderWidth: estiloAtivosMensal.pointBorderWidth,
-                                spanGaps: false,
-                                fill: false,
-                                yAxisID: 'y'
+                                maxBarThickness: 24
                             }
                         ]
                     },
@@ -1535,101 +1417,104 @@
                                     },
                                     usePointStyle: true
                                 }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => {
-                                        if (ctx.raw == null) {
-                                            return `${ctx.dataset.label}: histórico indisponível`;
-                                        }
-                                        return `${ctx.dataset.label}: ${ctx.raw}`;
-                                    }
-                                }
                             }
                         },
                         scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            },
                             y: {
                                 beginAtZero: true,
-                                ticks: { precision: 0 }
+                                ticks: {
+                                    precision: 0
+                                }
                             }
                         }
                     }
                 });
             }
 
-            const ctxAnual =
-                document.getElementById('chartEvolucaoAnual')?.getContext('2d');
+            // Situação atual: donut.
+            const ctxSituacao =
+                document
+                    .getElementById('chartSituacaoAtual')
+                    ?.getContext('2d');
 
-            if (ctxAnual) {
+            if (ctxSituacao) {
                 if (chartAnual) chartAnual.destroy();
 
-                chartAnual = new Chart(ctxAnual, {
+                const totalBase = ativosHoje + inativosHoje;
+
+                const dadosDonut =
+                    totalBase > 0
+                        ? [ativosHoje, inativosHoje]
+                        : [1];
+
+                const labelsDonut =
+                    totalBase > 0
+                        ? ['Ativos', 'Inativos']
+                        : ['Sem alunos'];
+
+                const coresDonut =
+                    totalBase > 0
+                        ? ['#10b981', '#cbd5e1']
+                        : ['#e2e8f0'];
+
+                chartAnual = new Chart(ctxSituacao, {
+                    type: 'doughnut',
                     data: {
-                        labels: labelsAnuais,
+                        labels: labelsDonut,
                         datasets: [
                             {
-                                type: 'bar',
-                                label: 'Novas matrículas',
-                                data: dadosAnuais,
-                                backgroundColor: 'rgba(6, 182, 212, 0.35)',
-                                borderColor: '#06b6d4',
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                yAxisID: 'y'
-                            },
-                            {
-                                type: 'line',
-                                label: 'Alunos ativos',
-                                data: ativosFechamentoAnual,
-                                borderColor: '#0f172a',
-                                backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                                borderWidth: 3,
-                                tension: 0.25,
-                                showLine: estiloAtivosAnual.showLine,
-                                pointRadius: estiloAtivosAnual.pointRadius,
-                                pointHoverRadius: estiloAtivosAnual.pointHoverRadius,
-                                pointBackgroundColor: estiloAtivosAnual.pointBackgroundColor,
-                                pointBorderColor: estiloAtivosAnual.pointBorderColor,
-                                pointBorderWidth: estiloAtivosAnual.pointBorderWidth,
-                                spanGaps: false,
-                                fill: false,
-                                yAxisID: 'y'
+                                data: dadosDonut,
+                                backgroundColor: coresDonut,
+                                borderColor: '#ffffff',
+                                borderWidth: 4,
+                                hoverOffset: 5
                             }
                         ]
                     },
+                    plugins: [
+                        criarPluginCentroDonut(
+                            totalBase
+                        )
+                    ],
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
+                        cutout: '68%',
                         plugins: {
                             legend: {
-                                position: 'top',
+                                position: 'bottom',
                                 labels: {
                                     font: {
                                         size: 10,
                                         weight: 'bold'
                                     },
-                                    usePointStyle: true
+                                    usePointStyle: true,
+                                    padding: 18
                                 }
                             },
                             tooltip: {
                                 callbacks: {
                                     label: ctx => {
-                                        if (ctx.raw == null) {
-                                            return `${ctx.dataset.label}: histórico indisponível`;
+                                        if (totalBase === 0) {
+                                            return 'Sem alunos cadastrados';
                                         }
-                                        return `${ctx.dataset.label}: ${ctx.raw}`;
+
+                                        const valor = Number(ctx.raw || 0);
+                                        const percentual =
+                                            totalBase > 0
+                                                ? (
+                                                    (valor / totalBase) * 100
+                                                ).toFixed(1)
+                                                : '0.0';
+
+                                        return `${ctx.label}: ${valor} (${percentual}%)`;
                                     }
                                 }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { precision: 0 }
                             }
                         }
                     }
