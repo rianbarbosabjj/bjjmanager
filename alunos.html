@@ -3448,15 +3448,20 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     </div>
                 `;
 
-                elemento.style.position = 'fixed';
-                elemento.style.left = '-100000px';
-                elemento.style.top = '0';
+                // Mantém o elemento fora da interface, mas NÃO o desloca para
+                // coordenadas negativas. O html2canvas pode gerar páginas em
+                // branco quando o alvo está muito fora da viewport.
+                // O relatório de Frequência já usa com sucesso um elemento
+                // desconectado do DOM, então seguimos o mesmo padrão.
                 elemento.style.width = '794px';
                 elemento.style.background = '#ffffff';
 
-                document.body.appendChild(elemento);
-
                 await aguardarImagensRelatorio(elemento);
+
+                // Garante que fontes/layout estejam prontos antes da captura.
+                if (document.fonts?.ready) {
+                    await document.fonts.ready;
+                }
 
                 const opcoes = {
                     margin: [7, 7, 8, 7],
@@ -3473,7 +3478,9 @@ async function carregarFrequenciaDoAluno(idAluno) {
                         useCORS: true,
                         allowTaint: false,
                         backgroundColor: '#ffffff',
-                        logging: false
+                        logging: false,
+                        scrollX: 0,
+                        scrollY: 0
                     },
                     jsPDF: {
                         unit: 'mm',
@@ -3490,8 +3497,6 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     .set(opcoes)
                     .from(elemento)
                     .save();
-
-                elemento.remove();
 
                 window.fecharModalRelacaoAlunos();
 
