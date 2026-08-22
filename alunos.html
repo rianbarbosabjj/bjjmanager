@@ -1990,10 +1990,22 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     : (cidadeEndereco || ufEndereco);
                 const linhaRegiao = [bairroEndereco, cidadeUf].filter(Boolean).join(' · ');
 
-                const enderecoMontado = [linhaRua, linhaRegiao].filter(Boolean).join(' — ');
-                const enderecoFormatado = String(loc.endereco_formatado || '').trim() || enderecoMontado;
-                const enderecoSeguro = enderecoFormatado
-                    ? escaparHtmlLocalizacao(enderecoFormatado)
+                // Exibição administrativa enxuta:
+                // logradouro/número — bairro · cidade/UF.
+                // CEP, país e endereço completo continuam preservados no Firestore.
+                let enderecoExibicao = [linhaRua, linhaRegiao].filter(Boolean).join(' — ');
+
+                // Fallback para registros cujo backend trouxe apenas endereco_formatado.
+                // Remove, quando possível, o sufixo ", Brasil" para deixar a interface mais limpa.
+                if (!enderecoExibicao) {
+                    enderecoExibicao = String(loc.endereco_formatado || '')
+                        .trim()
+                        .replace(/,\s*Brasil$/i, '')
+                        .trim();
+                }
+
+                const enderecoSeguro = enderecoExibicao
+                    ? escaparHtmlLocalizacao(enderecoExibicao)
                     : 'Endereço não disponível para este registro';
 
                 const urlMapa = temLocalizacao
