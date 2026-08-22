@@ -2245,7 +2245,7 @@ window.registrarCheckin = async function(turmaId, nomeTurma) {
                     
                     const nomesDias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
                     const dataHojeStr = obterDataHojeSaoPaulo();
-                    const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", dataHojeStr));
+                    const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("equipe_id", "==", alunoLogado.equipe_id), where("data", "==", dataHojeStr));
                     const snapCheck = await getDocs(qCheck);
                     const turmasComCheckinHoje = snapCheck.docs.map(doc => doc.data().turma_id);
                     
