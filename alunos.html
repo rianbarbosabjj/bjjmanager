@@ -2141,9 +2141,10 @@ async function carregarFrequenciaDoAluno(idAluno) {
             btnSalvar.innerHTML = "⏳ SALVANDO..."; 
             btnSalvar.disabled = true; 
             
+
             // ===================== HISTÓRICO DE STATUS V3.4 =====================
-            // Não reconstrói mudanças anteriores à implantação desta versão.
-            // Daqui em diante, toda transição ATIVO <-> INATIVO fica registrada.
+            // A partir desta versão, cada mudança ATIVO <-> INATIVO fica registrada.
+            // Não tentamos reconstruir períodos anteriores à implantação deste histórico.
             const agoraIso = new Date().toISOString();
             const novoStatus = String(
                 document.getElementById('aluno-status')?.value || 'ATIVO'
@@ -2157,7 +2158,7 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 ? String(alunoAnterior.status || 'ATIVO').toUpperCase()
                 : null;
 
-            const statusMudou = !!id && statusAnterior !== novoStatus;
+            const statusMudou = Boolean(id && statusAnterior !== novoStatus);
 
             const dados = { 
                 equipe_id: window.teamId, 
@@ -2251,7 +2252,9 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
                         if (novoStatus === "INATIVO") {
                             dadosAtualizacao.inativado_em = agoraIso;
-                        } else if (statusAnterior === "INATIVO" && novoStatus === "ATIVO") {
+                        }
+
+                        if (statusAnterior === "INATIVO" && novoStatus === "ATIVO") {
                             dadosAtualizacao.reativado_em = agoraIso;
                         }
                     }
