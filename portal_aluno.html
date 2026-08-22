@@ -1888,6 +1888,46 @@
         // ==========================================
         // 📅 CHECK-IN E MURAL
         // ==========================================
+
+        // Mantém a mesma referência de data usada pelo backend do check-in.
+        function obterDataHojeSaoPaulo() {
+            const partes = new Intl.DateTimeFormat('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).formatToParts(new Date());
+
+            const mapa = {};
+            partes.forEach(({ type, value }) => {
+                if (type !== 'literal') mapa[type] = value;
+            });
+
+            return `${mapa.year}-${mapa.month}-${mapa.day}`;
+        }
+
+        function marcarBotaoCheckinComoFeito(btn) {
+            if (!btn) return;
+
+            btn.innerHTML = '✅ Check-in Feito';
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.className = "w-full mt-2 bg-emerald-500 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm opacity-70 cursor-not-allowed";
+        }
+
+        function mensagemIndicaCheckinDuplicado(valor) {
+            const texto = String(valor || '').toLowerCase();
+
+            return (
+                texto.includes('já fez check-in') ||
+                texto.includes('ja fez check-in') ||
+                texto.includes('check-in já realizado') ||
+                texto.includes('check-in ja realizado') ||
+                texto.includes('already-exists') ||
+                texto.includes('already exists')
+            );
+        }
+
 window.registrarCheckin = async function(turmaId, nomeTurma) {
     const btn = document.getElementById(`btn-checkin-${turmaId}`);
 
@@ -1955,24 +1995,68 @@ window.registrarCheckin = async function(turmaId, nomeTurma) {
         const retorno = resultado.data || {};
 
         if (!retorno.success) {
-            showToast(
-                retorno.error || "Não foi possível realizar o check-in.",
-                "error"
-            );
+            const mensagemRetorno =
+                retorno.error ||
+                retorno.message ||
+                "Não foi possível realizar o check-in.";
+
+            // Se o servidor informar duplicidade, isso significa que a presença
+            // já está registrada. O botão deve permanecer bloqueado.
+            if (mensagemIndicaCheckinDuplicado(mensagemRetorno)) {
+                marcarBotaoCheckinComoFeito(btn);
+                showToast(
+                    "Você já fez check-in nesta turma hoje.",
+                    "warning"
+                );
+
+                await Promise.allSettled([
+                    buscarMuralEHorarios(),
+                    buscarCurriculoAluno()
+                ]);
+                return;
+            }
+
+            showToast(mensagemRetorno, "error");
             restaurarBotao();
             return;
         }
+
+        // Confirma visualmente a presença antes mesmo de recarregar a grade.
+        marcarBotaoCheckinComoFeito(btn);
 
         showToast(
             retorno.message || "Check-in realizado com sucesso! Oss!",
             "success"
         );
 
-        buscarMuralEHorarios();
-        buscarCurriculoAluno();
+        await Promise.allSettled([
+            buscarMuralEHorarios(),
+            buscarCurriculoAluno()
+        ]);
 
     } catch (error) {
         console.error("Erro no check-in seguro:", error);
+
+        const detalhesErro =
+            error?.details?.error ||
+            error?.details ||
+            error?.message ||
+            error?.code ||
+            '';
+
+        if (mensagemIndicaCheckinDuplicado(detalhesErro)) {
+            marcarBotaoCheckinComoFeito(btn);
+            showToast(
+                "Você já fez check-in nesta turma hoje.",
+                "warning"
+            );
+
+            await Promise.allSettled([
+                buscarMuralEHorarios(),
+                buscarCurriculoAluno()
+            ]);
+            return;
+        }
 
         showToast(
             "Erro ao registrar check-in. Tente novamente.",
@@ -1982,7 +2066,7 @@ window.registrarCheckin = async function(turmaId, nomeTurma) {
         restaurarBotao();
     }
 };
-        
+
         window.filtrarCheckins = function() { 
             const valFiltro = document.getElementById('filtro-mes-checkin').value; 
             if (!valFiltro) return; 
@@ -2116,7 +2200,7 @@ window.registrarCheckin = async function(turmaId, nomeTurma) {
                     turmasExibidas.sort((a,b) => { const timeA = a.proximaSessaoObj ? a.proximaSessaoObj.getTime() : Infinity; const timeB = b.proximaSessaoObj ? b.proximaSessaoObj.getTime() : Infinity; return timeA - timeB; });
                     
                     const nomesDias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-                    const dataHojeStr = new Date().toISOString().split('T')[0];
+                    const dataHojeStr = obterDataHojeSaoPaulo();
                     const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", dataHojeStr));
                     const snapCheck = await getDocs(qCheck);
                     const turmasComCheckinHoje = snapCheck.docs.map(doc => doc.data().turma_id);
