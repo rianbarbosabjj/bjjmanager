@@ -804,7 +804,16 @@
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Situação dos alunos</label>
                     <select id="relacao-status" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 outline-none">
                         <option value="ATIVOS">Somente ativos</option>
+                        <option value="INATIVOS">Somente inativos</option>
                         <option value="TODOS">Ativos e inativos</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Modelo do relatório</label>
+                    <select id="relacao-modelo" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 outline-none">
+                        <option value="COM_CONTATO">Com responsável / contato</option>
+                        <option value="SEM_CONTATO">Sem responsável / contato</option>
                     </select>
                 </div>
 
@@ -812,7 +821,7 @@
                     <div class="flex gap-2 items-start">
                         <span class="text-sm">ℹ️</span>
                         <p class="text-[10px] leading-relaxed text-slate-500">
-                            O PDF incluirá logo e nome da equipe, data de emissão e Nome, Faixa, Idade, Telefone e Responsável. A situação selecionada será identificada no cabeçalho do relatório.
+                            O PDF incluirá logo e nome da equipe, data de emissão e Nome, Faixa, Idade e Telefone. No modelo com responsável/contato, menores exibem o responsável legal e adultos exibem o contato de emergência cadastrado.
                         </p>
                     </div>
                 </div>
@@ -3001,9 +3010,11 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
             const tipo = document.getElementById('relacao-tipo');
             const status = document.getElementById('relacao-status');
+            const modelo = document.getElementById('relacao-modelo');
 
             if (tipo) tipo.value = 'GERAL';
             if (status) status.value = 'ATIVOS';
+            if (modelo) modelo.value = 'COM_CONTATO';
 
             window.atualizarOpcoesRelacaoAlunos();
 
@@ -3084,11 +3095,31 @@ async function carregarFrequenciaDoAluno(idAluno) {
         function filtrarStatusRelatorio(alunos, escopoStatus) {
             const lista = Array.isArray(alunos) ? alunos : [];
 
-            if (escopoStatus === 'TODOS') return lista;
+            if (escopoStatus === 'TODOS') {
+                return lista;
+            }
+
+            if (escopoStatus === 'INATIVOS') {
+                return lista.filter(
+                    aluno => statusAlunoRelatorio(aluno) === 'INATIVO'
+                );
+            }
 
             return lista.filter(
                 aluno => statusAlunoRelatorio(aluno) === 'ATIVO'
             );
+        }
+
+        function subtituloStatusRelatorio(escopoStatus) {
+            if (escopoStatus === 'INATIVOS') {
+                return 'ALUNOS INATIVOS';
+            }
+
+            if (escopoStatus === 'TODOS') {
+                return 'ALUNOS ATIVOS E INATIVOS';
+            }
+
+            return 'ALUNOS ATIVOS';
         }
 
         function ordenarAlunosRelatorio(alunos) {
@@ -3100,10 +3131,36 @@ async function carregarFrequenciaDoAluno(idAluno) {
             );
         }
 
-        function linhaAlunoRelatorio(aluno) {
+        function idadeNumericaRelatorio(aluno) {
             const idade = calcularIdade(aluno?.data_nascimento);
-            const responsavel = String(aluno?.nome_responsavel || '').trim();
+            const numero = Number(idade);
+            return Number.isFinite(numero) ? numero : null;
+        }
+
+        function responsavelOuContatoRelatorio(aluno) {
+            const idade = idadeNumericaRelatorio(aluno);
+
+            if (idade !== null && idade < 18) {
+                return String(aluno?.nome_responsavel || '').trim();
+            }
+
+            if (idade !== null && idade >= 18) {
+                return String(aluno?.emergencia_nome || '').trim();
+            }
+
+            // Sem data confiável: não adivinhamos. Preferimos o responsável
+            // se existir e, na ausência, o contato de emergência.
+            return String(
+                aluno?.nome_responsavel ||
+                aluno?.emergencia_nome ||
+                ''
+            ).trim();
+        }
+
+        function linhaAlunoRelatorio(aluno, mostrarContato) {
+            const idade = calcularIdade(aluno?.data_nascimento);
             const telefone = String(aluno?.telefone || '').trim();
+            const responsavelContato = responsavelOuContatoRelatorio(aluno);
 
             const faixa = [
                 String(aluno?.faixa || 'Branca').trim(),
@@ -3130,14 +3187,18 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
                         ${escaparHtmlRelacao(telefone || '-')}
                     </td>
-                    <td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
-                        ${escaparHtmlRelacao(responsavel || '-')}
-                    </td>
+                    ${
+                        mostrarContato
+                            ? `<td style="padding:7px 5px; font-size:8.8px; color:#475569; vertical-align:top;">
+                                ${escaparHtmlRelacao(responsavelContato || '-')}
+                               </td>`
+                            : ''
+                    }
                 </tr>
             `;
         }
 
-        function tabelaAlunosRelatorio(alunos) {
+        function tabelaAlunosRelatorio(alunos, mostrarContato = true) {
             const lista = ordenarAlunosRelatorio(alunos);
 
             if (!lista.length) {
@@ -3148,25 +3209,29 @@ async function carregarFrequenciaDoAluno(idAluno) {
                 `;
             }
 
+            const cabecalhoContato = mostrarContato
+                ? `<th style="width:28%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Responsável / Contato</th>`
+                : '';
+
             return `
                 <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                     <thead style="display:table-header-group;">
                         <tr style="background:#f8fafc; border-top:1px solid #cbd5e1; border-bottom:2px solid #cbd5e1;">
-                            <th style="width:31%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Nome</th>
-                            <th style="width:15%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Faixa</th>
-                            <th style="width:8%; padding:7px 5px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Idade</th>
-                            <th style="width:18%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Telefone</th>
-                            <th style="width:28%; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Responsável</th>
+                            <th style="width:${mostrarContato ? '31%' : '38%'}; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Nome</th>
+                            <th style="width:${mostrarContato ? '15%' : '18%'}; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Faixa</th>
+                            <th style="width:${mostrarContato ? '8%' : '10%'}; padding:7px 5px; text-align:center; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Idade</th>
+                            <th style="width:${mostrarContato ? '18%' : '34%'}; padding:7px 5px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:.05em;">Telefone</th>
+                            ${cabecalhoContato}
                         </tr>
                     </thead>
                     <tbody>
-                        ${lista.map(linhaAlunoRelatorio).join('')}
+                        ${lista.map(aluno => linhaAlunoRelatorio(aluno, mostrarContato)).join('')}
                     </tbody>
                 </table>
             `;
         }
 
-        function secaoRelatorio(titulo, alunos, primeira = false) {
+        function secaoRelatorio(titulo, alunos, primeira = false, mostrarContato = true) {
             return `
                 <section style="${primeira ? '' : 'margin-top:22px;'}">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #cbd5e1;">
@@ -3177,12 +3242,14 @@ async function carregarFrequenciaDoAluno(idAluno) {
                             ${alunos.length} ${alunos.length === 1 ? 'aluno' : 'alunos'}
                         </span>
                     </div>
-                    ${tabelaAlunosRelatorio(alunos)}
+                    ${tabelaAlunosRelatorio(alunos, mostrarContato)}
                 </section>
             `;
         }
 
-        function montarConteudoRelacaoAlunos(tipo, detalhe, escopoStatus) {
+        function montarConteudoRelacaoAlunos(tipo, detalhe, escopoStatus, modeloRelatorio) {
+            const mostrarContato = modeloRelatorio !== 'SEM_CONTATO';
+
             const todos = filtrarStatusRelatorio(
                 window.todosAlunosCache || [],
                 escopoStatus
@@ -3191,11 +3258,9 @@ async function carregarFrequenciaDoAluno(idAluno) {
             if (tipo === 'GERAL') {
                 return {
                     titulo: 'RELAÇÃO GERAL DE ALUNOS',
-                    subtitulo: escopoStatus === 'ATIVOS'
-                        ? 'ALUNOS ATIVOS'
-                        : 'ALUNOS ATIVOS E INATIVOS',
+                    subtitulo: subtituloStatusRelatorio(escopoStatus),
                     total: todos.length,
-                    corpo: tabelaAlunosRelatorio(todos)
+                    corpo: tabelaAlunosRelatorio(todos, mostrarContato)
                 };
             }
 
@@ -3215,16 +3280,14 @@ async function carregarFrequenciaDoAluno(idAluno) {
                             nomeTurmaRelatorio(turma),
                             alunosTurma,
                             index === 0
-                        );
+                        , mostrarContato);
                     }).join('');
 
                     return {
                         titulo: 'RELAÇÃO DE ALUNOS POR TURMA',
-                        subtitulo: escopoStatus === 'ATIVOS'
-                            ? 'ALUNOS ATIVOS'
-                            : 'ALUNOS ATIVOS E INATIVOS',
+                        subtitulo: subtituloStatusRelatorio(escopoStatus),
                         total: totalVinculos,
-                        corpo: secoes || tabelaAlunosRelatorio([])
+                        corpo: secoes || tabelaAlunosRelatorio([], mostrarContato)
                     };
                 }
 
@@ -3244,11 +3307,9 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
                 return {
                     titulo: `RELAÇÃO DE ALUNOS - ${nomeTurma}`,
-                    subtitulo: escopoStatus === 'ATIVOS'
-                        ? 'ALUNOS ATIVOS'
-                        : 'ALUNOS ATIVOS E INATIVOS',
+                    subtitulo: subtituloStatusRelatorio(escopoStatus),
                     total: alunosTurma.length,
-                    corpo: tabelaAlunosRelatorio(alunosTurma)
+                    corpo: tabelaAlunosRelatorio(alunosTurma, mostrarContato)
                 };
             }
 
@@ -3269,16 +3330,14 @@ async function carregarFrequenciaDoAluno(idAluno) {
                         `Faixa ${faixa}`,
                         alunosFaixa,
                         index === 0
-                    );
+                    , mostrarContato);
                 }).join('');
 
                 return {
                     titulo: 'RELAÇÃO DE ALUNOS POR FAIXA',
-                    subtitulo: escopoStatus === 'ATIVOS'
-                        ? 'ALUNOS ATIVOS'
-                        : 'ALUNOS ATIVOS E INATIVOS',
+                    subtitulo: subtituloStatusRelatorio(escopoStatus),
                     total: totalVinculos,
-                    corpo: secoes || tabelaAlunosRelatorio([])
+                    corpo: secoes || tabelaAlunosRelatorio([], mostrarContato)
                 };
             }
 
@@ -3289,11 +3348,9 @@ async function carregarFrequenciaDoAluno(idAluno) {
 
             return {
                 titulo: `RELAÇÃO DE ALUNOS - FAIXA ${detalhe}`,
-                subtitulo: escopoStatus === 'ATIVOS'
-                    ? 'ALUNOS ATIVOS'
-                    : 'ALUNOS ATIVOS E INATIVOS',
+                subtitulo: subtituloStatusRelatorio(escopoStatus),
                 total: alunosFaixa.length,
-                corpo: tabelaAlunosRelatorio(alunosFaixa)
+                corpo: tabelaAlunosRelatorio(alunosFaixa, mostrarContato)
             };
         }
 
@@ -3365,10 +3422,15 @@ async function carregarFrequenciaDoAluno(idAluno) {
                     document.getElementById('relacao-status')?.value ||
                     'ATIVOS';
 
+                const modeloRelatorio =
+                    document.getElementById('relacao-modelo')?.value ||
+                    'COM_CONTATO';
+
                 const relatorio = montarConteudoRelacaoAlunos(
                     tipo,
                     detalhe,
-                    escopoStatus
+                    escopoStatus,
+                    modeloRelatorio
                 );
 
                 const equipeNome =
